@@ -40,6 +40,11 @@ jobs:
       - name: Install lint tools
         run: brew bundle --file Brewfile
 
+      - name: Prepare iOS Simulator
+        env:
+          CI: true
+        run: ./tool/ensure_ci_simulator.sh
+
       - name: CI (lint, test, iPad/Mac builds)
         env:
           CI: true

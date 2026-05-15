@@ -12,39 +12,91 @@ cd "$ROOT"
 # shellcheck source=resolve_platform_destination.sh
 source "$ROOT/tool/resolve_platform_destination.sh"
 
-existing_udid="$(iphone_udid_from_simctl 2>/dev/null || true)"
-if [[ -n "$existing_udid" ]]; then
-  dest="platform=iOS Simulator,id=${existing_udid}"
-  if destination_valid_for_scheme "$dest"; then
-    echo "==> CI simulator already available ($dest)"
-    exit 0
-  fi
-fi
+read_deployment_target() {
+  local project_file="superDemoApp.xcodeproj/project.pbxproj"
+  [[ -f "$project_file" ]] || return 1
+  rg -m1 'IPHONEOS_DEPLOYMENT_TARGET = ' "$project_file" \
+    | sed -E 's/.*IPHONEOS_DEPLOYMENT_TARGET = ([0-9]+(\.[0-9]+)?);.*/\1/'
+}
 
-echo "==> No available iPhone simulator; creating one for CI"
-
-runtime_id="$(
+select_ios_runtime_id() {
+  local deployment_target="$1"
   xcrun simctl list runtimes -j 2>/dev/null \
     | python3 -c "
 import json, sys
+
+target = sys.argv[1]
+parts = [int(x) for x in target.split('.') if x.isdigit()]
+while len(parts) < 2:
+    parts.append(0)
+target_tuple = tuple(parts[:2])
+
+def version_tuple(runtime):
+    nums = [int(x) for x in runtime.get('version', '0').split('.') if x.isdigit()]
+    while len(nums) < 2:
+        nums.append(0)
+    return tuple(nums[:2])
+
 data = json.load(sys.stdin)
-runtimes = data.get('runtimes', [])
 ios = [
-    r for r in runtimes
+    r for r in data.get('runtimes', [])
     if r.get('isAvailable') and 'iOS' in r.get('name', '')
 ]
-ios.sort(key=lambda r: r.get('version', ''), reverse=True)
-if not ios:
+matching = [r for r in ios if version_tuple(r) >= target_tuple]
+if not matching:
     sys.exit(1)
-print(ios[0]['identifier'])
-" 2>/dev/null || true
-)"
+matching.sort(key=version_tuple, reverse=True)
+print(matching[0]['identifier'])
+" "$deployment_target" 2>/dev/null || true
+}
+
+wait_for_scheme_destination() {
+  local dest="$1"
+  local attempt
+  for attempt in $(seq 1 40); do
+    if destination_valid_for_scheme "$dest"; then
+      return 0
+    fi
+    sleep 5
+  done
+  return 1
+}
+
+try_existing_destination() {
+  local udid
+  udid="$(iphone_udid_from_simctl 2>/dev/null || true)"
+  [[ -n "$udid" ]] || return 1
+  local dest="platform=iOS Simulator,id=${udid}"
+  wait_for_scheme_destination "$dest" || return 1
+  echo "==> CI simulator already available ($dest)"
+  export CI_SIMULATOR_DEST="$dest"
+  if [[ -n "${GITHUB_ENV:-}" ]]; then
+    echo "CI_SIMULATOR_DEST=${dest}" >>"${GITHUB_ENV}"
+  fi
+  return 0
+}
+
+if try_existing_destination; then
+  exit 0
+fi
+
+deployment_target="$(read_deployment_target || echo "26.5")"
+echo "==> Preparing iOS Simulator for deployment target ${deployment_target}"
+
+runtime_id="$(select_ios_runtime_id "$deployment_target")"
+if [[ -z "$runtime_id" ]]; then
+  echo "==> No iOS ${deployment_target}+ runtime; downloading iOS platform"
+  xcodebuild -downloadPlatform iOS
+  runtime_id="$(select_ios_runtime_id "$deployment_target")"
+fi
 
 if [[ -z "$runtime_id" ]]; then
-  echo "error: no available iOS simulator runtime found" >&2
+  echo "error: no iOS simulator runtime >= ${deployment_target}" >&2
   xcrun simctl list runtimes >&2 || true
   exit 1
 fi
+
+echo "==> Using runtime ${runtime_id}"
 
 device_type_id="$(
   xcrun simctl list devicetypes -j 2>/dev/null \
@@ -75,17 +127,16 @@ echo "==> Created simulator $udid"
 xcrun simctl boot "$udid" 2>/dev/null || true
 xcrun simctl bootstatus "$udid" -b
 
-if ! iphone_udid_from_simctl >/dev/null; then
-  echo "error: simulator created but still not listed as available" >&2
+dest="platform=iOS Simulator,id=${udid}"
+if ! wait_for_scheme_destination "$dest"; then
+  echo "error: xcodebuild does not accept destination after boot: $dest" >&2
+  xcodebuild -showdestinations -project superDemoApp.xcodeproj -scheme superDemoApp 2>&1 | head -30 >&2 || true
   xcrun simctl list devices available >&2 || true
   exit 1
 fi
 
-dest="$(resolve_iphone_destination)"
-if ! destination_valid_for_scheme "$dest"; then
-  echo "error: xcodebuild does not accept destination: $dest" >&2
-  xcodebuild -showdestinations -project superDemoApp.xcodeproj -scheme superDemoApp 2>&1 | head -30 >&2 || true
-  exit 1
+export CI_SIMULATOR_DEST="$dest"
+if [[ -n "${GITHUB_ENV:-}" ]]; then
+  echo "CI_SIMULATOR_DEST=${dest}" >>"${GITHUB_ENV}"
 fi
-
 echo "==> CI simulator ready ($dest)"
