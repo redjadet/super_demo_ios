@@ -3,6 +3,38 @@
 # Source from other scripts: source "$(dirname "$0")/resolve_platform_destination.sh"
 set -euo pipefail
 
+iphone_udid_from_simctl() {
+  local devices
+  devices="$(xcrun simctl list devices available 2>/dev/null || true)"
+  local selected_line
+  selected_line="$(printf '%s\n' "$devices" | awk '
+    /^[[:space:]]+iPhone / {
+      print
+      exit
+    }
+  ')"
+  [[ -n "$selected_line" ]] || return 1
+  local udid
+  udid="$(printf '%s\n' "$selected_line" | sed -E 's/.*\(([0-9A-F-]{36})\).*/\1/')"
+  [[ "$udid" =~ ^[0-9A-F-]{36}$ ]] || return 1
+  printf '%s\n' "$udid"
+}
+
+destination_udid() {
+  local dest="$1"
+  sed -n 's/.*id=\([0-9A-F-]\{36\}\).*/\1/p' <<<"$dest"
+}
+
+destination_valid_for_scheme() {
+  local dest="$1"
+  [[ -f superDemoApp.xcodeproj/project.pbxproj ]] || return 0
+  local udid
+  udid="$(destination_udid "$dest")"
+  [[ "$udid" =~ ^[0-9A-F-]{36}$ ]] || return 1
+  xcodebuild -showdestinations -project superDemoApp.xcodeproj -scheme superDemoApp 2>/dev/null \
+    | rg -q "id:${udid}"
+}
+
 resolve_iphone_destination_from_xcodebuild() {
   [[ -f superDemoApp.xcodeproj/project.pbxproj ]] || return 1
   local dest_line
@@ -17,7 +49,9 @@ resolve_iphone_destination_from_xcodebuild() {
   local udid
   udid="$(printf '%s\n' "$dest_line" | sed -n 's/.*id:\([0-9A-F-]\{36\}\).*/\1/p')"
   [[ "$udid" =~ ^[0-9A-F-]{36}$ ]] || return 1
-  printf 'platform=iOS Simulator,id=%s\n' "$udid"
+  local dest="platform=iOS Simulator,id=${udid}"
+  destination_valid_for_scheme "$dest" || return 1
+  printf '%s\n' "$dest"
 }
 
 resolve_iphone_destination() {
@@ -28,10 +62,6 @@ resolve_iphone_destination() {
   if [[ -n "${CHECKLIST_IPHONE_DEST:-}" ]]; then
     printf '%s\n' "$CHECKLIST_IPHONE_DEST"
     return 0
-  fi
-
-  if [[ "${CI:-}" == "true" ]]; then
-    resolve_iphone_destination_from_xcodebuild && return 0
   fi
 
   local preferred_name="${CHECKLIST_PREFERRED_IPHONE:-iPhone 17}"
@@ -74,14 +104,20 @@ resolve_iphone_destination() {
     local udid
     udid="$(printf '%s\n' "$selected_line" | sed -E 's/.*\(([0-9A-F-]{36})\).*/\1/')"
     if [[ "$udid" =~ ^[0-9A-F-]{36}$ ]]; then
-      printf 'platform=iOS Simulator,id=%s\n' "$udid"
-      return 0
+      local dest="platform=iOS Simulator,id=${udid}"
+      if destination_valid_for_scheme "$dest"; then
+        printf '%s\n' "$dest"
+        return 0
+      fi
     fi
   fi
 
+  if resolve_iphone_destination_from_xcodebuild; then
+    return 0
+  fi
+
   if [[ "${CI:-}" == "true" ]]; then
-    resolve_iphone_destination_from_xcodebuild && return 0
-    echo "error: no concrete iOS Simulator destination for CI tests" >&2
+    echo "error: no concrete iOS Simulator destination for CI (run ./tool/ensure_ci_simulator.sh)" >&2
     xcodebuild -showdestinations -project superDemoApp.xcodeproj -scheme superDemoApp 2>&1 | head -40 >&2 || true
     return 1
   fi

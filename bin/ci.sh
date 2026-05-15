@@ -8,6 +8,10 @@ cd "$ROOT"
 export PATH="/opt/homebrew/bin:/usr/local/bin:${PATH}"
 export CI=true
 
+if [[ "${CI:-}" == "true" ]]; then
+  ./tool/ensure_ci_simulator.sh
+fi
+
 # shellcheck source=../tool/resolve_platform_destination.sh
 source "$ROOT/tool/resolve_platform_destination.sh"
 
