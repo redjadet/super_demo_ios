@@ -12,6 +12,8 @@
 ```bash
 ./bin/lint.sh      # fast gate — SwiftLint + SwiftFormat
 ./bin/format.sh    # autocorrect formatting
+./bin/checklist-fast # docs/tooling/small Swift sanity
+./bin/checklist    # full delivery checklist
 ./bin/ci.sh        # full gate — lint + build + unit/UI tests
 ```
 
@@ -22,18 +24,25 @@
 | **GitHub Actions** | `.github/workflows/ci.yml` - Swift lint, Markdown lint, build, test on `macos-15` |
 | **Xcode build** | Run Script phase **Lint (SwiftLint & SwiftFormat)** -> `Scripts/xcode-lint.sh` |
 | **Local parity** | `./bin/ci.sh` - Swift + Markdown lint, build, tests (`CI=true`) |
+| **Fast checklist** | `./bin/checklist-fast` - Markdown/Swift lint, common issue checks, project sanity |
+| **Full checklist** | `./bin/checklist` - lint, common issue checks, existing iPhone simulator build/test, iPad/Mac builds |
 | **Docs-only** | `./bin/lint-markdown.sh` |
 
 `ENABLE_USER_SCRIPT_SANDBOXING` is **NO** at project level so the lint script can read Swift sources (required for SwiftFormat directory walks).
 
 Strict lint in Xcode builds: set environment `RUN_LINT_STRICT=1` or `CI=true` in the scheme (otherwise missing Homebrew tools log a warning and skip).
 
+`./bin/checklist` uses serial Xcode test flags by default so local runs reuse one
+selected simulator instead of spawning parallel cloned simulator workers. Use
+`CHECKLIST_ALLOW_PARALLEL_TESTS=1` only when intentionally stress-testing the
+parallel XCTest path.
+
 ## Swift style
 
 - **Types:** UpperCamelCase (`ItemRepository`, not `itemRepository`).
 - **Members:** lowerCamelCase; acronyms like `id`, `url` stay lowercase in names.
 - **Line length:** 120 warn / 150 error (see `.swiftlint.yml`).
-- **Imports:** Sorted, minimal; no unused imports (analyzer rule).
+- **Imports:** SwiftFormat owns import sorting; SwiftLint analyzer owns unused imports.
 - **Access:** Prefer `private` / `fileprivate`; widen only when required.
 - **Dependencies:** Prefer Apple frameworks and language features over helper libraries.
 
@@ -60,6 +69,8 @@ Strict lint in Xcode builds: set environment `RUN_LINT_STRICT=1` or `CI=true` in
 - Default isolation is **MainActor** — UI and SwiftData on main actor unless explicitly backgrounded.
 - Use `async`/`await`; prefer structured concurrency (`async let`, task groups) over unstructured fire-and-forget.
 - Pass `Sendable` models across actors; avoid capturing non-Sendable types in `@Sendable` closures.
+- Avoid `Task.detached`; use structured tasks, injected services, or actor-owned tasks.
+- Prefer `@MainActor` or `MainActor.run` over `DispatchQueue.main.async`.
 
 ## SwiftData
 
@@ -85,16 +96,34 @@ Add third-party packages only when:
 
 ## Custom SwiftLint rules
 
-| Rule                    | Intent                         |
-| ----------------------- | ------------------------------ |
-| `no_navigation_view`    | Deprecated API guard           |
-| `no_force_try`          | Ban `try!`                     |
-| `no_print_debug`        | Ban `print()`                  |
-| `swiftdata_model_final` | `@Model` must be `final class` |
+| Rule                      | Intent                         |
+| ------------------------- | ------------------------------ |
+| `no_navigation_view`      | Deprecated API guard           |
+| `no_force_try`            | Ban `try!`                     |
+| `no_print_debug`          | Ban `print()`                  |
+| `no_task_detached`        | Prefer structured concurrency  |
+| `no_dispatch_main_async`  | Prefer MainActor isolation     |
+| `no_screen_bounds_layout` | Ban screen-size layout hacks   |
+| `no_uiapplication_shared` | Protect universal app code     |
+| `swiftdata_model_final`   | `@Model` must be `final class` |
+
+## High-signal SwiftLint policy
+
+Enabled opt-in rules prioritize issues AI agents commonly miss:
+
+- Safety: force unwraps, IUOs, force tries, identical operands, unavailable functions.
+- Concurrency: async without await, incompatible concurrency annotations,
+  unhandled throwing tasks.
+- SwiftUI/accessibility: image labels, button traits, private state,
+  no Interface Builder.
+- Tests: balanced XCTest lifecycle, no empty tests, no focused/pending tests,
+  final test cases, test access control.
+- Maintainability/performance: optional collections, default-parameter order,
+  key paths, `reduce(into:)`, shorthand optional binding, sorted first/last.
 
 ## Agent checklist
 
 1. Read `AGENTS.md` for architecture, then `superDemoApp/AGENTS.md` for source-folder notes.
 2. Implement smallest change in the right layer.
-3. `./bin/lint.sh`
+3. `./bin/checklist-fast` for narrow work or `./bin/checklist` for full delivery proof.
 4. Add/update tests and previews for new UI or domain logic.

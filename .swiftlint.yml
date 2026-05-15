@@ -20,8 +20,12 @@ analyzer_rules:
   - unused_import
 
 opt_in_rules:
+  - accessibility_label_for_image
+  - accessibility_trait_for_button
   - array_init
+  - async_without_await
   - attributes
+  - balanced_xctest_lifecycle
   - closure_end_indentation
   - closure_spacing
   - collection_alignment
@@ -29,17 +33,27 @@ opt_in_rules:
   - contains_over_filter_count
   - contains_over_filter_is_empty
   - contains_over_first_not_nil
+  - discarded_notification_center_observer
+  - discouraged_assert
   - discouraged_optional_boolean
+  - discouraged_optional_collection
   - empty_count
   - empty_string
+  - empty_xctest_method
   - explicit_init
   - extension_access_modifier
+  - final_test_case
+  - flatmap_over_map_reduce
+  - function_default_parameter_at_end
   - fatal_error_message
   - first_where
   - force_unwrapping
+  - identical_operands
   - implicitly_unwrapped_optional
+  - incompatible_concurrency_annotation
   - joined_default_parameter
   - last_where
+  - legacy_objc_type
   - legacy_random
   - literal_expression_end_indentation
   - lower_acl_than_parent
@@ -52,15 +66,25 @@ opt_in_rules:
   - optional_enum_case_matching
   - overridden_super_call
   - pattern_matching_keywords
+  - prefer_key_path
   - prefer_self_type_over_type_of_self
+  - prefer_zero_over_explicit_init
   - private_swiftui_state
+  - prohibited_interface_builder
+  - quick_discouraged_focused_test
+  - quick_discouraged_pending_test
+  - reduce_into
   - redundant_nil_coalescing
   - redundant_type_annotation
-  - sorted_imports
+  - shorthand_optional_binding
+  - sorted_first_last
   - static_operator
   - strong_iboutlet
+  - test_case_accessibility
   - toggle_bool
   - trailing_closure
+  - unavailable_function
+  - unhandled_throwing_task
   - unneeded_parentheses_in_closure_argument
   - unowned_variable_capture
   - untyped_error_in_catch
@@ -141,4 +165,28 @@ custom_rules:
     name: SwiftData @Model must be final class
     regex: '@Model\s*\n\s*(?:public\s+|internal\s+|fileprivate\s+|private\s+)?class\s+(?!final)'
     message: "@Model types should be declared as final class."
+    severity: warning
+
+  no_task_detached:
+    name: Avoid Task.detached
+    regex: '\bTask\s*\.\s*detached\b'
+    message: "Avoid Task.detached in app code; use structured tasks, injected services, or an actor-owned task."
+    severity: warning
+
+  no_dispatch_main_async:
+    name: Prefer MainActor over DispatchQueue.main.async
+    regex: '\bDispatchQueue\s*\.\s*main\s*\.\s*async\b'
+    message: "Use @MainActor or MainActor.run instead of DispatchQueue.main.async in Swift concurrency code."
+    severity: warning
+
+  no_screen_bounds_layout:
+    name: No screen-bounds layout
+    regex: '\b(?:UIScreen|NSScreen)\s*\.\s*main\b|\bUIScreen\s*\.\s*main\s*\.\s*bounds\b'
+    message: "Avoid screen-size layout; use SwiftUI adaptive containers, geometry, and size classes."
+    severity: warning
+
+  no_uiapplication_shared:
+    name: Avoid UIApplication.shared in universal code
+    regex: '\bUIApplication\s*\.\s*shared\b'
+    message: "Avoid UIApplication.shared in universal app code; use scene, environment, or platform-specific adapters."
     severity: warning

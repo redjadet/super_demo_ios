@@ -64,6 +64,22 @@ Full CI locally (lint + build + tests):
 ./bin/ci.sh
 ```
 
+Fast checklist (lint + focused common issue checks + project sanity):
+
+```bash
+./bin/checklist-fast
+```
+
+Full checklist (lint + common issue checks + iPhone build/test + iPad/Mac builds).
+It uses `CHECKLIST_IPHONE_DEST` when provided; otherwise it chooses an
+available existing iPhone simulator, preferring a booted simulator first.
+Checklist tests run serially by default to avoid Xcode spawning multiple
+cloned simulator workers.
+
+```bash
+./bin/checklist
+```
+
 Build app:
 
 ```bash
@@ -84,10 +100,21 @@ If destination is unavailable:
 xcrun simctl list devices available
 ```
 
+Override checklist destinations only when needed:
+
+```bash
+CHECKLIST_IPHONE_DEST='platform=iOS Simulator,id=<UDID>' ./bin/checklist
+CHECKLIST_PREFERRED_IPHONE='iPhone 17 Pro' ./bin/checklist
+CHECKLIST_SKIP_PLATFORM_BUILDS=1 ./bin/checklist
+CHECKLIST_ALLOW_PARALLEL_TESTS=1 ./bin/checklist
+```
+
 ## Agent Setup Rules
 
 - Verify scheme/destination before build assumptions.
 - Prefer simulator builds for app code changes.
 - Use narrow tests first, then broader build/test when surface area grows.
+- Use `./bin/checklist-fast` for docs/tooling/small Swift edits and
+  `./bin/checklist` for full delivery proof.
 - Do not commit `xcuserdata`, local DerivedData, secrets, or machine-specific settings.
 - If Xcode or simulator tooling fails, report exact command and failure.

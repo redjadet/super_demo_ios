@@ -21,6 +21,8 @@ XcodeBuildMCP active profile: `superDemoApp`
 | Project/scheme sanity | `xcodebuild -list -project superDemoApp.xcodeproj` |
 | Swift lint gate | `./bin/lint.sh` |
 | Markdown lint gate | `./bin/lint-markdown.sh` |
+| Fast checklist | `./bin/checklist-fast` |
+| Full checklist | `./bin/checklist` |
 | Full local CI | `./bin/ci.sh` |
 | Safe formatting | `./bin/format.sh` |
 | Compile app | `xcodebuild -project superDemoApp.xcodeproj -scheme superDemoApp -destination 'platform=iOS Simulator,name=iPhone 17' build` |
@@ -47,6 +49,11 @@ XcodeBuildMCP active profile: `superDemoApp`
 - Start from current diff.
 - Use Apple-native frameworks first; document dependency tradeoffs.
 - Keep changes surgical.
+- Prefer `./bin/checklist-fast` for docs/tooling/small Swift edits; use `./bin/checklist` before broad/runtime handoff.
+- `./bin/checklist` resolves an available iPhone simulator automatically; set `CHECKLIST_IPHONE_DEST` only when a specific destination is required.
+- `./bin/checklist` disables parallel test workers by default to avoid cloned
+  simulator memory churn; set `CHECKLIST_ALLOW_PARALLEL_TESTS=1` only when
+  parallel proof is intentional.
 - Validate before final report.
 - Report exact proof command.
 - Add durable doc/test/script when the same failure pattern repeats.

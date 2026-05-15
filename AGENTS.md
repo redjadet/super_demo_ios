@@ -66,6 +66,8 @@ Use `./bin/format.sh` for safe Swift formatting when needed.
 - Reliability/quality: [`docs/error-handling.md`](docs/error-handling.md), [`docs/testing.md`](docs/testing.md), [`docs/code-style.md`](docs/code-style.md)
 - Feature structure: [`docs/module-structure.md`](docs/module-structure.md), [`docs/feature-template.md`](docs/feature-template.md)
 - Agent playbook: [`docs/ai-agent-playbook.md`](docs/ai-agent-playbook.md)
+- Commit/PR: [`docs/commit-and-pr-guidelines.md`](docs/commit-and-pr-guidelines.md)
+- Checklists: `./bin/checklist-fast`, `./bin/checklist` (see [`docs/README.md`](docs/README.md))
 
 ## Must Keep
 
@@ -79,3 +81,9 @@ Use `./bin/format.sh` for safe Swift formatting when needed.
 - SwiftData model changes need migration thinking, preview fixture update, and focused persistence tests.
 - New user-facing flows need accessibility labels/traits, Dynamic Type sanity, dark/light mode check, and critical UI test when workflow matters.
 - Repeated failure => add repo capability, not longer prompt.
+
+## Learned Workspace Facts
+
+- When Cursor opens the parent `super_demo_ios` folder, Xcode MCP and
+  workspace maps live in [`../../AGENTS.md`](../../AGENTS.md) and
+  [`.cursor/mcp.json`](../../.cursor/mcp.json) (outside this git repo).

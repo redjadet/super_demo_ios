@@ -3,6 +3,7 @@
 
 # Xcode
 build/
+buildServer.json
 DerivedData/
 *.xcuserstate
 **/xcuserdata/

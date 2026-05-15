@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+# Fast local checklist for docs/tooling/small Swift edits.
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+cd "$ROOT"
+
+show_help() {
+  cat <<'EOF'
+Usage: ./bin/checklist-fast [--help]
+
+Fast local sanity lane:
+- Markdown lint
+- SwiftLint + SwiftFormat lint
+- focused common issue checks
+- Xcode project/scheme listing
+
+Use ./bin/checklist for full build/test/platform proof.
+EOF
+}
+
+case "${1:-}" in
+  -h|--help|help)
+    show_help
+    exit 0
+    ;;
+  "")
+    ;;
+  *)
+    echo "error: unknown option: $1" >&2
+    show_help >&2
+    exit 2
+    ;;
+esac
+
+echo "==> Markdown lint"
+./bin/lint-markdown.sh
+
+echo "==> Swift lint"
+./bin/lint.sh
+
+echo "==> Common issue checks"
+./tool/check_common_issues.sh
+
+echo "==> Project/scheme sanity"
+xcodebuild -list -project superDemoApp.xcodeproj
+
+echo "Fast checklist passed."

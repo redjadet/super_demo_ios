@@ -31,6 +31,12 @@ Source-of-truth docs for `superDemoApp`.
 - AI agent playbook: [`ai-agent-playbook.md`](ai-agent-playbook.md)
 - Commit and PR guidelines: [`commit-and-pr-guidelines.md`](commit-and-pr-guidelines.md)
 
+## Validation
+
+- Fast local sanity: `./bin/checklist-fast`
+- Full delivery gate: `./bin/checklist`
+- Existing CI parity: `./bin/ci.sh`
+
 ## History
 
 - Plans: [`plans/README.md`](plans/README.md)

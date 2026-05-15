@@ -70,7 +70,9 @@ private struct NavigationViewWrapper<Content: View>: View {
             Text("Select an item")
         }
         #else
-        self.content()
+        NavigationStack {
+            self.content()
+        }
         #endif
     }
 }
