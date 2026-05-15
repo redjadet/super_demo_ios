@@ -31,3 +31,8 @@ playground.xcworkspace
 # Cursor IDE (local workspace; never commit)
 .cursor/
 **/.cursor/
+
+# VS Code / Cursor editor settings (local; never commit)
+.vscode/
+**/.vscode/
+*.code-workspace
