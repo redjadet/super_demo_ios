@@ -27,3 +27,7 @@ playground.xcworkspace
 .env
 .env.*
 *.pem
+
+# Cursor IDE (local workspace; never commit)
+.cursor/
+**/.cursor/
