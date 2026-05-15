@@ -23,7 +23,6 @@ require_file() {
 section "Required agent docs"
 required_files=(
   AGENTS.md
-  superDemoApp/AGENTS.md
   docs/README.md
   docs/agent_knowledge_base.md
   docs/agent_project_context.md

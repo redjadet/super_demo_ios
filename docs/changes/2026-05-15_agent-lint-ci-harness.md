@@ -22,7 +22,7 @@
   modern Swift idioms, and universal-app custom rules.
 - `.gitignore` for Xcode/macOS artifacts
 - Cursor rules under workspace `.cursor/rules/`
-- Workspace `AGENTS.md` pointer; expanded `superDemoApp/AGENTS.md` and agent docs
+- Consolidated agent map into repo-root `AGENTS.md` and expanded agent docs
 
 ## Verify
 

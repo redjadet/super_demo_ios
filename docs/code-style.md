@@ -123,7 +123,7 @@ Enabled opt-in rules prioritize issues AI agents commonly miss:
 
 ## Agent checklist
 
-1. Read `AGENTS.md` for architecture, then `superDemoApp/AGENTS.md` for source-folder notes.
+1. Read repo-root `AGENTS.md` for architecture and Swift-source notes.
 2. Implement smallest change in the right layer.
 3. `./bin/checklist-fast` for narrow work or `./bin/checklist` for full delivery proof.
 4. Add/update tests and previews for new UI or domain logic.
