@@ -36,3 +36,7 @@ playground.xcworkspace
 .vscode/
 **/.vscode/
 *.code-workspace
+
+# Agent task trackers (local per machine)
+tasks/
+**/tasks/

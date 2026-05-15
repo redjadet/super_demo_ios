@@ -32,7 +32,7 @@ persistence.
 
 Plan once -> execute end-to-end -> verify -> report proof. Ask only blockers:
 credentials/tooling, unsafe ambiguity below 95% confident, user-owned choice.
-Non-trivial work: [`tasks/codex/todo.md`](tasks/codex/todo.md), context ladder,
+Non-trivial work: local `tasks/codex/todo.md` (gitignored), context ladder,
 one observe/revise loop.
 
 ## Quality Gate

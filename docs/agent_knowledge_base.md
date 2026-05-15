@@ -69,7 +69,7 @@ If a verified lesson will matter again, put it in one of:
 - `docs/changes/`
 - `docs/plans/`
 - `docs/audits/`
-- `tasks/codex/todo.md`
+- local `tasks/codex/todo.md` (gitignored)
 - owning implementation doc under `docs/`
 
 Do not leave reusable conclusions only in chat.
