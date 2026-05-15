@@ -5,36 +5,37 @@
 //  Created by İlker Sevim on 15.05.2026.
 //
 
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 struct ContentView: View {
-    @Environment(\.modelContext) private var modelContext
+    @Environment(\.modelContext)
+    private var modelContext
     @Query private var items: [Item]
 
     var body: some View {
         NavigationViewWrapper {
             List {
-                ForEach(items) { item in
+                ForEach(self.items) { item in
                     NavigationLink {
                         Text("Item at \(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))")
                     } label: {
                         Text(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))
                     }
                 }
-                .onDelete(perform: deleteItems)
+                .onDelete(perform: self.deleteItems)
             }
-#if os(macOS)
+            #if os(macOS)
             .navigationSplitViewColumnWidth(min: 180, ideal: 200)
-#endif
+            #endif
             .toolbar {
-#if os(iOS)
+                #if os(iOS)
                 ToolbarItem(placement: .navigationBarTrailing) {
                     EditButton()
                 }
-#endif
+                #endif
                 ToolbarItem {
-                    Button(action: addItem) {
+                    Button(action: self.addItem) {
                         Label("Add Item", systemImage: "plus")
                     }
                 }
@@ -45,32 +46,32 @@ struct ContentView: View {
     private func addItem() {
         withAnimation {
             let newItem = Item(timestamp: Date())
-            modelContext.insert(newItem)
+            self.modelContext.insert(newItem)
         }
     }
 
     private func deleteItems(offsets: IndexSet) {
         withAnimation {
             for index in offsets {
-                modelContext.delete(items[index])
+                self.modelContext.delete(self.items[index])
             }
         }
     }
 }
 
-fileprivate struct NavigationViewWrapper<Content: View>: View {
+private struct NavigationViewWrapper<Content: View>: View {
     let content: () -> Content
 
     var body: some View {
-#if os(macOS)
+        #if os(macOS)
         NavigationSplitView {
-            content()
+            self.content()
         } detail: {
             Text("Select an item")
         }
-#else
-        content()
-#endif
+        #else
+        self.content()
+        #endif
     }
 }
 

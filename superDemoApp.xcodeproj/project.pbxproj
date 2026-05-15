@@ -99,6 +99,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 56D79AF92FB7787400B9E63E /* Build configuration list for PBXNativeTarget "superDemoApp" */;
 			buildPhases = (
+				56D79B102FB7787400B9E63E /* Lint (SwiftLint & SwiftFormat) */,
 				56D79AD22FB7787300B9E63E /* Sources */,
 				56D79AD32FB7787300B9E63E /* Frameworks */,
 				56D79AD42FB7787300B9E63E /* Resources */,
@@ -231,6 +232,37 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		56D79B102FB7787400B9E63E /* Lint (SwiftLint & SwiftFormat) */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${SRCROOT}/.swiftlint.yml",
+				"${SRCROOT}/.swiftformat",
+				"${SRCROOT}/bin/lint.sh",
+				"${SRCROOT}/Scripts/xcode-lint.sh",
+				"${SRCROOT}/superDemoApp",
+				"${SRCROOT}/superDemoAppTests",
+				"${SRCROOT}/superDemoAppUITests",
+			);
+			name = "Lint (SwiftLint & SwiftFormat)";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/swift-lint.stamp",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Scripts/xcode-lint.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		56D79AD22FB7787300B9E63E /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -307,7 +339,7 @@
 				DEVELOPMENT_TEAM = QPG8754DYH;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -369,7 +401,7 @@
 				DEVELOPMENT_TEAM = QPG8754DYH;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;

@@ -5,8 +5,8 @@
 //  Created by İlker Sevim on 15.05.2026.
 //
 
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 @main
 struct superDemoAppApp: App {
@@ -27,6 +27,6 @@ struct superDemoAppApp: App {
         WindowGroup {
             ContentView()
         }
-        .modelContainer(sharedModelContainer)
+        .modelContainer(self.sharedModelContainer)
     }
 }
