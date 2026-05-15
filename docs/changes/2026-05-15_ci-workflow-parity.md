@@ -17,6 +17,10 @@
 | Drifted workflow vs `ci.sh` | Workflow delegates to `./bin/ci.sh` |
 | `PreviewTrait` has no member `dark` | `.previewDarkAppearance()` helper |
 
+## Follow-up
+
+- GHA needs `ripgrep` for `tool/check_common_issues.sh` — added to `Brewfile`.
+
 ## Proof
 
 ```bash
