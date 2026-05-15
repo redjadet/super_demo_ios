@@ -12,8 +12,9 @@ Source-of-truth docs for `superDemoApp`.
 - Review gate: [`ai_code_review_protocol.md`](ai_code_review_protocol.md)
 - Project context: [`agent_project_context.md`](agent_project_context.md)
 - Environment setup: [`agent_environment_setup.md`](agent_environment_setup.md)
-- Host notes: [`agent_host_notes.md`](agent_host_notes.md)
+- Host notes: [`agent_host_notes.md`](agent_host_notes.md) (Cursor MCP, team skills lockfile)
 - Cursor setup: [`../tool/cursor-template/README.md`](../tool/cursor-template/README.md)
+- Team skills pin: [`../skills-lock.json`](../skills-lock.json)
 - Apple development practices: [`apple-development-practices.md`](apple-development-practices.md)
 
 ## Design (SwiftUI)
@@ -47,6 +48,7 @@ Source-of-truth docs for `superDemoApp`.
 - Full delivery gate: `./bin/checklist`
 - CI parity (lint + iPhone test + iPad/Mac builds): `./bin/ci.sh`
 - Cursor rules install: `./tool/install-cursor-rules.sh`
+- Team Apple skills restore: `npx skills experimental_install -y` (from git root; see [`agent_host_notes.md`](agent_host_notes.md))
 
 ## History
 

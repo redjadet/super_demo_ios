@@ -87,5 +87,9 @@ If a verified lesson will matter again, put it in one of:
 - `docs/audits/`
 - local `tasks/codex/todo.md` (gitignored)
 - owning implementation doc under `docs/`
+- lean bullets in [`../AGENTS.md`](../AGENTS.md) learned sections (preferences/facts only)
+
+Cursor team skills are pinned in [`../skills-lock.json`](../skills-lock.json); restore
+with `npx skills experimental_install -y`. Do not duplicate skill content in `docs/`.
 
 Do not leave reusable conclusions only in chat.

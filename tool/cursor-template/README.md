@@ -32,6 +32,17 @@ CURSOR_INSTALL_DIR="$(pwd)/.cursor" ./tool/install-cursor-rules.sh
 
 Restart Cursor or reload the window after install.
 
+## Team agent skills
+
+Tracked in [`skills-lock.json`](../../skills-lock.json). From git root:
+
+```bash
+npx skills experimental_install -y
+```
+
+Restores nine Apple-platform skills into `.agents/skills/` (gitignored). Reload Cursor.
+Details and skill list: [`docs/agent_host_notes.md`](../../docs/agent_host_notes.md).
+
 ## What gets installed
 
 - `rules/agents-map.mdc` — always applies; includes `@superDemoApp/AGENTS.md`

@@ -15,10 +15,10 @@ This file → `docs/` → source comments when code owns nuance. Done = plan, ex
 | Parent `super_demo_ios/` | Optional Cursor workspace root |
 | `superDemoApp/superDemoApp/` | App Swift sources |
 
-Gitignored: `.cursor/`, `.vscode/`, `tasks/`, `buildServer.json`.
+Gitignored: `.cursor/`, `.vscode/`, `tasks/`, `buildServer.json`, `.agents/`.
 
-Cursor install, MCP, rules: [`docs/agent_host_notes.md`](docs/agent_host_notes.md),
-[`tool/cursor-template/README.md`](tool/cursor-template/README.md).
+Cursor install, MCP, rules, team skills: [`docs/agent_host_notes.md`](docs/agent_host_notes.md),
+[`tool/cursor-template/README.md`](tool/cursor-template/README.md), [`skills-lock.json`](skills-lock.json).
 
 ## Read next (order)
 
@@ -82,5 +82,6 @@ first screen (semantic colors; paired `#Preview`s). Proof: `./bin/ci.sh` (iPhone
 - Published repo: `https://github.com/redjadet/super_demo_ios` (`superDemoApp/` is the only git root).
 - Parent `super_demo_ios/` holds gitignored `.cursor/`, `.vscode/`, `tasks/`, `buildServer.json`.
 - Cursor always applies `agents-map.mdc` → `@superDemoApp/AGENTS.md`; rule source in `tool/cursor-template/`.
-- Global Apple platform skills are optional; this repo’s `AGENTS.md` and `docs/` override skill defaults.
+- Team Apple skills: restore from [`skills-lock.json`](skills-lock.json)
+  (`npx skills experimental_install -y`); this file and `docs/` override skill defaults.
 - Cursor Swift/ObjC editing: `swiftlang.swift-vscode` + SweetPad + `xcode-build-server`; avoid duplicate C/C++ LSP (`cpptools`, `clangd`, `sswg.swift-lang`).

@@ -8,7 +8,8 @@ multi-platform CI, and Cursor rules.
 1. Open **`super_demo_ios/`** in Cursor (parent folder) or this directory in Xcode.
 2. Install tools: `brew bundle --file Brewfile`
 3. Install Cursor rules (from this directory): `./tool/install-cursor-rules.sh` then restart Cursor.
-4. Proof: `./bin/ci.sh`
+4. Restore team Apple agent skills: `npx skills experimental_install -y` (requires Node/npx).
+5. Proof: `./bin/ci.sh`
 
 ## Agents
 

@@ -14,4 +14,4 @@
 
 - Before merge/PR: run `./bin/ci.sh` (not iPhone-only proof).
 - Universal SwiftUI work: run `./bin/checklist` before handoff.
-- After clone: `./tool/install-cursor-rules.sh` then restart Cursor.
+- After clone: `./tool/install-cursor-rules.sh`, `npx skills experimental_install -y`, then restart Cursor (see [`2026-05-15_team-apple-skills-lock.md`](2026-05-15_team-apple-skills-lock.md)).

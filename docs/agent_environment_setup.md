@@ -103,14 +103,18 @@ GitHub Actions on push/PR to `main` runs lint, iOS Simulator build/test, then
 
 ## Cursor (first-time)
 
-From repo root:
+From git root (`superDemoApp/`), even when the Cursor workspace is parent `super_demo_ios/`:
 
 ```bash
 ./tool/install-cursor-rules.sh
+npx skills experimental_install -y
 ```
 
-See [`tool/cursor-template/README.md`](../tool/cursor-template/README.md) and
-[`agent_host_notes.md`](agent_host_notes.md).
+Restart Cursor. Confirm **Rules** (`agents-map`, `agent-execution-ios`) and MCP
+`xcode-tools`.
+
+See [`tool/cursor-template/README.md`](../tool/cursor-template/README.md),
+[`agent_host_notes.md`](agent_host_notes.md), and [`../skills-lock.json`](../skills-lock.json).
 
 If destination is unavailable:
 
