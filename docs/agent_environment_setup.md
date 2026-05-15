@@ -58,10 +58,16 @@ Format:
 ./bin/format.sh
 ```
 
-Full CI locally (lint + build + tests):
+Full CI locally (lint + iPhone build/test + iPad/Mac builds; matches GitHub Actions):
 
 ```bash
 ./bin/ci.sh
+```
+
+iPad/Mac compile only (same as CI platform step):
+
+```bash
+./bin/ci-platform-builds.sh
 ```
 
 Fast checklist (lint + focused common issue checks + project sanity):
@@ -92,7 +98,19 @@ Run tests:
 xcodebuild -project superDemoApp.xcodeproj -scheme superDemoApp -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.5' test
 ```
 
-GitHub Actions runs the same lint/build/test steps on push/PR to `main` (see `.github/workflows/ci.yml`).
+GitHub Actions on push/PR to `main` runs lint, iOS Simulator build/test, then
+`./bin/ci-platform-builds.sh` for iPad simulator + macOS builds (see `.github/workflows/ci.yml`).
+
+## Cursor (first-time)
+
+From repo root:
+
+```bash
+./tool/install-cursor-rules.sh
+```
+
+See [`tool/cursor-template/README.md`](../tool/cursor-template/README.md) and
+[`agent_host_notes.md`](agent_host_notes.md).
 
 If destination is unavailable:
 
@@ -106,6 +124,7 @@ Override checklist destinations only when needed:
 CHECKLIST_IPHONE_DEST='platform=iOS Simulator,id=<UDID>' ./bin/checklist
 CHECKLIST_PREFERRED_IPHONE='iPhone 17 Pro' ./bin/checklist
 CHECKLIST_SKIP_PLATFORM_BUILDS=1 ./bin/checklist
+CI_SKIP_PLATFORM_BUILDS=1 ./bin/ci.sh
 CHECKLIST_ALLOW_PARALLEL_TESTS=1 ./bin/checklist
 ```
 

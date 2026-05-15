@@ -23,9 +23,10 @@ adds visionOS behavior.
 ## Layout Rules
 
 - Prefer adaptive SwiftUI containers over fixed geometry.
-- Use `NavigationSplitView` for sidebar/detail workflows; it collapses on narrow
-  widths and fits iPad/Mac naturally.
-- Use `NavigationStack` for single-column flows.
+- Master/detail: **`AdaptiveNavigationShell`** in `Shared/Presentation/` — wraps
+  `NavigationSplitView` for iPhone, iPad, and Mac (collapses on compact iPhone).
+- Single-column-only flows: `NavigationStack`.
+- UI consistency across features: [`design_system.md`](design_system.md#ui-consistency-contract-all-features).
 - Use `ViewThatFits`, `Grid`, `LazyVGrid`, `LazyHGrid`, adaptive frames, and
   dynamic spacing before device-name branching.
 - Use size classes, scene/window size, and platform checks only when layout
@@ -50,6 +51,16 @@ Every user-facing screen should handle:
 - Dynamic Type / larger text,
 - light and dark appearance,
 - keyboard/pointer input where interactive.
+
+## Light and dark (required from day one)
+
+- Every new screen must work in **light and dark** without a separate “dark mode pass.”
+- Use semantic SwiftUI colors and system controls; custom colors only via asset catalog
+  with Any + Dark appearances.
+- Add paired `#Preview` traits (`.dark` + `UniversalPreviewLayouts`) per public screen.
+- Verify in Simulator appearance toggle after meaningful UI changes.
+- Policy: [`design_system.md`](design_system.md#light-and-dark-mode-required-from-day-one),
+  [`../DESIGN.md`](../DESIGN.md).
 
 ## Navigation
 
@@ -86,6 +97,9 @@ xcodebuild -showdestinations -project superDemoApp.xcodeproj -scheme superDemoAp
 ```
 
 For docs-only changes, `./bin/lint.sh` plus scheme/platform inspection is enough.
+
+CI and `./bin/ci.sh` run iPad simulator + macOS builds via `./bin/ci-platform-builds.sh`
+after the iPhone test lane.
 
 ## Agent Finish Gate
 

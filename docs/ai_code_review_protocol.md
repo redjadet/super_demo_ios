@@ -9,7 +9,8 @@ Use before accepting AI-written or heavily AI-shaped changes.
 3. Architecture: any boundary leak between Presentation, Domain, Data?
 4. Concurrency: MainActor isolation, cancellation, actor safety, no detached fire-and-forget unless justified.
 5. Persistence: SwiftData schema, relationship, delete, uniqueness, migration, test fixture impact.
-6. UI: accessibility, Dynamic Type, dark/light, loading/empty/error states.
+6. UI: accessibility, Dynamic Type, **light + dark from day one** (semantic colors, paired
+   previews), loading/empty/error states.
 7. Universal layout: iPhone, iPad split/Stage Manager, and Mac window behavior.
 8. Errors: typed failures, user-safe messages, logs with privacy-safe metadata.
 9. Tests: behavior assertions, edge cases, regression proof.

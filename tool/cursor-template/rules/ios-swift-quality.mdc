@@ -1,0 +1,55 @@
+---
+description: Swift/SwiftUI lint, concurrency, and agent verification for superDemoApp
+globs: superDemoApp/**/*.swift
+alwaysApply: false
+---
+
+# iOS Swift quality (superDemoApp)
+
+Config: `superDemoApp/.swiftlint.yml`, `superDemoApp/.swiftformat`. Full style:
+`superDemoApp/docs/code-style.md`. UI/design: `superDemoApp/DESIGN.md`,
+`superDemoApp/docs/design_system.md`.
+
+## Before claiming done
+
+From `superDemoApp/`:
+
+```bash
+./bin/lint.sh
+```
+
+Universal UI or navigation changes: `./bin/checklist` (not lint alone).
+
+`Features/<Name>/{Presentation,Domain,Data}/` only for layered work; `./bin/lint.sh` runs
+`tool/check_layer_boundaries.sh` (forbidden imports per layer).
+
+Optional build:
+
+```bash
+xcodebuild -project superDemoApp.xcodeproj -scheme superDemoApp \
+  -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.5' build
+```
+
+## Non-negotiables
+
+- **Layers:** Presentation (SwiftUI + ViewModel) → Domain (use cases, protocols) → Data
+  (SwiftData, network). No framework imports in Domain.
+- **UI:** `AdaptiveNavigationShell` (`NavigationSplitView`) for master/detail on iPhone, iPad,
+  Mac — never `NavigationView`. Reuse `Shared/Presentation/` helpers; follow
+  `docs/design_system.md` consistency contract + `docs/universal-apple-platforms.md`.
+  **Light and dark from day one:** semantic colors only; light + dark `#Preview` per screen.
+- **Universal proof:** `./bin/ci.sh` after layout/navigation changes (iPhone test, iPad + Mac build).
+- **Concurrency:** Respect `SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor`; mark background
+  work `nonisolated` or on actors explicitly; avoid `Task` without cancellation when tied to
+  view lifecycle.
+- **SwiftData:** `@Model` types are `final class`; mutations through `ModelContext` on
+  MainActor; no silent `fatalError` in production paths — surface recoverable errors.
+- **Safety:** No `try!`, no force unwrap (`!`) in new code. No `print()` — use `Logger`.
+- **Tests:** Swift Testing for Domain/Data; `#Preview` for each new View; keep
+  `superDemoAppUITests` smoke passing for primary flows.
+- **Scope:** Smallest change; match existing file header and naming; run `./bin/format.sh`
+  only when formatting is the task.
+
+## SwiftLint custom rules (project)
+
+- `no_navigation_view`, `no_force_try`, `no_print_debug`, `swiftdata_model_final`

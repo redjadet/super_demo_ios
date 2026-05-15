@@ -60,7 +60,8 @@ parallel XCTest path.
 - Use `NavigationStack` for single-column flows and `NavigationSplitView` for iPad/Mac sidebar/detail workflows; never use `NavigationView`.
 - Extract subviews when `body` grows; keep side effects in feature model or use case.
 - `@State` / `@Binding` only for local UI state; feature state in Observation models.
-- Every new screen gets a `#Preview` with realistic or in-memory data.
+- Every new screen gets `#Preview` in **light and dark** with realistic or in-memory data
+  (`UniversalPreviewLayouts` + `.dark` trait — see [`design_system.md`](design_system.md)).
 - Avoid hard-coded screen sizes, absolute positions, and device-name layout branching.
 - Prefer adaptive containers (`ViewThatFits`, `Grid`, lazy grids, stacks, split views) and platform-native toolbar/menu placements.
 
@@ -123,7 +124,7 @@ Enabled opt-in rules prioritize issues AI agents commonly miss:
 
 ## Agent checklist
 
-1. Read repo-root `AGENTS.md` for architecture and Swift-source notes.
+1. Read repo-root [`AGENTS.md`](../AGENTS.md), then [`agent_baseline.md`](agent_baseline.md).
 2. Implement smallest change in the right layer.
 3. `./bin/checklist-fast` for narrow work or `./bin/checklist` for full delivery proof.
 4. Add/update tests and previews for new UI or domain logic.

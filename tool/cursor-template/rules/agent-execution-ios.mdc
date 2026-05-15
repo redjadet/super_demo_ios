@@ -1,0 +1,16 @@
+---
+description: Agent execution discipline for superDemoApp (proof before done)
+alwaysApply: true
+---
+
+# Agent execution (superDemoApp)
+
+- **Think:** Below ~95% confidence on architecture or API → use always-applied
+  `superDemoApp/AGENTS.md` (via `agents-map` rule) and relevant `superDemoApp/docs/*.md`
+  before coding.
+- **Change:** Smallest reversible diff; every line traces to the request or required
+  lint/doc update.
+- **Prove:** `./superDemoApp/bin/lint.sh` after Swift edits; `./superDemoApp/bin/ci.sh`
+  before merge/PR; SwiftUI layout/navigation/universal UI/light-dark →
+  `./superDemoApp/bin/checklist` (iPhone test + iPad/Mac builds).
+- **Stuck:** Same failure twice → add script, test, or doc — not a longer prompt.

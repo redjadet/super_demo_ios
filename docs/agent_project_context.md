@@ -9,9 +9,10 @@ Machine-readable project facts for agents.
 - App target: `superDemoApp`
 - Unit test target: `superDemoAppTests`
 - UI test target: `superDemoAppUITests`
-- Current source shape: universal SwiftUI + SwiftData template.
-- Current persistence model: `Item` in `superDemoApp/Item.swift`.
-- Current root view: `ContentView` with a SwiftData `@Query`.
+- Current source shape: universal SwiftUI + SwiftData with layered reference feature.
+- Reference feature: `Features/Items/{Presentation,Domain,Data}/` (copy this layout).
+- Persistence model: `Features/Items/Data/Item.swift` (`@Model`).
+- Root UI: `App/ItemsComposition.swift` → `ItemsRootView` → `ItemsView`.
 - Current platform settings include iPhone, iPad, and Mac support.
 
 ## Preferred Growth Direction

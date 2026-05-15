@@ -1,0 +1,11 @@
+---
+description: Project agent map — always apply superDemoApp/AGENTS.md (Codex, Cursor, other agents)
+alwaysApply: true
+---
+
+# Agent map (canonical)
+
+Follow the project agent instructions below on every task. They are the only
+`AGENTS.md` for this repo. Repo `docs/` own detailed policy.
+
+@superDemoApp/AGENTS.md

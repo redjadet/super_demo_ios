@@ -1,119 +1,86 @@
-# AGENTS — superDemoApp (Codex, Cursor, and other agents)
+# AGENTS — superDemoApp
 
-**This is the only `AGENTS.md` for this project.** Repo docs under `docs/` are the
-system of record for detail.
-
-## Workspace layout
-
-| Path | Role |
-|------|------|
-| `superDemoApp/` | **Git repo root** — open here or `superDemoApp.xcodeproj` for app work |
-| Parent `super_demo_ios/` | Optional Cursor workspace root; not in git |
-| `superDemoApp/superDemoApp/` | App Swift sources (`ContentView.swift`, `Item.swift`, entry) |
-
-Gitignored local-only (never commit): `.cursor/`, `.vscode/`, `tasks/`, `buildServer.json`.
-
-When the editor workspace root is the parent folder, Cursor MCP and rules live in
-`../.cursor/mcp.json` and `../.cursor/rules/` (Xcode 26.3+ Intelligence MCP;
-keep `superDemoApp.xcodeproj` open in Xcode).
-
-**Cursor:** `.cursor/rules/agents-map.mdc` has `alwaysApply: true` and includes
-this file (`@superDemoApp/AGENTS.md`) in every Agent session. Nested `AGENTS.md`
-under `superDemoApp/` also applies when editing files in this repo.
+**Only `AGENTS.md` in this repo.** Lean map for all agents (Cursor, Codex, others).
+Details live in [`docs/`](docs/README.md).
 
 ## Authority
 
-Priority: this file → repo `docs/` → source comments only when code owns nuance.
-Done = Plan, Execute, Verify, Report proof.
+This file → `docs/` → source comments when code owns nuance. Done = plan, execute, verify, proof.
 
-## Start
+## Workspace
 
-1. This `AGENTS.md` (repo root)
-2. [`docs/agent_knowledge_base.md`](docs/agent_knowledge_base.md)
+| Path | Role |
+| ------ | ------ |
+| `superDemoApp/` | Git repo root; run `./bin/*` here |
+| Parent `super_demo_ios/` | Optional Cursor workspace root |
+| `superDemoApp/superDemoApp/` | App Swift sources |
+
+Gitignored: `.cursor/`, `.vscode/`, `tasks/`, `buildServer.json`.
+
+Cursor install, MCP, rules: [`docs/agent_host_notes.md`](docs/agent_host_notes.md),
+[`tool/cursor-template/README.md`](tool/cursor-template/README.md).
+
+## Read next (order)
+
+1. [`docs/agent_knowledge_base.md`](docs/agent_knowledge_base.md) — loop, finish gate
+2. [`docs/agent_project_context.md`](docs/agent_project_context.md) — project facts
 3. [`docs/apple-development-practices.md`](docs/apple-development-practices.md)
-4. [`docs/ai_code_review_protocol.md`](docs/ai_code_review_protocol.md)
-5. [`docs/agents_quick_reference.md`](docs/agents_quick_reference.md)
-6. Task docs from [`docs/README.md`](docs/README.md)
+4. [`DESIGN.md`](DESIGN.md) + [`docs/design_system.md`](docs/design_system.md) +
+   [`docs/universal-apple-platforms.md`](docs/universal-apple-platforms.md) — **required for UI work**
+5. [`docs/architecture.md`](docs/architecture.md) + [`docs/layers.md`](docs/layers.md) — **required for `Features/` work**
+6. [`docs/agents_quick_reference.md`](docs/agents_quick_reference.md) — commands, proof chooser
+7. [`docs/ai_code_review_protocol.md`](docs/ai_code_review_protocol.md)
+8. Task docs: [`docs/README.md`](docs/README.md)
 
 ## Snapshot
 
-Native universal SwiftUI app in `superDemoApp.xcodeproj`. Required product surface:
-iOS, iPadOS, and macOS. Current app target uses SwiftUI and SwiftData (`Item`,
-`ContentView`, `ModelContainer`). Test targets exist for unit and UI tests.
+Universal SwiftUI + SwiftData (`superDemoApp.xcodeproj`). **iOS, iPadOS, macOS.**
+Growth architecture: `Presentation -> Domain <- Data`. Full facts:
+[`docs/agent_project_context.md`](docs/agent_project_context.md).
 
-Preferred architecture for growth: feature-first Clean Architecture:
-`Presentation -> Domain <- Data`; SwiftUI views, Observation-first feature models,
-async use cases, protocol-driven repositories, SwiftData-backed local persistence.
-
-## Loop
-
-Plan once → execute end-to-end → verify → report proof. Ask only blockers:
-credentials/tooling, unsafe ambiguity below 95% confident, user-owned choice.
-
-Non-trivial work: local `tasks/codex/todo.md` (gitignored), context ladder, one
-observe/revise loop.
-
-## Quality gate
-
-From **repo root** (`superDemoApp/`):
+## Quality (repo root)
 
 ```bash
-brew bundle --file Brewfile   # SwiftLint + SwiftFormat
-./bin/lint.sh                 # after Swift edits
-./bin/lint-markdown.sh        # after docs/*.md edits
-./bin/ci.sh                   # before merge/PR — lint, build, tests
+./bin/lint.sh              # after Swift edits
+./bin/lint-markdown.sh     # after docs/*.md edits
+./bin/ci.sh                # before merge/PR
 ```
 
-Use `./bin/format.sh` for safe Swift formatting when needed. Narrow delivery:
-`./bin/checklist-fast`. Full proof: `./bin/checklist`.
+Proof by change type, simulators, CI flags:
+[`docs/agents_quick_reference.md`](docs/agents_quick_reference.md),
+[`docs/agent_environment_setup.md`](docs/agent_environment_setup.md).
 
-Default iOS simulator: **iPhone 17** — see [`docs/agent_environment_setup.md`](docs/agent_environment_setup.md).
+## Swift work
 
-## Editing Swift (`superDemoApp/superDemoApp/`)
+Code under `superDemoApp/superDemoApp/`. After edits: `./bin/lint.sh` (includes layer boundary checks).
 
-1. Read this file and the task doc under `docs/`.
-2. `./bin/lint.sh` after Swift edits; `./bin/checklist-fast` or `./bin/checklist` before handoff.
-3. Match neighbors (`ContentView.swift`, `Item.swift`, app entry). SwiftLint:
-   [`.swiftlint.yml`](.swiftlint.yml). SwiftFormat: [`.swiftformat`](.swiftformat).
-   Style: [`docs/code-style.md`](docs/code-style.md).
+**Layered features** use `Features/<Name>/{Presentation,Domain,Data}/` — see
+[`docs/feature-template.md`](docs/feature-template.md), [`docs/module-structure.md`](docs/module-structure.md).
+Reference layout: `Features/Items/`. Imports in `Features/` enforced by
+[`tool/check_layer_boundaries.sh`](tool/check_layer_boundaries.sh).
 
-Feature work: [`docs/feature-template.md`](docs/feature-template.md),
-[`docs/module-structure.md`](docs/module-structure.md),
-[`docs/navigation.md`](docs/navigation.md).
+**Universal UI:** Reuse `Shared/Presentation/AdaptiveNavigationShell.swift` and the
+[`docs/design_system.md`](docs/design_system.md) consistency contract — same navigation,
+states, toolbars, and layout helpers on every feature. **Light and dark** required from the
+first screen (semantic colors; paired `#Preview`s). Proof: `./bin/ci.sh` (iPhone + iPad + Mac).
 
-## Map
+## Rules & index
 
-- Harness: [`docs/agent_knowledge_base.md`](docs/agent_knowledge_base.md)
-- Project context: [`docs/agent_project_context.md`](docs/agent_project_context.md)
-- Environment: [`docs/agent_environment_setup.md`](docs/agent_environment_setup.md)
-- Host notes (Codex/Cursor): [`docs/agent_host_notes.md`](docs/agent_host_notes.md)
-- Review: [`docs/ai_code_review_protocol.md`](docs/ai_code_review_protocol.md)
-- Commands: [`docs/agents_quick_reference.md`](docs/agents_quick_reference.md)
-- Docs index: [`docs/README.md`](docs/README.md)
-- Apple practices: [`docs/apple-development-practices.md`](docs/apple-development-practices.md)
-- Architecture: [`docs/architecture.md`](docs/architecture.md), [`docs/layers.md`](docs/layers.md)
-- State: [`docs/state-management.md`](docs/state-management.md)
-- Universal UI: [`docs/universal-apple-platforms.md`](docs/universal-apple-platforms.md)
-- Persistence/sync: [`docs/offline-first.md`](docs/offline-first.md), [`docs/sync-and-networking.md`](docs/sync-and-networking.md)
-- DI/navigation: [`docs/dependency-injection.md`](docs/dependency-injection.md), [`docs/navigation.md`](docs/navigation.md)
-- Reliability/quality: [`docs/error-handling.md`](docs/error-handling.md), [`docs/testing.md`](docs/testing.md), [`docs/code-style.md`](docs/code-style.md)
-- Playbook: [`docs/ai-agent-playbook.md`](docs/ai-agent-playbook.md)
-- Commit/PR: [`docs/commit-and-pr-guidelines.md`](docs/commit-and-pr-guidelines.md)
+- Baseline: [`docs/agent_baseline.md`](docs/agent_baseline.md)
+- Preferences: [`docs/agent_preferences.md`](docs/agent_preferences.md)
+- Full doc map: [`docs/README.md`](docs/README.md)
 
-## Must keep
-
-- Smallest reversible change; every changed line traces to request or required validation/doc update.
-- UI stays SwiftUI-first; no UIKit bridge unless native SwiftUI cannot meet the need.
-- UI responsive across iPhone, iPad, Mac windows, orientations, Dynamic Type, touch, pointer, keyboard.
-- Apple-native first: SwiftUI, Observation, SwiftData, Swift Concurrency, Swift Testing, App Intents when appropriate.
-- Domain has no SwiftUI, SwiftData, URLSession, or platform UI dependencies.
-- Data owns persistence/network DTO mapping; repositories hide storage and transport.
-- Async work uses Swift Concurrency; isolate mutable shared state with `@MainActor` or actors.
-- SwiftData model changes need migration thinking, preview fixture update, and focused persistence tests.
-- New user-facing flows need accessibility, Dynamic Type, dark/light sanity, and critical UI tests when workflows matter.
-- Repeated failure → add repo capability, not a longer prompt.
-
-## Learned preferences
+## Learned User Preferences
 
 - Terse “caveman” replies unless the user says stop caveman / normal mode.
 - No `git commit` or `git push` unless the user explicitly asks.
+- Keep this file a lean map (target under ~100 lines); put depth in `docs/` only.
+- Prefer strong clean-architecture enforcement (layer checks, `Features/` layout) when adding code.
+
+## Learned Workspace Facts
+
+- Published repo: `https://github.com/redjadet/super_demo_ios` (`superDemoApp/` is the only git root).
+- Parent `super_demo_ios/` holds gitignored `.cursor/`, `.vscode/`, `tasks/`, `buildServer.json`.
+- Cursor always applies `agents-map.mdc` → `@superDemoApp/AGENTS.md`; rule source in `tool/cursor-template/`.
+- Global Apple platform skills are optional; this repo’s `AGENTS.md` and `docs/` override skill defaults.
+- Cursor Swift/ObjC editing: `swiftlang.swift-vscode` + SweetPad + `xcode-build-server`; avoid duplicate C/C++ LSP (`cpptools`, `clangd`, `sswg.swift-lang`).

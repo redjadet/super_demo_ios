@@ -40,3 +40,6 @@ playground.xcworkspace
 # Agent task trackers (local per machine)
 tasks/
 **/tasks/
+
+# Project skills (restored from skills-lock.json via npx skills experimental_install)
+.agents/

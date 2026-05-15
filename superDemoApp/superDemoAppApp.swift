@@ -25,7 +25,7 @@ struct superDemoAppApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ItemsRootView()
         }
         .modelContainer(self.sharedModelContainer)
     }

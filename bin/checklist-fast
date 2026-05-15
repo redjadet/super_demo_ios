@@ -11,6 +11,7 @@ Usage: ./bin/checklist-fast [--help]
 
 Fast local sanity lane:
 - Markdown lint
+- DESIGN.md lint (DesignMD; skips if Node npx missing)
 - SwiftLint + SwiftFormat lint
 - focused common issue checks
 - Xcode project/scheme listing
@@ -41,6 +42,9 @@ echo "==> Swift lint"
 
 echo "==> Common issue checks"
 ./tool/check_common_issues.sh
+
+echo "==> DESIGN.md lint (DesignMD)"
+./tool/check_design_md.sh
 
 echo "==> Project/scheme sanity"
 xcodebuild -list -project superDemoApp.xcodeproj

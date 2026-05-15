@@ -20,11 +20,22 @@ details.
 1. [`../AGENTS.md`](../AGENTS.md)
 2. This file
 3. [`apple-development-practices.md`](apple-development-practices.md)
-4. [`agent_project_context.md`](agent_project_context.md)
-5. [`ai_code_review_protocol.md`](ai_code_review_protocol.md)
-6. [`agents_quick_reference.md`](agents_quick_reference.md)
-7. task docs from [`README.md`](README.md)
-8. targeted source and tests
+4. [`../DESIGN.md`](../DESIGN.md), [`design_system.md`](design_system.md), and
+   [`universal-apple-platforms.md`](universal-apple-platforms.md) when touching UI
+5. [`architecture.md`](architecture.md) and [`layers.md`](layers.md) when touching `Features/`
+6. [`agent_project_context.md`](agent_project_context.md)
+7. [`ai_code_review_protocol.md`](ai_code_review_protocol.md)
+8. [`agents_quick_reference.md`](agents_quick_reference.md)
+9. task docs from [`README.md`](README.md)
+10. targeted source and tests
+
+## Agent loop
+
+Plan once → execute end-to-end → verify → report proof. Ask only blockers:
+credentials/tooling, ambiguity below ~95% confidence, user-owned choice.
+
+Non-trivial work: local `tasks/codex/todo.md` (gitignored), context ladder below, one
+observe/revise loop.
 
 ## Execution Contract
 
@@ -39,15 +50,20 @@ details.
 
 Check every non-trivial iOS change:
 
-- Architecture boundary: Presentation, Domain, Data dependencies point right way.
+- Architecture boundary: Presentation, Domain, Data dependencies point right way;
+  `./bin/lint.sh` layer check passes for any `Features/` paths touched.
 - Apple-native fit: SwiftUI, Observation, SwiftData, Swift Concurrency, Swift Testing, App Intents considered before dependencies.
 - Concurrency: UI mutations on MainActor; shared mutable state isolated.
 - Persistence: SwiftData changes handle migration, uniqueness, delete behavior, and preview/test fixtures.
 - Networking: typed request/response, cancellation, retry/idempotency, timeout, offline behavior.
-- UI: accessibility, Dynamic Type, dark/light, loading/empty/error states, no clipped controls.
-- Universal layout: compact iPhone, iPad split/Stage Manager, and Mac windows.
+- UI: follow [`../DESIGN.md`](../DESIGN.md); accessibility, Dynamic Type, **light + dark**
+  (semantic colors, paired previews — [`design_system.md`](design_system.md#light-and-dark-mode-required-from-day-one)),
+  loading/empty/error states, no clipped controls.
+- Universal layout: all iPhones, iPads, Mac sizes; shared `AdaptiveNavigationShell`; proof
+  via `./bin/ci.sh` iPad + Mac lanes — [`universal-apple-platforms.md`](universal-apple-platforms.md).
 - Privacy/security: no secrets in repo; least permission; user data minimized.
 - Tests: fast unit coverage for logic; integration/UI proof for critical workflows.
+- Universal compile: iPad simulator + macOS builds in `./bin/ci.sh` and GitHub Actions.
 - Performance: no avoidable main-thread hangs, body-time heavy work, or broad invalidation.
 - Operational clarity: future agent can reproduce proof from repo commands.
 

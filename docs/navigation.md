@@ -4,8 +4,9 @@ Use declarative SwiftUI navigation that adapts across iOS, iPadOS, and macOS.
 
 ## Defaults
 
-- iPhone / compact window: `NavigationStack` or collapsed `NavigationSplitView`.
-- iPad and Mac: `NavigationSplitView` for sidebar/detail workflows.
+- Master/detail features: **`AdaptiveNavigationShell`** (`NavigationSplitView`) on
+  iPhone, iPad, and Mac. Compact width collapses automatically; do not fork navigation per OS.
+- Single-column-only flows: `NavigationStack` (no persistent sidebar).
 - Represent destinations as typed route values where flow complexity grows.
 - Keep route construction out of leaf views.
 - Keep selection/default detail state explicit for iPad and Mac.
@@ -20,5 +21,7 @@ Use declarative SwiftUI navigation that adapts across iOS, iPadOS, and macOS.
 
 ## Current App Note
 
-`ContentView` uses a small wrapper for platform-adaptive navigation. Keep that
-simple until multiple routes or feature modules justify a route model.
+- Shared: `Shared/Presentation/AdaptiveNavigationShell.swift`
+- Items: `ItemsNavigationShell` → `AdaptiveNavigationShell`
+- New features: reuse `AdaptiveNavigationShell`; add a thin feature shell only for a custom
+  detail placeholder. See [`design_system.md`](design_system.md#ui-consistency-contract-all-features).

@@ -31,11 +31,16 @@ documented product need beats the platform stack.
 
 ## UI And Layout
 
-- Build adaptive layouts from the start; do not retrofit iPad/Mac later.
-- Use `NavigationSplitView` for sidebar/detail workflows and default selections on iPad/Mac.
-- Use `NavigationStack` for single-column flows and compact collapsed navigation.
+Visual consistency and SwiftUI recipes: [`../DESIGN.md`](../DESIGN.md),
+[`design_system.md`](design_system.md), [`universal-apple-platforms.md`](universal-apple-platforms.md).
+
+- Build adaptive layouts from the start for **all iPhones, iPads, and Macs**; one codebase.
+- Master/detail: `AdaptiveNavigationShell` (`NavigationSplitView`) on every platform.
+- Single-column-only flows: `NavigationStack`.
+- Reuse shared Presentation helpers; follow the design_system **UI consistency contract**.
 - Prefer `ViewThatFits`, `Grid`, lazy grids, stacks, layout priorities, and adaptive frames over fixed widths.
-- Validate compact, regular, and Mac window sizes; include Dynamic Type and dark/light states.
+- Validate compact, regular, and Mac window sizes; include Dynamic Type and **light + dark**
+  (semantic colors and paired `#Preview`s from the first screen — not a later pass).
 
 ## State And Data
 

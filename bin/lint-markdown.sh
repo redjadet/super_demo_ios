@@ -11,6 +11,7 @@ if ! command -v npx >/dev/null 2>&1; then
 fi
 
 echo "==> markdownlint"
-npx --yes markdownlint-cli2 "**/*.md"
+# Vendored skills under .agents/ are not project docs; lint repo docs only.
+npx --yes markdownlint-cli2 "**/*.md" "#.agents/**"
 
 echo "Markdown lint passed."

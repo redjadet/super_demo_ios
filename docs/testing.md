@@ -11,6 +11,11 @@ tests for critical workflows.
 - Performance-sensitive code: add XCTest performance coverage or metric proof.
 - Use parameterized Swift Testing cases for boundary combinations when useful.
 
+## UI smoke (CI)
+
+`superDemoAppUITests.testLaunchShowsAddItemControl` runs in the iOS Simulator CI lane.
+Extend UI tests when adding primary navigation or forms; keep smoke green before PR.
+
 ## What To Test
 
 - Domain use cases: success, edge, failure, cancellation where relevant.

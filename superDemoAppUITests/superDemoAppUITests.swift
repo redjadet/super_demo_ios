@@ -15,7 +15,11 @@ final class superDemoAppUITests: XCTestCase {
         let app = XCUIApplication()
         app.launch()
 
-        XCTAssertTrue(app.buttons["Add Item"].waitForExistence(timeout: 5))
+        let addItem = app.buttons["addItem"]
+        let addByLabel = app.buttons["Add Item"]
+        XCTAssertTrue(
+            addItem.waitForExistence(timeout: 5) || addByLabel.waitForExistence(timeout: 1)
+        )
     }
 
     @MainActor

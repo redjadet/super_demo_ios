@@ -1,0 +1,59 @@
+{
+  "version": 1,
+  "skills": {
+    "app-store": {
+      "source": "rshankras/claude-code-apple-skills",
+      "sourceType": "github",
+      "skillPath": "skills/app-store/SKILL.md",
+      "computedHash": "bbf1b97352b6ca37229f0c73a606a362120fef971199aaefa78b1a01228e537e"
+    },
+    "apple-intelligence": {
+      "source": "rshankras/claude-code-apple-skills",
+      "sourceType": "github",
+      "skillPath": "skills/apple-intelligence/SKILL.md",
+      "computedHash": "cb396b15eff45606fa8cb00fff74c7a4fa76291a3bd516340b6eafcc47e79338"
+    },
+    "design": {
+      "source": "rshankras/claude-code-apple-skills",
+      "sourceType": "github",
+      "skillPath": "skills/design/SKILL.md",
+      "computedHash": "5d9822dfb0760568675bd748b34220ab28bbbb9e86a2d1dc12fef0f71cd04bd8"
+    },
+    "ios-development": {
+      "source": "rshankras/claude-code-apple-skills",
+      "sourceType": "github",
+      "skillPath": "skills/ios/SKILL.md",
+      "computedHash": "6ae44504bbea6c10adb59ff112cbad983a9f3f5dbede000f7fbc5083c3d3076e"
+    },
+    "macos-development": {
+      "source": "rshankras/claude-code-apple-skills",
+      "sourceType": "github",
+      "skillPath": "skills/macos/SKILL.md",
+      "computedHash": "e785d476d46a702399d9b688f8a23973f1b9159ba8b8537ddf5ddf15f6e6c565"
+    },
+    "release-review": {
+      "source": "rshankras/claude-code-apple-skills",
+      "sourceType": "github",
+      "skillPath": "skills/release-review/SKILL.md",
+      "computedHash": "e958cd9335854f73bfd7bee005632dcb4580d0acd1cd62f60a14ff8ba89df8d9"
+    },
+    "security": {
+      "source": "rshankras/claude-code-apple-skills",
+      "sourceType": "github",
+      "skillPath": "skills/security/SKILL.md",
+      "computedHash": "0630926283229a4393f89e893f3654922499d92315b3cf5409189f502d53e63d"
+    },
+    "swift-development": {
+      "source": "rshankras/claude-code-apple-skills",
+      "sourceType": "github",
+      "skillPath": "skills/swift/SKILL.md",
+      "computedHash": "288fb175cd0742b10c16f147028ae031cbd9ec6bcd4417d2bd264a771bbaed70"
+    },
+    "testing": {
+      "source": "rshankras/claude-code-apple-skills",
+      "sourceType": "github",
+      "skillPath": "skills/testing/SKILL.md",
+      "computedHash": "b49549bb712467f8de97e702a31e4c894d18c70db10bf85aa42f297c8dc6b32e"
+    }
+  }
+}

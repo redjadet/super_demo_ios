@@ -4,13 +4,23 @@ Source-of-truth docs for `superDemoApp`.
 
 ## Start Here
 
+- Agent map (lean): [`../AGENTS.md`](../AGENTS.md)
 - AI agent harness: [`agent_knowledge_base.md`](agent_knowledge_base.md)
+- Agent baseline rules: [`agent_baseline.md`](agent_baseline.md)
+- Agent preferences: [`agent_preferences.md`](agent_preferences.md)
 - Commands: [`agents_quick_reference.md`](agents_quick_reference.md)
 - Review gate: [`ai_code_review_protocol.md`](ai_code_review_protocol.md)
 - Project context: [`agent_project_context.md`](agent_project_context.md)
 - Environment setup: [`agent_environment_setup.md`](agent_environment_setup.md)
 - Host notes: [`agent_host_notes.md`](agent_host_notes.md)
+- Cursor setup: [`../tool/cursor-template/README.md`](../tool/cursor-template/README.md)
 - Apple development practices: [`apple-development-practices.md`](apple-development-practices.md)
+
+## Design (SwiftUI)
+
+- Design principles: [`../DESIGN.md`](../DESIGN.md)
+- Design system (tokens, components, consistency, light/dark): [`design_system.md`](design_system.md)
+- Universal iPhone / iPad / Mac: [`universal-apple-platforms.md`](universal-apple-platforms.md)
 
 ## iOS Engineering
 
@@ -35,7 +45,8 @@ Source-of-truth docs for `superDemoApp`.
 
 - Fast local sanity: `./bin/checklist-fast`
 - Full delivery gate: `./bin/checklist`
-- Existing CI parity: `./bin/ci.sh`
+- CI parity (lint + iPhone test + iPad/Mac builds): `./bin/ci.sh`
+- Cursor rules install: `./tool/install-cursor-rules.sh`
 
 ## History
 

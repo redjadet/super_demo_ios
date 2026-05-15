@@ -2,23 +2,33 @@
 //  superDemoAppTests.swift
 //  superDemoAppTests
 //
-//  Created by İlker Sevim on 15.05.2026.
-//
 
+import SwiftData
 import XCTest
 @testable import superDemoApp
 
 final class superDemoAppTests: XCTestCase {
-    func testItemStoresTimestamp() {
+    func testItemMapsToEntity() {
         let timestamp = Date(timeIntervalSince1970: 1_779_999_600)
         let item = Item(timestamp: timestamp)
 
-        XCTAssertEqual(item.timestamp, timestamp)
+        XCTAssertEqual(item.toEntity(), ItemEntity(id: item.id, timestamp: timestamp))
     }
 
-    func testPerformanceExample() {
-        measure {
-            _ = Item(timestamp: Date())
-        }
+    @MainActor
+    func testSwiftDataRepositoryAddsAndFetchesItem() throws {
+        let container = try ModelContainer(
+            for: Item.self,
+            configurations: ModelConfiguration(isStoredInMemoryOnly: true)
+        )
+        let context = ModelContext(container)
+        let repository = SwiftDataItemRepository(context: context)
+        let timestamp = Date(timeIntervalSince1970: 1_780_000_000)
+
+        let created = try repository.addItem(timestamp: timestamp)
+        let items = try repository.fetchItems()
+
+        XCTAssertEqual(items, [created])
+        XCTAssertEqual(created.timestamp, timestamp)
     }
 }

@@ -7,62 +7,12 @@ cd "$ROOT"
 
 export PATH="/opt/homebrew/bin:/usr/local/bin:${PATH}"
 
-resolve_iphone_destination() {
-  if [[ -n "${CHECKLIST_IPHONE_DEST:-}" ]]; then
-    printf '%s\n' "$CHECKLIST_IPHONE_DEST"
-    return
-  fi
-
-  local preferred_name="${CHECKLIST_PREFERRED_IPHONE:-iPhone 17}"
-  local devices
-  devices="$(xcrun simctl list devices available 2>/dev/null || true)"
-
-  local selected_line
-  selected_line="$(printf '%s\n' "$devices" | awk '
-    /^[[:space:]]+iPhone / && /\(Booted\)/ {
-      print
-      exit
-    }
-  ')"
-
-  if [[ -z "$selected_line" ]]; then
-    selected_line="$(printf '%s\n' "$devices" | awk -v preferred="$preferred_name" '
-      /^[[:space:]]+iPhone / {
-        line = $0
-        sub(/^[[:space:]]+/, "", line)
-        name = line
-        sub(/[[:space:]]+\([0-9A-F-]{36}\).*/, "", name)
-        if (name == preferred) {
-          print
-          exit
-        }
-      }
-    ')"
-  fi
-
-  if [[ -z "$selected_line" ]]; then
-    selected_line="$(printf '%s\n' "$devices" | awk '
-      /^[[:space:]]+iPhone / {
-        print
-        exit
-      }
-    ')"
-  fi
-
-  local udid
-  udid="$(printf '%s\n' "$selected_line" | sed -E 's/.*\(([0-9A-F-]{36})\).*/\1/')"
-
-  if [[ "$udid" =~ ^[0-9A-F-]{36}$ ]]; then
-    printf 'platform=iOS Simulator,id=%s\n' "$udid"
-    return
-  fi
-
-  printf 'platform=iOS Simulator,name=%s\n' "$preferred_name"
-}
+# shellcheck source=../tool/resolve_platform_destination.sh
+source "$ROOT/tool/resolve_platform_destination.sh"
 
 IPHONE_DEST="$(resolve_iphone_destination)"
-IPAD_DEST="${CHECKLIST_IPAD_DEST:-platform=iOS Simulator,name=iPad Pro 13-inch (M5),OS=26.5}"
-MAC_DEST="${CHECKLIST_MAC_DEST:-platform=macOS}"
+IPAD_DEST="$(resolve_ipad_destination)"
+MAC_DEST="$(resolve_mac_destination)"
 TEST_SERIAL_FLAGS=()
 
 if [[ "${CHECKLIST_ALLOW_PARALLEL_TESTS:-0}" != "1" ]]; then
@@ -77,6 +27,9 @@ fi
 
 echo "==> Markdown lint"
 ./bin/lint-markdown.sh
+
+echo "==> DESIGN.md lint (DesignMD)"
+./tool/check_design_md.sh
 
 echo "==> Swift lint"
 ./bin/lint.sh
@@ -100,11 +53,7 @@ xcodebuild \
   test
 
 if [[ "${CHECKLIST_SKIP_PLATFORM_BUILDS:-0}" != "1" ]]; then
-  echo "==> iPad build"
-  xcodebuild -project superDemoApp.xcodeproj -scheme superDemoApp -configuration Debug -destination "$IPAD_DEST" build
-
-  echo "==> Mac build"
-  xcodebuild -project superDemoApp.xcodeproj -scheme superDemoApp -configuration Debug -destination "$MAC_DEST" build
+  ./bin/ci-platform-builds.sh
 else
   echo "info: skipping iPad/Mac builds because CHECKLIST_SKIP_PLATFORM_BUILDS=1"
 fi

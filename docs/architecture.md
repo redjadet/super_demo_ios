@@ -32,6 +32,33 @@ Domain protocols sit closer to use cases than infrastructure.
 
 ## Decision Rule
 
-- One simple SwiftUI screen: direct view + local SwiftData can be acceptable.
-- Screen with rules, side effects, network, or sync: introduce an `@Observable` feature model + use case + repository protocol.
+- One simple SwiftUI screen: direct view + local SwiftData can be acceptable **only**
+  outside `Features/` (legacy flat layout). Migrate before adding rules or side effects.
+- Screen with rules, side effects, network, or sync: use `Features/<Name>/` layers and
+  an `@Observable` feature model + use case + repository protocol.
 - Shared behavior across features: extract to shared domain/service only after second real use.
+
+## Automated enforcement
+
+`./bin/lint.sh` runs [`../tool/check_layer_boundaries.sh`](../tool/check_layer_boundaries.sh).
+
+When code lives under `superDemoApp/Features/<Name>/`:
+
+| Layer | Forbidden imports |
+| --- | --- |
+| `Domain/` | SwiftUI, SwiftData, UIKit, AppKit, URLSession, Combine |
+| `Presentation/` | SwiftData, URLSession |
+| `Data/` | SwiftUI, UIKit, AppKit |
+
+Rules:
+
+- No `.swift` files directly under `Features/<Name>/` (use layer folders).
+- Empty layer folders log a warning.
+
+See [`layers.md`](layers.md), [`module-structure.md`](module-structure.md).
+
+## Reference implementation
+
+Copy `superDemoApp/Features/Items/` when scaffolding a new feature: Domain use cases,
+Data repository + SwiftData model, Presentation `@Observable` feature model + SwiftUI view.
+Composition lives in `superDemoApp/App/`.

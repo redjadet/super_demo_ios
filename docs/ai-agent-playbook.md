@@ -7,7 +7,7 @@
 3. Read [`apple-development-practices.md`](apple-development-practices.md).
 4. Read task-relevant docs.
 5. Inspect current source with `rg`.
-6. Define validation before editing.
+6. Define validation before editing (chooser in [`agents_quick_reference.md`](agents_quick_reference.md)).
 
 ## During Work
 

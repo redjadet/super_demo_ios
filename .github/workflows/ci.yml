@@ -27,28 +27,7 @@ jobs:
       - name: Install lint tools
         run: brew bundle --file Brewfile
 
-      - name: Lint
+      - name: CI (lint, test, iPad/Mac builds)
         env:
           CI: true
-        run: ./bin/lint.sh
-
-      - name: Lint Markdown
-        run: ./bin/lint-markdown.sh
-
-      - name: Build
-        run: |
-          xcodebuild \
-            -project superDemoApp.xcodeproj \
-            -scheme superDemoApp \
-            -destination 'generic/platform=iOS Simulator' \
-            -configuration Debug \
-            build
-
-      - name: Test
-        run: |
-          xcodebuild \
-            -project superDemoApp.xcodeproj \
-            -scheme superDemoApp \
-            -destination 'generic/platform=iOS Simulator' \
-            -configuration Debug \
-            test
+        run: ./bin/ci.sh

@@ -23,14 +23,24 @@ require_file() {
 section "Required agent docs"
 required_files=(
   AGENTS.md
+  DESIGN.md
+  README.md
   docs/README.md
   docs/agent_knowledge_base.md
+  docs/agent_baseline.md
+  docs/agent_preferences.md
   docs/agent_project_context.md
   docs/agent_environment_setup.md
   docs/agent_host_notes.md
   docs/agents_quick_reference.md
   docs/ai_code_review_protocol.md
   docs/apple-development-practices.md
+  docs/design_system.md
+  docs/architecture.md
+  docs/layers.md
+  docs/module-structure.md
+  docs/dependency-injection.md
+  docs/feature-template.md
   docs/universal-apple-platforms.md
   docs/state-management.md
   docs/testing.md
@@ -52,6 +62,9 @@ if [[ -f "$project_file" ]]; then
     || fail "project must target iPhone, iPad, and Mac device families"
 fi
 
+section "Clean Architecture layer boundaries"
+./tool/check_layer_boundaries.sh
+
 section "SwiftUI and state anti-patterns"
 swift_paths=(superDemoApp superDemoAppTests superDemoAppUITests)
 
@@ -60,6 +73,18 @@ check_absent() {
   local message="$2"
   local matches
   matches="$(rg -n "$pattern" "${swift_paths[@]}" || true)"
+  if [[ -n "$matches" ]]; then
+    echo "$matches" >&2
+    fail "$message"
+  fi
+}
+
+check_absent_in_paths() {
+  local pattern="$1"
+  local message="$2"
+  shift 2
+  local matches
+  matches="$(rg -n "$pattern" "$@" || true)"
   if [[ -n "$matches" ]]; then
     echo "$matches" >&2
     fail "$message"
@@ -76,6 +101,19 @@ check_absent '\bTask\s*\.\s*detached\b' "avoid Task.detached; prefer structured 
 check_absent '\bDispatchQueue\s*\.\s*main\s*\.\s*async\b' "prefer @MainActor or MainActor.run over DispatchQueue.main.async"
 check_absent '\b(?:UIScreen|NSScreen)\s*\.\s*main\b' "avoid screen-bounds layout; use adaptive SwiftUI layout"
 check_absent '\bUIApplication\s*\.\s*shared\b' "avoid UIApplication.shared in universal app code"
+
+section "Light and dark color policy"
+presentation_paths=()
+[[ -d superDemoApp/Features ]] && presentation_paths+=(superDemoApp/Features)
+[[ -d superDemoApp/Shared ]] && presentation_paths+=(superDemoApp/Shared)
+if ((${#presentation_paths[@]} > 0)); then
+  check_absent_in_paths 'Color\.(white|black)\b' \
+    "use semantic colors or asset catalog Any+Dark; Color.white/black breaks appearance support" \
+    "${presentation_paths[@]}"
+  check_absent_in_paths 'UIColor\.(white|black)\b' \
+    "use semantic colors; avoid fixed UIColor white/black in Presentation" \
+    "${presentation_paths[@]}"
+fi
 
 section "Linter rule policy"
 require_lint_rule() {
@@ -136,6 +174,23 @@ if [[ -n "$secret_matches" ]]; then
   echo "$secret_matches" >&2
   fail "possible tracked secret literal found"
 fi
+
+section "Cursor agent template"
+cursor_template_files=(
+  tool/cursor-template/README.md
+  tool/cursor-template/mcp.json
+  tool/cursor-template/rules/agents-map.mdc
+  tool/cursor-template/rules/agent-execution-ios.mdc
+  tool/cursor-template/rules/ios-swift-quality.mdc
+  tool/install-cursor-rules.sh
+  tool/resolve_platform_destination.sh
+  tool/check_layer_boundaries.sh
+  bin/ci-platform-builds.sh
+)
+
+for path in "${cursor_template_files[@]}"; do
+  require_file "$path"
+done
 
 section "XcodeBuildMCP profile"
 mcp_config="../.xcodebuildmcp/config.yaml"

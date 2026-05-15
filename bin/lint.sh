@@ -21,4 +21,7 @@ swiftlint lint --strict --config "$ROOT/.swiftlint.yml"
 echo "==> SwiftFormat (lint)"
 swiftformat --lint "$ROOT/superDemoApp" "$ROOT/superDemoAppTests" "$ROOT/superDemoAppUITests"
 
+echo "==> Layer boundaries (Features/*)"
+"$ROOT/tool/check_layer_boundaries.sh"
+
 echo "Lint passed."
