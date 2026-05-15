@@ -12,6 +12,14 @@ cd "$ROOT"
 # shellcheck source=resolve_platform_destination.sh
 source "$ROOT/tool/resolve_platform_destination.sh"
 
+if [[ -n "${CI_SIMULATOR_DEST:-}" ]]; then
+  if destination_valid_for_scheme "${CI_SIMULATOR_DEST}"; then
+    echo "==> CI simulator already configured (${CI_SIMULATOR_DEST})"
+    exit 0
+  fi
+  echo "warning: CI_SIMULATOR_DEST invalid for scheme; reprovisioning" >&2
+fi
+
 read_deployment_target() {
   local project_file="superDemoApp.xcodeproj/project.pbxproj"
   [[ -f "$project_file" ]] || return 1

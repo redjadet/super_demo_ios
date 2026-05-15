@@ -8,7 +8,7 @@ cd "$ROOT"
 export PATH="/opt/homebrew/bin:/usr/local/bin:${PATH}"
 export CI=true
 
-if [[ "${CI:-}" == "true" ]]; then
+if [[ "${CI:-}" == "true" && -z "${CI_SIMULATOR_DEST:-}" ]]; then
   ./tool/ensure_ci_simulator.sh
 fi
 
