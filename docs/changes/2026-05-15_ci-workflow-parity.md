@@ -20,6 +20,9 @@
 ## Follow-up
 
 - GHA needs `ripgrep` for `tool/check_common_issues.sh` — added to `Brewfile`.
+- Project targets iOS 26.5 — workflow selects newest `Xcode_26*.app` on the runner.
+- `resolve_iphone_destination` falls back to `generic/platform=iOS Simulator` when no
+  concrete simulator destinations exist for the active Xcode.
 
 ## Proof
 

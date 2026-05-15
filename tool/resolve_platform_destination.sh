@@ -3,6 +3,12 @@
 # Source from other scripts: source "$(dirname "$0")/resolve_platform_destination.sh"
 set -euo pipefail
 
+ci_has_ios_simulator_destination() {
+  [[ -f superDemoApp.xcodeproj/project.pbxproj ]] || return 1
+  xcodebuild -showdestinations -project superDemoApp.xcodeproj -scheme superDemoApp 2>/dev/null \
+    | rg -q 'platform:iOS Simulator, arch:'
+}
+
 resolve_iphone_destination() {
   if [[ -n "${CI_SIMULATOR_DEST:-}" ]]; then
     printf '%s\n' "$CI_SIMULATOR_DEST"
@@ -10,6 +16,11 @@ resolve_iphone_destination() {
   fi
   if [[ -n "${CHECKLIST_IPHONE_DEST:-}" ]]; then
     printf '%s\n' "$CHECKLIST_IPHONE_DEST"
+    return 0
+  fi
+
+  if [[ "${CI:-}" == "true" ]] && ! ci_has_ios_simulator_destination; then
+    printf 'generic/platform=iOS Simulator\n'
     return 0
   fi
 
@@ -53,9 +64,18 @@ resolve_iphone_destination() {
     local udid
     udid="$(printf '%s\n' "$selected_line" | sed -E 's/.*\(([0-9A-F-]{36})\).*/\1/')"
     if [[ "$udid" =~ ^[0-9A-F-]{36}$ ]]; then
+      if [[ "${CI:-}" == "true" ]] && ! ci_has_ios_simulator_destination; then
+        printf 'generic/platform=iOS Simulator\n'
+        return 0
+      fi
       printf 'platform=iOS Simulator,id=%s\n' "$udid"
       return 0
     fi
+  fi
+
+  if [[ "${CI:-}" == "true" ]] && ! ci_has_ios_simulator_destination; then
+    printf 'generic/platform=iOS Simulator\n'
+    return 0
   fi
 
   printf 'platform=iOS Simulator,name=%s\n' "$preferred_name"
