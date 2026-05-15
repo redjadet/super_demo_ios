@@ -17,6 +17,10 @@ When the editor workspace root is the parent folder, Cursor MCP and rules live i
 `../.cursor/mcp.json` and `../.cursor/rules/` (Xcode 26.3+ Intelligence MCP;
 keep `superDemoApp.xcodeproj` open in Xcode).
 
+**Cursor:** `.cursor/rules/agents-map.mdc` has `alwaysApply: true` and includes
+this file (`@superDemoApp/AGENTS.md`) in every Agent session. Nested `AGENTS.md`
+under `superDemoApp/` also applies when editing files in this repo.
+
 ## Authority
 
 Priority: this file → repo `docs/` → source comments only when code owns nuance.

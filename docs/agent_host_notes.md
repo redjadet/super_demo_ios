@@ -27,7 +27,9 @@ Host-specific notes for AI agents. Repo docs still own project rules.
 ## Cursor
 
 - Single agent map: repo-root [`AGENTS.md`](../AGENTS.md) only (no nested copies).
-- Keep `.cursor` rules thin; they should point back to repo `docs/` and `AGENTS.md`.
+- Always-applied project rule: `../.cursor/rules/agents-map.mdc` includes
+  `@superDemoApp/AGENTS.md` on every Agent session (`alwaysApply: true`).
+- Keep other `.cursor` rules thin; they should point back to repo `docs/` and `AGENTS.md`.
 - Do not fork architecture guidance into host-only prompts.
 - If a Cursor rule changes agent behavior, update owning source doc first.
 
