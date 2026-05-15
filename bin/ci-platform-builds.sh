@@ -20,11 +20,21 @@ xcodebuild \
   build
 
 echo "==> Mac build ($MAC_DEST)"
+MAC_BUILD_FLAGS=()
+if [[ "${CI:-}" == "true" ]]; then
+  # GitHub-hosted runners have no Mac Development certificate for the project team.
+  MAC_BUILD_FLAGS=(
+    CODE_SIGNING_ALLOWED=NO
+    CODE_SIGN_IDENTITY=-
+  )
+fi
+
 xcodebuild \
   -project superDemoApp.xcodeproj \
   -scheme superDemoApp \
   -destination "$MAC_DEST" \
   -configuration Debug \
+  "${MAC_BUILD_FLAGS[@]}" \
   build
 
 echo "Platform builds passed."
