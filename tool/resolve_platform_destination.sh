@@ -3,10 +3,21 @@
 # Source from other scripts: source "$(dirname "$0")/resolve_platform_destination.sh"
 set -euo pipefail
 
-ci_has_ios_simulator_destination() {
+resolve_iphone_destination_from_xcodebuild() {
   [[ -f superDemoApp.xcodeproj/project.pbxproj ]] || return 1
-  xcodebuild -showdestinations -project superDemoApp.xcodeproj -scheme superDemoApp 2>/dev/null \
-    | rg -q 'platform:iOS Simulator, arch:'
+  local dest_line
+  dest_line="$(
+    xcodebuild -showdestinations -project superDemoApp.xcodeproj -scheme superDemoApp 2>/dev/null \
+      | rg 'platform:iOS Simulator, id:[0-9A-F-]{36}' \
+      | rg -v placeholder \
+      | head -1 \
+      || true
+  )"
+  [[ -n "$dest_line" ]] || return 1
+  local udid
+  udid="$(printf '%s\n' "$dest_line" | sed -n 's/.*id:\([0-9A-F-]\{36\}\).*/\1/p')"
+  [[ "$udid" =~ ^[0-9A-F-]{36}$ ]] || return 1
+  printf 'platform=iOS Simulator,id=%s\n' "$udid"
 }
 
 resolve_iphone_destination() {
@@ -19,9 +30,8 @@ resolve_iphone_destination() {
     return 0
   fi
 
-  if [[ "${CI:-}" == "true" ]] && ! ci_has_ios_simulator_destination; then
-    printf 'generic/platform=iOS Simulator\n'
-    return 0
+  if [[ "${CI:-}" == "true" ]]; then
+    resolve_iphone_destination_from_xcodebuild && return 0
   fi
 
   local preferred_name="${CHECKLIST_PREFERRED_IPHONE:-iPhone 17}"
@@ -64,18 +74,16 @@ resolve_iphone_destination() {
     local udid
     udid="$(printf '%s\n' "$selected_line" | sed -E 's/.*\(([0-9A-F-]{36})\).*/\1/')"
     if [[ "$udid" =~ ^[0-9A-F-]{36}$ ]]; then
-      if [[ "${CI:-}" == "true" ]] && ! ci_has_ios_simulator_destination; then
-        printf 'generic/platform=iOS Simulator\n'
-        return 0
-      fi
       printf 'platform=iOS Simulator,id=%s\n' "$udid"
       return 0
     fi
   fi
 
-  if [[ "${CI:-}" == "true" ]] && ! ci_has_ios_simulator_destination; then
-    printf 'generic/platform=iOS Simulator\n'
-    return 0
+  if [[ "${CI:-}" == "true" ]]; then
+    resolve_iphone_destination_from_xcodebuild && return 0
+    echo "error: no concrete iOS Simulator destination for CI tests" >&2
+    xcodebuild -showdestinations -project superDemoApp.xcodeproj -scheme superDemoApp 2>&1 | head -40 >&2 || true
+    return 1
   fi
 
   printf 'platform=iOS Simulator,name=%s\n' "$preferred_name"
