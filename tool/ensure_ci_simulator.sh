@@ -21,11 +21,13 @@ read_deployment_target() {
 
 select_ios_runtime_id() {
   local deployment_target="$1"
+  local mode="${2:-strict}"
   xcrun simctl list runtimes -j 2>/dev/null \
     | python3 -c "
 import json, sys
 
 target = sys.argv[1]
+mode = sys.argv[2]
 parts = [int(x) for x in target.split('.') if x.isdigit()]
 while len(parts) < 2:
     parts.append(0)
@@ -42,12 +44,16 @@ ios = [
     r for r in data.get('runtimes', [])
     if r.get('isAvailable') and 'iOS' in r.get('name', '')
 ]
+if not ios:
+    sys.exit(1)
 matching = [r for r in ios if version_tuple(r) >= target_tuple]
+if not matching and mode == 'best':
+    matching = ios
 if not matching:
     sys.exit(1)
 matching.sort(key=version_tuple, reverse=True)
 print(matching[0]['identifier'])
-" "$deployment_target" 2>/dev/null || true
+" "$deployment_target" "$mode" 2>/dev/null || true
 }
 
 wait_for_scheme_destination() {
@@ -80,18 +86,23 @@ if try_existing_destination; then
   exit 0
 fi
 
-deployment_target="$(read_deployment_target || echo "26.5")"
+deployment_target="$(read_deployment_target || echo "26.0")"
 echo "==> Preparing iOS Simulator for deployment target ${deployment_target}"
 
-runtime_id="$(select_ios_runtime_id "$deployment_target")"
+runtime_id="$(select_ios_runtime_id "$deployment_target" strict)"
 if [[ -z "$runtime_id" ]]; then
   echo "==> No iOS ${deployment_target}+ runtime; downloading iOS platform"
   xcodebuild -downloadPlatform iOS
-  runtime_id="$(select_ios_runtime_id "$deployment_target")"
+  runtime_id="$(select_ios_runtime_id "$deployment_target" strict)"
 fi
 
 if [[ -z "$runtime_id" ]]; then
-  echo "error: no iOS simulator runtime >= ${deployment_target}" >&2
+  echo "warning: no runtime >= ${deployment_target}; using newest available iOS runtime" >&2
+  runtime_id="$(select_ios_runtime_id "$deployment_target" best)"
+fi
+
+if [[ -z "$runtime_id" ]]; then
+  echo "error: no iOS simulator runtime available" >&2
   xcrun simctl list runtimes >&2 || true
   exit 1
 fi
