@@ -12,6 +12,10 @@ cd "$ROOT"
 # shellcheck source=resolve_platform_destination.sh
 source "$ROOT/tool/resolve_platform_destination.sh"
 
+finalize_ci_simulator_dest() {
+  prefer_arm64_simulator_destination "$1"
+}
+
 if [[ -n "${CI_SIMULATOR_DEST:-}" ]]; then
   if destination_valid_for_scheme "${CI_SIMULATOR_DEST}"; then
     echo "==> CI simulator already configured (${CI_SIMULATOR_DEST})"
@@ -82,6 +86,7 @@ try_existing_destination() {
   [[ -n "$udid" ]] || return 1
   local dest="platform=iOS Simulator,id=${udid}"
   wait_for_scheme_destination "$dest" || return 1
+  dest="$(finalize_ci_simulator_dest "$dest")"
   echo "==> CI simulator already available ($dest)"
   export CI_SIMULATOR_DEST="$dest"
   if [[ -n "${GITHUB_ENV:-}" ]]; then
@@ -154,6 +159,7 @@ if ! wait_for_scheme_destination "$dest"; then
   exit 1
 fi
 
+dest="$(finalize_ci_simulator_dest "$dest")"
 export CI_SIMULATOR_DEST="$dest"
 if [[ -n "${GITHUB_ENV:-}" ]]; then
   echo "CI_SIMULATOR_DEST=${dest}" >>"${GITHUB_ENV}"

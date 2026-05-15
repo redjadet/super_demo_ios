@@ -35,6 +35,15 @@ destination_valid_for_scheme() {
     | rg -q "id:${udid}"
 }
 
+prefer_arm64_simulator_destination() {
+  local dest="$1"
+  if [[ "$dest" == *"id="* && "$dest" != *"arch="* ]]; then
+    printf '%s,arch=arm64\n' "$dest"
+  else
+    printf '%s\n' "$dest"
+  fi
+}
+
 resolve_iphone_destination_from_xcodebuild() {
   [[ -f superDemoApp.xcodeproj/project.pbxproj ]] || return 1
   local dest_line
@@ -51,16 +60,19 @@ resolve_iphone_destination_from_xcodebuild() {
   [[ "$udid" =~ ^[0-9A-F-]{36}$ ]] || return 1
   local dest="platform=iOS Simulator,id=${udid}"
   destination_valid_for_scheme "$dest" || return 1
-  printf '%s\n' "$dest"
+  prefer_arm64_simulator_destination "$dest"
 }
 
 resolve_iphone_destination() {
+  local dest
   if [[ -n "${CI_SIMULATOR_DEST:-}" ]]; then
-    printf '%s\n' "$CI_SIMULATOR_DEST"
+    dest="${CI_SIMULATOR_DEST}"
+    prefer_arm64_simulator_destination "$dest"
     return 0
   fi
   if [[ -n "${CHECKLIST_IPHONE_DEST:-}" ]]; then
-    printf '%s\n' "$CHECKLIST_IPHONE_DEST"
+    dest="${CHECKLIST_IPHONE_DEST}"
+    prefer_arm64_simulator_destination "$dest"
     return 0
   fi
 
@@ -106,13 +118,14 @@ resolve_iphone_destination() {
     if [[ "$udid" =~ ^[0-9A-F-]{36}$ ]]; then
       local dest="platform=iOS Simulator,id=${udid}"
       if destination_valid_for_scheme "$dest"; then
-        printf '%s\n' "$dest"
+        prefer_arm64_simulator_destination "$dest"
         return 0
       fi
     fi
   fi
 
-  if resolve_iphone_destination_from_xcodebuild; then
+  if dest="$(resolve_iphone_destination_from_xcodebuild)"; then
+    prefer_arm64_simulator_destination "$dest"
     return 0
   fi
 
