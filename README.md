@@ -11,6 +11,30 @@ multi-platform CI, and Cursor rules.
 4. Restore team Apple agent skills: `npx skills experimental_install -y` (requires Node/npx).
 5. Proof: `./bin/ci.sh`
 
+## Portfolio (reviewers)
+
+**Purpose:** Universal SwiftUI + SwiftData baseline with recruiter-oriented docs,
+clean-arch posture, `./bin/*` gates, optional **Feed** narrative (clients,
+repos, concurrency) — see **`docs/portfolio.md`**.
+
+**Skill map:**
+
+- **Layered architecture** — `Features/Items/` today; **`Features/Feed/` planned**
+  (typed domain/data/presentation folders).
+- **SwiftData** — `Item`; **`CachedFeedPost`** when Feed cache ships.
+- **Networking** — `Features/Feed/Data/` (planned) with injectable **`URLSession`**.
+- **Structured concurrency / cancel** — Feed feature model (planned docs).
+- **Universal UI** — `Shared/Presentation/` + shared design modifiers.
+- **Testing** — `superDemoAppTests/`, `superDemoAppUITests/`.
+
+\* **Feed** paths mirror roadmap; runnable module today is **`Items/`**.
+  See [_change log_: portfolio + Feed roadmap](docs/changes/2026-05-16_portfolio-documentation-and-feed-roadmap.md).
+
+**Guided tour:** [`docs/portfolio.md`](docs/portfolio.md).
+
+**Architecture tour:** [`docs/architecture.md`](docs/architecture.md),
+[`docs/feature-template.md`](docs/feature-template.md).
+
 ## Agents
 
 Start at [`AGENTS.md`](AGENTS.md). Docs index: [`docs/README.md`](docs/README.md).
@@ -19,8 +43,6 @@ New feature work: [`docs/feature-template.md`](docs/feature-template.md).
 
 ## Validation
 
-| When | Command |
-| ------ | ------ |
-| After Swift edits | `./bin/lint.sh` |
-| Universal UI / navigation | `./bin/checklist` |
-| Before merge/PR | `./bin/ci.sh` |
+- After Swift edits: `./bin/lint.sh`.
+- SwiftUI/universal/nav smoke: `./bin/checklist`.
+- Before merge / PR: `./bin/ci.sh`.

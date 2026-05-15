@@ -1,6 +1,25 @@
 # Sync And Networking
 
-No network layer exists yet. Use this when adding remote data.
+## Portfolio Feed (when implemented)
+
+The **Feed** feature (see [`docs/portfolio.md`](portfolio.md) and
+[`README.md`](../README.md) Portfolio) targets:
+
+- **GET** `https://jsonplaceholder.typicode.com/posts`
+  (`{ userId, id, title, body }` rows in a JSON array).
+- **`FeedAPIClient`** lives under `Features/Feed/Data/` only.
+- Injectable **`URLSession`**; **`timeoutIntervalForRequest` ~ 30s** in app
+  composition when using a custom configuration.
+- **`PostDTO` → `FeedPost`** in **`RemoteFeedRepository`**.
+- **`CachingFeedRepository`** / **`CachedFeedPost`**: persist on success,
+  fall back silently on network failure when rows exist.
+
+**DummyJSON** alternate (`/posts`): wrapper `{ posts: [...], ... }` before DTO map.
+
+Tests: **`URLProtocol`** or injected **`URLSession`** — no flaky live HTTP on CI.
+
+**Status:** Core networking rules stay below; Feed bullets document intent before
+Swift ships.
 
 ## Networking Rules
 
