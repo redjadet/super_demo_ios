@@ -15,8 +15,6 @@ source "$ROOT/tool/xcodebuild_sandbox_flags.sh"
 IPHONE_DEST="$(resolve_iphone_destination)"
 IPAD_DEST="$(resolve_ipad_destination)"
 MAC_DEST="$(resolve_mac_destination)"
-TEST_SERIAL_FLAGS=()
-
 if [[ "${CHECKLIST_ALLOW_PARALLEL_TESTS:-0}" != "1" ]]; then
   TEST_SERIAL_FLAGS=(
     -parallel-testing-enabled NO
@@ -48,8 +46,8 @@ xcodebuild \
   -scheme superDemoApp \
   -configuration Debug \
   -destination "$IPHONE_DEST" \
-  "${XCODEBUILD_SANDBOX_FLAGS[@]}" \
-  "${TEST_SERIAL_FLAGS[@]}" \
+  ${XCODEBUILD_SANDBOX_FLAGS+"${XCODEBUILD_SANDBOX_FLAGS[@]}"} \
+  ${TEST_SERIAL_FLAGS+"${TEST_SERIAL_FLAGS[@]}"} \
   test
 
 if [[ "${CHECKLIST_SKIP_PLATFORM_BUILDS:-0}" != "1" ]]; then

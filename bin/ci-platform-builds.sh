@@ -15,9 +15,10 @@ MAC_DEST="$(resolve_mac_destination)"
 
 run_ipad_build() {
   echo "==> iPad build ($IPAD_DEST)"
-  IPAD_DERIVED_DATA_FLAGS=()
   if [[ -n "${IPAD_DERIVED_DATA_PATH:-}" ]]; then
     IPAD_DERIVED_DATA_FLAGS=(-derivedDataPath "$IPAD_DERIVED_DATA_PATH")
+  else
+    unset IPAD_DERIVED_DATA_FLAGS
   fi
 
   xcodebuild \
@@ -25,25 +26,27 @@ run_ipad_build() {
     -scheme superDemoApp \
     -destination "$IPAD_DEST" \
     -configuration Debug \
-    "${XCODEBUILD_SANDBOX_FLAGS[@]}" \
-    "${IPAD_DERIVED_DATA_FLAGS[@]}" \
+    ${XCODEBUILD_SANDBOX_FLAGS+"${XCODEBUILD_SANDBOX_FLAGS[@]}"} \
+    ${IPAD_DERIVED_DATA_FLAGS+"${IPAD_DERIVED_DATA_FLAGS[@]}"} \
     build
 }
 
 run_mac_build() {
   echo "==> Mac build ($MAC_DEST)"
-  MAC_DERIVED_DATA_FLAGS=()
   if [[ -n "${MAC_DERIVED_DATA_PATH:-}" ]]; then
     MAC_DERIVED_DATA_FLAGS=(-derivedDataPath "$MAC_DERIVED_DATA_PATH")
+  else
+    unset MAC_DERIVED_DATA_FLAGS
   fi
 
-  MAC_BUILD_FLAGS=()
   if [[ "${CI:-}" == "true" ]]; then
     # GitHub-hosted runners have no Mac Development certificate for the project team.
     MAC_BUILD_FLAGS=(
       CODE_SIGNING_ALLOWED=NO
       CODE_SIGN_IDENTITY=-
     )
+  else
+    unset MAC_BUILD_FLAGS
   fi
 
   xcodebuild \
@@ -51,9 +54,9 @@ run_mac_build() {
     -scheme superDemoApp \
     -destination "$MAC_DEST" \
     -configuration Debug \
-    "${XCODEBUILD_SANDBOX_FLAGS[@]}" \
-    "${MAC_DERIVED_DATA_FLAGS[@]}" \
-    "${MAC_BUILD_FLAGS[@]}" \
+    ${XCODEBUILD_SANDBOX_FLAGS+"${XCODEBUILD_SANDBOX_FLAGS[@]}"} \
+    ${MAC_DERIVED_DATA_FLAGS+"${MAC_DERIVED_DATA_FLAGS[@]}"} \
+    ${MAC_BUILD_FLAGS+"${MAC_BUILD_FLAGS[@]}"} \
     build
 }
 

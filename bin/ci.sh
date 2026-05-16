@@ -20,7 +20,6 @@ source "$ROOT/tool/xcodebuild_sandbox_flags.sh"
 SIMULATOR_DEST="$(resolve_iphone_destination)"
 echo "==> iPhone destination: $SIMULATOR_DEST"
 
-TEST_SERIAL_FLAGS=()
 if [[ "${CI_ALLOW_PARALLEL_TESTS:-0}" != "1" ]]; then
   TEST_SERIAL_FLAGS=(
     -parallel-testing-enabled NO
@@ -46,8 +45,8 @@ xcodebuild \
   -scheme superDemoApp \
   -destination "$SIMULATOR_DEST" \
   -configuration Debug \
-  "${XCODEBUILD_SANDBOX_FLAGS[@]}" \
-  "${TEST_SERIAL_FLAGS[@]}" \
+  ${XCODEBUILD_SANDBOX_FLAGS+"${XCODEBUILD_SANDBOX_FLAGS[@]}"} \
+  ${TEST_SERIAL_FLAGS+"${TEST_SERIAL_FLAGS[@]}"} \
   test
 
 if [[ "${CI_SKIP_PLATFORM_BUILDS:-0}" != "1" ]]; then
