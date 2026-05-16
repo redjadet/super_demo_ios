@@ -23,6 +23,18 @@ struct FeedRootView: View {
     private var modelContext
 
     var body: some View {
-        FeedView(model: FeedComposition.makeFeatureModel(context: self.modelContext))
+        FeedRootContent(context: self.modelContext)
+    }
+}
+
+private struct FeedRootContent: View {
+    @State private var model: FeedFeatureModel
+
+    init(context: ModelContext) {
+        self._model = State(initialValue: FeedComposition.makeFeatureModel(context: context))
+    }
+
+    var body: some View {
+        FeedView(model: self.model)
     }
 }

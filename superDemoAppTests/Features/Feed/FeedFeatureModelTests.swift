@@ -76,4 +76,27 @@ struct FeedFeatureModelTests {
             Issue.record("Expected restored content after cancel")
         }
     }
+
+    @Test
+    @MainActor
+    func refreshKeepsExistingContentVisible() async {
+        let repository = FeedModelRepositorySpy()
+        repository.posts = [FeedPost(id: 1, userID: 1, title: "A", body: "B")]
+        let model = FeedFeatureModel(
+            refreshFeed: RefreshFeedUseCase(repository: repository)
+        )
+        await model.refreshAndWait()
+
+        repository.delayNanoseconds = 500_000_000
+        model.refresh()
+        try? await Task.sleep(nanoseconds: 50_000_000)
+
+        if case let .content(posts) = model.state {
+            #expect(posts.count == 1)
+        } else {
+            Issue.record("Expected existing content to remain visible during refresh")
+        }
+
+        model.cancelRefresh()
+    }
 }

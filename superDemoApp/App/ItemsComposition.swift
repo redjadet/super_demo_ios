@@ -23,6 +23,18 @@ struct ItemsRootView: View {
     private var modelContext
 
     var body: some View {
-        ItemsView(model: ItemsComposition.makeFeatureModel(context: self.modelContext))
+        ItemsRootContent(context: self.modelContext)
+    }
+}
+
+private struct ItemsRootContent: View {
+    @State private var model: ItemsFeatureModel
+
+    init(context: ModelContext) {
+        self._model = State(initialValue: ItemsComposition.makeFeatureModel(context: context))
+    }
+
+    var body: some View {
+        ItemsView(model: self.model)
     }
 }

@@ -29,7 +29,7 @@ final class FeedFeatureModel {
     func refresh() {
         self.refreshTask?.cancel()
         self.stateBeforeRefresh = self.state
-        self.state = .loading
+        self.showLoadingStateIfNeeded()
 
         self.refreshTask = Task { [weak self] in
             guard let self else { return }
@@ -40,7 +40,7 @@ final class FeedFeatureModel {
     func refreshAndWait() async {
         self.refreshTask?.cancel()
         self.stateBeforeRefresh = self.state
-        self.state = .loading
+        self.showLoadingStateIfNeeded()
         await self.performRefresh()
     }
 
@@ -67,5 +67,12 @@ final class FeedFeatureModel {
             self.state = .failed(FeedDisplayError(error))
             self.stateBeforeRefresh = nil
         }
+    }
+
+    private func showLoadingStateIfNeeded() {
+        if case .content = self.state {
+            return
+        }
+        self.state = .loading
     }
 }

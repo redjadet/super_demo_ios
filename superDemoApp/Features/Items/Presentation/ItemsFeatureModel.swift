@@ -33,7 +33,7 @@ final class ItemsFeatureModel {
     }
 
     func refresh() async {
-        self.state = .loading
+        self.showLoadingStateIfNeeded()
         await Task.yield()
         do {
             let items = try self.loadItems()
@@ -62,5 +62,12 @@ final class ItemsFeatureModel {
         } catch {
             self.state = .failed(DisplayError(error))
         }
+    }
+
+    private func showLoadingStateIfNeeded() {
+        if case .content = self.state {
+            return
+        }
+        self.state = .loading
     }
 }
