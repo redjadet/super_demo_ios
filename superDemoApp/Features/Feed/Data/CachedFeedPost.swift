@@ -30,6 +30,12 @@ final class CachedFeedPost {
         )
     }
 
+    func update(with post: FeedPost) {
+        self.userID = post.userID
+        self.title = post.title
+        self.body = post.body
+    }
+
     var toDomain: FeedPost {
         FeedPost(id: self.postID, userID: self.userID, title: self.title, body: self.body)
     }

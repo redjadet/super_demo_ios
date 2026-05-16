@@ -26,6 +26,12 @@ Host-specific notes for AI agents. Repo docs still own project rules.
 
 ## Cursor
 
+### Editor (Swift / ObjC)
+
+- Use `swiftlang.swift-vscode` + SweetPad + `xcode-build-server` for Swift editing.
+- Avoid duplicate C/C++ LSP extensions (`cpptools`, `clangd`, `sswg.swift-lang`) alongside
+  the Swift extension.
+
 ### Setup
 
 1. Open workspace: parent `super_demo_ios/` (recommended) or git root `superDemoApp/`.

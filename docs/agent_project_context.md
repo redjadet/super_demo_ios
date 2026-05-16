@@ -2,6 +2,24 @@
 
 Machine-readable project facts for agents.
 
+## Repository
+
+- Published: `https://github.com/redjadet/super_demo_ios` (`superDemoApp/` is the only git root).
+- Parent folder `super_demo_ios/` may hold gitignored `.cursor/`, `.vscode/`, `tasks/`,
+  `buildServer.json`, `.agents/` (skills install target).
+
+## Workspace layout
+
+| Path | Role |
+| ------ | ------ |
+| `superDemoApp/` | Git root; run `./bin/*` and `./tool/*` here |
+| `super_demo_ios/` (parent) | Optional Cursor workspace root |
+| `superDemoApp/superDemoApp/` | App Swift sources |
+| `superDemoApp/superDemoAppTests/` | Unit tests |
+| `superDemoApp/superDemoAppUITests/` | UI tests |
+| `superDemoApp/Features/` | Layered features (`Presentation` / `Domain` / `Data`) |
+| `superDemoApp/Shared/` | Cross-feature presentation helpers |
+
 ## Current App
 
 - Project: `superDemoApp.xcodeproj`

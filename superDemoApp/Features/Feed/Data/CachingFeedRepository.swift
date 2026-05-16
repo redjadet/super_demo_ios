@@ -33,13 +33,22 @@ final class CachingFeedRepository: FeedRepository {
     private func replaceCache(with posts: [FeedPost]) throws {
         let descriptor = FetchDescriptor<CachedFeedPost>()
         let existing = try self.context.fetch(descriptor)
-        for row in existing {
+        let rowsByID = Dictionary(uniqueKeysWithValues: existing.map { ($0.postID, $0) })
+        let incomingIDs = Set(posts.map(\.id))
+
+        for post in posts {
+            if let existingRow = rowsByID[post.id] {
+                existingRow.update(with: post)
+            } else {
+                self.context.insert(CachedFeedPost(post: post))
+            }
+        }
+        for row in existing where !incomingIDs.contains(row.postID) {
             self.context.delete(row)
         }
-        for post in posts {
-            self.context.insert(CachedFeedPost(post: post))
+        if self.context.hasChanges {
+            try self.context.save()
         }
-        try self.context.save()
     }
 
     private func loadCachedPosts() throws -> [FeedPost] {

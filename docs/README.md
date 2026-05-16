@@ -5,7 +5,7 @@ Source-of-truth docs for `superDemoApp`.
 ## Start Here
 
 - **Portfolio / reviewers:** [`portfolio.md`](portfolio.md) (+ [`../README.md`](../README.md) Portfolio section).
-- Agent map (lean): [`../AGENTS.md`](../AGENTS.md)
+- Agent map (lean links only; detail in `docs/`): [`../AGENTS.md`](../AGENTS.md)
 - AI agent harness: [`agent_knowledge_base.md`](agent_knowledge_base.md)
 - Agent baseline rules: [`agent_baseline.md`](agent_baseline.md)
 - Agent preferences: [`agent_preferences.md`](agent_preferences.md)
