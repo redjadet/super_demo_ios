@@ -7,6 +7,8 @@ cd "$ROOT"
 
 # shellcheck source=../tool/resolve_platform_destination.sh
 source "$ROOT/tool/resolve_platform_destination.sh"
+# shellcheck source=../tool/xcodebuild_sandbox_flags.sh
+source "$ROOT/tool/xcodebuild_sandbox_flags.sh"
 
 IPAD_DEST="$(resolve_ipad_destination)"
 MAC_DEST="$(resolve_mac_destination)"
@@ -23,6 +25,7 @@ run_ipad_build() {
     -scheme superDemoApp \
     -destination "$IPAD_DEST" \
     -configuration Debug \
+    "${XCODEBUILD_SANDBOX_FLAGS[@]}" \
     "${IPAD_DERIVED_DATA_FLAGS[@]}" \
     build
 }
@@ -48,6 +51,7 @@ run_mac_build() {
     -scheme superDemoApp \
     -destination "$MAC_DEST" \
     -configuration Debug \
+    "${XCODEBUILD_SANDBOX_FLAGS[@]}" \
     "${MAC_DERIVED_DATA_FLAGS[@]}" \
     "${MAC_BUILD_FLAGS[@]}" \
     build

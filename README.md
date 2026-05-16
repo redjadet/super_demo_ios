@@ -1,21 +1,21 @@
 # superDemoApp
 
-Universal SwiftUI app (iOS, iPadOS, macOS) with an AI-agent harness: lint gates,
-multi-platform CI, and Cursor rules.
+Universal SwiftUI app (iOS, iPadOS, macOS): layered `Features/`, SwiftData, lint
+gates, and multi-platform CI.
 
 ## Quick start
 
-1. Open **`super_demo_ios/`** in Cursor (parent folder) or this directory in Xcode.
+1. Open `superDemoApp.xcodeproj` in Xcode (run `./bin/*` from this directory).
 2. Install tools: `brew bundle --file Brewfile`
-3. Install Cursor rules (from this directory): `./tool/install-cursor-rules.sh` then restart Cursor.
-4. Restore team Apple agent skills: `npx skills experimental_install -y` (requires Node/npx).
-5. Proof: `./bin/ci.sh`
+3. Verify: `./bin/ci.sh`
+
+Reviewers: [Portfolio](#portfolio-reviewers) and [`docs/portfolio.md`](docs/portfolio.md).
 
 ## Portfolio (reviewers)
 
 **Purpose:** Universal SwiftUI + SwiftData baseline with recruiter-oriented docs,
-clean-arch posture, `./bin/*` gates, optional **Feed** narrative (clients,
-repos, concurrency) — see **`docs/portfolio.md`**.
+clean-arch posture, `./bin/*` gates, and a **Feed** feature (network client,
+repository, concurrency) — see **`docs/portfolio.md`**.
 
 **Skill map:**
 
@@ -31,11 +31,11 @@ repos, concurrency) — see **`docs/portfolio.md`**.
 **Architecture tour:** [`docs/architecture.md`](docs/architecture.md),
 [`docs/feature-template.md`](docs/feature-template.md).
 
-## Agents
+## AI-assisted development
 
-Start at [`AGENTS.md`](AGENTS.md). Docs index: [`docs/README.md`](docs/README.md).
-
-New feature work: [`docs/feature-template.md`](docs/feature-template.md).
+Optional agent setup (rules, MCP, skills): [`AGENTS.md`](AGENTS.md),
+[`docs/README.md`](docs/README.md). New feature work:
+[`docs/feature-template.md`](docs/feature-template.md).
 
 ## Validation
 

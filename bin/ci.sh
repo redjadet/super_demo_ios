@@ -14,6 +14,8 @@ fi
 
 # shellcheck source=../tool/resolve_platform_destination.sh
 source "$ROOT/tool/resolve_platform_destination.sh"
+# shellcheck source=../tool/xcodebuild_sandbox_flags.sh
+source "$ROOT/tool/xcodebuild_sandbox_flags.sh"
 
 SIMULATOR_DEST="$(resolve_iphone_destination)"
 echo "==> iPhone destination: $SIMULATOR_DEST"
@@ -44,6 +46,7 @@ xcodebuild \
   -scheme superDemoApp \
   -destination "$SIMULATOR_DEST" \
   -configuration Debug \
+  "${XCODEBUILD_SANDBOX_FLAGS[@]}" \
   "${TEST_SERIAL_FLAGS[@]}" \
   test
 

@@ -24,7 +24,10 @@ From git root **`superDemoApp/`**: `./bin/lint-markdown.sh`
 
 ## Follow-up when Feed code merges
 
-1. Add sibling `docs/changes/` note with wired paths + `./bin/ci.sh` proof.
-2. Remove “planned” footnotes from [`README.md`](../../README.md),
-   [`portfolio.md`](../portfolio.md) **How to read**.
-3. Check reviewer boxes in [`portfolio.md`](../portfolio.md) vs CI/device.
+**Done** — see [`2026-05-16_feed-feature-shipped.md`](2026-05-16_feed-feature-shipped.md).
+
+1. ~~Add sibling `docs/changes/` note with wired paths + `./bin/ci.sh` proof.~~
+2. ~~Remove “planned” footnotes from [`README.md`](../../README.md),
+   [`portfolio.md`](../portfolio.md) **How to read**.~~
+3. ~~Check reviewer boxes in [`portfolio.md`](../portfolio.md) vs CI/device.~~
+   (VoiceOver remains a manual reviewer step.)

@@ -9,6 +9,8 @@ export PATH="/opt/homebrew/bin:/usr/local/bin:${PATH}"
 
 # shellcheck source=../tool/resolve_platform_destination.sh
 source "$ROOT/tool/resolve_platform_destination.sh"
+# shellcheck source=../tool/xcodebuild_sandbox_flags.sh
+source "$ROOT/tool/xcodebuild_sandbox_flags.sh"
 
 IPHONE_DEST="$(resolve_iphone_destination)"
 IPAD_DEST="$(resolve_ipad_destination)"
@@ -46,6 +48,7 @@ xcodebuild \
   -scheme superDemoApp \
   -configuration Debug \
   -destination "$IPHONE_DEST" \
+  "${XCODEBUILD_SANDBOX_FLAGS[@]}" \
   "${TEST_SERIAL_FLAGS[@]}" \
   test
 

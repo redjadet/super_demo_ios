@@ -1,9 +1,9 @@
 # Sync And Networking
 
-## Portfolio Feed (when implemented)
+## Portfolio Feed
 
 The **Feed** feature (see [`docs/portfolio.md`](portfolio.md) and
-[`README.md`](../README.md) Portfolio) targets:
+[`README.md`](../README.md) Portfolio) implements:
 
 - **GET** `https://jsonplaceholder.typicode.com/posts`
   (`{ userId, id, title, body }` rows in a JSON array).
@@ -18,8 +18,9 @@ The **Feed** feature (see [`docs/portfolio.md`](portfolio.md) and
 
 Tests: **`URLProtocol`** or injected **`URLSession`** — no flaky live HTTP on CI.
 
-**Status:** Core networking rules stay below; Feed bullets document intent before
-Swift ships.
+**Status:** Shipped under `Features/Feed/`; see
+[`changes/2026-05-16_feed-feature-shipped.md`](changes/2026-05-16_feed-feature-shipped.md).
+Core networking rules stay below.
 
 ## Networking Rules
 

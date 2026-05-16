@@ -11,11 +11,10 @@ read-through cache.
 2. [`docs/architecture.md`](architecture.md) +
    [`docs/feature-template.md`](feature-template.md).
 3. **`Features/Items/`** — Reference (SwiftData, sync repository API).
-4. **`Features/Feed/`** — *(Planned / in-flight.)* JSONPlaceholder;
-   [`changes/2026-05-16_portfolio-documentation-and-feed-roadmap.md`](changes/2026-05-16_portfolio-documentation-and-feed-roadmap.md)
-   separates doc-vs-code status.
-5. **`App/`** — `ItemsComposition`; `FeedComposition` + `AppRootView` tabs when
-   implemented.
+4. **`Features/Feed/`** — JSONPlaceholder client + SwiftData read-through cache;
+   see [`changes/2026-05-16_feed-feature-shipped.md`](changes/2026-05-16_feed-feature-shipped.md).
+5. **`App/`** — `AppRootView` tabs; `ItemsComposition` / `FeedComposition` wire
+   `ModelContext` into repositories and hold `@State` feature models.
 6. **`Shared/Presentation/AdaptiveNavigationShell.swift`** — shared chrome.
 
 ## Items walkthrough (`Features/Items/`)
@@ -28,12 +27,12 @@ read-through cache.
 
 Observation + thin use cases on a repository protocol.
 
-## Feed walkthrough (`Features/Feed/` — target layout)
+## Feed walkthrough (`Features/Feed/`)
 
 - **Domain** — `FeedPost`, `FeedRepository`, load/refresh use cases,
   typed error surface (`FeedDisplayError`).
 - **Data** — `PostDTO`, `FeedAPIClient` + live `URLSession`, `RemoteFeedRepository`,
-  optional `CachedFeedPost` + `CachingFeedRepository`.
+  `CachedFeedPost` + `CachingFeedRepository`.
 - **Presentation** — `FeedFeatureModel` (cancel in-flight refresh), list + retry UX,
   `FeedNavigationShell`.
 
@@ -54,11 +53,11 @@ HTTP — no live network on default CI.
 
 ## Reviewer checklist
 
-- [ ] Layer imports pass `./bin/lint.sh`
-- [ ] Feed list + Retry + toolbar refresh after Swift lands
-- [ ] `./bin/ci.sh` passes
-- [ ] Previews cover light/dark where applicable (`FeedView` when merged)
-- [ ] VoiceOver on Feed chrome / rows / Retry
+- [x] Layer imports pass `./bin/lint.sh` (also in `./bin/ci.sh`)
+- [x] Feed tab reachable; list, Retry, toolbar refresh (`FeedView` / UI tests)
+- [x] `./bin/ci.sh` passes on merge (lint + iPhone tests + iPad/Mac builds)
+- [x] Previews cover light/dark for `FeedView` (`#Preview` + `UniversalPreviewLayouts`)
+- [ ] VoiceOver on Feed chrome / rows / Retry (manual pass on device/simulator)
 
 ## Edge cases (summary)
 

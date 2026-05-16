@@ -11,7 +11,6 @@
 --indent 4
 --indentcase false
 --ifdef no-indent
---xcodeindentation enabled
 --tabwidth 4
 
 # Line endings and width should match SwiftLint line_length.
