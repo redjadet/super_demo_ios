@@ -40,10 +40,7 @@ echo "==> Common issue checks"
 echo "==> Project/scheme sanity"
 xcodebuild -list -project superDemoApp.xcodeproj
 
-echo "==> iPhone build ($IPHONE_DEST)"
-xcodebuild -project superDemoApp.xcodeproj -scheme superDemoApp -configuration Debug -destination "$IPHONE_DEST" build
-
-echo "==> iPhone tests ($IPHONE_DEST)"
+echo "==> iPhone tests ($IPHONE_DEST; builds app + tests)"
 xcodebuild \
   -project superDemoApp.xcodeproj \
   -scheme superDemoApp \

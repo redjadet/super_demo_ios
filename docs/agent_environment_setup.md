@@ -58,13 +58,13 @@ Format:
 ./bin/format.sh
 ```
 
-Full CI locally (lint + iPhone build/test + iPad/Mac builds; matches GitHub Actions):
+Full CI locally (lint + iPhone test/build + parallel iPad/Mac builds; matches GitHub Actions):
 
 ```bash
 ./bin/ci.sh
 ```
 
-iPad/Mac compile only (same as CI platform step):
+iPad/Mac compile only (same as CI platform step; parallel by default with isolated DerivedData):
 
 ```bash
 ./bin/ci-platform-builds.sh
@@ -98,8 +98,9 @@ Run tests:
 xcodebuild -project superDemoApp.xcodeproj -scheme superDemoApp -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.5' test
 ```
 
-GitHub Actions on push/PR to `main` runs lint, iOS Simulator build/test, then
-`./bin/ci-platform-builds.sh` for iPad simulator + macOS builds (see `.github/workflows/ci.yml`).
+GitHub Actions on push/PR to `main` runs lint, iOS Simulator tests (which build
+the app and tests), then `./bin/ci-platform-builds.sh` for iPad simulator + macOS
+builds (see `.github/workflows/ci.yml`).
 
 ## Cursor (first-time)
 

@@ -16,6 +16,10 @@ require swiftlint
 require swiftformat
 
 echo "==> SwiftFormat"
-swiftformat "$ROOT/superDemoApp" "$ROOT/superDemoAppTests" "$ROOT/superDemoAppUITests"
+swiftformat \
+  --config "$ROOT/.swiftformat" \
+  "$ROOT/superDemoApp" \
+  "$ROOT/superDemoAppTests" \
+  "$ROOT/superDemoAppUITests"
 
 echo "Format complete. Re-run ./bin/lint.sh before committing."

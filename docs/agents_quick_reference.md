@@ -63,6 +63,8 @@ UI smoke: `superDemoAppUITests.testLaunchShowsAddItemControl` in CI iPhone test 
 ## Reminders
 
 - Start from current diff.
+- Swift indentation is 4 spaces. If Xcode reports `(indent)`, run `./bin/format.sh`
+  and re-check the exact file diagnostics.
 - Use Apple-native frameworks first; document dependency tradeoffs.
 - Keep changes surgical.
 - Prefer `./bin/checklist-fast` for docs/tooling/small Swift edits.
@@ -72,6 +74,8 @@ UI smoke: `superDemoAppUITests.testLaunchShowsAddItemControl` in CI iPhone test 
 - `./bin/checklist` and `./bin/ci.sh` disable parallel test workers by default;
   set `CHECKLIST_ALLOW_PARALLEL_TESTS=1` or `CI_ALLOW_PARALLEL_TESTS=1` only when
   parallel proof is intentional.
+- `./bin/ci-platform-builds.sh` runs iPad and Mac builds in parallel by default;
+  set `CI_SERIAL_PLATFORM_BUILDS=1` if Xcode is resource constrained.
 - Validate before final report.
 - Report exact proof command.
 - Add durable doc/test/script when the same failure pattern repeats.

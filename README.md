@@ -19,16 +19,12 @@ repos, concurrency) — see **`docs/portfolio.md`**.
 
 **Skill map:**
 
-- **Layered architecture** — `Features/Items/` today; **`Features/Feed/` planned**
-  (typed domain/data/presentation folders).
-- **SwiftData** — `Item`; **`CachedFeedPost`** when Feed cache ships.
-- **Networking** — `Features/Feed/Data/` (planned) with injectable **`URLSession`**.
-- **Structured concurrency / cancel** — Feed feature model (planned docs).
+- **Layered architecture** — `Features/Items/` and `Features/Feed/` (typed domain/data/presentation folders).
+- **SwiftData** — `Item` and **`CachedFeedPost`** (Feed cache).
+- **Networking** — `Features/Feed/Data/` with injectable **`URLSession`**.
+- **Structured concurrency / cancel** — Feed feature model + refresh cancel.
 - **Universal UI** — `Shared/Presentation/` + shared design modifiers.
 - **Testing** — `superDemoAppTests/`, `superDemoAppUITests/`.
-
-\* **Feed** paths mirror roadmap; runnable module today is **`Items/`**.
-  See [_change log_: portfolio + Feed roadmap](docs/changes/2026-05-16_portfolio-documentation-and-feed-roadmap.md).
 
 **Guided tour:** [`docs/portfolio.md`](docs/portfolio.md).
 

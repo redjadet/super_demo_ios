@@ -38,15 +38,7 @@ echo "==> Markdown lint"
 echo "==> Common issue checks"
 ./tool/check_common_issues.sh
 
-echo "==> Build"
-xcodebuild \
-  -project superDemoApp.xcodeproj \
-  -scheme superDemoApp \
-  -destination "$SIMULATOR_DEST" \
-  -configuration Debug \
-  build
-
-echo "==> Test"
+echo "==> iPhone tests (builds app + tests)"
 xcodebuild \
   -project superDemoApp.xcodeproj \
   -scheme superDemoApp \

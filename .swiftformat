@@ -1,22 +1,39 @@
-# SwiftFormat — keep aligned with .swiftlint.yml
+# SwiftFormat — deterministic formatting for humans and AI agents.
+# Keep aligned with .swiftlint.yml and docs/code-style.md.
 # Run: ./bin/format.sh
 
 --swiftversion 5.0
 
---exclude DerivedData,.build
+# Ignore generated/build artifacts and local Xcode state.
+--exclude .build,DerivedData,**/*.generated.swift,**/xcuserdata
 
+# Indentation must match SwiftLint's indent rule and .editorconfig.
 --indent 4
 --indentcase false
 --ifdef no-indent
 --xcodeindentation enabled
 --tabwidth 4
+
+# Line endings and width should match SwiftLint line_length.
+--linebreaks lf
 --maxwidth 120
+
+# Wrapping: stable multi-line diffs for generated/agent edits.
 --wraparguments before-first
 --wrapparameters before-first
 --wrapcollections before-first
---stripunusedargs always
---self insert
---importgrouping testable-bottom
---trimwhitespace always
+
+# Whitespace and punctuation.
+--allman false
 --commas always
+--elseposition same-line
+--emptybraces no-space
+--operatorfunc spaced
 --semicolons never
+--trimwhitespace always
+
+# Swift spelling and imports.
+--importgrouping testable-bottom
+--self insert
+--stripunusedargs closure-only
+--voidtype void

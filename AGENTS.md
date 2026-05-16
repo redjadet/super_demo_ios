@@ -53,6 +53,7 @@ Proof by change type, simulators, CI flags:
 ## Swift work
 
 Code under `superDemoApp/superDemoApp/`. After edits: `./bin/lint.sh` (includes layer boundary checks).
+Use 4-space Swift indentation; run `./bin/format.sh` before lint if Xcode reports `(indent)`.
 
 **Layered features** use `Features/<Name>/{Presentation,Domain,Data}/` — see
 [`docs/feature-template.md`](docs/feature-template.md), [`docs/module-structure.md`](docs/module-structure.md).

@@ -45,7 +45,7 @@ jobs:
           CI: true
         run: ./tool/ensure_ci_simulator.sh
 
-      - name: CI (lint, test, iPad/Mac builds)
+      - name: CI (lint, iPhone test, parallel iPad/Mac builds)
         env:
           CI: true
         run: ./bin/ci.sh

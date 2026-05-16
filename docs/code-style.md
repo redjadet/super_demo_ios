@@ -39,6 +39,8 @@ parallel XCTest path.
 
 ## Swift style
 
+- Format with `./bin/format.sh`; scripts pass `.swiftformat` explicitly so agent,
+  Xcode, and CI runs use the same options.
 - **Types:** UpperCamelCase (`ItemRepository`, not `itemRepository`).
 - **Members:** lowerCamelCase; acronyms like `id`, `url` stay lowercase in names.
 - **Line length:** 120 warn / 150 error (see `.swiftlint.yml`).

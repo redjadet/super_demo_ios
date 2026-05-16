@@ -3,6 +3,8 @@
 Apply on every change unless the user overrides for a scoped task.
 
 - Smallest reversible diff; every changed line traces to the request or required validation/doc update.
+- Swift uses 4-space indentation. Do not write 2-space Swift; run `./bin/format.sh`
+  before validation when editing Swift.
 - UI stays SwiftUI-first; no UIKit bridge unless native SwiftUI cannot meet the need.
 - UI/design work follows [`../DESIGN.md`](../DESIGN.md) and [`design_system.md`](design_system.md).
 - UI responsive on **all iPhones, iPads, and Macs** — follow
