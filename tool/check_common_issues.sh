@@ -182,6 +182,20 @@ if [[ -n "$secret_matches" ]]; then
   fail "possible tracked secret literal found"
 fi
 
+section "Fastlane / Bundler"
+fastlane_files=(
+  Gemfile
+  Gemfile.lock
+  fastlane/Fastfile
+  fastlane/Appfile
+  bin/fastlane-run
+)
+for path in "${fastlane_files[@]}"; do
+  require_file "$path"
+done
+[[ -x bin/fastlane-run ]] || fail "bin/fastlane-run must be executable"
+[[ -x tool/bootstrap_fastlane.sh ]] || fail "tool/bootstrap_fastlane.sh must be executable"
+
 section "Cursor agent template"
 cursor_template_files=(
   tool/cursor-template/README.md
@@ -192,8 +206,13 @@ cursor_template_files=(
   tool/install-cursor-rules.sh
   tool/resolve_platform_destination.sh
   tool/check_layer_boundaries.sh
+  Gemfile
+  Gemfile.lock
+  fastlane/Fastfile
   bin/ci-platform-builds.sh
+  bin/fastlane-run
   bin/verify-swift.sh
+  tool/bootstrap_fastlane.sh
   tool/check_agent_swift_patterns.sh
   tool/install-git-hooks.sh
   tool/git-hooks/pre-commit

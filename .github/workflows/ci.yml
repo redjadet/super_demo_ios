@@ -21,8 +21,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
 
-      - name: Select Xcode 26.5
-        run: ./tool/select_xcode_26_5.sh
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.3"
+          bundler-cache: true
 
       - name: Install lint tools
         run: brew bundle check --file Brewfile || brew bundle --file Brewfile
@@ -30,10 +33,7 @@ jobs:
       - name: Lint
         env:
           CI: true
-        run: |
-          ./bin/lint.sh
-          ./bin/lint-markdown.sh
-          ./tool/check_common_issues.sh
+        run: bundle exec fastlane ci_lint
 
   iphone-test:
     runs-on: macos-26
@@ -45,11 +45,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
 
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.3"
+          bundler-cache: true
+
       - name: iPhone tests
         env:
           CI: true
           CI_PREPARE_IPAD: "0"
-        run: ./bin/ci-iphone-test.sh
+        run: bundle exec fastlane iphone_test
 
   platform-builds:
     runs-on: macos-26
@@ -61,12 +67,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
 
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.3"
+          bundler-cache: true
+
       - name: iPad and Mac builds
         env:
           CI: true
           CI_PREPARE_IPHONE: "0"
           CI_SERIAL_PLATFORM_BUILDS: "1"
-        run: ./bin/ci-platform-builds.sh
+        run: bundle exec fastlane platform_builds
 
   lint-build-test:
     runs-on: ubuntu-latest

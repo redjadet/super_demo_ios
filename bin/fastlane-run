@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# Run Fastlane from repo root with Bundler (local dev + CI).
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+cd "$ROOT"
+
+export PATH="/opt/homebrew/opt/ruby/bin:/opt/homebrew/bin:/usr/local/bin:${PATH}"
+
+if ! command -v bundle >/dev/null 2>&1; then
+  echo "error: bundle not found. Run ./tool/bootstrap_fastlane.sh or brew install ruby" >&2
+  exit 1
+fi
+
+need_bundle_install=false
+if [[ ! -f Gemfile.lock ]]; then
+  need_bundle_install=true
+elif [[ ! -d vendor/bundle ]]; then
+  need_bundle_install=true
+elif ! bundle check >/dev/null 2>&1; then
+  need_bundle_install=true
+fi
+
+if [[ "$need_bundle_install" == "true" ]]; then
+  echo "==> bundle install (first run or gems missing)"
+  ./tool/bootstrap_fastlane.sh
+fi
+
+exec bundle exec fastlane "$@"

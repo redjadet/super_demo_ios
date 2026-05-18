@@ -21,7 +21,8 @@ XcodeBuildMCP active profile: `superDemoApp`
 | Docs / tooling / small Swift | `./bin/checklist-fast` |
 | Domain / Data logic | `./bin/verify-swift.sh` + targeted tests |
 | SwiftUI layout, navigation, universal UI, light/dark | `./bin/checklist` |
-| Before merge / PR | `./bin/ci.sh` (same proof lanes as GitHub Actions) |
+| Before merge / PR | `./bin/ci.sh` or `bundle exec fastlane ci` (same proof lanes as GitHub Actions) |
+| Fastlane lanes (lint, test, builds, CI) | `./bin/fastlane-run <lane>` — see `fastlane/Fastfile` |
 
 `CI_SKIP_PLATFORM_BUILDS=1` skips iPad/Mac in `./bin/ci.sh` only when intentionally narrow.
 UI smoke: `superDemoAppUITests.testLaunchShowsAddItemControl` in CI iPhone test lane.
@@ -37,7 +38,10 @@ UI smoke: `superDemoAppUITests.testLaunchShowsAddItemControl` in CI iPhone test 
 | DESIGN.md DesignMD lint (needs Node; in checklists) | `./tool/check_design_md.sh` |
 | Fast checklist (markdown + DesignMD + lint + sanity) | `./bin/checklist-fast` |
 | Full checklist (above + iPhone test + iPad/Mac) | `./bin/checklist` |
-| Full local CI | `./bin/ci.sh` |
+| Full local CI | `./bin/ci.sh` (`fastlane ci`) |
+| CI lint job only | `bundle exec fastlane ci_lint` |
+| iPhone tests lane | `bundle exec fastlane iphone_test` |
+| iPad + Mac lane | `bundle exec fastlane platform_builds` |
 | iPhone build/test lane only | `./bin/ci-iphone-test.sh` |
 | iPad + Mac builds only | `./bin/ci-platform-builds.sh` |
 | Install Cursor rules + hooks (after clone) | `./tool/install-cursor-rules.sh` |
