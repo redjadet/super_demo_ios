@@ -48,9 +48,6 @@ jobs:
       - name: Select Xcode 26.5
         run: ./tool/select_xcode_26_5.sh
 
-      - name: Install lint tools
-        run: brew bundle check --file Brewfile || brew bundle --file Brewfile
-
       - name: Prepare iOS Simulator
         env:
           CI: true
@@ -74,9 +71,6 @@ jobs:
 
       - name: Select Xcode 26.5
         run: ./tool/select_xcode_26_5.sh
-
-      - name: Install lint tools
-        run: brew bundle check --file Brewfile || brew bundle --file Brewfile
 
       - name: Prepare iOS Simulator
         env:

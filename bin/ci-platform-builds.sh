@@ -5,6 +5,12 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 
+export PATH="/opt/homebrew/bin:/usr/local/bin:${PATH}"
+
+if [[ "${CI:-}" == "true" ]]; then
+  ./tool/select_xcode_26_5.sh
+fi
+
 # shellcheck source=../tool/resolve_platform_destination.sh
 source "$ROOT/tool/resolve_platform_destination.sh"
 # shellcheck source=../tool/xcodebuild_sandbox_flags.sh
