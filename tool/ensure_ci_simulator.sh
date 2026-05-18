@@ -14,18 +14,35 @@ source "$ROOT/tool/resolve_platform_destination.sh"
 # shellcheck source=ios_simulator_runtime.sh
 source "$ROOT/tool/ios_simulator_runtime.sh"
 
+CI_PREPARE_IPHONE="${CI_PREPARE_IPHONE:-1}"
+CI_PREPARE_IPAD="${CI_PREPARE_IPAD:-1}"
+
 finalize_ci_simulator_dest() {
   prefer_arm64_simulator_destination "$1"
 }
 
-if [[ -n "${CI_SIMULATOR_DEST:-}" && -n "${CI_IPAD_DEST:-}" ]]; then
-  if destination_valid_for_scheme "${CI_SIMULATOR_DEST}" \
-    && destination_valid_for_scheme "${CI_IPAD_DEST}"; then
-    echo "==> CI simulators already configured"
-    exit 0
-  fi
-  echo "warning: CI_SIMULATOR_DEST invalid for scheme; reprovisioning" >&2
+if [[ "$CI_PREPARE_IPHONE" != "1" && "$CI_PREPARE_IPAD" != "1" ]]; then
+  echo "error: CI_PREPARE_IPHONE=0 and CI_PREPARE_IPAD=0; nothing to prepare" >&2
+  exit 2
 fi
+
+iphone_ready=0
+ipad_ready=0
+if [[ "$CI_PREPARE_IPHONE" != "1" ]]; then
+  iphone_ready=1
+elif [[ -n "${CI_SIMULATOR_DEST:-}" ]] && destination_valid_for_scheme "${CI_SIMULATOR_DEST}"; then
+  iphone_ready=1
+fi
+if [[ "$CI_PREPARE_IPAD" != "1" ]]; then
+  ipad_ready=1
+elif [[ -n "${CI_IPAD_DEST:-}" ]] && destination_valid_for_scheme "${CI_IPAD_DEST}"; then
+  ipad_ready=1
+fi
+if ((iphone_ready == 1 && ipad_ready == 1)); then
+  echo "==> CI simulators already configured"
+  exit 0
+fi
+echo "warning: CI simulator destination missing or invalid; provisioning required devices" >&2
 
 boot_simulator_with_timeout() {
   local udid="$1"
@@ -151,12 +168,23 @@ create_newest_runtime_simulator() {
   export_ci_simulator_dest "$dest"
 }
 
-if try_newest_runtime_destination; then
-  runtime_id="$(select_newest_ios_runtime_id)"
-  provision_ipad_on_runtime "$runtime_id"
-  exit 0
+if [[ "$CI_PREPARE_IPHONE" == "1" ]]; then
+  if try_newest_runtime_destination; then
+    runtime_id="$(select_newest_ios_runtime_id)"
+  else
+    create_newest_runtime_simulator
+    runtime_id="$(select_newest_ios_runtime_id)"
+  fi
+else
+  ensure_ios_runtime_matches_sdk
+  runtime_id="$(select_newest_ios_runtime_id)" || true
+  if [[ -z "$runtime_id" ]]; then
+    echo "error: no iOS simulator runtime available" >&2
+    xcrun simctl list runtimes >&2 || true
+    exit 1
+  fi
 fi
 
-create_newest_runtime_simulator
-runtime_id="$(select_newest_ios_runtime_id)"
-provision_ipad_on_runtime "$runtime_id"
+if [[ "$CI_PREPARE_IPAD" == "1" ]]; then
+  provision_ipad_on_runtime "$runtime_id"
+fi

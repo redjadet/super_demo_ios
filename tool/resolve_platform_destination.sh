@@ -34,7 +34,7 @@ destination_valid_for_scheme() {
   udid="$(destination_udid "$dest")"
   [[ "$udid" =~ ^[0-9A-F-]{36}$ ]] || return 1
   xcodebuild -showdestinations -project superDemoApp.xcodeproj -scheme superDemoApp 2>/dev/null \
-    | rg -q "id:${udid}"
+    | grep -q "id:${udid}"
 }
 
 prefer_arm64_simulator_destination() {
@@ -51,8 +51,8 @@ resolve_iphone_destination_from_xcodebuild() {
   local dest_line
   dest_line="$(
     xcodebuild -showdestinations -project superDemoApp.xcodeproj -scheme superDemoApp 2>/dev/null \
-      | rg 'platform:iOS Simulator, id:[0-9A-F-]{36}' \
-      | rg -v placeholder \
+      | grep -E 'platform:iOS Simulator, id:[0-9A-F-]{36}' \
+      | grep -v placeholder \
       | head -1 \
       || true
   )"
@@ -99,7 +99,7 @@ resolve_iphone_destination() {
     return 1
   fi
 
-  printf 'platform=iOS Simulator,name=%s\n' "$preferred_name"
+  printf 'platform=iOS Simulator,name=iPhone 17\n'
 }
 
 resolve_ipad_destination() {
