@@ -80,6 +80,15 @@ lanes as GitHub Actions):
 ./bin/ci.sh
 ```
 
+Fastlane wrapper (bootstraps Bundler when needed, then runs the same repo scripts):
+
+```bash
+./bin/fastlane-run ci
+./bin/fastlane-run ci_lint
+./bin/fastlane-run iphone_test
+./bin/fastlane-run platform_builds
+```
+
 iPad/Mac compile only (same as CI platform step; parallel by default with isolated DerivedData):
 
 ```bash

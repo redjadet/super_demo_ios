@@ -17,10 +17,26 @@ def ci?
 end
 
 def run_repo_script(rel_path, extra_env: {})
-  extra_env.each { |key, value| ENV[key.to_s] = value }
+  previous_env = {}
+  extra_env.each do |key, value|
+    key = key.to_s
+    previous_env[key] = ENV.key?(key) ? ENV[key] : nil
+    ENV[key] = value
+  end
   script = File.join(repo_root, rel_path)
-  Dir.chdir(repo_root) do
-    sh(script)
+  begin
+    Dir.chdir(repo_root) do
+      sh(script)
+    end
+  ensure
+    extra_env.each_key do |key|
+      key = key.to_s
+      if previous_env[key].nil?
+        ENV.delete(key)
+      else
+        ENV[key] = previous_env[key]
+      end
+    end
   end
 end
 
