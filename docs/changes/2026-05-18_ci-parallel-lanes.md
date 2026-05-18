@@ -19,6 +19,8 @@
   steps use the same Xcode that prepared simulators.
 - Test/build lanes install Brewfile tools because the Xcode target lint run script
   needs SwiftLint/SwiftFormat during `xcodebuild`.
+- Workflow jobs have explicit timeouts: 15 minutes for lint, 45 minutes for iPhone
+  tests and platform builds, and 5 minutes for the aggregate gate.
 
 ## Proof
 

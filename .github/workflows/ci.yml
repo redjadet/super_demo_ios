@@ -13,6 +13,7 @@ concurrency:
 jobs:
   lint:
     runs-on: macos-26
+    timeout-minutes: 15
     defaults:
       run:
         working-directory: .
@@ -37,6 +38,7 @@ jobs:
 
   iphone-test:
     runs-on: macos-26
+    timeout-minutes: 45
     defaults:
       run:
         working-directory: .
@@ -62,6 +64,7 @@ jobs:
 
   platform-builds:
     runs-on: macos-26
+    timeout-minutes: 45
     defaults:
       run:
         working-directory: .
@@ -88,6 +91,7 @@ jobs:
 
   lint-build-test:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     needs: [lint, iphone-test, platform-builds]
     if: ${{ always() }}
     steps:
