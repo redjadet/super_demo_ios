@@ -1,0 +1,3 @@
+# Auto-generated; regenerated on every fastlane run (see fastlane/README.md).
+# bin/lint-markdown.sh excludes this path; keep IDE/cli2 aligned.
+fastlane/**
