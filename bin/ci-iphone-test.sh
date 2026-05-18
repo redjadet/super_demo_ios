@@ -37,6 +37,7 @@ if [[ "${CI_ALLOW_PARALLEL_TESTS:-0}" != "1" ]]; then
   )
 fi
 
+assert_xcodebuild_matches_developer_dir
 echo "==> iPhone tests (builds app + tests, $XCODEBUILD)"
 "$XCODEBUILD" \
   -project superDemoApp.xcodeproj \

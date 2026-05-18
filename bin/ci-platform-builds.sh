@@ -30,6 +30,7 @@ echo "==> iPad destination: $IPAD_DEST"
 echo "==> Mac destination: $MAC_DEST"
 
 run_ipad_build() {
+  assert_xcodebuild_matches_developer_dir
   echo "==> iPad build ($IPAD_DEST)"
   if [[ -n "${IPAD_DERIVED_DATA_PATH:-}" ]]; then
     IPAD_DERIVED_DATA_FLAGS=(-derivedDataPath "$IPAD_DERIVED_DATA_PATH")
@@ -48,6 +49,7 @@ run_ipad_build() {
 }
 
 run_mac_build() {
+  assert_xcodebuild_matches_developer_dir
   echo "==> Mac build ($MAC_DEST)"
   if [[ -n "${MAC_DERIVED_DATA_PATH:-}" ]]; then
     MAC_DERIVED_DATA_FLAGS=(-derivedDataPath "$MAC_DERIVED_DATA_PATH")

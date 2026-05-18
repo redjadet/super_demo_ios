@@ -3,7 +3,10 @@
 set -euo pipefail
 
 if [[ -n "${SUPER_DEMO_XCODE_SELECTED:-}" ]]; then
-  return 0 2>/dev/null || exit 0
+  if [[ -n "${DEVELOPER_DIR:-}" && -x "${DEVELOPER_DIR}/usr/bin/xcodebuild" ]]; then
+    return 0 2>/dev/null || exit 0
+  fi
+  unset SUPER_DEMO_XCODE_SELECTED
 fi
 
 readonly REQUIRED_MAJOR_MINOR="26.5"
@@ -12,8 +15,12 @@ candidates=(
   /Applications/Xcode_26.5.0.app
   /Applications/Xcode_26.5.app
   /Applications/Xcode-26.5.0.app
-  /Applications/Xcode_26.5_beta_2.app
 )
+if [[ "${CI:-}" != "true" ]]; then
+  candidates+=(
+    /Applications/Xcode_26.5_beta_2.app
+  )
+fi
 
 xcode_app=""
 for candidate in "${candidates[@]}"; do
@@ -63,3 +70,6 @@ if [[ "$version_line" != *"Xcode ${REQUIRED_MAJOR_MINOR}"* ]]; then
 fi
 
 export SUPER_DEMO_XCODE_SELECTED=1
+if [[ -n "${GITHUB_ENV:-}" ]]; then
+  echo "SUPER_DEMO_XCODE_SELECTED=1" >>"$GITHUB_ENV"
+fi
