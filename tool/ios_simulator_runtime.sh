@@ -113,6 +113,47 @@ find_ipad_udid_on_newest_runtime() {
   find_ipad_udid_on_runtime "$runtime_id"
 }
 
+# Prints xcodebuild destination for a booted simulator UDID (id=, then name+OS).
+scheme_destination_for_udid() {
+  local udid="$1"
+  [[ "$udid" =~ ^[0-9A-F-]{36}$ ]] || return 1
+  local by_name
+  by_name="$(
+    xcrun simctl list devices -j 2>/dev/null \
+      | python3 -c "
+import json, sys
+
+udid = sys.argv[1]
+data = json.load(sys.stdin)
+name = ''
+runtime_id = ''
+for rid, devices in data.get('devices', {}).items():
+    for d in devices:
+        if d.get('udid') == udid:
+            name = d.get('name', '')
+            runtime_id = rid
+            break
+    if name:
+        break
+if not name or not runtime_id:
+    sys.exit(1)
+runtime_version = ''
+for r in data.get('runtimes', []):
+    if r.get('identifier') == runtime_id:
+        runtime_version = r.get('version', '')
+        break
+if not runtime_version:
+    sys.exit(1)
+print(f'platform=iOS Simulator,name={name},OS={runtime_version}')
+" "$udid" 2>/dev/null || true
+  )"
+  if [[ -n "$by_name" ]]; then
+    printf '%s\n' "$by_name"
+    return 0
+  fi
+  printf 'platform=iOS Simulator,id=%s\n' "$udid"
+}
+
 select_preferred_ipad_device_type_id() {
   xcrun simctl list devicetypes -j 2>/dev/null \
     | python3 -c "
@@ -175,6 +216,31 @@ ensure_ios_runtime_matches_sdk() {
   runtime_version="$(ios_runtime_version "$runtime_id")"
   if [[ "${CI:-}" == "true" ]]; then
     echo "==> CI using newest installed iOS ${runtime_version} (iphonesimulator SDK ${sdk})"
+    needs_download="$(
+      python3 -c "
+import sys
+
+def vt(v):
+    nums = [int(x) for x in v.split('.') if x.isdigit()]
+    while len(nums) < 3:
+        nums.append(0)
+    return tuple(nums[:3])
+
+sdk = sys.argv[1]
+runtime = sys.argv[2]
+print('yes' if vt(sdk) > vt(runtime) else 'no')
+" "$sdk" "$runtime_version"
+    )"
+    if [[ "$needs_download" == "yes" ]]; then
+      echo "==> CI SDK ${sdk} > simulator runtime ${runtime_version}; downloading iOS platform (timeout 900s)" >&2
+      if command -v timeout >/dev/null 2>&1; then
+        timeout 900 /usr/bin/xcrun --developer-dir "${DEVELOPER_DIR:-}" xcodebuild -downloadPlatform iOS \
+          || echo "warning: -downloadPlatform iOS failed or timed out; continuing with runtime ${runtime_version}" >&2
+      else
+        /usr/bin/xcrun --developer-dir "${DEVELOPER_DIR:-}" xcodebuild -downloadPlatform iOS \
+          || echo "warning: -downloadPlatform iOS failed; continuing with runtime ${runtime_version}" >&2
+      fi
+    fi
     return 0
   fi
 

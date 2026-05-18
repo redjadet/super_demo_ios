@@ -85,16 +85,26 @@ boot_simulator_with_timeout() {
 }
 
 wait_for_scheme_destination() {
-  local dest="$1"
-  local attempt
+  local udid="$1"
+  local dest attempt alt_dest
+  dest="platform=iOS Simulator,id=${udid}"
   for attempt in $(seq 1 24); do
     if destination_valid_for_scheme "$dest"; then
+      printf '%s\n' "$dest"
       return 0
     fi
     echo "==> Waiting for xcodebuild destination (attempt ${attempt}/24)..." >&2
     sleep 5
   done
-  return 1
+  alt_dest="$(scheme_destination_for_udid "$udid")"
+  if destination_valid_for_scheme "$alt_dest"; then
+    printf '%s\n' "$alt_dest"
+    return 0
+  fi
+  echo "warning: xcodebuild -showdestinations did not list simulator ${udid}; using ${alt_dest}" >&2
+  xcodebuild_show_destinations 2>&1 | head -20 >&2 || true
+  printf '%s\n' "$alt_dest"
+  return 0
 }
 
 export_ci_simulator_dest() {
@@ -129,8 +139,7 @@ provision_ipad_on_runtime() {
   fi
 
   boot_simulator_with_timeout "$udid" 120 || true
-  dest="platform=iOS Simulator,id=${udid}"
-  wait_for_scheme_destination "$dest" || return 1
+  dest="$(wait_for_scheme_destination "$udid")" || return 1
   export_ci_ipad_dest "$dest"
 }
 
@@ -148,8 +157,7 @@ try_newest_runtime_destination() {
 
   boot_simulator_with_timeout "$udid" 120 || true
 
-  dest="platform=iOS Simulator,id=${udid}"
-  wait_for_scheme_destination "$dest" || return 1
+  dest="$(wait_for_scheme_destination "$udid")" || return 1
   export_ci_simulator_dest "$dest"
   return 0
 }
@@ -161,7 +169,7 @@ create_newest_runtime_simulator() {
   runtime_id="$(select_newest_ios_runtime_id)" || true
   if [[ -z "$runtime_id" ]]; then
     echo "==> No iOS simulator runtime; downloading iOS platform"
-    "$XCODEBUILD" -downloadPlatform iOS
+    /usr/bin/xcrun --developer-dir "${DEVELOPER_DIR:-}" xcodebuild -downloadPlatform iOS
     runtime_id="$(select_newest_ios_runtime_id)" || true
   fi
 
@@ -186,13 +194,12 @@ create_newest_runtime_simulator() {
 
   boot_simulator_with_timeout "$udid" 180
 
-  dest="platform=iOS Simulator,id=${udid}"
-  if ! wait_for_scheme_destination "$dest"; then
-    echo "error: xcodebuild does not accept destination after boot: $dest" >&2
+  dest="$(wait_for_scheme_destination "$udid")" || {
+    echo "error: xcodebuild does not accept destination after boot for ${udid}" >&2
     xcodebuild_show_destinations 2>&1 | head -30 >&2 || true
     xcrun simctl list devices available >&2 || true
     _ensure_fatal 1
-  fi
+  }
 
   export_ci_simulator_dest "$dest"
 }
