@@ -48,6 +48,13 @@ assert_xcodebuild_matches_developer_dir() {
   fi
 }
 
+# Invoke xcodebuild via xcrun so nested toolchains honor DEVELOPER_DIR (GHA has
+# multiple Xcode apps; the usr/bin/xcodebuild shim may exec another app).
+run_xcodebuild() {
+  assert_xcodebuild_matches_developer_dir || return 1
+  /usr/bin/xcrun --developer-dir "$DEVELOPER_DIR" xcodebuild "$@"
+}
+
 if [[ -n "${DEVELOPER_DIR:-}" && -x "${DEVELOPER_DIR}/usr/bin/xcodebuild" ]]; then
   refresh_xcodebuild_from_developer_dir
 else

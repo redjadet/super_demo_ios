@@ -32,14 +32,22 @@ destination_udid() {
   sed -n 's/.*id=\([0-9A-F-]\{36\}\).*/\1/p' <<<"$dest"
 }
 
+xcodebuild_show_destinations() {
+  if [[ -n "${DEVELOPER_DIR:-}" ]]; then
+    /usr/bin/xcrun --developer-dir "$DEVELOPER_DIR" xcodebuild \
+      -showdestinations -project superDemoApp.xcodeproj -scheme superDemoApp 2>/dev/null
+    return
+  fi
+  "$XCODEBUILD" -showdestinations -project superDemoApp.xcodeproj -scheme superDemoApp 2>/dev/null
+}
+
 destination_valid_for_scheme() {
   local dest="$1"
   [[ -f superDemoApp.xcodeproj/project.pbxproj ]] || return 0
   local udid
   udid="$(destination_udid "$dest")"
   [[ "$udid" =~ ^[0-9A-F-]{36}$ ]] || return 1
-  "$XCODEBUILD" -showdestinations -project superDemoApp.xcodeproj -scheme superDemoApp 2>/dev/null \
-    | grep -q "id:${udid}"
+  xcodebuild_show_destinations | grep -q "id:${udid}"
 }
 
 prefer_arm64_simulator_destination() {
@@ -57,7 +65,7 @@ resolve_iphone_destination_from_xcodebuild() {
   [[ -f superDemoApp.xcodeproj/project.pbxproj ]] || return 1
   local dest_line
   dest_line="$(
-    "$XCODEBUILD" -showdestinations -project superDemoApp.xcodeproj -scheme superDemoApp 2>/dev/null \
+    xcodebuild_show_destinations \
       | grep -E 'platform:iOS Simulator, id:[0-9A-F-]{36}' \
       | grep -v placeholder \
       | head -1 \
@@ -93,10 +101,6 @@ resolve_iphone_destination() {
       prefer_arm64_simulator_destination "$dest"
       return 0
     fi
-    if [[ "${CI:-}" == "true" ]]; then
-      prefer_arm64_simulator_destination "$dest"
-      return 0
-    fi
   fi
 
   if dest="$(resolve_iphone_destination_from_xcodebuild)"; then
@@ -106,7 +110,7 @@ resolve_iphone_destination() {
 
   if [[ "${CI:-}" == "true" ]]; then
     echo "error: no concrete iOS Simulator destination for CI (run ./tool/ensure_ci_simulator.sh)" >&2
-    "$XCODEBUILD" -showdestinations -project superDemoApp.xcodeproj -scheme superDemoApp 2>&1 | head -40 >&2 || true
+    xcodebuild_show_destinations 2>&1 | head -40 >&2 || true
     return 1
   fi
 
@@ -131,15 +135,11 @@ resolve_ipad_destination() {
       prefer_arm64_simulator_destination "$dest"
       return 0
     fi
-    if [[ "${CI:-}" == "true" ]]; then
-      prefer_arm64_simulator_destination "$dest"
-      return 0
-    fi
   fi
 
   if [[ "${CI:-}" == "true" ]]; then
     echo "error: no iPad simulator on newest iOS runtime for CI" >&2
-    "$XCODEBUILD" -showdestinations -project superDemoApp.xcodeproj -scheme superDemoApp 2>&1 | head -40 >&2 || true
+    xcodebuild_show_destinations 2>&1 | head -40 >&2 || true
     return 1
   fi
 

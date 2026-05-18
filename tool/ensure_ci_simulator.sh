@@ -189,7 +189,7 @@ create_newest_runtime_simulator() {
   dest="platform=iOS Simulator,id=${udid}"
   if ! wait_for_scheme_destination "$dest"; then
     echo "error: xcodebuild does not accept destination after boot: $dest" >&2
-    "$XCODEBUILD" -showdestinations -project superDemoApp.xcodeproj -scheme superDemoApp 2>&1 | head -30 >&2 || true
+    xcodebuild_show_destinations 2>&1 | head -30 >&2 || true
     xcrun simctl list devices available >&2 || true
     _ensure_fatal 1
   fi

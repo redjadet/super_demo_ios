@@ -37,9 +37,8 @@ if [[ "${CI_ALLOW_PARALLEL_TESTS:-0}" != "1" ]]; then
   )
 fi
 
-assert_xcodebuild_matches_developer_dir
-echo "==> iPhone tests (builds app + tests, $XCODEBUILD)"
-env DEVELOPER_DIR="$DEVELOPER_DIR" "$XCODEBUILD" \
+echo "==> iPhone tests (builds app + tests, xcrun --developer-dir $DEVELOPER_DIR xcodebuild)"
+run_xcodebuild \
   -project superDemoApp.xcodeproj \
   -scheme superDemoApp \
   -destination "$SIMULATOR_DEST" \
