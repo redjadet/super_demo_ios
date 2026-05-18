@@ -87,6 +87,7 @@ jobs:
       - name: iPad and Mac builds
         env:
           CI: true
+          CI_SERIAL_PLATFORM_BUILDS: "1"
         run: ./bin/ci-platform-builds.sh
 
   lint-build-test:

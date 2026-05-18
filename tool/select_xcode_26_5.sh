@@ -28,7 +28,9 @@ if [[ -z "$xcode_app" ]]; then
 fi
 
 developer_dir="${xcode_app}/Contents/Developer"
+developer_bin="${developer_dir}/usr/bin"
 export DEVELOPER_DIR="$developer_dir"
+export PATH="${developer_bin}:${PATH}"
 current_dir="$(xcode-select -p 2>/dev/null || true)"
 if [[ "$current_dir" != "$developer_dir" ]]; then
   if [[ "${CI:-}" == "true" ]]; then
@@ -41,10 +43,15 @@ fi
 if [[ -n "${GITHUB_ENV:-}" ]]; then
   echo "DEVELOPER_DIR=${developer_dir}" >>"$GITHUB_ENV"
 fi
+if [[ -n "${GITHUB_PATH:-}" ]]; then
+  echo "${developer_bin}" >>"$GITHUB_PATH"
+fi
 
-version_line="$(xcodebuild -version 2>/dev/null | sed -n '1p')"
+xcodebuild="${developer_bin}/xcodebuild"
+version_line="$("$xcodebuild" -version 2>/dev/null | sed -n '1p')"
 echo "Using ${xcode_app}"
 echo "${version_line}"
+echo "xcodebuild=$(command -v xcodebuild)"
 
 if [[ "$version_line" != *"Xcode ${REQUIRED_MAJOR_MINOR}"* ]]; then
   echo "error: expected Xcode ${REQUIRED_MAJOR_MINOR}.x, got: ${version_line}" >&2
