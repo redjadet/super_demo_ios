@@ -96,7 +96,8 @@ sys.exit(1)
 " 2>/dev/null || true
 }
 
-# Ensures simctl has a runtime at least as new as the active iphonesimulator SDK.
+# Ensures an iOS simulator runtime exists. On CI, uses the newest installed runtime only
+# (no platform download — GHA images often have SDK 26.5 with runtime 26.4; download hangs).
 ensure_ios_runtime_matches_sdk() {
   local sdk runtime_id runtime_version
   sdk="$(ios_simulator_sdk_version)"
@@ -110,6 +111,11 @@ ensure_ios_runtime_matches_sdk() {
   fi
 
   runtime_version="$(ios_runtime_version "$runtime_id")"
+  if [[ "${CI:-}" == "true" ]]; then
+    echo "==> CI using newest installed iOS ${runtime_version} (iphonesimulator SDK ${sdk})"
+    return 0
+  fi
+
   local needs_download
   needs_download="$(
     python3 -c "

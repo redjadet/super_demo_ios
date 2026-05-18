@@ -26,13 +26,25 @@ if [[ -n "${CI_SIMULATOR_DEST:-}" ]]; then
   echo "warning: CI_SIMULATOR_DEST invalid for scheme; reprovisioning" >&2
 fi
 
+boot_simulator_with_timeout() {
+  local udid="$1"
+  local timeout_seconds="${2:-120}"
+  xcrun simctl boot "$udid" 2>/dev/null || true
+  if command -v timeout >/dev/null 2>&1; then
+    timeout "$timeout_seconds" xcrun simctl bootstatus "$udid" -b
+  else
+    xcrun simctl bootstatus "$udid" -b
+  fi
+}
+
 wait_for_scheme_destination() {
   local dest="$1"
   local attempt
-  for attempt in $(seq 1 40); do
+  for attempt in $(seq 1 24); do
     if destination_valid_for_scheme "$dest"; then
       return 0
     fi
+    echo "==> Waiting for xcodebuild destination (attempt ${attempt}/24)..." >&2
     sleep 5
   done
   return 1
@@ -60,8 +72,7 @@ try_newest_runtime_destination() {
     return 1
   fi
 
-  xcrun simctl boot "$udid" 2>/dev/null || true
-  xcrun simctl bootstatus "$udid" -b 2>/dev/null || true
+  boot_simulator_with_timeout "$udid" 120 || true
 
   dest="platform=iOS Simulator,id=${udid}"
   wait_for_scheme_destination "$dest" || return 1
@@ -99,8 +110,7 @@ create_newest_runtime_simulator() {
   udid="$(xcrun simctl create "CI iPhone" "$device_type_id" "$runtime_id")"
   echo "==> Created simulator ${udid}"
 
-  xcrun simctl boot "$udid" 2>/dev/null || true
-  xcrun simctl bootstatus "$udid" -b
+  boot_simulator_with_timeout "$udid" 180
 
   dest="platform=iOS Simulator,id=${udid}"
   if ! wait_for_scheme_destination "$dest"; then
