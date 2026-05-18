@@ -24,13 +24,25 @@ assert_xcodebuild_matches_developer_dir() {
     echo "error: XCODEBUILD (${XCODEBUILD}) does not match ${expected}" >&2
     return 1
   fi
+  local active_dir
+  active_dir="$(xcode-select -p 2>/dev/null || true)"
+  if [[ "$active_dir" != "$DEVELOPER_DIR" ]]; then
+    if [[ "${CI:-}" == "true" ]]; then
+      sudo xcode-select -s "$DEVELOPER_DIR"
+    elif ! xcode-select -s "$DEVELOPER_DIR" 2>/dev/null; then
+      echo "warning: xcode-select still points at ${active_dir:-unknown}; run: sudo xcode-select -s ${DEVELOPER_DIR}" >&2
+    fi
+    active_dir="$(xcode-select -p 2>/dev/null || true)"
+  fi
+  if [[ "$active_dir" != "$DEVELOPER_DIR" ]]; then
+    echo "error: xcode-select (${active_dir:-unknown}) does not match DEVELOPER_DIR (${DEVELOPER_DIR})" >&2
+    return 1
+  fi
   if [[ "${CI:-}" == "true" ]]; then
     local resolved
     resolved="$(command -v xcodebuild || true)"
     if [[ -n "$resolved" && "$resolved" != "$XCODEBUILD" ]]; then
       echo "error: PATH xcodebuild (${resolved}) overrides pinned ${XCODEBUILD}" >&2
-      echo "DEVELOPER_DIR=${DEVELOPER_DIR}" >&2
-      xcode-select -p >&2 || true
       return 1
     fi
   fi

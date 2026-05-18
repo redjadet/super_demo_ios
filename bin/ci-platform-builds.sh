@@ -38,7 +38,7 @@ run_ipad_build() {
     unset IPAD_DERIVED_DATA_FLAGS
   fi
 
-  "$XCODEBUILD" \
+  env DEVELOPER_DIR="$DEVELOPER_DIR" "$XCODEBUILD" \
     -project superDemoApp.xcodeproj \
     -scheme superDemoApp \
     -destination "$IPAD_DEST" \
@@ -67,7 +67,7 @@ run_mac_build() {
     unset MAC_BUILD_FLAGS
   fi
 
-  "$XCODEBUILD" \
+  env DEVELOPER_DIR="$DEVELOPER_DIR" "$XCODEBUILD" \
     -project superDemoApp.xcodeproj \
     -scheme superDemoApp \
     -destination "$MAC_DEST" \

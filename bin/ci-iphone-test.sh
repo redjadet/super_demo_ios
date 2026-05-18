@@ -39,7 +39,7 @@ fi
 
 assert_xcodebuild_matches_developer_dir
 echo "==> iPhone tests (builds app + tests, $XCODEBUILD)"
-"$XCODEBUILD" \
+env DEVELOPER_DIR="$DEVELOPER_DIR" "$XCODEBUILD" \
   -project superDemoApp.xcodeproj \
   -scheme superDemoApp \
   -destination "$SIMULATOR_DEST" \
