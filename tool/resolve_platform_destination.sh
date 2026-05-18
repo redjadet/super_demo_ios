@@ -3,20 +3,22 @@
 # Source from other scripts: source "$(dirname "$0")/resolve_platform_destination.sh"
 set -euo pipefail
 
+_resolve_platform_root() {
+  local script_dir
+  if [[ -n "${BASH_VERSION:-}" && -n "${BASH_SOURCE[0]:-}" ]]; then
+    script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+  else
+    script_dir="$(cd "$(dirname "$0")" && pwd)"
+  fi
+  cd "${script_dir}/.." && pwd
+}
+# shellcheck source=ios_simulator_runtime.sh
+source "$(_resolve_platform_root)/tool/ios_simulator_runtime.sh"
+
 iphone_udid_from_simctl() {
-  local devices
-  devices="$(xcrun simctl list devices available 2>/dev/null || true)"
-  local selected_line
-  selected_line="$(printf '%s\n' "$devices" | awk '
-    /^[[:space:]]+iPhone / {
-      print
-      exit
-    }
-  ')"
-  [[ -n "$selected_line" ]] || return 1
   local udid
-  udid="$(printf '%s\n' "$selected_line" | sed -E 's/.*\(([0-9A-F-]{36})\).*/\1/')"
-  [[ "$udid" =~ ^[0-9A-F-]{36}$ ]] || return 1
+  udid="$(find_iphone_udid_on_newest_runtime 2>/dev/null || true)"
+  [[ -n "$udid" ]] || return 1
   printf '%s\n' "$udid"
 }
 
@@ -76,51 +78,13 @@ resolve_iphone_destination() {
     return 0
   fi
 
-  local preferred_name="${CHECKLIST_PREFERRED_IPHONE:-iPhone 17}"
-  local devices
-  devices="$(xcrun simctl list devices available 2>/dev/null || true)"
-
-  local selected_line
-  selected_line="$(printf '%s\n' "$devices" | awk '
-    /^[[:space:]]+iPhone / && /\(Booted\)/ {
-      print
-      exit
-    }
-  ')"
-
-  if [[ -z "$selected_line" ]]; then
-    selected_line="$(printf '%s\n' "$devices" | awk -v preferred="$preferred_name" '
-      /^[[:space:]]+iPhone / {
-        line = $0
-        sub(/^[[:space:]]+/, "", line)
-        name = line
-        sub(/[[:space:]]+\([0-9A-F-]{36}\).*/, "", name)
-        if (name == preferred) {
-          print
-          exit
-        }
-      }
-    ')"
-  fi
-
-  if [[ -z "$selected_line" ]]; then
-    selected_line="$(printf '%s\n' "$devices" | awk '
-      /^[[:space:]]+iPhone / {
-        print
-        exit
-      }
-    ')"
-  fi
-
-  if [[ -n "$selected_line" ]]; then
-    local udid
-    udid="$(printf '%s\n' "$selected_line" | sed -E 's/.*\(([0-9A-F-]{36})\).*/\1/')"
-    if [[ "$udid" =~ ^[0-9A-F-]{36}$ ]]; then
-      local dest="platform=iOS Simulator,id=${udid}"
-      if destination_valid_for_scheme "$dest"; then
-        prefer_arm64_simulator_destination "$dest"
-        return 0
-      fi
+  local udid dest
+  udid="$(find_iphone_udid_on_newest_runtime 2>/dev/null || true)"
+  if [[ -n "$udid" ]]; then
+    dest="platform=iOS Simulator,id=${udid}"
+    if destination_valid_for_scheme "$dest"; then
+      prefer_arm64_simulator_destination "$dest"
+      return 0
     fi
   fi
 

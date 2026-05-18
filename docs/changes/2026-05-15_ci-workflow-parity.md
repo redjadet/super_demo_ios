@@ -21,8 +21,11 @@
 
 - GHA needs `ripgrep` for `tool/check_common_issues.sh` — added to `Brewfile`.
 - Project targets iOS 26.5 — CI uses `macos-26` and pins **Xcode 26.5** via `tool/select_xcode_26_5.sh`.
-- `resolve_iphone_destination` picks a concrete simulator via `xcodebuild
-  -showdestinations` on CI (generic destination cannot run unit/UI tests).
+- `tool/ensure_ci_simulator.sh` boots or creates an iPhone on the **newest installed iOS
+  Simulator runtime** (matches `iphonesimulator` SDK; downloads the iOS platform when the
+  runtime is older than the SDK).
+- `resolve_iphone_destination` prefers an iPhone on that newest runtime (not the first
+  device in `simctl list`).
 
 ## Proof
 
