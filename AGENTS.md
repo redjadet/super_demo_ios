@@ -41,6 +41,7 @@ Cursor rules, MCP, team skills: [`docs/agent_host_notes.md`](docs/agent_host_not
 | Any Swift edit | [`docs/code-style.md`](docs/code-style.md); then `./bin/lint.sh` |
 | New / layered feature | [`docs/feature-template.md`](docs/feature-template.md), [`docs/module-structure.md`](docs/module-structure.md) |
 | SwiftUI / navigation / light–dark | [`docs/design_system.md`](docs/design_system.md); `Shared/Presentation/AdaptiveNavigationShell.swift` |
+| Fast feedback / device risk | [`docs/development-feedback-loop.md`](docs/development-feedback-loop.md) |
 | Domain / Data / persistence | [`docs/offline-first.md`](docs/offline-first.md), [`docs/dependency-injection.md`](docs/dependency-injection.md) |
 | Tests | [`docs/testing.md`](docs/testing.md) |
 | Commit / PR | [`docs/commit-and-pr-guidelines.md`](docs/commit-and-pr-guidelines.md) |

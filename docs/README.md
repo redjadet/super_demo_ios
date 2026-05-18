@@ -17,6 +17,7 @@ Source-of-truth docs for `superDemoApp`.
 - Cursor setup: [`../tool/cursor-template/README.md`](../tool/cursor-template/README.md)
 - Team skills pin: [`../skills-lock.json`](../skills-lock.json)
 - Apple development practices: [`apple-development-practices.md`](apple-development-practices.md)
+- Development feedback loop: [`development-feedback-loop.md`](development-feedback-loop.md)
 
 ## Design (SwiftUI)
 
@@ -36,6 +37,7 @@ Source-of-truth docs for `superDemoApp`.
 - Navigation: [`navigation.md`](navigation.md)
 - Error handling and logging: [`error-handling.md`](error-handling.md)
 - Testing: [`testing.md`](testing.md)
+- Development feedback loop: [`development-feedback-loop.md`](development-feedback-loop.md)
 - Code style: [`code-style.md`](code-style.md)
 - Module structure: [`module-structure.md`](module-structure.md)
 - Sync and networking: [`sync-and-networking.md`](sync-and-networking.md)

@@ -14,6 +14,7 @@ details.
 | Codebase = memory. | Durable conclusions belong in docs, tests, scripts, or plans. |
 | Tools beat prompts. | Prefer Xcode/build/test output over model memory. |
 | Missing capability beats retry. | Repeated failure needs a small doc/test/script/check, not another prompt. |
+| Fast feedback is a product constraint. | Use previews, mocks, tests, and platform proof to shorten manual loops. |
 
 ## Progressive Disclosure
 
@@ -25,9 +26,10 @@ details.
 5. [`architecture.md`](architecture.md) and [`layers.md`](layers.md) when touching `Features/`
 6. [`agent_project_context.md`](agent_project_context.md)
 7. [`ai_code_review_protocol.md`](ai_code_review_protocol.md)
-8. [`agents_quick_reference.md`](agents_quick_reference.md)
-9. task docs from [`README.md`](README.md)
-10. targeted source and tests
+8. [`development-feedback-loop.md`](development-feedback-loop.md)
+9. [`agents_quick_reference.md`](agents_quick_reference.md)
+10. task docs from [`README.md`](README.md)
+11. targeted source and tests
 
 ## Agent loop
 
@@ -59,6 +61,8 @@ Check every non-trivial iOS change:
 - UI: follow [`../DESIGN.md`](../DESIGN.md); accessibility, Dynamic Type, **light + dark**
   (semantic colors, paired previews — [`design_system.md`](design_system.md#light-and-dark-mode-required-from-day-one)),
   loading/empty/error states, no clipped controls.
+- Feedback loop: preview/mock states cover manual setup paths; repeated manual checks become
+  tests, scripts, fixtures, or release checklists; see [`development-feedback-loop.md`](development-feedback-loop.md).
 - Universal layout: all iPhones, iPads, Mac sizes; shared `AdaptiveNavigationShell`; proof
   via `./bin/ci.sh` iPad + Mac lanes — [`universal-apple-platforms.md`](universal-apple-platforms.md).
 - Privacy/security: no secrets in repo; least permission; user data minimized.

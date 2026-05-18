@@ -5,9 +5,11 @@
 1. Read [`../AGENTS.md`](../AGENTS.md).
 2. Check `git status --short`.
 3. Read [`apple-development-practices.md`](apple-development-practices.md).
-4. Read task-relevant docs.
-5. Inspect current source with `rg`.
-6. Define validation before editing (chooser in [`agents_quick_reference.md`](agents_quick_reference.md)).
+4. Read [`development-feedback-loop.md`](development-feedback-loop.md) for UI,
+   validation, device-only, or release-sensitive work.
+5. Read task-relevant docs.
+6. Inspect current source with `rg`.
+7. Define validation before editing (chooser in [`agents_quick_reference.md`](agents_quick_reference.md)).
 
 ## During Work
 
@@ -15,6 +17,7 @@
 - Keep architecture boundaries visible.
 - Prefer compileable checkpoints.
 - Use app-visible proof for UI changes when possible.
+- Add mock states, previews, tests, or scripts when manual recreation would slow the loop.
 - Do not overwrite user changes.
 - Do not invent package APIs; verify in project or official docs.
 - Prefer Apple-native APIs; document tradeoff before adding dependencies.
@@ -23,6 +26,7 @@
 
 - SwiftUI body has no heavy side effects.
 - UI is universal: compact iPhone, iPad split/regular, and Mac window sizes.
+- Preview fixtures cover important loading, empty, populated, error, and dark states.
 - Feature models are `@Observable` and `@MainActor` when driving UI.
 - Async tasks handle cancellation and stale results.
 - SwiftData context stays out of Domain.
