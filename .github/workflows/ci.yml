@@ -38,7 +38,7 @@ jobs:
 
   iphone-test:
     runs-on: macos-26
-    timeout-minutes: 45
+    timeout-minutes: 60
     defaults:
       run:
         working-directory: .

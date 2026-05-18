@@ -12,6 +12,7 @@ enum UiTestSupport {
         let app = XCUIApplication()
         app.launchArguments.append("-UITesting")
         app.launch()
+        _ = app.wait(for: .runningForeground, timeout: 30)
         return app
     }
 

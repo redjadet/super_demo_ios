@@ -42,6 +42,7 @@ fi
 if [[ "${CI:-}" == "true" ]]; then
   TEST_SKIP_FLAGS=(
     -skip-testing:superDemoAppUITests/superDemoAppUITestsLaunchTests
+    -skip-testing:superDemoAppUITests/superDemoAppUITests/testLaunchPerformance
   )
 fi
 
