@@ -199,6 +199,7 @@ cursor_template_files=(
   tool/git-hooks/pre-commit
   tool/cursor-template/hooks/hooks.json
   tool/cursor-template/hooks/format-swift-after-edit.sh
+  tool/select_xcode_26_5.sh
 )
 
 for path in "${cursor_template_files[@]}"; do

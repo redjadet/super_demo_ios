@@ -20,7 +20,7 @@
 ## Follow-up
 
 - GHA needs `ripgrep` for `tool/check_common_issues.sh` — added to `Brewfile`.
-- Project targets iOS 26.5 — workflow selects newest `Xcode_26*.app` on the runner.
+- Project targets iOS 26.5 — CI uses `macos-26` and pins **Xcode 26.5** via `tool/select_xcode_26_5.sh`.
 - `resolve_iphone_destination` picks a concrete simulator via `xcodebuild
   -showdestinations` on CI (generic destination cannot run unit/UI tests).
 

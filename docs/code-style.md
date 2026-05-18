@@ -21,7 +21,7 @@
 
 | Layer | What runs |
 | --- | --- |
-| **GitHub Actions** | `.github/workflows/ci.yml` - Swift lint, Markdown lint, build, test on `macos-15` |
+| **GitHub Actions** | `.github/workflows/ci.yml` - Swift lint, build, test on `macos-26` with **Xcode 26.5** (`tool/select_xcode_26_5.sh`) |
 | **Xcode build** | Run Script phase **Lint (SwiftLint & SwiftFormat)** -> `Scripts/xcode-lint.sh` |
 | **Local parity** | `./bin/ci.sh` - Swift + Markdown lint, build, tests (`CI=true`) |
 | **Fast checklist** | `./bin/checklist-fast` - Markdown/Swift lint, common issue checks, project sanity |
