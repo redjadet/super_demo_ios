@@ -15,11 +15,16 @@
   can resolve simulators before lint tools are installed.
 - CI simulator prep accepts `CI_PREPARE_IPHONE=0` / `CI_PREPARE_IPAD=0`; parallel
   lanes only provision the device family they need.
+- `tool/select_xcode_26_5.sh` writes `DEVELOPER_DIR` to `GITHUB_ENV`; later CI
+  steps use the same Xcode that prepared simulators.
+- Test/build lanes install Brewfile tools because the Xcode target lint run script
+  needs SwiftLint/SwiftFormat during `xcodebuild`.
 
 ## Proof
 
 ```bash
 bash -n bin/ci.sh bin/ci-iphone-test.sh bin/ci-platform-builds.sh
+shellcheck -e SC1091 tool/select_xcode_26_5.sh
 shellcheck -e SC1091 bin/ci.sh bin/ci-iphone-test.sh bin/ci-platform-builds.sh tool/ensure_ci_simulator.sh tool/resolve_platform_destination.sh tool/ios_simulator_runtime.sh
 actionlint .github/workflows/ci.yml
 PATH=/usr/bin:/bin:/usr/sbin:/sbin CI=true CI_PREPARE_IPAD=0 ./tool/ensure_ci_simulator.sh

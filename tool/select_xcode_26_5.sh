@@ -23,11 +23,12 @@ if [[ -z "$xcode_app" ]]; then
   echo "error: Xcode ${REQUIRED_MAJOR_MINOR} not found. Checked:" >&2
   printf '  %s\n' "${candidates[@]}" >&2
   echo "Installed Xcode apps:" >&2
-  ls -1 /Applications 2>/dev/null | grep -i xcode >&2 || true
+  find /Applications -maxdepth 1 -iname '*xcode*' -print 2>/dev/null >&2 || true
   exit 1
 fi
 
 developer_dir="${xcode_app}/Contents/Developer"
+export DEVELOPER_DIR="$developer_dir"
 current_dir="$(xcode-select -p 2>/dev/null || true)"
 if [[ "$current_dir" != "$developer_dir" ]]; then
   if [[ "${CI:-}" == "true" ]]; then
@@ -35,6 +36,10 @@ if [[ "$current_dir" != "$developer_dir" ]]; then
   elif ! xcode-select -s "$developer_dir" 2>/dev/null; then
     echo "warning: run: sudo xcode-select -s ${developer_dir}" >&2
   fi
+fi
+
+if [[ -n "${GITHUB_ENV:-}" ]]; then
+  echo "DEVELOPER_DIR=${developer_dir}" >>"$GITHUB_ENV"
 fi
 
 version_line="$(xcodebuild -version 2>/dev/null | sed -n '1p')"
