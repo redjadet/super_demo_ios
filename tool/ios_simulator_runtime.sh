@@ -77,6 +77,42 @@ find_iphone_udid_on_newest_runtime() {
   find_iphone_udid_on_runtime "$runtime_id"
 }
 
+# Prints UDID of preferred iPad on runtime_id, or empty.
+find_ipad_udid_on_runtime() {
+  local runtime_id="$1"
+  xcrun simctl list devices -j 2>/dev/null \
+    | python3 -c "
+import json, sys
+
+runtime_id = sys.argv[1]
+preferred = (
+    'iPad Pro 13-inch (M5)',
+    'iPad Pro 11-inch (M5)',
+    'iPad Pro 13-inch (M4)',
+    'iPad Pro 11-inch (M4)',
+    'iPad Air 13-inch (M3)',
+    'iPad (A16)',
+)
+data = json.load(sys.stdin)
+devices = data.get('devices', {}).get(runtime_id, [])
+ipads = [d for d in devices if d.get('isAvailable') and 'iPad' in d.get('name', '')]
+if not ipads:
+    sys.exit(1)
+for name in preferred:
+    for d in ipads:
+        if d.get('name') == name:
+            print(d['udid'])
+            sys.exit(0)
+print(ipads[0]['udid'])
+" "$runtime_id" 2>/dev/null || true
+}
+
+find_ipad_udid_on_newest_runtime() {
+  local runtime_id
+  runtime_id="$(select_newest_ios_runtime_id)" || return 1
+  find_ipad_udid_on_runtime "$runtime_id"
+}
+
 select_preferred_iphone_device_type_id() {
   xcrun simctl list devicetypes -j 2>/dev/null \
     | python3 -c "

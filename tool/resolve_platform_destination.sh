@@ -112,40 +112,20 @@ resolve_ipad_destination() {
     return 0
   fi
 
-  local preferred_name="${CHECKLIST_PREFERRED_IPAD:-iPad Pro 13-inch (M5)}"
-  local devices
-  devices="$(xcrun simctl list devices available 2>/dev/null || true)"
-
-  local selected_line
-  selected_line="$(printf '%s\n' "$devices" | awk -v preferred="$preferred_name" '
-    /^[[:space:]]+iPad / {
-      line = $0
-      sub(/^[[:space:]]+/, "", line)
-      name = line
-      sub(/[[:space:]]+\([0-9A-F-]{36}\).*/, "", name)
-      if (name == preferred) {
-        print
-        exit
-      }
-    }
-  ')"
-
-  if [[ -z "$selected_line" ]]; then
-    selected_line="$(printf '%s\n' "$devices" | awk '
-      /^[[:space:]]+iPad / {
-        print
-        exit
-      }
-    ')"
-  fi
-
-  if [[ -n "$selected_line" ]]; then
-    local udid
-    udid="$(printf '%s\n' "$selected_line" | sed -E 's/.*\(([0-9A-F-]{36})\).*/\1/')"
-    if [[ "$udid" =~ ^[0-9A-F-]{36}$ ]]; then
-      printf 'platform=iOS Simulator,id=%s\n' "$udid"
+  local udid dest
+  udid="$(find_ipad_udid_on_newest_runtime 2>/dev/null || true)"
+  if [[ -n "$udid" ]]; then
+    dest="platform=iOS Simulator,id=${udid}"
+    if destination_valid_for_scheme "$dest"; then
+      prefer_arm64_simulator_destination "$dest"
       return 0
     fi
+  fi
+
+  if [[ "${CI:-}" == "true" ]]; then
+    echo "error: no iPad simulator on newest iOS runtime for CI" >&2
+    xcodebuild -showdestinations -project superDemoApp.xcodeproj -scheme superDemoApp 2>&1 | head -40 >&2 || true
+    return 1
   fi
 
   printf 'generic/platform=iOS Simulator\n'

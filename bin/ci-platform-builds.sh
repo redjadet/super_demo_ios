@@ -12,6 +12,8 @@ source "$ROOT/tool/xcodebuild_sandbox_flags.sh"
 
 IPAD_DEST="$(resolve_ipad_destination)"
 MAC_DEST="$(resolve_mac_destination)"
+echo "==> iPad destination: $IPAD_DEST"
+echo "==> Mac destination: $MAC_DEST"
 
 run_ipad_build() {
   echo "==> iPad build ($IPAD_DEST)"
