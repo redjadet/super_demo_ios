@@ -37,7 +37,7 @@ if [[ "${CI_ALLOW_PARALLEL_TESTS:-0}" != "1" ]]; then
   )
 fi
 
-echo "==> iPhone tests (builds app + tests, xcrun --developer-dir $DEVELOPER_DIR xcodebuild)"
+echo "==> iPhone tests (builds app + tests, $XCODEBUILD)"
 run_xcodebuild \
   -project superDemoApp.xcodeproj \
   -scheme superDemoApp \

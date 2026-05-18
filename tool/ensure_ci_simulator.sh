@@ -169,7 +169,8 @@ create_newest_runtime_simulator() {
   runtime_id="$(select_newest_ios_runtime_id)" || true
   if [[ -z "$runtime_id" ]]; then
     echo "==> No iOS simulator runtime; downloading iOS platform"
-    /usr/bin/xcrun --developer-dir "${DEVELOPER_DIR:-}" xcodebuild -downloadPlatform iOS
+    refresh_xcodebuild_from_developer_dir
+    "$XCODEBUILD" -downloadPlatform iOS
     runtime_id="$(select_newest_ios_runtime_id)" || true
   fi
 

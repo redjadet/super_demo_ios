@@ -234,10 +234,12 @@ print('yes' if vt(sdk) > vt(runtime) else 'no')
     if [[ "$needs_download" == "yes" ]]; then
       echo "==> CI SDK ${sdk} > simulator runtime ${runtime_version}; downloading iOS platform (timeout 900s)" >&2
       if command -v timeout >/dev/null 2>&1; then
-        timeout 900 /usr/bin/xcrun --developer-dir "${DEVELOPER_DIR:-}" xcodebuild -downloadPlatform iOS \
+        refresh_xcodebuild_from_developer_dir
+        timeout 900 "$XCODEBUILD" -downloadPlatform iOS \
           || echo "warning: -downloadPlatform iOS failed or timed out; continuing with runtime ${runtime_version}" >&2
       else
-        /usr/bin/xcrun --developer-dir "${DEVELOPER_DIR:-}" xcodebuild -downloadPlatform iOS \
+        refresh_xcodebuild_from_developer_dir
+        "$XCODEBUILD" -downloadPlatform iOS \
           || echo "warning: -downloadPlatform iOS failed; continuing with runtime ${runtime_version}" >&2
       fi
     fi

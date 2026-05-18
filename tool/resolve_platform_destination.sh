@@ -34,9 +34,7 @@ destination_udid() {
 
 xcodebuild_show_destinations() {
   if [[ -n "${DEVELOPER_DIR:-}" ]]; then
-    /usr/bin/xcrun --developer-dir "$DEVELOPER_DIR" xcodebuild \
-      -showdestinations -project superDemoApp.xcodeproj -scheme superDemoApp 2>/dev/null
-    return
+    refresh_xcodebuild_from_developer_dir
   fi
   "$XCODEBUILD" -showdestinations -project superDemoApp.xcodeproj -scheme superDemoApp 2>/dev/null
 }
