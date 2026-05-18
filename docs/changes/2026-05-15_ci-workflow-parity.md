@@ -26,6 +26,8 @@
   SDK patch is ahead of the runtime (e.g. SDK 26.5, runtime 26.4) — that download stalls CI.
 - `resolve_iphone_destination` prefers an iPhone on that newest runtime (not the first
   device in `simctl list`).
+- Superseded on 2026-05-18: GitHub Actions now uses parallel lint, iPhone test,
+  and platform-build lanes; see [`2026-05-18_ci-parallel-lanes.md`](2026-05-18_ci-parallel-lanes.md).
 
 ## Proof
 
