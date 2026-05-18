@@ -7,6 +7,21 @@ Machine-readable project facts for agents.
 - Published: `https://github.com/redjadet/super_demo_ios` (`superDemoApp/` is the only git root).
 - Parent folder `super_demo_ios/` may hold gitignored `.cursor/`, `.vscode/`, `tasks/`,
   `buildServer.json`, `.agents/` (skills install target).
+- GitHub Actions and local pre-merge proof: `./bin/ci.sh` (see
+  [`agents_quick_reference.md`](agents_quick_reference.md)).
+
+## Shipped features (tour)
+
+- `Features/Items/` — SwiftData reference slice.
+- `Features/Feed/` — JSONPlaceholder + read-through cache.
+- `Features/ProductionReadiness/` — dashboard, shared networking, UIKit showcase.
+- Reviewer path: [`portfolio.md`](portfolio.md).
+
+## Bash scripts (`set -u`)
+
+- Optional xcodebuild flag arrays stay **unset** when empty (not `=()`).
+- Expand with `${VAR+"${VAR[@]}"}` in `bin/ci.sh`, `bin/ci-platform-builds.sh`,
+  `bin/checklist`; flags from `tool/xcodebuild_sandbox_flags.sh`.
 
 ## Workspace layout
 

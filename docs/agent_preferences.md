@@ -1,6 +1,8 @@
 # Agent Preferences
 
 User and repo conventions for agent replies, git behavior, and doc shape.
+Continual-learning and agents should update **this file**, not
+[`../AGENTS.md`](../AGENTS.md) (map-only).
 
 ## Replies
 
@@ -12,10 +14,23 @@ User and repo conventions for agent replies, git behavior, and doc shape.
 
 ## Documentation
 
-- Keep [`../AGENTS.md`](../AGENTS.md) a lean map (target under ~100 lines); put depth in
-  `docs/` only.
+- [`../AGENTS.md`](../AGENTS.md) is a **route map only** (~70 lines): links and tables,
+  no policy essays. Put depth in `docs/`.
+- Public [`../README.md`](../README.md) must not mention Cursor or other IDE-specific
+  tooling.
 - Prefer strong clean-architecture enforcement (layer checks, `Features/` layout) when
   adding code — see [`agent_baseline.md`](agent_baseline.md),
   [`architecture.md`](architecture.md), [`layers.md`](layers.md).
+
+## Product / UI
+
+- New user-facing capabilities need a normal UI entry point (tabs/navigation), not
+  test-only wiring.
+
+## Swift quality (recurring)
+
+- When the same lint/concurrency mistake appears again, extend
+  [`agent_swift_guards.md`](agent_swift_guards.md) and lint/format tooling—not only
+  one-off file fixes.
 
 Host-specific tooling: [`agent_host_notes.md`](agent_host_notes.md).

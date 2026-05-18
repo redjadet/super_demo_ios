@@ -79,7 +79,7 @@ Add or bump skills:
 ### Policy wiring
 
 - Single agent map: repo-root [`AGENTS.md`](../AGENTS.md) only (no nested copies). Keep
-  `AGENTS.md` under 100 lines; put detail in `docs/` (see [`agent_baseline.md`](agent_baseline.md),
+  `AGENTS.md` a lean route map (~70 lines); put detail in `docs/` (see [`agent_baseline.md`](agent_baseline.md),
   [`agents_quick_reference.md`](agents_quick_reference.md)).
 - Always-applied rule `agents-map.mdc` includes `@superDemoApp/AGENTS.md` on every
   Agent session.

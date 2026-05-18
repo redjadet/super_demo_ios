@@ -61,4 +61,20 @@ See [`layers.md`](layers.md), [`module-structure.md`](module-structure.md).
 
 Copy `superDemoApp/Features/Items/` when scaffolding a new feature: Domain use cases,
 Data repository + SwiftData model, Presentation `@Observable` feature model + SwiftUI view.
+
+## Production Readiness Dashboard
+
+`Features/ProductionReadiness/` is the senior-level reference slice:
+
+- Domain owns dashboard entities, scoring rules, repository protocol, and display errors.
+- Data owns deterministic sample data plus the remote API-health adapter backed by
+  `Shared/Networking`.
+- Presentation owns SwiftUI state, conditional visual modifiers, preview states, and the
+  UIKit showcase entry.
+- UIKit interop stays intentionally bounded: collection performance and custom transitions
+  are iOS-only, while the universal SwiftUI shell still builds on Mac.
+
+Architecture trade-off: this repo uses clear boundaries where behavior needs tests, but it
+does not claim one architecture is always best. Simple screens can stay simple; production
+flows need predictable ownership, controlled dependencies, and explicit failure paths.
 Composition lives in `superDemoApp/App/`.

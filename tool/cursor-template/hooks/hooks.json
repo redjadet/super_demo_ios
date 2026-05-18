@@ -1,0 +1,19 @@
+{
+  "$schema": "https://unpkg.com/cursor-hooks@latest/schema/hooks.schema.json",
+  "version": 1,
+  "hooks": {
+    "afterFileEdit": [
+      {
+        "command": ".cursor/hooks/format-swift-after-edit.sh",
+        "matcher": "Write|StrReplace|EditNotebook",
+        "timeout": 20
+      }
+    ],
+    "afterTabFileEdit": [
+      {
+        "command": ".cursor/hooks/format-swift-after-edit.sh",
+        "timeout": 20
+      }
+    ]
+  }
+}

@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+# Re-stages Swift files after ./bin/verify-swift.sh (format + lint).
+# Skip: SKIP_SWIFT_VERIFY=1 or git commit --no-verify
+set -euo pipefail
+
+if [[ "${SKIP_SWIFT_VERIFY:-}" == "1" ]]; then
+  exit 0
+fi
+
+ROOT="$(git rev-parse --show-toplevel)"
+cd "$ROOT"
+
+staged_swift="$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.swift$' || true)"
+if [[ -z "$staged_swift" ]]; then
+  exit 0
+fi
+
+export PATH="/opt/homebrew/bin:/usr/local/bin:${PATH}"
+
+if ! command -v swiftformat >/dev/null 2>&1 || ! command -v swiftlint >/dev/null 2>&1; then
+  echo "warning: SwiftLint/SwiftFormat not installed — skipping pre-commit Swift verify." >&2
+  echo "  Install: brew bundle --file Brewfile" >&2
+  exit 0
+fi
+
+echo "pre-commit: staged Swift — ./bin/verify-swift.sh"
+"$ROOT/bin/verify-swift.sh"
+
+while IFS= read -r file; do
+  [[ -n "$file" ]] || continue
+  if [[ -f "$file" ]]; then
+    git add -- "$file"
+  fi
+done <<< "$staged_swift"
+
+exit 0

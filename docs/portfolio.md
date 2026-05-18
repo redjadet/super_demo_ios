@@ -13,9 +13,10 @@ read-through cache.
 3. **`Features/Items/`** — Reference (SwiftData, sync repository API).
 4. **`Features/Feed/`** — JSONPlaceholder client + SwiftData read-through cache;
    see [`changes/2026-05-16_feed-feature-shipped.md`](changes/2026-05-16_feed-feature-shipped.md).
-5. **`App/`** — `AppRootView` tabs; `ItemsComposition` / `FeedComposition` wire
-   `ModelContext` into repositories and hold `@State` feature models.
-6. **`Shared/Presentation/AdaptiveNavigationShell.swift`** — shared chrome.
+5. **`Features/ProductionReadiness/`** — dashboard, networking, UIKit showcase;
+   see [`changes/2026-05-18_production_readiness_dashboard.md`](changes/2026-05-18_production_readiness_dashboard.md).
+6. **`App/`** — `AppRootView` tabs; composition roots wire DI and feature models.
+7. **`Shared/Presentation/AdaptiveNavigationShell.swift`** — shared chrome.
 
 ## Items walkthrough (`Features/Items/`)
 

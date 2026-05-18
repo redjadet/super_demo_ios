@@ -27,6 +27,8 @@ value state is enough.
 
 - Use `@Observable` for new screen/feature models when deployment target supports iOS 17+.
 - Mark UI-driving feature models `@MainActor`.
+- Inject dependencies with a plain `init(...)`; assign default collaborators in the
+  init **body**, not default parameter values (Swift 6 / MainActor isolation).
 - Keep models small: state, user actions, and orchestration only.
 - Move business rules into use cases and pure Domain types.
 - Inject protocols, clocks, ID generators, and services.

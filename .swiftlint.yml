@@ -27,6 +27,7 @@ opt_in_rules:
   - attributes
   - balanced_xctest_lifecycle
   - closure_end_indentation
+  - closure_parameter_position
   - closure_spacing
   - collection_alignment
   - comma_inheritance
@@ -190,3 +191,13 @@ custom_rules:
     regex: '\bUIApplication\s*\.\s*shared\b'
     message: "Avoid UIApplication.shared in universal app code; use scene, environment, or platform-specific adapters."
     severity: warning
+
+  swift_two_space_member_indent:
+    name: Swift member indent must be 4 spaces
+    regex: '(?m)^  (?:func |init\(|var |let |case |private |fileprivate |internal |public |@Test|@Suite)'
+    message: "Use 4-space Swift indentation (.editorconfig). Run ./bin/format.sh before ./bin/lint.sh. See docs/agent_swift_guards.md."
+    severity: error
+    match_kinds:
+      - identifier
+      - keyword
+      - typeidentifier

@@ -10,7 +10,8 @@ alwaysApply: true
   before coding.
 - **Change:** Smallest reversible diff; every line traces to the request or required
   lint/doc update.
-- **Prove:** `./superDemoApp/bin/lint.sh` after Swift edits; `./superDemoApp/bin/ci.sh`
-  before merge/PR; SwiftUI layout/navigation/universal UI/light-dark →
-  `./superDemoApp/bin/checklist` (iPhone test + iPad/Mac builds).
+- **Prove:** `./superDemoApp/bin/verify-swift.sh` after Swift edits (format + lint);
+  read `superDemoApp/docs/agent_swift_guards.md` when lint/concurrency fails;
+  `./superDemoApp/bin/ci.sh` before merge/PR; SwiftUI layout/navigation/universal
+  UI/light-dark → `./superDemoApp/bin/checklist` (iPhone test + iPad/Mac builds).
 - **Stuck:** Same failure twice → add script, test, or doc — not a longer prompt.

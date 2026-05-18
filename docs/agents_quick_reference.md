@@ -19,9 +19,10 @@ XcodeBuildMCP active profile: `superDemoApp`
 | Change type | Minimum proof |
 | --- | --- |
 | Docs / tooling / small Swift | `./bin/checklist-fast` |
-| Domain / Data logic | `./bin/lint.sh` + targeted tests |
+| Domain / Data logic | `./bin/verify-swift.sh` + targeted tests |
 | SwiftUI layout, navigation, universal UI, light/dark | `./bin/checklist` |
-| Before merge / PR | `./bin/ci.sh` (matches GitHub Actions) |
+| Before merge / PR | `./bin/ci.sh` or `./bin/fastlane-run ci` (same proof lanes as GitHub Actions) |
+| Fastlane lanes (lint, test, builds, CI) | `./bin/fastlane-run <lane>` — see `fastlane/Fastfile` |
 
 `CI_SKIP_PLATFORM_BUILDS=1` skips iPad/Mac in `./bin/ci.sh` only when intentionally narrow.
 UI smoke: `superDemoAppUITests.testLaunchShowsAddItemControl` in CI iPhone test lane.
@@ -29,15 +30,22 @@ UI smoke: `superDemoAppUITests.testLaunchShowsAddItemControl` in CI iPhone test 
 | Situation | Command |
 | --- | --- |
 | Project/scheme sanity | `xcodebuild -list -project superDemoApp.xcodeproj` |
-| Swift lint + layer boundaries | `./bin/lint.sh` |
+| Swift after edits (agents) | `./bin/verify-swift.sh` (format + lint; **preferred**) |
+| Swift format only | `./bin/format.sh` |
+| Swift lint + layer boundaries | `./bin/lint.sh` (indent + agent patterns + SwiftLint + SwiftFormat) |
 | Layer boundaries only | `./tool/check_layer_boundaries.sh` |
 | Markdown lint gate | `./bin/lint-markdown.sh` |
 | DESIGN.md DesignMD lint (needs Node; in checklists) | `./tool/check_design_md.sh` |
 | Fast checklist (markdown + DesignMD + lint + sanity) | `./bin/checklist-fast` |
 | Full checklist (above + iPhone test + iPad/Mac) | `./bin/checklist` |
-| Full local CI | `./bin/ci.sh` |
+| Full local CI | `./bin/ci.sh` (`./bin/fastlane-run ci`) |
+| CI lint job only | `./bin/fastlane-run ci_lint` |
+| iPhone tests lane | `./bin/fastlane-run iphone_test` |
+| iPad + Mac lane | `./bin/fastlane-run platform_builds` |
+| iPhone build/test lane only | `./bin/ci-iphone-test.sh` |
 | iPad + Mac builds only | `./bin/ci-platform-builds.sh` |
-| Install Cursor rules (after clone) | `./tool/install-cursor-rules.sh` |
+| Install Cursor rules + hooks (after clone) | `./tool/install-cursor-rules.sh` |
+| Install git pre-commit (after clone) | `./tool/install-git-hooks.sh` |
 | Restore team Apple skills from lockfile | `npx skills experimental_install -y` (from git root) |
 | Safe formatting | `./bin/format.sh` |
 | Compile app | `xcodebuild -project superDemoApp.xcodeproj -scheme superDemoApp -destination 'platform=iOS Simulator,name=iPhone 17' build` |
@@ -63,13 +71,13 @@ UI smoke: `superDemoAppUITests.testLaunchShowsAddItemControl` in CI iPhone test 
 ## Reminders
 
 - Start from current diff.
-- Swift indentation is 4 spaces. If Xcode reports `(indent)`, run `./bin/format.sh`
-  and re-check the exact file diagnostics.
+- Swift indentation is 4 spaces. If Xcode reports `(indent)` or 2-space member
+  errors, run `./bin/verify-swift.sh` — see [`agent_swift_guards.md`](agent_swift_guards.md).
 - Use Apple-native frameworks first; document dependency tradeoffs.
 - Keep changes surgical.
 - Prefer `./bin/checklist-fast` for docs/tooling/small Swift edits.
 - Use `./bin/checklist` for SwiftUI layout/navigation/universal UI before handoff.
-- Use `./bin/ci.sh` before merge/PR (includes iPad/Mac builds).
+- Use `./bin/ci.sh` before merge/PR (same lint, iPhone test, iPad build, and Mac build proof as CI).
 - `./bin/checklist` resolves an available iPhone simulator automatically; set `CHECKLIST_IPHONE_DEST` only when a specific destination is required.
 - `./bin/checklist` and `./bin/ci.sh` disable parallel test workers by default;
   set `CHECKLIST_ALLOW_PARALLEL_TESTS=1` or `CI_ALLOW_PARALLEL_TESTS=1` only when

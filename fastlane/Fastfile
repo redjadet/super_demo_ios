@@ -1,0 +1,151 @@
+# frozen_string_literal: true
+
+# Orchestrates existing bin/ and tool/ scripts for local dev and GitHub Actions.
+# Keeps simulator/Xcode pinning in bash; Fastlane provides one entry point and CI caching.
+
+default_platform(:ios)
+
+PROJECT = "superDemoApp.xcodeproj"
+SCHEME = "superDemoApp"
+
+def repo_root
+  @repo_root ||= File.expand_path("..", __dir__)
+end
+
+def ci?
+  ENV["CI"] == "true"
+end
+
+def run_repo_script(rel_path, extra_env: {})
+  previous_env = {}
+  extra_env.each do |key, value|
+    key = key.to_s
+    previous_env[key] = ENV.key?(key) ? ENV[key] : nil
+    ENV[key] = value
+  end
+  script = File.join(repo_root, rel_path)
+  begin
+    Dir.chdir(repo_root) do
+      sh(script)
+    end
+  ensure
+    extra_env.each_key do |key|
+      key = key.to_s
+      if previous_env[key].nil?
+        ENV.delete(key)
+      else
+        ENV[key] = previous_env[key]
+      end
+    end
+  end
+end
+
+platform :ios do
+  desc "Pin active Xcode to 26.5.x (local + CI)"
+  lane :select_xcode do
+    run_repo_script("tool/select_xcode_26_5.sh")
+  end
+
+  desc "Swift lint (indent, agent patterns, SwiftLint, SwiftFormat, layers)"
+  lane :lint do
+    run_repo_script("bin/lint.sh")
+  end
+
+  desc "Markdown lint"
+  lane :lint_markdown do
+    run_repo_script("bin/lint-markdown.sh")
+  end
+
+  desc "DESIGN.md DesignMD lint (requires Node npx)"
+  lane :lint_design_md do
+    run_repo_script("tool/check_design_md.sh")
+  end
+
+  desc "Agent guardrails and repo sanity checks"
+  lane :common_checks do
+    run_repo_script("tool/check_common_issues.sh")
+  end
+
+  desc "Safe Swift format (SwiftFormat)"
+  lane :format do
+    run_repo_script("bin/format.sh")
+  end
+
+  desc "Lint job lane for GitHub Actions"
+  lane :ci_lint do
+    select_xcode if ci?
+    lint
+    lint_markdown
+    common_checks
+  end
+
+  desc "Boot iPhone simulator on CI when CI_SIMULATOR_DEST is unset"
+  lane :prepare_iphone_simulator do
+    run_repo_script(
+      "tool/ensure_ci_simulator.sh",
+      extra_env: { "CI_PREPARE_IPAD" => "0" }
+    )
+  end
+
+  desc "Boot iPad simulator on CI when CI_IPAD_DEST is unset"
+  lane :prepare_ipad_simulator do
+    run_repo_script(
+      "tool/ensure_ci_simulator.sh",
+      extra_env: { "CI_PREPARE_IPHONE" => "0" }
+    )
+  end
+
+  desc "iPhone build + unit/UI tests (same as bin/ci-iphone-test.sh)"
+  lane :iphone_test do
+    run_repo_script(
+      "bin/ci-iphone-test.sh",
+      extra_env: { "CI_PREPARE_IPAD" => ENV.fetch("CI_PREPARE_IPAD", "0") }
+    )
+  end
+
+  desc "iPad simulator + macOS compile proof (bin/ci-platform-builds.sh)"
+  lane :platform_builds do
+    run_repo_script(
+      "bin/ci-platform-builds.sh",
+      extra_env: { "CI_PREPARE_IPHONE" => ENV.fetch("CI_PREPARE_IPHONE", "0") }
+    )
+  end
+
+  desc "Full local/CI proof: lint, common checks, platform builds, iPhone tests"
+  lane :ci do
+    ENV["CI"] = "true" unless ENV.key?("CI")
+    # Xcode pin happens inside ci-iphone-test / ci-platform-builds when CI=true.
+    lint
+    lint_markdown
+    common_checks
+
+    if ENV["CI_SKIP_PLATFORM_BUILDS"] == "1"
+      UI.important("Skipping iPad/Mac (CI_SKIP_PLATFORM_BUILDS=1)")
+      iphone_test
+    elsif ci?
+      platform_builds
+      iphone_test
+    else
+      iphone_test
+      platform_builds
+    end
+
+    UI.success("CI lanes passed.")
+  end
+
+  desc "Fast checklist: markdown, swift lint, common checks, design md, xcode list"
+  lane :checklist_fast do
+    lint_markdown
+    lint
+    common_checks
+    lint_design_md
+    Dir.chdir(repo_root) do
+      sh("xcodebuild", "-list", "-project", PROJECT)
+    end
+  end
+
+  desc "Full checklist: lint, design md, iPhone test, iPad/Mac (bin/checklist)"
+  lane :checklist do
+    run_repo_script("bin/checklist")
+  end
+end

@@ -31,6 +31,21 @@ Core networking rules stay below.
 - Set explicit timeout and retry policy where product needs it.
 - Never build URLs with unescaped string concatenation.
 
+## Production Networking Client
+
+`Shared/Networking/` demonstrates production retry policy without third-party dependencies:
+
+- retryable: timeout/connectivity failures, 429, and selected 5xx statuses
+- non-retryable: most 4xx statuses
+- `401`: refresh token once, then retry the original request once
+- `429`: respect `Retry-After` when present
+- exponential backoff plus jitter; limited attempts
+- POST retries only when an idempotency key is present
+- cancellation remains cancellation, not a user-facing server failure
+- logs use host/status/error metadata only; no secrets or authorization headers
+
+Feature Data adapters map `APIError` into domain/UI-safe messages.
+
 ## Sync Rules
 
 - Local write first when offline-first requirement applies.

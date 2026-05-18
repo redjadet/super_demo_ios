@@ -2,7 +2,7 @@
 
 ## Start
 
-1. Read [`../AGENTS.md`](../AGENTS.md).
+1. Read [`../AGENTS.md`](../AGENTS.md) and [`agent_swift_guards.md`](agent_swift_guards.md).
 2. Check `git status --short`.
 3. Read [`apple-development-practices.md`](apple-development-practices.md).
 4. Read [`development-feedback-loop.md`](development-feedback-loop.md) for UI,
@@ -27,7 +27,9 @@
 - SwiftUI body has no heavy side effects.
 - UI is universal: compact iPhone, iPad split/regular, and Mac window sizes.
 - Preview fixtures cover important loading, empty, populated, error, and dark states.
-- Feature models are `@Observable` and `@MainActor` when driving UI.
+- Feature models are `@Observable` and `@MainActor` when driving UI; no `Type()`
+  default args on those inits.
+- Swift edited with `./bin/format.sh` before `./bin/lint.sh`.
 - Async tasks handle cancellation and stale results.
 - SwiftData context stays out of Domain.
 - Views have accessibility labels/traits for custom controls.

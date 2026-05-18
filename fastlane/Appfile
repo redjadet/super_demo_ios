@@ -1,0 +1,2 @@
+# App Store Connect / codesigning metadata (lanes are CI-focused today).
+app_identifier("com.ilkersevim.superDemoApp")

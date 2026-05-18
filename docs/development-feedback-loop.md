@@ -8,6 +8,10 @@ therefore make validation cheap, repeatable, and close to production behavior.
 Reduce rebuild, relaunch, navigation, and manual state recreation time for both
 human and AI-assisted development.
 
+The Production Readiness Dashboard makes this visible in-app: small modules, mock states,
+previews, UI shortcuts, and deterministic tests reduce validation time in native iOS,
+where there is no Flutter-style hot reload/hot restart loop.
+
 ## Agent Defaults
 
 - Prefer small feature slices that compile independently.

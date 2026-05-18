@@ -20,9 +20,14 @@
 ## Follow-up
 
 - GHA needs `ripgrep` for `tool/check_common_issues.sh` — added to `Brewfile`.
-- Project targets iOS 26.5 — workflow selects newest `Xcode_26*.app` on the runner.
-- `resolve_iphone_destination` picks a concrete simulator via `xcodebuild
-  -showdestinations` on CI (generic destination cannot run unit/UI tests).
+- Project targets iOS 26.5 — CI uses `macos-26` and pins **Xcode 26.5** via `tool/select_xcode_26_5.sh`.
+- `tool/ensure_ci_simulator.sh` boots or creates an iPhone on the **newest installed iOS
+  Simulator runtime**. On GHA it does **not** run `xcodebuild -downloadPlatform` when the
+  SDK patch is ahead of the runtime (e.g. SDK 26.5, runtime 26.4) — that download stalls CI.
+- `resolve_iphone_destination` prefers an iPhone on that newest runtime (not the first
+  device in `simctl list`).
+- Superseded on 2026-05-18: GitHub Actions now uses parallel lint, iPhone test,
+  and platform-build lanes; see [`2026-05-18_ci-parallel-lanes.md`](2026-05-18_ci-parallel-lanes.md).
 
 ## Proof
 

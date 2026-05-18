@@ -11,8 +11,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  lint-build-test:
-    runs-on: macos-15
+  lint:
+    runs-on: macos-26
     defaults:
       run:
         working-directory: .
@@ -21,31 +21,88 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
 
-      - name: Select Xcode
-        run: |
-          set -euo pipefail
-          if XCODE_APP="$(ls -d /Applications/Xcode_26*.app 2>/dev/null | sort -V | tail -1)"; then
-            :
-          elif [[ -d /Applications/Xcode.app ]]; then
-            XCODE_APP="/Applications/Xcode.app"
-          else
-            echo "error: no Xcode.app found under /Applications" >&2
-            ls /Applications
-            exit 1
-          fi
-          echo "Using ${XCODE_APP}"
-          sudo xcode-select -s "${XCODE_APP}/Contents/Developer"
-          xcodebuild -version
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.3"
+          bundler-cache: true
 
       - name: Install lint tools
-        run: brew bundle --file Brewfile
+        run: brew bundle check --file Brewfile || brew bundle --file Brewfile
 
-      - name: Prepare iOS Simulator
+      - name: Lint
         env:
           CI: true
-        run: ./tool/ensure_ci_simulator.sh
+        run: bundle exec fastlane ci_lint
 
-      - name: CI (lint, iPhone test, parallel iPad/Mac builds)
+  iphone-test:
+    runs-on: macos-26
+    defaults:
+      run:
+        working-directory: .
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.3"
+          bundler-cache: true
+
+      - name: Install lint tools
+        run: brew bundle check --file Brewfile || brew bundle --file Brewfile
+
+      - name: iPhone tests
         env:
           CI: true
-        run: ./bin/ci.sh
+          CI_PREPARE_IPAD: "0"
+        run: ./bin/ci-iphone-test.sh
+
+  platform-builds:
+    runs-on: macos-26
+    defaults:
+      run:
+        working-directory: .
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.3"
+          bundler-cache: true
+
+      - name: Install lint tools
+        run: brew bundle check --file Brewfile || brew bundle --file Brewfile
+
+      - name: iPad and Mac builds
+        env:
+          CI: true
+          CI_PREPARE_IPHONE: "0"
+          CI_SERIAL_PLATFORM_BUILDS: "1"
+        run: ./bin/ci-platform-builds.sh
+
+  lint-build-test:
+    runs-on: ubuntu-latest
+    needs: [lint, iphone-test, platform-builds]
+    if: ${{ always() }}
+    steps:
+      - name: Check CI lanes
+        run: |
+          if [[ "${{ needs.lint.result }}" != "success" ]]; then
+            echo "lint failed or did not complete"
+            exit 1
+          fi
+          if [[ "${{ needs['iphone-test'].result }}" != "success" ]]; then
+            echo "iphone-test failed or did not complete"
+            exit 1
+          fi
+          if [[ "${{ needs['platform-builds'].result }}" != "success" ]]; then
+            echo "platform-builds failed or did not complete"
+            exit 1
+          fi
+          echo "CI lanes passed."

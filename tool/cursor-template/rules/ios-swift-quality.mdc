@@ -15,8 +15,12 @@ Config: `superDemoApp/.swiftlint.yml`, `superDemoApp/.swiftformat`. Full style:
 From `superDemoApp/`:
 
 ```bash
-./bin/lint.sh
+./bin/verify-swift.sh
 ```
+
+(`format.sh` then `lint.sh` — required after **any** Swift edit; do not run lint alone.)
+
+If lint fails: read `superDemoApp/docs/agent_swift_guards.md` (indent, braces, `@MainActor` deinit).
 
 Universal UI or navigation changes: `./bin/checklist` (not lint alone).
 
@@ -47,9 +51,10 @@ xcodebuild -project superDemoApp.xcodeproj -scheme superDemoApp \
 - **Safety:** No `try!`, no force unwrap (`!`) in new code. No `print()` — use `Logger`.
 - **Tests:** Swift Testing for Domain/Data; `#Preview` for each new View; keep
   `superDemoAppUITests` smoke passing for primary flows.
-- **Scope:** Smallest change; match existing file header and naming; run `./bin/format.sh`
-  only when formatting is the task.
+- **Scope:** Smallest change; match existing file header and naming.
+- **After Swift edits:** `./bin/verify-swift.sh` before claiming done (not optional).
 
 ## SwiftLint custom rules (project)
 
 - `no_navigation_view`, `no_force_try`, `no_print_debug`, `swiftdata_model_final`
+- `swift_two_space_member_indent` — run `./bin/verify-swift.sh` to fix

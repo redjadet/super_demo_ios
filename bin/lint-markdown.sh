@@ -12,6 +12,6 @@ fi
 
 echo "==> markdownlint"
 # Vendored skills under .agents/ are not project docs; lint repo docs only.
-npx --yes markdownlint-cli2 "**/*.md" "#.agents/**"
+npx --yes markdownlint-cli2 "**/*.md" "#.agents/**" "#fastlane/**" "#vendor/**"
 
 echo "Markdown lint passed."

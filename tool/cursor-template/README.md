@@ -32,6 +32,12 @@ CURSOR_INSTALL_DIR="$(pwd)/.cursor" ./tool/install-cursor-rules.sh
 
 Restart Cursor or reload the window after install.
 
+Git pre-commit (staged `.swift` → `./bin/verify-swift.sh`):
+
+```bash
+./tool/install-git-hooks.sh
+```
+
 ## Team agent skills
 
 Tracked in [`skills-lock.json`](../../skills-lock.json). From git root:
@@ -49,6 +55,8 @@ Details and skill list: [`docs/agent_host_notes.md`](../../docs/agent_host_notes
 - `rules/agent-execution-ios.mdc` — always applies; lint/CI/checklist discipline
 - `rules/ios-swift-quality.mdc` — applies when editing `superDemoApp/**/*.swift`
 - `mcp.json` — Xcode Intelligence MCP (`xcrun mcpbridge`)
+- `hooks.json` + `hooks/format-swift-after-edit.sh` — SwiftFormat after agent/Tab edits
+  (one file, fail open)
 
 Canonical policy: lean [`AGENTS.md`](../../AGENTS.md) (map) + `docs/` (detail). Edit the
 template here, run install, and update owning docs if behavior changes.

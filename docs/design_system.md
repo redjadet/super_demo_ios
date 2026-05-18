@@ -90,6 +90,13 @@ work, also run `./bin/checklist` and note compact + regular + Mac window sizes c
 
 Full matrix and finish questions: [`universal-apple-platforms.md`](universal-apple-platforms.md).
 
+## Cross-Platform Consistency
+
+The Production Readiness Dashboard includes a Design Consistency section that shows
+spacing, typography, color, radius, and component-state tokens. Flutter's shared UI layer
+is strong for visual consistency; native iOS teams can reduce drift with disciplined
+tokens, reusable components, previews, and review checklists.
+
 ## Token map (YAML → SwiftUI)
 
 | YAML key | SwiftUI / API |

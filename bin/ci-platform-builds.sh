@@ -5,6 +5,20 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 
+if [[ "${CI:-}" == "true" ]]; then
+  # shellcheck source=../tool/select_xcode_26_5.sh
+  source "$ROOT/tool/select_xcode_26_5.sh"
+else
+  export PATH="/opt/homebrew/bin:/usr/local/bin:${PATH}"
+fi
+
+# shellcheck source=../tool/xcode_env.sh
+source "$ROOT/tool/xcode_env.sh"
+
+if [[ "${CI:-}" == "true" && -z "${CI_IPAD_DEST:-}" ]]; then
+  CI_PREPARE_IPHONE="${CI_PREPARE_IPHONE:-0}" source "$ROOT/tool/ensure_ci_simulator.sh" || exit $?
+fi
+
 # shellcheck source=../tool/resolve_platform_destination.sh
 source "$ROOT/tool/resolve_platform_destination.sh"
 # shellcheck source=../tool/xcodebuild_sandbox_flags.sh
@@ -12,6 +26,8 @@ source "$ROOT/tool/xcodebuild_sandbox_flags.sh"
 
 IPAD_DEST="$(resolve_ipad_destination)"
 MAC_DEST="$(resolve_mac_destination)"
+echo "==> iPad destination: $IPAD_DEST"
+echo "==> Mac destination: $MAC_DEST"
 
 run_ipad_build() {
   echo "==> iPad build ($IPAD_DEST)"
@@ -21,7 +37,7 @@ run_ipad_build() {
     unset IPAD_DERIVED_DATA_FLAGS
   fi
 
-  xcodebuild \
+  run_xcodebuild \
     -project superDemoApp.xcodeproj \
     -scheme superDemoApp \
     -destination "$IPAD_DEST" \
@@ -49,7 +65,7 @@ run_mac_build() {
     unset MAC_BUILD_FLAGS
   fi
 
-  xcodebuild \
+  run_xcodebuild \
     -project superDemoApp.xcodeproj \
     -scheme superDemoApp \
     -destination "$MAC_DEST" \
