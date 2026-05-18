@@ -113,6 +113,32 @@ find_ipad_udid_on_newest_runtime() {
   find_ipad_udid_on_runtime "$runtime_id"
 }
 
+select_preferred_ipad_device_type_id() {
+  xcrun simctl list devicetypes -j 2>/dev/null \
+    | python3 -c "
+import json, sys
+data = json.load(sys.stdin)
+types = data.get('devicetypes', [])
+ipads = [t for t in types if t.get('productFamily') == 'iPad']
+preferred = (
+    'iPad Pro 13-inch (M5)',
+    'iPad Pro 11-inch (M5)',
+    'iPad Pro 13-inch (M4)',
+    'iPad Pro 11-inch (M4)',
+    'iPad Air 13-inch (M3)',
+    'iPad (A16)',
+)
+for name in preferred:
+    for t in ipads:
+        if t.get('name') == name:
+            print(t['identifier'])
+            sys.exit(0)
+if ipads:
+    print(ipads[-1]['identifier'])
+sys.exit(1)
+" 2>/dev/null || true
+}
+
 select_preferred_iphone_device_type_id() {
   xcrun simctl list devicetypes -j 2>/dev/null \
     | python3 -c "

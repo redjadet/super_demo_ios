@@ -18,9 +18,10 @@ finalize_ci_simulator_dest() {
   prefer_arm64_simulator_destination "$1"
 }
 
-if [[ -n "${CI_SIMULATOR_DEST:-}" ]]; then
-  if destination_valid_for_scheme "${CI_SIMULATOR_DEST}"; then
-    echo "==> CI simulator already configured (${CI_SIMULATOR_DEST})"
+if [[ -n "${CI_SIMULATOR_DEST:-}" && -n "${CI_IPAD_DEST:-}" ]]; then
+  if destination_valid_for_scheme "${CI_SIMULATOR_DEST}" \
+    && destination_valid_for_scheme "${CI_IPAD_DEST}"; then
+    echo "==> CI simulators already configured"
     exit 0
   fi
   echo "warning: CI_SIMULATOR_DEST invalid for scheme; reprovisioning" >&2
@@ -57,7 +58,34 @@ export_ci_simulator_dest() {
   if [[ -n "${GITHUB_ENV:-}" ]]; then
     echo "CI_SIMULATOR_DEST=${dest}" >>"${GITHUB_ENV}"
   fi
-  echo "==> CI simulator ready ($dest)"
+  echo "==> CI iPhone simulator ready ($dest)"
+}
+
+export_ci_ipad_dest() {
+  local dest="$1"
+  dest="$(finalize_ci_simulator_dest "$dest")"
+  export CI_IPAD_DEST="$dest"
+  if [[ -n "${GITHUB_ENV:-}" ]]; then
+    echo "CI_IPAD_DEST=${dest}" >>"${GITHUB_ENV}"
+  fi
+  echo "==> CI iPad simulator ready ($dest)"
+}
+
+provision_ipad_on_runtime() {
+  local runtime_id="$1"
+  local udid device_type_id dest
+
+  udid="$(find_ipad_udid_on_runtime "$runtime_id" || true)"
+  if [[ -z "$udid" ]]; then
+    device_type_id="$(select_preferred_ipad_device_type_id)" || return 1
+    udid="$(xcrun simctl create "CI iPad" "$device_type_id" "$runtime_id")"
+    echo "==> Created iPad simulator ${udid}"
+  fi
+
+  boot_simulator_with_timeout "$udid" 120 || true
+  dest="platform=iOS Simulator,id=${udid}"
+  wait_for_scheme_destination "$dest" || return 1
+  export_ci_ipad_dest "$dest"
 }
 
 try_newest_runtime_destination() {
@@ -124,7 +152,11 @@ create_newest_runtime_simulator() {
 }
 
 if try_newest_runtime_destination; then
+  runtime_id="$(select_newest_ios_runtime_id)"
+  provision_ipad_on_runtime "$runtime_id"
   exit 0
 fi
 
 create_newest_runtime_simulator
+runtime_id="$(select_newest_ios_runtime_id)"
+provision_ipad_on_runtime "$runtime_id"
