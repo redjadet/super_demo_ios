@@ -5,11 +5,15 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 
-export PATH="/opt/homebrew/bin:/usr/local/bin:${PATH}"
-
 if [[ "${CI:-}" == "true" ]]; then
-  ./tool/select_xcode_26_5.sh
+  # shellcheck source=../tool/select_xcode_26_5.sh
+  source "$ROOT/tool/select_xcode_26_5.sh"
+else
+  export PATH="/opt/homebrew/bin:/usr/local/bin:${PATH}"
 fi
+
+# shellcheck source=../tool/xcode_env.sh
+source "$ROOT/tool/xcode_env.sh"
 
 if [[ "${CI:-}" == "true" && -z "${CI_SIMULATOR_DEST:-}" ]]; then
   ./tool/ensure_ci_simulator.sh
@@ -33,8 +37,8 @@ if [[ "${CI_ALLOW_PARALLEL_TESTS:-0}" != "1" ]]; then
   )
 fi
 
-echo "==> iPhone tests (builds app + tests)"
-xcodebuild \
+echo "==> iPhone tests (builds app + tests, $XCODEBUILD)"
+"$XCODEBUILD" \
   -project superDemoApp.xcodeproj \
   -scheme superDemoApp \
   -destination "$SIMULATOR_DEST" \

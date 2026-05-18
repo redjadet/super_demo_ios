@@ -5,11 +5,15 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 
-export PATH="/opt/homebrew/bin:/usr/local/bin:${PATH}"
-
 if [[ "${CI:-}" == "true" ]]; then
-  ./tool/select_xcode_26_5.sh
+  # shellcheck source=../tool/select_xcode_26_5.sh
+  source "$ROOT/tool/select_xcode_26_5.sh"
+else
+  export PATH="/opt/homebrew/bin:/usr/local/bin:${PATH}"
 fi
+
+# shellcheck source=../tool/xcode_env.sh
+source "$ROOT/tool/xcode_env.sh"
 
 # shellcheck source=../tool/resolve_platform_destination.sh
 source "$ROOT/tool/resolve_platform_destination.sh"
@@ -29,7 +33,7 @@ run_ipad_build() {
     unset IPAD_DERIVED_DATA_FLAGS
   fi
 
-  xcodebuild \
+  "$XCODEBUILD" \
     -project superDemoApp.xcodeproj \
     -scheme superDemoApp \
     -destination "$IPAD_DEST" \
@@ -57,7 +61,7 @@ run_mac_build() {
     unset MAC_BUILD_FLAGS
   fi
 
-  xcodebuild \
+  "$XCODEBUILD" \
     -project superDemoApp.xcodeproj \
     -scheme superDemoApp \
     -destination "$MAC_DEST" \

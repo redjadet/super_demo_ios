@@ -9,6 +9,8 @@ fi
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 
+# shellcheck source=xcode_env.sh
+source "$ROOT/tool/xcode_env.sh"
 # shellcheck source=resolve_platform_destination.sh
 source "$ROOT/tool/resolve_platform_destination.sh"
 # shellcheck source=ios_simulator_runtime.sh
@@ -132,7 +134,7 @@ create_newest_runtime_simulator() {
   runtime_id="$(select_newest_ios_runtime_id)" || true
   if [[ -z "$runtime_id" ]]; then
     echo "==> No iOS simulator runtime; downloading iOS platform"
-    xcodebuild -downloadPlatform iOS
+    "$XCODEBUILD" -downloadPlatform iOS
     runtime_id="$(select_newest_ios_runtime_id)" || true
   fi
 
@@ -160,7 +162,7 @@ create_newest_runtime_simulator() {
   dest="platform=iOS Simulator,id=${udid}"
   if ! wait_for_scheme_destination "$dest"; then
     echo "error: xcodebuild does not accept destination after boot: $dest" >&2
-    xcodebuild -showdestinations -project superDemoApp.xcodeproj -scheme superDemoApp 2>&1 | head -30 >&2 || true
+    "$XCODEBUILD" -showdestinations -project superDemoApp.xcodeproj -scheme superDemoApp 2>&1 | head -30 >&2 || true
     xcrun simctl list devices available >&2 || true
     exit 1
   fi

@@ -12,8 +12,13 @@ _resolve_platform_root() {
   fi
   cd "${script_dir}/.." && pwd
 }
+_resolve_platform_root_path="$(_resolve_platform_root)"
 # shellcheck source=ios_simulator_runtime.sh
-source "$(_resolve_platform_root)/tool/ios_simulator_runtime.sh"
+source "${_resolve_platform_root_path}/tool/ios_simulator_runtime.sh"
+if [[ -z "${XCODEBUILD:-}" ]]; then
+  # shellcheck source=xcode_env.sh
+  source "${_resolve_platform_root_path}/tool/xcode_env.sh"
+fi
 
 iphone_udid_from_simctl() {
   local udid
@@ -33,7 +38,7 @@ destination_valid_for_scheme() {
   local udid
   udid="$(destination_udid "$dest")"
   [[ "$udid" =~ ^[0-9A-F-]{36}$ ]] || return 1
-  xcodebuild -showdestinations -project superDemoApp.xcodeproj -scheme superDemoApp 2>/dev/null \
+  "$XCODEBUILD" -showdestinations -project superDemoApp.xcodeproj -scheme superDemoApp 2>/dev/null \
     | grep -q "id:${udid}"
 }
 
@@ -50,7 +55,7 @@ resolve_iphone_destination_from_xcodebuild() {
   [[ -f superDemoApp.xcodeproj/project.pbxproj ]] || return 1
   local dest_line
   dest_line="$(
-    xcodebuild -showdestinations -project superDemoApp.xcodeproj -scheme superDemoApp 2>/dev/null \
+    "$XCODEBUILD" -showdestinations -project superDemoApp.xcodeproj -scheme superDemoApp 2>/dev/null \
       | grep -E 'platform:iOS Simulator, id:[0-9A-F-]{36}' \
       | grep -v placeholder \
       | head -1 \
@@ -95,7 +100,7 @@ resolve_iphone_destination() {
 
   if [[ "${CI:-}" == "true" ]]; then
     echo "error: no concrete iOS Simulator destination for CI (run ./tool/ensure_ci_simulator.sh)" >&2
-    xcodebuild -showdestinations -project superDemoApp.xcodeproj -scheme superDemoApp 2>&1 | head -40 >&2 || true
+    "$XCODEBUILD" -showdestinations -project superDemoApp.xcodeproj -scheme superDemoApp 2>&1 | head -40 >&2 || true
     return 1
   fi
 
@@ -124,7 +129,7 @@ resolve_ipad_destination() {
 
   if [[ "${CI:-}" == "true" ]]; then
     echo "error: no iPad simulator on newest iOS runtime for CI" >&2
-    xcodebuild -showdestinations -project superDemoApp.xcodeproj -scheme superDemoApp 2>&1 | head -40 >&2 || true
+    "$XCODEBUILD" -showdestinations -project superDemoApp.xcodeproj -scheme superDemoApp 2>&1 | head -40 >&2 || true
     return 1
   fi
 
