@@ -15,6 +15,10 @@ fi
 # shellcheck source=../tool/xcode_env.sh
 source "$ROOT/tool/xcode_env.sh"
 
+if [[ "${CI:-}" == "true" && -z "${CI_IPAD_DEST:-}" ]]; then
+  CI_PREPARE_IPHONE="${CI_PREPARE_IPHONE:-0}" ./tool/ensure_ci_simulator.sh
+fi
+
 # shellcheck source=../tool/resolve_platform_destination.sh
 source "$ROOT/tool/resolve_platform_destination.sh"
 # shellcheck source=../tool/xcodebuild_sandbox_flags.sh

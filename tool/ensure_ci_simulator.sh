@@ -9,8 +9,14 @@ fi
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 
+if [[ "${CI:-}" == "true" ]]; then
+  # shellcheck source=select_xcode_26_5.sh
+  source "$ROOT/tool/select_xcode_26_5.sh"
+fi
+
 # shellcheck source=xcode_env.sh
 source "$ROOT/tool/xcode_env.sh"
+echo "==> ensure_ci_simulator using ${XCODEBUILD}"
 # shellcheck source=resolve_platform_destination.sh
 source "$ROOT/tool/resolve_platform_destination.sh"
 # shellcheck source=ios_simulator_runtime.sh
