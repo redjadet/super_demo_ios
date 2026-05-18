@@ -44,11 +44,13 @@ destination_valid_for_scheme() {
 
 prefer_arm64_simulator_destination() {
   local dest="$1"
-  if [[ "$dest" == *"id="* && "$dest" != *"arch="* ]]; then
-    printf '%s,arch=arm64\n' "$dest"
-  else
+  # id= destinations already resolve to a concrete arm64 simulator; appending
+  # arch=arm64 makes xcodebuild fail destination matching on CI.
+  if [[ "$dest" == *"id="* || "$dest" == *"arch="* ]]; then
     printf '%s\n' "$dest"
+    return
   fi
+  printf '%s,arch=arm64\n' "$dest"
 }
 
 resolve_iphone_destination_from_xcodebuild() {
