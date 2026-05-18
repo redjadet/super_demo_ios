@@ -6,15 +6,23 @@
 import SwiftUI
 
 private enum AppTab: Hashable {
+    case dashboard
     case items
     case feed
 }
 
 struct AppRootView: View {
-    @State private var selection: AppTab = .items
+    @State private var selection: AppTab = .dashboard
 
     var body: some View {
         TabView(selection: self.$selection) {
+            ProductionReadinessRootView()
+                .tabItem {
+                    Label("Dashboard", systemImage: "checklist.checked")
+                }
+                .tag(AppTab.dashboard)
+                .accessibilityIdentifier("dashboardTab")
+
             ItemsRootView()
                 .tabItem {
                     Label("Items", systemImage: "list.bullet")

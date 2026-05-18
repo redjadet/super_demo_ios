@@ -12,19 +12,53 @@ final class superDemoAppUITests: XCTestCase {
     func testLaunchShowsAddItemControl() {
         continueAfterFailure = false
 
-        let app = XCUIApplication()
-        app.launch()
+        let app = UiTestSupport.launchApplication()
 
         UiTestSupport.openItemsTab(in: app)
         XCTAssertTrue(UiTestSupport.waitForItemsChrome(in: app))
     }
 
     @MainActor
+    func testDashboardShowsProductionRisks() {
+        continueAfterFailure = false
+
+        let app = UiTestSupport.launchApplication()
+
+        let dashboard = app.tabBars.buttons["Dashboard"]
+        XCTAssertTrue(dashboard.waitForExistence(timeout: 10))
+        dashboard.tap()
+        _ = UiTestSupport.waitForListOrCollection(identifier: "productionReadinessDashboard", in: app)
+
+        let risksLink = app.buttons["productionRisksLink"]
+        UiTestSupport.scrollToElement(risksLink, in: app)
+        XCTAssertTrue(risksLink.waitForExistence(timeout: 10))
+        risksLink.tap()
+        _ = UiTestSupport.waitForListOrCollection(identifier: "productionRisksScreen", in: app)
+    }
+
+    @MainActor
+    func testUIKitShowcaseCollectionIsReachable() {
+        continueAfterFailure = false
+
+        let app = UiTestSupport.launchApplication()
+
+        let dashboard = app.tabBars.buttons["Dashboard"]
+        XCTAssertTrue(dashboard.waitForExistence(timeout: 10))
+        dashboard.tap()
+        _ = UiTestSupport.waitForListOrCollection(identifier: "productionReadinessDashboard", in: app)
+
+        let showcaseLink = app.buttons["uikitShowcaseLink"]
+        UiTestSupport.scrollToElement(showcaseLink, in: app)
+        XCTAssertTrue(showcaseLink.waitForExistence(timeout: 10))
+        showcaseLink.tap()
+        XCTAssertTrue(app.collectionViews["uikitShowcaseCollection"].waitForExistence(timeout: 10))
+    }
+
+    @MainActor
     func testFeedTabIsReachable() {
         continueAfterFailure = false
 
-        let app = XCUIApplication()
-        app.launch()
+        let app = UiTestSupport.launchApplication()
 
         let feedTab = app.tabBars.buttons["Feed"]
         XCTAssertTrue(feedTab.waitForExistence(timeout: 10))

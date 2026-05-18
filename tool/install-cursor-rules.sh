@@ -10,7 +10,7 @@ usage() {
   cat <<'EOF'
 Usage: ./tool/install-cursor-rules.sh [--dry-run]
 
-Installs Cursor rules and mcp.json from tool/cursor-template/.
+Installs Cursor rules, hooks, and mcp.json from tool/cursor-template/.
 
 Default install directory (parent workspace):
   ../.cursor
@@ -69,8 +69,19 @@ done
 
 install_file "$TEMPLATE/mcp.json" "$CURSOR_DIR/mcp.json"
 
+if [[ -d "$TEMPLATE/hooks" ]]; then
+  install_file "$TEMPLATE/hooks/hooks.json" "$CURSOR_DIR/hooks.json"
+  for hook in "$TEMPLATE"/hooks/*.sh; do
+    [[ -f "$hook" ]] || continue
+    install_file "$hook" "$CURSOR_DIR/hooks/$(basename "$hook")"
+    if [[ "$DRY_RUN" -eq 0 ]]; then
+      chmod +x "$CURSOR_DIR/hooks/$(basename "$hook")"
+    fi
+  done
+fi
+
 if [[ "$DRY_RUN" -eq 1 ]]; then
   echo "Dry run complete."
 else
-  echo "Cursor rules installed. Restart Cursor or reload the window."
+  echo "Cursor rules and hooks installed. Restart Cursor or reload the window."
 fi

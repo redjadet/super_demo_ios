@@ -22,4 +22,5 @@ swiftformat \
   "$ROOT/superDemoAppTests" \
   "$ROOT/superDemoAppUITests"
 
-echo "Format complete. Re-run ./bin/lint.sh before committing."
+echo "Format complete. Run ./bin/verify-swift.sh (format + lint) before committing."
+echo "Agents: docs/agent_swift_guards.md — indent, braces, @MainActor deinit, UIKit teardown."

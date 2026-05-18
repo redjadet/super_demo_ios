@@ -55,7 +55,10 @@ Check every non-trivial iOS change:
 - Architecture boundary: Presentation, Domain, Data dependencies point right way;
   `./bin/lint.sh` layer check passes for any `Features/` paths touched.
 - Apple-native fit: SwiftUI, Observation, SwiftData, Swift Concurrency, Swift Testing, App Intents considered before dependencies.
-- Concurrency: UI mutations on MainActor; shared mutable state isolated.
+- Concurrency: UI mutations on MainActor; shared mutable state isolated; no
+  `Type()` default args on `@MainActor` inits ([`agent_swift_guards.md`](agent_swift_guards.md)).
+- Style: `./bin/verify-swift.sh` after Swift edits; 4-space Swift only — [`agent_swift_guards.md`](agent_swift_guards.md)
+  ([`agent_swift_guards.md`](agent_swift_guards.md)).
 - Persistence: SwiftData changes handle migration, uniqueness, delete behavior, and preview/test fixtures.
 - Networking: typed request/response, cancellation, retry/idempotency, timeout, offline behavior.
 - UI: follow [`../DESIGN.md`](../DESIGN.md); accessibility, Dynamic Type, **light + dark**
@@ -91,7 +94,9 @@ If a verified lesson will matter again, put it in one of:
 - `docs/audits/`
 - local `tasks/codex/todo.md` (gitignored)
 - owning implementation doc under `docs/`
-- lean bullets in [`../AGENTS.md`](../AGENTS.md) learned sections (preferences/facts only)
+- [`agent_preferences.md`](agent_preferences.md) and
+  [`agent_project_context.md`](agent_project_context.md) — not
+  [`../AGENTS.md`](../AGENTS.md) (map-only; no learned-section growth)
 
 Cursor team skills are pinned in [`../skills-lock.json`](../skills-lock.json); restore
 with `npx skills experimental_install -y`. Do not duplicate skill content in `docs/`.

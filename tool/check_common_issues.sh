@@ -45,6 +45,7 @@ required_files=(
   docs/state-management.md
   docs/testing.md
   docs/code-style.md
+  docs/agent_swift_guards.md
 )
 
 for path in "${required_files[@]}"; do
@@ -64,6 +65,11 @@ fi
 
 section "Clean Architecture layer boundaries"
 ./tool/check_layer_boundaries.sh
+
+section "Agent Swift pattern checks"
+require_file tool/check_agent_swift_patterns.sh
+[[ -x tool/check_agent_swift_patterns.sh ]] || fail "tool/check_agent_swift_patterns.sh must be executable"
+./tool/check_agent_swift_patterns.sh
 
 section "SwiftUI and state anti-patterns"
 swift_paths=(superDemoApp superDemoAppTests superDemoAppUITests)
@@ -145,6 +151,7 @@ required_lint_rules=(
   no_screen_bounds_layout
   no_task_detached
   no_uiapplication_shared
+  swift_two_space_member_indent
   prefer_key_path
   private_swiftui_state
   prohibited_interface_builder
@@ -186,6 +193,12 @@ cursor_template_files=(
   tool/resolve_platform_destination.sh
   tool/check_layer_boundaries.sh
   bin/ci-platform-builds.sh
+  bin/verify-swift.sh
+  tool/check_agent_swift_patterns.sh
+  tool/install-git-hooks.sh
+  tool/git-hooks/pre-commit
+  tool/cursor-template/hooks/hooks.json
+  tool/cursor-template/hooks/format-swift-after-edit.sh
 )
 
 for path in "${cursor_template_files[@]}"; do

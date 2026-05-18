@@ -46,17 +46,32 @@ platform flows not enabled in MCP.
 
 ## Commands
 
-Lint (fast):
+Swift verify (format + lint; use after edits and before commit):
+
+```bash
+./bin/verify-swift.sh
+```
+
+Lint only (after verify, or when no Swift changed):
 
 ```bash
 ./bin/lint.sh
 ```
 
-Format:
+Format only:
 
 ```bash
 ./bin/format.sh
 ```
+
+## Hooks (one-time install)
+
+```bash
+./tool/install-cursor-rules.sh   # ../.cursor/hooks.json + format-swift-after-edit.sh
+./tool/install-git-hooks.sh      # pre-commit → verify-swift on staged .swift
+```
+
+See [`agent_swift_guards.md`](agent_swift_guards.md#automated-hooks-optional-recommended).
 
 Full CI locally (lint + iPhone test/build + parallel iPad/Mac builds; matches GitHub Actions):
 

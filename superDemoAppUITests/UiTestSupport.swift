@@ -6,6 +6,15 @@
 import XCTest
 
 enum UiTestSupport {
+    /// Launches the app with flags that disable live network in UI-test builds.
+    @MainActor
+    static func launchApplication() -> XCUIApplication {
+        let app = XCUIApplication()
+        app.launchArguments.append("-UITesting")
+        app.launch()
+        return app
+    }
+
     /// Opens the Items tab when the root shell uses `TabView`.
     @MainActor
     static func openItemsTab(in app: XCUIApplication) {
@@ -43,5 +52,31 @@ enum UiTestSupport {
             RunLoop.current.run(until: Date().addingTimeInterval(0.2))
         }
         return false
+    }
+
+    /// SwiftUI `List` surfaces as a table on iOS; collection view on some SDKs.
+    @MainActor
+    @discardableResult
+    static func waitForListOrCollection(
+        identifier: String,
+        in app: XCUIApplication,
+        timeout: TimeInterval = 10
+    ) -> XCUIElement {
+        let table = app.tables[identifier]
+        if table.waitForExistence(timeout: timeout) {
+            return table
+        }
+        let collection = app.collectionViews[identifier]
+        XCTAssertTrue(collection.waitForExistence(timeout: timeout))
+        return collection
+    }
+
+    @MainActor
+    static func scrollToElement(_ element: XCUIElement, in app: XCUIApplication) {
+        var remainingSwipes = 4
+        while !element.exists, remainingSwipes > 0 {
+            app.swipeUp()
+            remainingSwipes -= 1
+        }
     }
 }

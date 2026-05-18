@@ -20,6 +20,7 @@ private struct StubFeedAPIClient: FeedAPIClient {
     }
 }
 
+@MainActor
 @Suite("Remote feed repository")
 struct RemoteFeedRepositoryTests {
     @Test

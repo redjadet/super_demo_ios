@@ -10,8 +10,8 @@
 ## Commands (run from `superDemoApp/`)
 
 ```bash
-./bin/lint.sh      # fast gate — SwiftLint + SwiftFormat
-./bin/format.sh    # autocorrect formatting
+./bin/format.sh    # run after editing Swift — 4-space indent, wrapping (before lint)
+./bin/lint.sh      # fast gate — indent check + SwiftLint + SwiftFormat lint
 ./bin/checklist-fast # docs/tooling/small Swift sanity
 ./bin/checklist    # full delivery checklist
 ./bin/ci.sh        # full gate — lint + build + unit/UI tests
@@ -39,6 +39,8 @@ parallel XCTest path.
 
 ## Swift style
 
+- **Agents:** read [`agent_swift_guards.md`](agent_swift_guards.md) before Swift edits;
+  run `./bin/format.sh` then `./bin/lint.sh` (order matters for `(indent)` failures).
 - Format with `./bin/format.sh`; scripts pass `.swiftformat` explicitly so agent,
   Xcode, and CI runs use the same options.
 - **Types:** UpperCamelCase (`ItemRepository`, not `itemRepository`).
@@ -69,6 +71,9 @@ parallel XCTest path.
 
 ## Concurrency (matches Xcode build settings)
 
+- **`@MainActor` initializers:** no default parameter values that call `Type()`; assign
+  dependencies in the init body (Swift 6 default-arg isolation). See
+  [`agent_swift_guards.md`](agent_swift_guards.md#mainactor-feature-model-initializers).
 - Default isolation is **MainActor** — UI and SwiftData on main actor unless explicitly backgrounded.
 - Use `async`/`await`; prefer structured concurrency (`async let`, task groups) over unstructured fire-and-forget.
 - Pass `Sendable` models across actors; avoid capturing non-Sendable types in `@Sendable` closures.
@@ -97,18 +102,30 @@ Add third-party packages only when:
 - Replace `fatalError` in recoverable paths with thrown errors or user-visible failure state.
 - Use `import os` and `Logger(subsystem:category:)` instead of `print()`.
 
+## Style rules agents miss (SwiftLint)
+
+| Rule | Do |
+| --- | --- |
+| `extension_access_modifier` | `fileprivate extension Foo {` not `fileprivate var` on extension |
+| `closure_parameter_position` | `{ session, id in` on same line as `{` |
+| `trailing_closure` | `foo(stubs: x) { session in` not `foo(stubs: x, body: {` |
+| SwiftFormat `(indent)` | 4 spaces only — `./bin/format.sh` |
+
+Details: [`agent_swift_guards.md`](agent_swift_guards.md).
+
 ## Custom SwiftLint rules
 
-| Rule                      | Intent                         |
-| ------------------------- | ------------------------------ |
-| `no_navigation_view`      | Deprecated API guard           |
-| `no_force_try`            | Ban `try!`                     |
-| `no_print_debug`          | Ban `print()`                  |
-| `no_task_detached`        | Prefer structured concurrency  |
-| `no_dispatch_main_async`  | Prefer MainActor isolation     |
-| `no_screen_bounds_layout` | Ban screen-size layout hacks   |
-| `no_uiapplication_shared` | Protect universal app code     |
-| `swiftdata_model_final`   | `@Model` must be `final class` |
+| Rule                              | Intent                                                |
+| --------------------------------- | ----------------------------------------------------- |
+| `swift_two_space_member_indent`   | Ban 2-space member indent (run `./bin/format.sh`)     |
+| `no_navigation_view`              | Deprecated API guard                                  |
+| `no_force_try`                    | Ban `try!`                                            |
+| `no_print_debug`                  | Ban `print()`                                         |
+| `no_task_detached`                | Prefer structured concurrency                         |
+| `no_dispatch_main_async`          | Prefer MainActor isolation                            |
+| `no_screen_bounds_layout`         | Ban screen-size layout hacks                          |
+| `no_uiapplication_shared`         | Protect universal app code                            |
+| `swiftdata_model_final`           | `@Model` must be `final class`                        |
 
 ## High-signal SwiftLint policy
 

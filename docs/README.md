@@ -8,6 +8,7 @@ Source-of-truth docs for `superDemoApp`.
 - Agent map (lean links only; detail in `docs/`): [`../AGENTS.md`](../AGENTS.md)
 - AI agent harness: [`agent_knowledge_base.md`](agent_knowledge_base.md)
 - Agent baseline rules: [`agent_baseline.md`](agent_baseline.md)
+- Agent Swift guards (indent, lint, concurrency): [`agent_swift_guards.md`](agent_swift_guards.md)
 - Agent preferences: [`agent_preferences.md`](agent_preferences.md)
 - Commands: [`agents_quick_reference.md`](agents_quick_reference.md)
 - Review gate: [`ai_code_review_protocol.md`](ai_code_review_protocol.md)
@@ -18,6 +19,8 @@ Source-of-truth docs for `superDemoApp`.
 - Team skills pin: [`../skills-lock.json`](../skills-lock.json)
 - Apple development practices: [`apple-development-practices.md`](apple-development-practices.md)
 - Development feedback loop: [`development-feedback-loop.md`](development-feedback-loop.md)
+- Release checklist: [`release-checklist.md`](release-checklist.md)
+- Production risks: [`production-risks.md`](production-risks.md)
 
 ## Design (SwiftUI)
 
@@ -44,6 +47,7 @@ Source-of-truth docs for `superDemoApp`.
 - Feature template: [`feature-template.md`](feature-template.md)
 - AI agent playbook: [`ai-agent-playbook.md`](ai-agent-playbook.md)
 - Commit and PR guidelines: [`commit-and-pr-guidelines.md`](commit-and-pr-guidelines.md)
+- Production readiness dashboard: [`../superDemoApp/Features/ProductionReadiness/`](../superDemoApp/Features/ProductionReadiness/)
 
 ## Validation
 

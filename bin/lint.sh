@@ -15,16 +15,26 @@ require() {
 require swiftlint
 require swiftformat
 
+echo "==> Swift indent (4 spaces)"
+"$ROOT/tool/check_swift_two_space_indent.sh"
+
+echo "==> Agent Swift patterns"
+"$ROOT/tool/check_agent_swift_patterns.sh"
+
 echo "==> SwiftLint"
 swiftlint lint --strict --config "$ROOT/.swiftlint.yml"
 
 echo "==> SwiftFormat (lint)"
-swiftformat \
+if ! swiftformat \
   --lint \
   --config "$ROOT/.swiftformat" \
   "$ROOT/superDemoApp" \
   "$ROOT/superDemoAppTests" \
   "$ROOT/superDemoAppUITests"
+then
+  echo "hint: run ./bin/format.sh to fix indentation and wrapping, then ./bin/lint.sh again" >&2
+  exit 1
+fi
 
 echo "==> Layer boundaries (Features/*)"
 "$ROOT/tool/check_layer_boundaries.sh"

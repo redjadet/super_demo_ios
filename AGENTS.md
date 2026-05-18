@@ -1,7 +1,10 @@
 # AGENTS — superDemoApp
 
-**Only `AGENTS.md` in this repo.** Lean map for Cursor, Codex, and other agents.
-All policy depth lives in [`docs/`](docs/README.md).
+**Map only** — route to `docs/` for policy, style, and feature detail. Do not add
+checklists, long bullets, or implementation notes here.
+
+**Only `AGENTS.md` in this repo.** For Cursor, Codex, and other agents.
+Target **~70 lines**; if content needs explanation, put it in `docs/`.
 
 ## Authority
 
@@ -30,15 +33,16 @@ Cursor rules, MCP, team skills: [`docs/agent_host_notes.md`](docs/agent_host_not
    [`docs/universal-apple-platforms.md`](docs/universal-apple-platforms.md)
 5. `Features/`: [`docs/architecture.md`](docs/architecture.md),
    [`docs/layers.md`](docs/layers.md)
-6. [`docs/agents_quick_reference.md`](docs/agents_quick_reference.md) — commands, proof
-7. [`docs/ai_code_review_protocol.md`](docs/ai_code_review_protocol.md)
-8. Full index: [`docs/README.md`](docs/README.md)
+6. [`docs/agent_swift_guards.md`](docs/agent_swift_guards.md) — indent, lint, concurrency pitfalls
+7. [`docs/agents_quick_reference.md`](docs/agents_quick_reference.md) — commands, proof
+8. [`docs/ai_code_review_protocol.md`](docs/ai_code_review_protocol.md)
+9. Full index: [`docs/README.md`](docs/README.md)
 
 ## Route by change type
 
 | Change | Start here |
 | ------ | ------------ |
-| Any Swift edit | [`docs/code-style.md`](docs/code-style.md); then `./bin/lint.sh` |
+| Any Swift edit | [`docs/agent_swift_guards.md`](docs/agent_swift_guards.md), [`docs/code-style.md`](docs/code-style.md); `./bin/verify-swift.sh` |
 | New / layered feature | [`docs/feature-template.md`](docs/feature-template.md), [`docs/module-structure.md`](docs/module-structure.md) |
 | SwiftUI / navigation / light–dark | [`docs/design_system.md`](docs/design_system.md); `Shared/Presentation/AdaptiveNavigationShell.swift` |
 | Fast feedback / device risk | [`docs/development-feedback-loop.md`](docs/development-feedback-loop.md) |
@@ -48,28 +52,6 @@ Cursor rules, MCP, team skills: [`docs/agent_host_notes.md`](docs/agent_host_not
 | Proof before merge | [`docs/agents_quick_reference.md`](docs/agents_quick_reference.md); `./bin/ci.sh` |
 
 Non-negotiables: [`docs/agent_baseline.md`](docs/agent_baseline.md).
-User/repo conventions: [`docs/agent_preferences.md`](docs/agent_preferences.md).
-
-## Learned User Preferences
-
-- Keep this file a lean link map (~100 lines); put policy depth in `docs/` (see
-  [`docs/agent_preferences.md`](docs/agent_preferences.md)).
-- Terse “caveman” replies unless the user says stop caveman / normal mode.
-- No `git commit` or `git push` unless explicitly asked.
-- Public [`README.md`](README.md) must not mention Cursor or other IDE-specific tooling
-  (recruiter-facing repo view).
-- New user-facing capabilities need a normal UI entry point (tabs/navigation), not
-  test-only wiring.
-- Prefer strong clean-architecture enforcement when adding code (`Features/` layout,
-  layer boundaries).
-
-## Learned Workspace Facts
-
-- Git root is `superDemoApp/`; run `./bin/*` from there. Parent `super_demo_ios/` is an
-  optional Cursor workspace root.
-- GitHub Actions CI runs `./bin/ci.sh` (same as local pre-merge proof).
-- Bash scripts use `set -u`: leave optional xcodebuild flag arrays **unset** when empty
-  (not `=()`); expand with `${VAR+"${VAR[@]}"}` in `bin/ci.sh`, `bin/ci-platform-builds.sh`,
-  `bin/checklist`; flags from `tool/xcodebuild_sandbox_flags.sh`.
-- Shipped features: `Features/Items/` (reference) and `Features/Feed/` (JSONPlaceholder);
-  reviewer tour in [`docs/portfolio.md`](docs/portfolio.md).
+Standing preferences & durable facts: [`docs/agent_preferences.md`](docs/agent_preferences.md),
+[`docs/agent_project_context.md`](docs/agent_project_context.md).
+Shipped-feature tour: [`docs/portfolio.md`](docs/portfolio.md).
