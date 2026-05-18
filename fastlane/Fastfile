@@ -81,7 +81,6 @@ platform :ios do
 
   desc "iPhone build + unit/UI tests (same as bin/ci-iphone-test.sh)"
   lane :iphone_test do
-    select_xcode if ci?
     run_repo_script(
       "bin/ci-iphone-test.sh",
       extra_env: { "CI_PREPARE_IPAD" => ENV.fetch("CI_PREPARE_IPAD", "0") }
@@ -90,7 +89,6 @@ platform :ios do
 
   desc "iPad simulator + macOS compile proof (bin/ci-platform-builds.sh)"
   lane :platform_builds do
-    select_xcode if ci?
     run_repo_script(
       "bin/ci-platform-builds.sh",
       extra_env: { "CI_PREPARE_IPHONE" => ENV.fetch("CI_PREPARE_IPHONE", "0") }

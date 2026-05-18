@@ -2,6 +2,10 @@
 # Pin active developer dir to Xcode 26.5.x (CI + local parity with README badge).
 set -euo pipefail
 
+if [[ -n "${SUPER_DEMO_XCODE_SELECTED:-}" ]]; then
+  return 0 2>/dev/null || exit 0
+fi
+
 readonly REQUIRED_MAJOR_MINOR="26.5"
 
 candidates=(
@@ -57,3 +61,5 @@ if [[ "$version_line" != *"Xcode ${REQUIRED_MAJOR_MINOR}"* ]]; then
   echo "error: expected Xcode ${REQUIRED_MAJOR_MINOR}.x, got: ${version_line}" >&2
   exit 1
 fi
+
+export SUPER_DEMO_XCODE_SELECTED=1
