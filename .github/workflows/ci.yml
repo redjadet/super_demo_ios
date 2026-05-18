@@ -51,6 +51,9 @@ jobs:
           ruby-version: "3.3"
           bundler-cache: true
 
+      - name: Install lint tools
+        run: brew bundle check --file Brewfile || brew bundle --file Brewfile
+
       - name: iPhone tests
         env:
           CI: true
@@ -72,6 +75,9 @@ jobs:
         with:
           ruby-version: "3.3"
           bundler-cache: true
+
+      - name: Install lint tools
+        run: brew bundle check --file Brewfile || brew bundle --file Brewfile
 
       - name: iPad and Mac builds
         env:
