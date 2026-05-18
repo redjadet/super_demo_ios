@@ -93,6 +93,10 @@ resolve_iphone_destination() {
       prefer_arm64_simulator_destination "$dest"
       return 0
     fi
+    if [[ "${CI:-}" == "true" ]]; then
+      prefer_arm64_simulator_destination "$dest"
+      return 0
+    fi
   fi
 
   if dest="$(resolve_iphone_destination_from_xcodebuild)"; then
@@ -124,6 +128,10 @@ resolve_ipad_destination() {
   if [[ -n "$udid" ]]; then
     dest="platform=iOS Simulator,id=${udid}"
     if destination_valid_for_scheme "$dest"; then
+      prefer_arm64_simulator_destination "$dest"
+      return 0
+    fi
+    if [[ "${CI:-}" == "true" ]]; then
       prefer_arm64_simulator_destination "$dest"
       return 0
     fi

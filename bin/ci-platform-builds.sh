@@ -16,7 +16,7 @@ fi
 source "$ROOT/tool/xcode_env.sh"
 
 if [[ "${CI:-}" == "true" && -z "${CI_IPAD_DEST:-}" ]]; then
-  CI_PREPARE_IPHONE="${CI_PREPARE_IPHONE:-0}" ./tool/ensure_ci_simulator.sh
+  CI_PREPARE_IPHONE="${CI_PREPARE_IPHONE:-0}" source "$ROOT/tool/ensure_ci_simulator.sh" || exit $?
 fi
 
 # shellcheck source=../tool/resolve_platform_destination.sh

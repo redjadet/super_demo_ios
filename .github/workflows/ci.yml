@@ -55,7 +55,9 @@ jobs:
         env:
           CI: true
           CI_PREPARE_IPAD: "0"
-        run: bundle exec fastlane iphone_test
+        run: |
+          source ./tool/select_xcode_26_5.sh
+          bundle exec fastlane iphone_test
 
   platform-builds:
     runs-on: macos-26
@@ -78,7 +80,9 @@ jobs:
           CI: true
           CI_PREPARE_IPHONE: "0"
           CI_SERIAL_PLATFORM_BUILDS: "1"
-        run: bundle exec fastlane platform_builds
+        run: |
+          source ./tool/select_xcode_26_5.sh
+          bundle exec fastlane platform_builds
 
   lint-build-test:
     runs-on: ubuntu-latest

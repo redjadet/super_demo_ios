@@ -1,9 +1,30 @@
 #!/usr/bin/env bash
 # Create and boot an iPhone simulator on CI on the newest iOS runtime (matches SDK).
+# Source from CI scripts so exported CI_*_DEST vars stay in the parent shell.
 set -euo pipefail
 
+_ensure_is_sourced() {
+  [[ "${BASH_SOURCE[0]}" != "${0}" ]]
+}
+
+_ensure_done() {
+  local code="${1:-0}"
+  if _ensure_is_sourced; then
+    return "$code"
+  fi
+  exit "$code"
+}
+
+_ensure_fatal() {
+  local code="${1:-1}"
+  if _ensure_is_sourced; then
+    return "$code"
+  fi
+  exit "$code"
+}
+
 if [[ "${CI:-}" != "true" ]]; then
-  exit 0
+  _ensure_done 0
 fi
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -31,7 +52,7 @@ finalize_ci_simulator_dest() {
 
 if [[ "$CI_PREPARE_IPHONE" != "1" && "$CI_PREPARE_IPAD" != "1" ]]; then
   echo "error: CI_PREPARE_IPHONE=0 and CI_PREPARE_IPAD=0; nothing to prepare" >&2
-  exit 2
+  _ensure_fatal 2
 fi
 
 iphone_ready=0
@@ -48,7 +69,7 @@ elif [[ -n "${CI_IPAD_DEST:-}" ]] && destination_valid_for_scheme "${CI_IPAD_DES
 fi
 if ((iphone_ready == 1 && ipad_ready == 1)); then
   echo "==> CI simulators already configured"
-  exit 0
+  _ensure_done 0
 fi
 echo "warning: CI simulator destination missing or invalid; provisioning required devices" >&2
 
@@ -147,7 +168,7 @@ create_newest_runtime_simulator() {
   if [[ -z "$runtime_id" ]]; then
     echo "error: no iOS simulator runtime available" >&2
     xcrun simctl list runtimes >&2 || true
-    exit 1
+    _ensure_fatal 1
   fi
 
   runtime_version="$(ios_runtime_version "$runtime_id")"
@@ -157,7 +178,7 @@ create_newest_runtime_simulator() {
   device_type_id="$(select_preferred_iphone_device_type_id)" || true
   if [[ -z "$device_type_id" ]]; then
     echo "error: no iPhone device type found" >&2
-    exit 1
+    _ensure_fatal 1
   fi
 
   udid="$(xcrun simctl create "CI iPhone" "$device_type_id" "$runtime_id")"
@@ -170,7 +191,7 @@ create_newest_runtime_simulator() {
     echo "error: xcodebuild does not accept destination after boot: $dest" >&2
     "$XCODEBUILD" -showdestinations -project superDemoApp.xcodeproj -scheme superDemoApp 2>&1 | head -30 >&2 || true
     xcrun simctl list devices available >&2 || true
-    exit 1
+    _ensure_fatal 1
   fi
 
   export_ci_simulator_dest "$dest"
@@ -189,7 +210,7 @@ else
   if [[ -z "$runtime_id" ]]; then
     echo "error: no iOS simulator runtime available" >&2
     xcrun simctl list runtimes >&2 || true
-    exit 1
+    _ensure_fatal 1
   fi
 fi
 
