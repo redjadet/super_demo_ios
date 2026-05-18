@@ -4,6 +4,9 @@ Record durable implementation notes after meaningful changes.
 
 ## Entries
 
+- [`2026-05-18_ci-parallel-lanes.md`](2026-05-18_ci-parallel-lanes.md)
+  — GitHub Actions lint/test/platform proof split into parallel lanes with
+  `lint-build-test` preserved as aggregate gate.
 - [`2026-05-16_feed-feature-shipped.md`](2026-05-16_feed-feature-shipped.md)
   — Feed tab, layered module, SwiftData cache, tests, doc sync.
 - [`2026-05-16_portfolio-documentation-and-feed-roadmap.md`](2026-05-16_portfolio-documentation-and-feed-roadmap.md)

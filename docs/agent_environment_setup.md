@@ -73,7 +73,8 @@ Format only:
 
 See [`agent_swift_guards.md`](agent_swift_guards.md#automated-hooks-optional-recommended).
 
-Full CI locally (lint + iPhone test/build + parallel iPad/Mac builds; matches GitHub Actions):
+Full CI locally (lint + iPhone test/build + parallel iPad/Mac builds; same proof
+lanes as GitHub Actions):
 
 ```bash
 ./bin/ci.sh
@@ -114,8 +115,9 @@ xcodebuild -project superDemoApp.xcodeproj -scheme superDemoApp -destination 'pl
 ```
 
 GitHub Actions on push/PR to `main` runs lint, iOS Simulator tests (which build
-the app and tests), then `./bin/ci-platform-builds.sh` for iPad simulator + macOS
-builds (see `.github/workflows/ci.yml`).
+the app and tests), and `./bin/ci-platform-builds.sh` for iPad simulator + macOS
+builds as parallel lanes. The `lint-build-test` job is an aggregate required-check
+gate over those lanes (see `.github/workflows/ci.yml`).
 
 ## Cursor (first-time)
 

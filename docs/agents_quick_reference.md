@@ -21,7 +21,7 @@ XcodeBuildMCP active profile: `superDemoApp`
 | Docs / tooling / small Swift | `./bin/checklist-fast` |
 | Domain / Data logic | `./bin/verify-swift.sh` + targeted tests |
 | SwiftUI layout, navigation, universal UI, light/dark | `./bin/checklist` |
-| Before merge / PR | `./bin/ci.sh` (matches GitHub Actions) |
+| Before merge / PR | `./bin/ci.sh` (same proof lanes as GitHub Actions) |
 
 `CI_SKIP_PLATFORM_BUILDS=1` skips iPad/Mac in `./bin/ci.sh` only when intentionally narrow.
 UI smoke: `superDemoAppUITests.testLaunchShowsAddItemControl` in CI iPhone test lane.
@@ -38,6 +38,7 @@ UI smoke: `superDemoAppUITests.testLaunchShowsAddItemControl` in CI iPhone test 
 | Fast checklist (markdown + DesignMD + lint + sanity) | `./bin/checklist-fast` |
 | Full checklist (above + iPhone test + iPad/Mac) | `./bin/checklist` |
 | Full local CI | `./bin/ci.sh` |
+| iPhone build/test lane only | `./bin/ci-iphone-test.sh` |
 | iPad + Mac builds only | `./bin/ci-platform-builds.sh` |
 | Install Cursor rules + hooks (after clone) | `./tool/install-cursor-rules.sh` |
 | Install git pre-commit (after clone) | `./tool/install-git-hooks.sh` |
@@ -72,7 +73,7 @@ UI smoke: `superDemoAppUITests.testLaunchShowsAddItemControl` in CI iPhone test 
 - Keep changes surgical.
 - Prefer `./bin/checklist-fast` for docs/tooling/small Swift edits.
 - Use `./bin/checklist` for SwiftUI layout/navigation/universal UI before handoff.
-- Use `./bin/ci.sh` before merge/PR (includes iPad/Mac builds).
+- Use `./bin/ci.sh` before merge/PR (same lint, iPhone test, iPad build, and Mac build proof as CI).
 - `./bin/checklist` resolves an available iPhone simulator automatically; set `CHECKLIST_IPHONE_DEST` only when a specific destination is required.
 - `./bin/checklist` and `./bin/ci.sh` disable parallel test workers by default;
   set `CHECKLIST_ALLOW_PARALLEL_TESTS=1` or `CI_ALLOW_PARALLEL_TESTS=1` only when

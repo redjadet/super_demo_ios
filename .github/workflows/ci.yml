@@ -11,7 +11,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  lint-build-test:
+  lint:
     runs-on: macos-26
     defaults:
       run:
@@ -25,14 +25,79 @@ jobs:
         run: ./tool/select_xcode_26_5.sh
 
       - name: Install lint tools
-        run: brew bundle --file Brewfile
+        run: brew bundle check --file Brewfile || brew bundle --file Brewfile
+
+      - name: Lint
+        env:
+          CI: true
+        run: |
+          ./bin/lint.sh
+          ./bin/lint-markdown.sh
+          ./tool/check_common_issues.sh
+
+  iphone-test:
+    runs-on: macos-26
+    defaults:
+      run:
+        working-directory: .
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Select Xcode 26.5
+        run: ./tool/select_xcode_26_5.sh
 
       - name: Prepare iOS Simulator
         env:
           CI: true
         run: ./tool/ensure_ci_simulator.sh
 
-      - name: CI (lint, iPhone test, parallel iPad/Mac builds)
+      - name: iPhone tests
         env:
           CI: true
-        run: ./bin/ci.sh
+        run: ./bin/ci-iphone-test.sh
+
+  platform-builds:
+    runs-on: macos-26
+    defaults:
+      run:
+        working-directory: .
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Select Xcode 26.5
+        run: ./tool/select_xcode_26_5.sh
+
+      - name: Prepare iOS Simulator
+        env:
+          CI: true
+        run: ./tool/ensure_ci_simulator.sh
+
+      - name: iPad and Mac builds
+        env:
+          CI: true
+        run: ./bin/ci-platform-builds.sh
+
+  lint-build-test:
+    runs-on: ubuntu-latest
+    needs: [lint, iphone-test, platform-builds]
+    if: ${{ always() }}
+    steps:
+      - name: Check CI lanes
+        run: |
+          if [[ "${{ needs.lint.result }}" != "success" ]]; then
+            echo "lint failed or did not complete"
+            exit 1
+          fi
+          if [[ "${{ needs['iphone-test'].result }}" != "success" ]]; then
+            echo "iphone-test failed or did not complete"
+            exit 1
+          fi
+          if [[ "${{ needs['platform-builds'].result }}" != "success" ]]; then
+            echo "platform-builds failed or did not complete"
+            exit 1
+          fi
+          echo "CI lanes passed."
