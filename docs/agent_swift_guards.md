@@ -195,7 +195,8 @@ See [`testing.md`](testing.md#urlprotocol-stubs).
   Do not call `XCUIApplication().launch()` directly in feature tests unless you
   also terminate and pass the flag.
 - **`superDemoAppUITests`** must keep balanced **`setUp`** / **`tearDown`**
-  (`balanced_xctest_lifecycle`). `tearDown` calls `UiTestSupport.terminateApplication`.
+  (`balanced_xctest_lifecycle`). Mark **`tearDown`** with **`@MainActor`** when it
+  calls `UiTestSupport.terminateApplication` (Swift 6 / CI compile).
 - Prefer **accessibility identifiers** on buttons/links (`productionRisksLink`,
   `uikitShowcaseLink`, `feedTab`, `itemsTab`, `refreshFeed`, `feedList`), not
   visible text alone, so labels can change without breaking smoke tests.

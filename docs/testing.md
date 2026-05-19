@@ -20,7 +20,9 @@ adding a deterministic test, mock fixture, preview state, or script.
 The iPhone test lane (`bin/ci-iphone-test.sh`, GitHub Actions `iphone-test`) runs
 unit tests plus `superDemoAppUITests` in one serial `xcodebuild test` invocation.
 On CI it skips `superDemoAppUITestsLaunchTests` and `testLaunchPerformance` to
-avoid duplicate launch coverage and long performance relaunches.
+avoid duplicate launch coverage and long performance relaunches. **Do not** split
+unit and UI into two `xcodebuild test` passes (GitHub Actions accessibility
+timeout).
 
 | UI test | What it proves |
 | --- | --- |
@@ -34,9 +36,9 @@ Helpers live in `superDemoAppUITests/UiTestSupport.swift`:
 - **`launchApplication()`** — passes `-UITesting`, terminates any running app
   instance, then launches and waits for foreground (avoids CI
   `Failed to terminate` between tests).
-- **`tearDown`** in `superDemoAppUITests` — calls `terminateApplication` so the
-  next test does not inherit a stuck process (SwiftLint: balanced `setUp` /
-  `tearDown`).
+- **`tearDown`** in `superDemoAppUITests` — `@MainActor`, calls
+  `terminateApplication` so the next test does not inherit a stuck process
+  (SwiftLint: balanced `setUp` / `tearDown`; required for Swift 6 on CI).
 
 ### `-UITesting` behavior
 

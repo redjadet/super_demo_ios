@@ -15,7 +15,8 @@ Machine-readable project facts for agents.
 - GitHub Actions runs on `macos-26` and pins **Xcode 26.5.0** via
   `tool/select_xcode_26_5.sh` (see [`code-style.md`](code-style.md)).
 - `fastlane/README.md` is auto-generated and gitignored; markdownlint skips
-  `fastlane/**` (`.markdownlintignore`, `bin/lint-markdown.sh`).
+  `fastlane/**` in CI (`.markdownlintignore`, `bin/lint-markdown.sh`). For local
+  IDE lint on that file, `fastlane/.markdownlint.json` disables MD003/MD041.
 - Normal app runs use live HTTP to JSONPlaceholder; UI tests pass `-UITesting` so
   Production Readiness and Feed use sample data only — [`sync-and-networking.md`](sync-and-networking.md),
   [`testing.md`](testing.md).

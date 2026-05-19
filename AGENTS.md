@@ -58,3 +58,7 @@ Cursor rules, MCP, team skills:
 Non-negotiables: [`docs/agent_baseline.md`](docs/agent_baseline.md).
 Standing user prefs: [`docs/agent_preferences.md`](docs/agent_preferences.md).
 Shipped-feature tour: [`docs/portfolio.md`](docs/portfolio.md).
+
+Continual-learning and chat memory: update [`docs/agent_preferences.md`](docs/agent_preferences.md)
+and [`docs/agent_project_context.md`](docs/agent_project_context.md) only—never
+add policy bullets or learned sections here.

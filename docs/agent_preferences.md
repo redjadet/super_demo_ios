@@ -1,8 +1,10 @@
 # Agent Preferences
 
 User and repo conventions for agent replies, git behavior, and doc shape.
-Continual-learning and agents should update **this file**, not
-[`../AGENTS.md`](../AGENTS.md) (map-only).
+Continual-learning and agents must update **this file** and
+[`agent_project_context.md`](agent_project_context.md), never
+[`../AGENTS.md`](../AGENTS.md). Keep `AGENTS.md` a link-only map (~70 lines)—no
+`## Learned …` sections or policy bullets there.
 
 ## Replies
 
