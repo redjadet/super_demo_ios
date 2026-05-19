@@ -16,6 +16,57 @@ enum UiTestSupport {
         return app
     }
 
+    /// Opens the Feed tab when the root shell uses `TabView`.
+    @MainActor
+    static func openFeedTab(in app: XCUIApplication) {
+        let tabBarFeed = app.tabBars.buttons["Feed"]
+        if tabBarFeed.waitForExistence(timeout: 10) {
+            if !tabBarFeed.isSelected {
+                tabBarFeed.tap()
+            }
+            return
+        }
+
+        let feedTabId = app.buttons["feedTab"]
+        if feedTabId.waitForExistence(timeout: 5) {
+            feedTabId.tap()
+        }
+    }
+
+    /// Waits for Feed chrome (toolbar, states, or list). `isSelected` on tab buttons is unreliable on CI.
+    @MainActor
+    static func waitForFeedChrome(in app: XCUIApplication, timeout: TimeInterval = 30) -> Bool {
+        let deadline = Date().addingTimeInterval(timeout)
+        while Date() < deadline {
+            let refresh = app.buttons["refreshFeed"]
+            let refreshToolbar = app.toolbars.buttons["refreshFeed"]
+            let refreshLabel = app.buttons["Refresh Feed"]
+            let retry = app.buttons["feedRetry"]
+            let loading = app.progressIndicators.firstMatch
+            let feedFailed = app.staticTexts["Could Not Load Feed"]
+            let feedEmpty = app.staticTexts["No Posts"]
+            let feedList = app.descendants(matching: .any).matching(identifier: "feedList").firstMatch
+            let firstPostCell = app.cells.firstMatch
+
+            let hasFeedUI =
+                refresh.exists
+                    || refreshToolbar.exists
+                    || refreshLabel.exists
+                    || retry.exists
+                    || loading.exists
+                    || feedFailed.exists
+                    || feedEmpty.exists
+                    || feedList.exists
+                    || firstPostCell.exists
+            if hasFeedUI {
+                return true
+            }
+
+            RunLoop.current.run(until: Date().addingTimeInterval(0.2))
+        }
+        return false
+    }
+
     /// Opens the Items tab when the root shell uses `TabView`.
     @MainActor
     static func openItemsTab(in app: XCUIApplication) {
@@ -43,9 +94,10 @@ enum UiTestSupport {
                 return true
             }
 
-            let hasItemsUI = app.staticTexts["No Items"].exists
-                || app.staticTexts["Could Not Load Items"].exists
-                || app.cells.firstMatch.exists
+            let hasItemsUI =
+                app.staticTexts["No Items"].exists
+                    || app.staticTexts["Could Not Load Items"].exists
+                    || app.cells.firstMatch.exists
             if hasItemsUI {
                 return true
             }

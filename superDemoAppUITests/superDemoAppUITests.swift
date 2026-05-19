@@ -60,29 +60,8 @@ final class superDemoAppUITests: XCTestCase {
 
         let app = UiTestSupport.launchApplication()
 
-        let feedTab = app.tabBars.buttons["Feed"]
-        XCTAssertTrue(feedTab.waitForExistence(timeout: 10))
-        feedTab.tap()
-        XCTAssertTrue(feedTab.isSelected)
-
-        let refresh = app.buttons["refreshFeed"]
-        let refreshToolbar = app.toolbars.buttons["refreshFeed"]
-        let refreshLabel = app.buttons["Refresh Feed"]
-        let retry = app.buttons["feedRetry"]
-        let loading = app.progressIndicators.firstMatch
-        let feedFailed = app.staticTexts["Could Not Load Feed"]
-        let feedEmpty = app.staticTexts["No Posts"]
-        let firstPostCell = app.cells.firstMatch
-        XCTAssertTrue(
-            refresh.waitForExistence(timeout: 15)
-                || refreshToolbar.waitForExistence(timeout: 5)
-                || refreshLabel.waitForExistence(timeout: 5)
-                || retry.waitForExistence(timeout: 5)
-                || loading.waitForExistence(timeout: 5)
-                || feedFailed.waitForExistence(timeout: 15)
-                || feedEmpty.waitForExistence(timeout: 5)
-                || firstPostCell.waitForExistence(timeout: 20)
-        )
+        UiTestSupport.openFeedTab(in: app)
+        XCTAssertTrue(UiTestSupport.waitForFeedChrome(in: app))
     }
 
     @MainActor
