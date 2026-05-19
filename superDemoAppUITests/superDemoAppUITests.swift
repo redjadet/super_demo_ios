@@ -13,6 +13,7 @@ final class superDemoAppUITests: XCTestCase {
         continueAfterFailure = false
     }
 
+    @MainActor
     override func tearDown() {
         UiTestSupport.terminateApplication(XCUIApplication())
         super.tearDown()
