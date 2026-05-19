@@ -22,7 +22,7 @@ XcodeBuildMCP active profile: `superDemoApp`
 | Domain / Data logic | `./bin/verify-swift.sh` + targeted tests |
 | SwiftUI layout, navigation, universal UI, light/dark | `./bin/checklist` |
 | Before merge / PR | `./bin/ci.sh` or `./bin/fastlane-run ci` (same proof lanes as GitHub Actions) |
-| Fastlane lanes (lint, test, builds, CI) | `./bin/fastlane-run <lane>` — see `fastlane/Fastfile` |
+| Fastlane lanes (lint, test, builds, CI, beta) | `./bin/fastlane-run <lane>` — see `fastlane/Fastfile` |
 
 `CI_SKIP_PLATFORM_BUILDS=1` skips iPad/Mac in `./bin/ci.sh` only when intentionally narrow.
 UI smoke: `superDemoAppUITests.testLaunchShowsAddItemControl` in CI iPhone test lane.
@@ -39,6 +39,7 @@ UI smoke: `superDemoAppUITests.testLaunchShowsAddItemControl` in CI iPhone test 
 | Fast checklist (markdown + DesignMD + lint + sanity) | `./bin/checklist-fast` |
 | Full checklist (above + iPhone test + iPad/Mac) | `./bin/checklist` |
 | Full local CI | `./bin/ci.sh` (`./bin/fastlane-run ci`) |
+| TestFlight beta lane | `TESTFLIGHT_BUILD_NUMBER=<unique-build-number> ./bin/fastlane-run ios beta` |
 | CI lint job only | `./bin/fastlane-run ci_lint` |
 | iPhone tests lane | `./bin/fastlane-run iphone_test` |
 | iPad + Mac lane | `./bin/fastlane-run platform_builds` |

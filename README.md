@@ -65,9 +65,9 @@ xcodebuild -project superDemoApp.xcodeproj -scheme superDemoApp -destination 'pl
 
 ## TestFlight And Release
 
-- Archive with Xcode or Fastlane after `./bin/ci.sh` passes.
-- Suggested Fastlane lane: build, run tests, increment build number, archive, upload to
-  TestFlight, attach release notes from `docs/release-checklist.md`.
+- Archive with Xcode or `TESTFLIGHT_BUILD_NUMBER=<unique-build-number> ./bin/fastlane-run ios beta`.
+- Fastlane beta runs existing CI proof, builds a clean App Store archive, uploads to
+  TestFlight, and uses release notes from `docs/release-notes/testflight.md`.
 - Suggested GitHub Actions gate: lint, unit/UI tests on iPhone simulator, iPad build,
   macOS build, then archive on a signed release runner.
 - Before TestFlight, complete [`docs/release-checklist.md`](docs/release-checklist.md) and

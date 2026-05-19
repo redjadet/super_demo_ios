@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "shellwords"
+
 # Orchestrates existing bin/ and tool/ scripts for local dev and GitHub Actions.
 # Keeps simulator/Xcode pinning in bash; Fastlane provides one entry point and CI caching.
 
@@ -7,6 +9,8 @@ default_platform(:ios)
 
 PROJECT = "superDemoApp.xcodeproj"
 SCHEME = "superDemoApp"
+TESTFLIGHT_RELEASE_NOTES_REL_PATH = "docs/release-notes/testflight.md"
+TESTFLIGHT_OUTPUT_REL_DIR = "build/testflight"
 
 def repo_root
   @repo_root ||= File.expand_path("..", __dir__)
@@ -14,6 +18,27 @@ end
 
 def ci?
   ENV["CI"] == "true"
+end
+
+def required_env(name)
+  value = ENV[name].to_s.strip
+  UI.user_error!("Set #{name} before running the TestFlight beta lane.") if value.empty?
+  value
+end
+
+def repo_path(path)
+  File.expand_path(path, repo_root)
+end
+
+def testflight_release_notes
+  path = repo_path(ENV.fetch("TESTFLIGHT_RELEASE_NOTES_PATH", TESTFLIGHT_RELEASE_NOTES_REL_PATH))
+  UI.user_error!("Release notes file missing: #{path}") unless File.file?(path)
+
+  notes = File.read(path).strip
+  UI.user_error!("Release notes file is empty: #{path}") if notes.empty?
+  UI.user_error!("Release notes still contain TODO: #{path}") if notes.match?(/\bTODO\b/i)
+
+  notes
 end
 
 def run_repo_script(rel_path, extra_env: {})
@@ -147,5 +172,44 @@ platform :ios do
   desc "Full checklist: lint, design md, iPhone test, iPad/Mac (bin/checklist)"
   lane :checklist do
     run_repo_script("bin/checklist")
+  end
+
+  desc "Production beta: CI proof, signed archive, TestFlight upload"
+  lane :beta do
+    build_number = required_env("TESTFLIGHT_BUILD_NUMBER")
+    notes = testflight_release_notes
+    select_xcode
+
+    if ENV["TESTFLIGHT_SKIP_CI"] == "1"
+      UI.important("Skipping CI proof (TESTFLIGHT_SKIP_CI=1). Use only after a same-commit proof run.")
+    else
+      ci
+    end
+
+    ipa_path = build_app(
+      project: PROJECT,
+      scheme: SCHEME,
+      configuration: "Release",
+      clean: true,
+      export_method: "app-store",
+      output_directory: repo_path(TESTFLIGHT_OUTPUT_REL_DIR),
+      output_name: "superDemoApp-#{build_number}.ipa",
+      xcargs: "CURRENT_PROJECT_VERSION=#{build_number.shellescape}"
+    )
+
+    if ENV["TESTFLIGHT_SKIP_UPLOAD"] == "1"
+      UI.important("Built TestFlight archive without upload: #{ipa_path}")
+      next
+    end
+
+    upload_options = {
+      ipa: ipa_path,
+      changelog: notes,
+      skip_waiting_for_build_processing: true
+    }
+    api_key_path = ENV["APP_STORE_CONNECT_API_KEY_PATH"].to_s.strip
+    upload_options[:api_key_path] = repo_path(api_key_path) unless api_key_path.empty?
+
+    upload_to_testflight(**upload_options)
   end
 end
