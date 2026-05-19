@@ -4,7 +4,9 @@
 checklists, long bullets, or implementation notes here.
 
 **Only `AGENTS.md` in this repo.** For Cursor, Codex, and other agents.
-Target **~70 lines**; if content needs explanation, put it in `docs/`.
+Target **~70 lines**; durable prefs and workspace facts belong in
+[`docs/agent_preferences.md`](docs/agent_preferences.md) and
+[`docs/agent_project_context.md`](docs/agent_project_context.md), not here.
 
 ## Authority
 
@@ -19,8 +21,10 @@ Done means plan, execute, verify, and report proof.
 | Parent `super_demo_ios/` | Optional Cursor workspace root |
 | `superDemoApp/superDemoApp/` | App Swift sources |
 
-Paths, targets, repo URL: [`docs/agent_project_context.md`](docs/agent_project_context.md).
-Cursor rules, MCP, team skills: [`docs/agent_host_notes.md`](docs/agent_host_notes.md),
+Paths, targets, CI pins, repo URL:
+[`docs/agent_project_context.md`](docs/agent_project_context.md).
+Cursor rules, MCP, team skills:
+[`docs/agent_host_notes.md`](docs/agent_host_notes.md),
 [`tool/cursor-template/README.md`](tool/cursor-template/README.md),
 [`skills-lock.json`](skills-lock.json).
 
@@ -52,6 +56,5 @@ Cursor rules, MCP, team skills: [`docs/agent_host_notes.md`](docs/agent_host_not
 | Proof before merge | [`docs/agents_quick_reference.md`](docs/agents_quick_reference.md); `./bin/ci.sh` |
 
 Non-negotiables: [`docs/agent_baseline.md`](docs/agent_baseline.md).
-Standing preferences & durable facts: [`docs/agent_preferences.md`](docs/agent_preferences.md),
-[`docs/agent_project_context.md`](docs/agent_project_context.md).
+Standing user prefs: [`docs/agent_preferences.md`](docs/agent_preferences.md).
 Shipped-feature tour: [`docs/portfolio.md`](docs/portfolio.md).

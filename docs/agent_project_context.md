@@ -10,6 +10,16 @@ Machine-readable project facts for agents.
 - GitHub Actions and local pre-merge proof: `./bin/ci.sh` (see
   [`agents_quick_reference.md`](agents_quick_reference.md)).
 
+## CI and repo tooling
+
+- GitHub Actions runs on `macos-26` and pins **Xcode 26.5.0** via
+  `tool/select_xcode_26_5.sh` (see [`code-style.md`](code-style.md)).
+- `fastlane/README.md` is auto-generated and gitignored; markdownlint skips
+  `fastlane/**` (`.markdownlintignore`, `bin/lint-markdown.sh`).
+- Normal app runs use live HTTP to JSONPlaceholder; UI tests pass `-UITesting` so
+  Production Readiness uses sample data only — [`sync-and-networking.md`](sync-and-networking.md),
+  [`testing.md`](testing.md).
+
 ## Shipped features (tour)
 
 - `Features/Items/` — SwiftData reference slice.

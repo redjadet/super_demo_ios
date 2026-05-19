@@ -33,4 +33,14 @@ Continual-learning and agents should update **this file**, not
   [`agent_swift_guards.md`](agent_swift_guards.md) and lint/format tooling—not only
   one-off file fixes.
 
+## Review and delivery passes
+
+- When the user asks to finish a review or delivery pass, complete cited
+  should-fix, nice-to-have, and proposed items—not only blockers.
+
+## Xcode / MCP
+
+- When the user asks to rebuild or clear Xcode warnings/errors, prefer the
+  **Xcode tools** MCP (`xcode-tools`) per [`agent_host_notes.md`](agent_host_notes.md).
+
 Host-specific tooling: [`agent_host_notes.md`](agent_host_notes.md).
