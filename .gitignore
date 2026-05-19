@@ -43,6 +43,7 @@ tasks/
 
 # Bundler / Fastlane
 vendor/bundle/
+fastlane/Matchfile
 fastlane/README.md
 fastlane/report.xml
 fastlane/Preview.html

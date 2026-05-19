@@ -58,9 +58,24 @@ Lane behavior:
   [`docs/release-notes/testflight.md`](release-notes/testflight.md).
 - Set `TESTFLIGHT_SKIP_UPLOAD=1` only to validate archive shape without upload.
 - Set `TESTFLIGHT_SKIP_CI=1` only after a same-commit CI proof already passed.
+- Archive only (no upload): `TESTFLIGHT_BUILD_NUMBER=<n> ./bin/fastlane-run ios build_ipa`.
+
+Optional signing via [match](https://docs.fastlane.tools/actions/match/): copy
+`fastlane/Matchfile.example` to `fastlane/Matchfile`, run `fastlane match appstore`
+once, then set `FASTLANE_USE_MATCH=1` (or keep `Matchfile` in repo). CI should use
+`MATCH_READONLY=1` (default when `CI=true`).
 
 ## App Store
 
+- Release notes source: [`docs/release-notes/app-store.md`](release-notes/app-store.md).
+- Upload lane (does not submit for review unless you opt in):
+
+```bash
+TESTFLIGHT_BUILD_NUMBER=<unique-build-number> ./bin/fastlane-run ios release
+```
+
+- Set `APP_STORE_SUBMIT_FOR_REVIEW=1` only when metadata and build are ready for review.
+- Set `APP_STORE_SKIP_UPLOAD=1` to validate the archive without upload.
 - Entitlements and signing match production bundle ID.
 - Privacy labels reflect diagnostics, identifiers, and network services.
 - Review notes explain permissions, background modes, deep links, or demo credentials.

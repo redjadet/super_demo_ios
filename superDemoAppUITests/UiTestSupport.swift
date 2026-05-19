@@ -6,13 +6,25 @@
 import XCTest
 
 enum UiTestSupport {
+    private static let terminateTimeout: TimeInterval = 20
+
+    /// Ends a running app instance so the next `launch()` does not hang on XCTest terminate (common on CI).
+    @MainActor
+    static func terminateApplication(_ app: XCUIApplication) {
+        guard app.state != .notRunning else { return }
+
+        app.terminate()
+        _ = app.wait(for: .notRunning, timeout: self.terminateTimeout)
+    }
+
     /// Launches the app with flags that disable live network in UI-test builds.
     @MainActor
     static func launchApplication() -> XCUIApplication {
         let app = XCUIApplication()
-        app.launchArguments.append("-UITesting")
+        app.launchArguments = ["-UITesting"]
+        self.terminateApplication(app)
         app.launch()
-        _ = app.wait(for: .runningForeground, timeout: 30)
+        XCTAssertTrue(app.wait(for: .runningForeground, timeout: 30))
         return app
     }
 

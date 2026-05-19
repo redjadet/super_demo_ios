@@ -17,12 +17,38 @@ adding a deterministic test, mock fixture, preview state, or script.
 
 ## UI smoke (CI)
 
-`superDemoAppUITests.testLaunchShowsAddItemControl` is the CI launch smoke (see
-`bin/ci-iphone-test.sh`, which skips duplicate `LaunchTests` and
-`testLaunchPerformance` on CI).
+The iPhone test lane (`bin/ci-iphone-test.sh`, GitHub Actions `iphone-test`) runs
+unit tests plus `superDemoAppUITests` in one serial `xcodebuild test` invocation.
+On CI it skips `superDemoAppUITestsLaunchTests` and `testLaunchPerformance` to
+avoid duplicate launch coverage and long performance relaunches.
+
+| UI test | What it proves |
+| --- | --- |
+| `testLaunchShowsAddItemControl` | Items tab chrome (`addItem` / empty / list) |
+| `testDashboardShowsProductionRisks` | Dashboard → Production Risks list |
+| `testUIKitShowcaseCollectionIsReachable` | Dashboard → UIKit showcase collection |
+| `testFeedTabIsReachable` | Feed tab chrome (toolbar, list, empty, or error) |
+
+Helpers live in `superDemoAppUITests/UiTestSupport.swift`:
+
+- **`launchApplication()`** — passes `-UITesting`, terminates any running app
+  instance, then launches and waits for foreground (avoids CI
+  `Failed to terminate` between tests).
+- **`tearDown`** in `superDemoAppUITests` — calls `terminateApplication` so the
+  next test does not inherit a stuck process (SwiftLint: balanced `setUp` /
+  `tearDown`).
+
+### `-UITesting` behavior
+
+When `ProcessInfo` contains `-UITesting` (`AppLaunchConfiguration.isUITesting`):
+
+- **Production Readiness** uses `SampleProductionReadinessRepository` (no live
+  JSONPlaceholder health probe).
+- **Feed** uses `SampleFeedRepository` via `FeedComposition` (no live posts fetch).
+
+Normal app runs still hit JSONPlaceholder for Feed and remote health checks.
+
 Extend UI tests when adding primary navigation or forms; keep smoke green before PR.
-UI tests launch with `-UITesting` (see `UiTestSupport.launchApplication`) so the
-Production Readiness dashboard uses sample data only—no live JSONPlaceholder calls.
 
 ## What To Test
 
@@ -71,6 +97,8 @@ xcodebuild -project superDemoApp.xcodeproj -scheme superDemoApp -destination 'pl
 xcodebuild -project superDemoApp.xcodeproj -scheme superDemoApp -destination 'platform=macOS' build
 ```
 
-Production Readiness coverage lives under `superDemoAppTests/Features/ProductionReadiness`
-and `superDemoAppTests/Shared/Networking`. UI smoke covers Dashboard, Production Risks,
-and the iOS UIKit showcase entry.
+Production Readiness unit coverage:
+`superDemoAppTests/Features/ProductionReadiness` and
+`superDemoAppTests/Shared/Networking`. Feed unit coverage:
+`superDemoAppTests/Features/Feed`. UI smoke covers Items, Dashboard (risks +
+UIKit showcase), and Feed tabs — see table above.

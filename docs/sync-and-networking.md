@@ -17,6 +17,9 @@ The **Feed** feature (see [`docs/portfolio.md`](portfolio.md) and
 **DummyJSON** alternate (`/posts`): wrapper `{ posts: [...], ... }` before DTO map.
 
 Tests: **`URLProtocol`** or injected **`URLSession`** — no flaky live HTTP on CI.
+UI tests pass **`-UITesting`**; `FeedComposition` uses **`SampleFeedRepository`**
+instead of `RemoteFeedRepository` so the Feed tab does not open live HTTP during
+`superDemoAppUITests` (see [`testing.md`](testing.md#-uitesting-behavior)).
 
 **Status:** Shipped under `Features/Feed/`; see
 [`changes/2026-05-16_feed-feature-shipped.md`](changes/2026-05-16_feed-feature-shipped.md).

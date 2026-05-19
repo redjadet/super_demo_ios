@@ -11,9 +11,10 @@
   `@State` feature models so SwiftData-backed repositories are not recreated every
   `body` evaluation; refresh keeps visible content during in-flight reload
   (`ItemsFeatureModelTests`, `FeedFeatureModelTests`).
-- **UI tests** — `UiTestSupport` helpers for tab + Items chrome across launch
+- **UI tests** — `UiTestSupport` helpers for tab + Items/Feed chrome across launch
   configurations; `.swiftformat` no longer uses `--xcodeindentation` (matches
-  `.editorconfig` 4-space indent).
+  `.editorconfig` 4-space indent). CI stability (terminate between tests,
+  `SampleFeedRepository` under `-UITesting`): [`2026-05-19_ui-test-ci-stability.md`](2026-05-19_ui-test-ci-stability.md).
 
 ## Docs sync
 

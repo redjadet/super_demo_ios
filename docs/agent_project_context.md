@@ -17,7 +17,7 @@ Machine-readable project facts for agents.
 - `fastlane/README.md` is auto-generated and gitignored; markdownlint skips
   `fastlane/**` (`.markdownlintignore`, `bin/lint-markdown.sh`).
 - Normal app runs use live HTTP to JSONPlaceholder; UI tests pass `-UITesting` so
-  Production Readiness uses sample data only — [`sync-and-networking.md`](sync-and-networking.md),
+  Production Readiness and Feed use sample data only — [`sync-and-networking.md`](sync-and-networking.md),
   [`testing.md`](testing.md).
 
 ## Shipped features (tour)

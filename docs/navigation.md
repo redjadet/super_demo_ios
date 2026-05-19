@@ -21,7 +21,21 @@ Use declarative SwiftUI navigation that adapts across iOS, iPadOS, and macOS.
 
 ## Current App Note
 
+- Root shell: `AppRootView` (`TabView`) — Dashboard, Items, Feed tabs with
+  `accessibilityIdentifier` on each tab (`dashboardTab`, `itemsTab`, `feedTab`).
+- Feature stacks: Items and Feed use `ItemsNavigationShell` / `FeedNavigationShell`
+  → `AdaptiveNavigationShell` for master/detail inside a tab.
 - Shared: `Shared/Presentation/AdaptiveNavigationShell.swift`
-- Items: `ItemsNavigationShell` → `AdaptiveNavigationShell`
 - New features: reuse `AdaptiveNavigationShell`; add a thin feature shell only for a custom
   detail placeholder. See [`design_system.md`](design_system.md#ui-consistency-contract-all-features).
+
+### UI test coverage (CI smoke)
+
+| Path | UI test |
+| --- | --- |
+| Items tab | `testLaunchShowsAddItemControl` |
+| Dashboard → Production Risks | `testDashboardShowsProductionRisks` |
+| Dashboard → UIKit showcase | `testUIKitShowcaseCollectionIsReachable` |
+| Feed tab | `testFeedTabIsReachable` |
+
+Details: [`testing.md`](testing.md#ui-smoke-ci).

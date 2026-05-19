@@ -1,0 +1,13 @@
+# Copy to fastlane/Matchfile and set FASTLANE_USE_MATCH=1 (or rely on Matchfile presence).
+# Store encrypted certs/profiles in a private git repo; use readonly match on CI.
+#
+# First-time setup (local, once):
+#   fastlane match init
+#   fastlane match appstore
+#
+# See: https://docs.fastlane.tools/actions/match/
+
+git_url("https://github.com/your-org/ios-signing")
+storage_mode("git")
+type("appstore")
+app_identifier(["com.ilkersevim.superDemoApp"])

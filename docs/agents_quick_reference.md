@@ -25,7 +25,9 @@ XcodeBuildMCP active profile: `superDemoApp`
 | Fastlane lanes (lint, test, builds, CI, beta) | `./bin/fastlane-run <lane>` — see `fastlane/Fastfile` |
 
 `CI_SKIP_PLATFORM_BUILDS=1` skips iPad/Mac in `./bin/ci.sh` only when intentionally narrow.
-UI smoke: `superDemoAppUITests.testLaunchShowsAddItemControl` in CI iPhone test lane.
+UI smoke (CI `iphone-test` / `bin/ci-iphone-test.sh`): Items launch, Dashboard →
+Production Risks, UIKit showcase, Feed tab — see [`testing.md`](testing.md#ui-smoke-ci).
+Launch via `UiTestSupport.launchApplication()` (`-UITesting`, terminate between tests).
 
 | Situation | Command |
 | --- | --- |
@@ -40,6 +42,9 @@ UI smoke: `superDemoAppUITests.testLaunchShowsAddItemControl` in CI iPhone test 
 | Full checklist (above + iPhone test + iPad/Mac) | `./bin/checklist` |
 | Full local CI | `./bin/ci.sh` (`./bin/fastlane-run ci`) |
 | TestFlight beta lane | `TESTFLIGHT_BUILD_NUMBER=<unique-build-number> ./bin/fastlane-run ios beta` |
+| App Store upload lane | `TESTFLIGHT_BUILD_NUMBER=<unique-build-number> ./bin/fastlane-run ios release` |
+| Release IPA only (no upload) | `TESTFLIGHT_BUILD_NUMBER=<n> ./bin/fastlane-run ios build_ipa` |
+| match signing sync | `./bin/fastlane-run ios sync_signing` (needs `Matchfile` or `FASTLANE_USE_MATCH=1`) |
 | CI lint job only | `./bin/fastlane-run ci_lint` |
 | iPhone tests lane | `./bin/fastlane-run iphone_test` |
 | iPad + Mac lane | `./bin/fastlane-run platform_builds` |

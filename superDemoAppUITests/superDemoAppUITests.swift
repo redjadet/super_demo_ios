@@ -8,10 +8,18 @@
 import XCTest
 
 final class superDemoAppUITests: XCTestCase {
+    override func setUp() {
+        super.setUp()
+        continueAfterFailure = false
+    }
+
+    override func tearDown() {
+        UiTestSupport.terminateApplication(XCUIApplication())
+        super.tearDown()
+    }
+
     @MainActor
     func testLaunchShowsAddItemControl() {
-        continueAfterFailure = false
-
         let app = UiTestSupport.launchApplication()
 
         UiTestSupport.openItemsTab(in: app)
@@ -20,8 +28,6 @@ final class superDemoAppUITests: XCTestCase {
 
     @MainActor
     func testDashboardShowsProductionRisks() {
-        continueAfterFailure = false
-
         let app = UiTestSupport.launchApplication()
 
         let dashboard = app.tabBars.buttons["Dashboard"]
@@ -38,8 +44,6 @@ final class superDemoAppUITests: XCTestCase {
 
     @MainActor
     func testUIKitShowcaseCollectionIsReachable() {
-        continueAfterFailure = false
-
         let app = UiTestSupport.launchApplication()
 
         let dashboard = app.tabBars.buttons["Dashboard"]
@@ -56,8 +60,6 @@ final class superDemoAppUITests: XCTestCase {
 
     @MainActor
     func testFeedTabIsReachable() {
-        continueAfterFailure = false
-
         let app = UiTestSupport.launchApplication()
 
         UiTestSupport.openFeedTab(in: app)
@@ -66,8 +68,6 @@ final class superDemoAppUITests: XCTestCase {
 
     @MainActor
     func testLaunchPerformance() {
-        continueAfterFailure = false
-
         measure(metrics: [XCTApplicationLaunchMetric()]) {
             let app = XCUIApplication()
             app.launchArguments.append("-UITesting")

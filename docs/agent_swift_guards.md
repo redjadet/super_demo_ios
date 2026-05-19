@@ -191,9 +191,19 @@ See [`testing.md`](testing.md#urlprotocol-stubs).
 
 ## UI tests
 
-Prefer **accessibility identifiers** on buttons/links (`productionRisksLink`,
-`uikitShowcaseLink`), not visible text alone, so labels can change without
-breaking smoke tests.
+- Launch through **`UiTestSupport.launchApplication()`** (sets `-UITesting`).
+  Do not call `XCUIApplication().launch()` directly in feature tests unless you
+  also terminate and pass the flag.
+- **`superDemoAppUITests`** must keep balanced **`setUp`** / **`tearDown`**
+  (`balanced_xctest_lifecycle`). `tearDown` calls `UiTestSupport.terminateApplication`.
+- Prefer **accessibility identifiers** on buttons/links (`productionRisksLink`,
+  `uikitShowcaseLink`, `feedTab`, `itemsTab`, `refreshFeed`, `feedList`), not
+  visible text alone, so labels can change without breaking smoke tests.
+- Tab bar labels (`Feed`, `Items`, `Dashboard`) are fallbacks when identifiers
+  are not on the tab button itself.
+- Under `-UITesting`, wire new networked features with a **sample repository**
+  in composition (see `SampleFeedRepository`, `SampleProductionReadinessRepository`)
+  so UI tests stay offline and terminate cleanly on CI.
 
 ## When the same failure happens twice
 

@@ -4,6 +4,8 @@ Record durable implementation notes after meaningful changes.
 
 ## Entries
 
+- [`2026-05-19_ui-test-ci-stability.md`](2026-05-19_ui-test-ci-stability.md)
+  — UI test terminate between launches, Feed sample repo under `-UITesting`, CI fix.
 - [`2026-05-18_fastlane-ci-wrapper-hardening.md`](2026-05-18_fastlane-ci-wrapper-hardening.md)
   — Fastlane env isolation, generated-output cleanup, and wrapper docs.
 - [`2026-05-18_ci-parallel-lanes.md`](2026-05-18_ci-parallel-lanes.md)

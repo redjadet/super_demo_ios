@@ -20,7 +20,8 @@ Source-of-truth docs for `superDemoApp`.
 - Apple development practices: [`apple-development-practices.md`](apple-development-practices.md)
 - Development feedback loop: [`development-feedback-loop.md`](development-feedback-loop.md)
 - Release checklist: [`release-checklist.md`](release-checklist.md)
-- TestFlight release notes source: [`release-notes/testflight.md`](release-notes/testflight.md)
+- TestFlight release notes: [`release-notes/testflight.md`](release-notes/testflight.md);
+  App Store: [`release-notes/app-store.md`](release-notes/app-store.md)
 - Production risks: [`production-risks.md`](production-risks.md)
 
 ## Design (SwiftUI)

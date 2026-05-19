@@ -55,7 +55,7 @@ HTTP — no live network on default CI.
 ## Reviewer checklist
 
 - [x] Layer imports pass `./bin/lint.sh` (also in `./bin/ci.sh`)
-- [x] Feed tab reachable; list, Retry, toolbar refresh (`FeedView` / UI tests)
+- [x] Feed tab reachable; list, Retry, toolbar refresh (`testFeedTabIsReachable` / `FeedView`)
 - [x] `./bin/ci.sh` passes on merge (lint + iPhone tests + iPad/Mac builds)
 - [x] Previews cover light/dark for `FeedView` (`#Preview` + `UniversalPreviewLayouts`)
 - [ ] VoiceOver on Feed chrome / rows / Retry (manual pass on device/simulator)

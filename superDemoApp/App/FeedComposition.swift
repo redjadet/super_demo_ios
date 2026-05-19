@@ -9,8 +9,13 @@ import SwiftUI
 enum FeedComposition {
     @MainActor
     static func makeFeatureModel(context: ModelContext) -> FeedFeatureModel {
-        let client = LiveFeedAPIClient(session: AppURLSession.makeDefault())
-        let remote = RemoteFeedRepository(client: client)
+        let remote: any FeedRepository
+        if AppLaunchConfiguration.isUITesting {
+            remote = SampleFeedRepository()
+        } else {
+            let client = LiveFeedAPIClient(session: AppURLSession.makeDefault())
+            remote = RemoteFeedRepository(client: client)
+        }
         let repository = CachingFeedRepository(remote: remote, context: context)
         return FeedFeatureModel(
             refreshFeed: RefreshFeedUseCase(repository: repository)

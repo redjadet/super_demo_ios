@@ -88,6 +88,7 @@ trusting local checks alone:
 - TestFlight scenarios for device-only behavior
 - App Store review notes when capabilities or permissions need context
 
-See also: [`testing.md`](testing.md), [`design_system.md`](design_system.md),
+See also: [`testing.md`](testing.md) (CI UI smoke, `-UITesting`, terminate between tests),
+[`design_system.md`](design_system.md),
 [`universal-apple-platforms.md`](universal-apple-platforms.md), and
 [`agents_quick_reference.md`](agents_quick_reference.md).
