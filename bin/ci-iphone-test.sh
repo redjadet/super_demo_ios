@@ -37,12 +37,38 @@ if [[ "${CI_ALLOW_PARALLEL_TESTS:-0}" != "1" ]]; then
   )
 fi
 
-echo "==> iPhone tests (builds app + tests, $XCODEBUILD)"
-run_xcodebuild \
-  -project superDemoApp.xcodeproj \
-  -scheme superDemoApp \
-  -destination "$SIMULATOR_DEST" \
-  -configuration Debug \
-  ${XCODEBUILD_SANDBOX_FLAGS+"${XCODEBUILD_SANDBOX_FLAGS[@]}"} \
-  ${TEST_SERIAL_FLAGS+"${TEST_SERIAL_FLAGS[@]}"} \
-  test
+XCODEBUILD_TEST_ARGS=(
+  -project superDemoApp.xcodeproj
+  -scheme superDemoApp
+  -destination "$SIMULATOR_DEST"
+  -configuration Debug
+  ${XCODEBUILD_SANDBOX_FLAGS+"${XCODEBUILD_SANDBOX_FLAGS[@]}"}
+  ${TEST_SERIAL_FLAGS+"${TEST_SERIAL_FLAGS[@]}"}
+)
+
+if [[ "${CI:-}" == "true" ]]; then
+  # LaunchTests duplicates testLaunchShowsAddItemControl; performance test relaunches repeatedly.
+  # Single xcodebuild test with both targets has seen UITest-Runner SIGKILL on GHA during bootstrap.
+  TEST_SKIP_FLAGS=(
+    -skip-testing:superDemoAppUITests/superDemoAppUITestsLaunchTests
+    -skip-testing:superDemoAppUITests/superDemoAppUITests/testLaunchPerformance
+  )
+
+  echo "==> Unit tests ($XCODEBUILD)"
+  run_xcodebuild \
+    "${XCODEBUILD_TEST_ARGS[@]}" \
+    -only-testing:superDemoAppTests \
+    test
+
+  echo "==> UI smoke tests ($XCODEBUILD)"
+  run_xcodebuild \
+    "${XCODEBUILD_TEST_ARGS[@]}" \
+    ${TEST_SKIP_FLAGS+"${TEST_SKIP_FLAGS[@]}"} \
+    -skip-testing:superDemoAppTests \
+    test
+else
+  echo "==> iPhone tests (builds app + tests, $XCODEBUILD)"
+  run_xcodebuild \
+    "${XCODEBUILD_TEST_ARGS[@]}" \
+    test
+fi
