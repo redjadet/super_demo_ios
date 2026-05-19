@@ -18,8 +18,8 @@ adding a deterministic test, mock fixture, preview state, or script.
 ## UI smoke (CI)
 
 `superDemoAppUITests.testLaunchShowsAddItemControl` is the CI launch smoke (see
-`bin/ci-iphone-test.sh`). `superDemoAppUITestsLaunchTests` and
-`testLaunchPerformance` run locally; CI skips them as duplicate or slow.
+`bin/ci-iphone-test.sh`, which skips duplicate `LaunchTests` and
+`testLaunchPerformance` on CI).
 Extend UI tests when adding primary navigation or forms; keep smoke green before PR.
 UI tests launch with `-UITesting` (see `UiTestSupport.launchApplication`) so the
 Production Readiness dashboard uses sample data only—no live JSONPlaceholder calls.

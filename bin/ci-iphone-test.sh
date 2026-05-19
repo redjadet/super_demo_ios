@@ -48,27 +48,15 @@ XCODEBUILD_TEST_ARGS=(
 
 if [[ "${CI:-}" == "true" ]]; then
   # LaunchTests duplicates testLaunchShowsAddItemControl; performance test relaunches repeatedly.
-  # Single xcodebuild test with both targets has seen UITest-Runner SIGKILL on GHA during bootstrap.
+  # A second xcodebuild test pass times out waiting for AX on GHA — keep one test invocation.
   TEST_SKIP_FLAGS=(
     -skip-testing:superDemoAppUITests/superDemoAppUITestsLaunchTests
     -skip-testing:superDemoAppUITests/superDemoAppUITests/testLaunchPerformance
   )
-
-  echo "==> Unit tests ($XCODEBUILD)"
-  run_xcodebuild \
-    "${XCODEBUILD_TEST_ARGS[@]}" \
-    -only-testing:superDemoAppTests \
-    test
-
-  echo "==> UI smoke tests ($XCODEBUILD)"
-  run_xcodebuild \
-    "${XCODEBUILD_TEST_ARGS[@]}" \
-    ${TEST_SKIP_FLAGS+"${TEST_SKIP_FLAGS[@]}"} \
-    -skip-testing:superDemoAppTests \
-    test
-else
-  echo "==> iPhone tests (builds app + tests, $XCODEBUILD)"
-  run_xcodebuild \
-    "${XCODEBUILD_TEST_ARGS[@]}" \
-    test
 fi
+
+echo "==> iPhone tests (builds app + tests, $XCODEBUILD)"
+run_xcodebuild \
+  "${XCODEBUILD_TEST_ARGS[@]}" \
+  ${TEST_SKIP_FLAGS+"${TEST_SKIP_FLAGS[@]}"} \
+  test
