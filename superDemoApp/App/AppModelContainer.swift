@@ -11,7 +11,10 @@ enum AppModelContainer {
             Item.self,
             CachedFeedPost.self,
         ])
-        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
+        let modelConfiguration = ModelConfiguration(
+            schema: schema,
+            isStoredInMemoryOnly: AppLaunchConfiguration.isUITesting
+        )
 
         do {
             return try ModelContainer(for: schema, configurations: [modelConfiguration])

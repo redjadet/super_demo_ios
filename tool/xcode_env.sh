@@ -18,6 +18,16 @@ refresh_xcodebuild_from_developer_dir() {
 }
 
 assert_xcodebuild_matches_developer_dir() {
+  if [[ -z "${DEVELOPER_DIR:-}" ]]; then
+    XCODEBUILD="${XCODEBUILD:-$(command -v xcodebuild || true)}"
+    export XCODEBUILD
+    if [[ -z "$XCODEBUILD" || ! -x "$XCODEBUILD" ]]; then
+      echo "error: xcodebuild not found (DEVELOPER_DIR=unset)" >&2
+      return 1
+    fi
+    return 0
+  fi
+
   refresh_xcodebuild_from_developer_dir || return 1
   local expected="${DEVELOPER_DIR}/usr/bin/xcodebuild"
   if [[ "$XCODEBUILD" != "$expected" ]]; then

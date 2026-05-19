@@ -37,15 +37,6 @@ if [[ "${CI_ALLOW_PARALLEL_TESTS:-0}" != "1" ]]; then
   )
 fi
 
-# Xcode launch snapshot tests (runsForEachTargetApplicationUIConfiguration) flake on
-# GHA with kAXErrorServerNotFound; CI smoke is superDemoAppUITests.testLaunchShowsAddItemControl.
-if [[ "${CI:-}" == "true" ]]; then
-  TEST_SKIP_FLAGS=(
-    -skip-testing:superDemoAppUITests/superDemoAppUITestsLaunchTests
-    -skip-testing:superDemoAppUITests/superDemoAppUITests/testLaunchPerformance
-  )
-fi
-
 echo "==> iPhone tests (builds app + tests, $XCODEBUILD)"
 run_xcodebuild \
   -project superDemoApp.xcodeproj \
@@ -54,5 +45,4 @@ run_xcodebuild \
   -configuration Debug \
   ${XCODEBUILD_SANDBOX_FLAGS+"${XCODEBUILD_SANDBOX_FLAGS[@]}"} \
   ${TEST_SERIAL_FLAGS+"${TEST_SERIAL_FLAGS[@]}"} \
-  ${TEST_SKIP_FLAGS+"${TEST_SKIP_FLAGS[@]}"} \
   test

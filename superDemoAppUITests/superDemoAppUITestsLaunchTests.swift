@@ -21,13 +21,5 @@ final class superDemoAppUITestsLaunchTests: XCTestCase {
 
         UiTestSupport.openItemsTab(in: app)
         XCTAssertTrue(UiTestSupport.waitForItemsChrome(in: app))
-
-        let window = app.windows.firstMatch
-        XCTAssertTrue(window.waitForExistence(timeout: 30))
-
-        let attachment = XCTAttachment(screenshot: app.screenshot())
-        attachment.name = "Launch Screen"
-        attachment.lifetime = .keepAlways
-        add(attachment)
     }
 }
