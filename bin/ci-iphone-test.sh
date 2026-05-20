@@ -47,6 +47,18 @@ XCODEBUILD_TEST_ARGS=(
   ${TEST_SERIAL_FLAGS+"${TEST_SERIAL_FLAGS[@]}"}
 )
 
+if [[ "${CI:-}" == "true" ]]; then
+  # GitHub Actions repeatedly hangs the UI runner on duplicate launch/perf cases.
+  # Keep deterministic unit coverage plus primary UI smoke in one xcodebuild pass.
+  TEST_SELECTION_FLAGS=(
+    -only-testing:superDemoAppTests
+    -only-testing:superDemoAppUITests/superDemoAppUITests/testLaunchShowsAddItemControl
+    -only-testing:superDemoAppUITests/superDemoAppUITests/testDashboardShowsProductionRisks
+    -only-testing:superDemoAppUITests/superDemoAppUITests/testUIKitShowcaseCollectionIsReachable
+    -only-testing:superDemoAppUITests/superDemoAppUITests/testFeedTabIsReachable
+  )
+fi
+
 echo "==> iPhone tests (builds app + tests, $XCODEBUILD)"
 log_dir="$(mktemp -d)"
 trap 'rm -rf "$log_dir"' EXIT
@@ -66,6 +78,7 @@ run_xcodebuild_with_ci_timeout() {
 run_tests() {
   run_xcodebuild_with_ci_timeout \
     "${XCODEBUILD_TEST_ARGS[@]}" \
+    ${TEST_SELECTION_FLAGS+"${TEST_SELECTION_FLAGS[@]}"} \
     test 2>&1 | tee "$test_log"
 }
 

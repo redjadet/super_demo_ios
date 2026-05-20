@@ -18,11 +18,13 @@ adding a deterministic test, mock fixture, preview state, or script.
 ## UI smoke (CI)
 
 The iPhone test lane (`bin/ci-iphone-test.sh`, GitHub Actions `iphone-test`) runs
-unit tests plus `superDemoAppUITests` in one serial `xcodebuild test` invocation.
-It keeps launch and performance UI coverage enabled on CI, and retries once after
-simulator reboot when GitHub Actions hits the XCTest runner accessibility-init
-timeout or a bounded `xcodebuild` hang. **Do not** split unit and UI into two
-`xcodebuild test` passes (GitHub Actions accessibility timeout).
+unit tests plus primary `superDemoAppUITests` smoke cases in one serial
+`xcodebuild test` invocation. It skips duplicate launch/performance UI cases on
+CI because GitHub Actions repeatedly hangs the XCTest accessibility runner there,
+then retries once after simulator reboot when the runner init times out or a
+bounded `xcodebuild` hang occurs. **Do not** split unit and UI into two
+`xcodebuild test` passes (GitHub Actions accessibility timeout). Run the full UI
+target locally before risky UI releases.
 
 | UI test | What it proves |
 | --- | --- |
@@ -30,8 +32,8 @@ timeout or a bounded `xcodebuild` hang. **Do not** split unit and UI into two
 | `testDashboardShowsProductionRisks` | Dashboard → Production Risks list |
 | `testUIKitShowcaseCollectionIsReachable` | Dashboard → UIKit showcase collection |
 | `testFeedTabIsReachable` | Feed tab chrome (toolbar, list, empty, or error) |
-| `testLaunch` | App launch reaches Items chrome |
-| `testLaunchPerformance` | Launch performance stays covered under `-UITesting` |
+| `testLaunch` | Local/full-lane launch duplicate for Items chrome |
+| `testLaunchPerformance` | Local launch performance under `-UITesting` |
 
 Helpers live in `superDemoAppUITests/UiTestSupport.swift`:
 
