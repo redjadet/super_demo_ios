@@ -130,8 +130,9 @@ gate over those lanes (see `.github/workflows/ci.yml`).
 
 The **iphone-test** job runs `./bin/ci-iphone-test.sh` (serial UI tests, one
 `xcodebuild test` invocation, one retry after simulator reboot for XCTest
-accessibility-init timeouts). UI tests use `-UITesting` and terminate the app
-between cases — see [`testing.md`](testing.md#ui-smoke-ci).
+accessibility-init timeouts; `CI_IPHONE_XCODEBUILD_TIMEOUT_SECONDS` bounds each
+attempt, default 900). UI tests use `-UITesting` and terminate the app between
+cases — see [`testing.md`](testing.md#ui-smoke-ci).
 
 ## Cursor (first-time)
 

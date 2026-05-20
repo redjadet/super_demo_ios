@@ -52,8 +52,19 @@ log_dir="$(mktemp -d)"
 trap 'rm -rf "$log_dir"' EXIT
 test_log="$log_dir/iphone-test.log"
 
+run_xcodebuild_with_ci_timeout() {
+  assert_xcodebuild_matches_developer_dir || return 1
+  if [[ "${CI:-}" == "true" ]]; then
+    python3 "$ROOT/tool/run_with_timeout.py" \
+      --timeout "${CI_IPHONE_XCODEBUILD_TIMEOUT_SECONDS:-900}" \
+      -- "$XCODEBUILD" "$@"
+  else
+    "$XCODEBUILD" "$@"
+  fi
+}
+
 run_tests() {
-  run_xcodebuild \
+  run_xcodebuild_with_ci_timeout \
     "${XCODEBUILD_TEST_ARGS[@]}" \
     test 2>&1 | tee "$test_log"
 }
@@ -64,8 +75,10 @@ if ((test_status == 0)); then
   exit 0
 fi
 
-if [[ "${CI:-}" == "true" ]] && grep -q "Timed out while loading Accessibility" "$test_log"; then
-  echo "warning: UI test runner failed to load Accessibility; retrying once after simulator reboot" >&2
+if [[ "${CI:-}" == "true" ]] && {
+  ((test_status == 124)) || grep -q "Timed out while loading Accessibility" "$test_log"
+}; then
+  echo "warning: UI test runner failed or timed out; retrying once after simulator reboot" >&2
 
   udid="$(sed -n 's/.*id=\([0-9A-F-]\{36\}\).*/\1/p' <<<"$SIMULATOR_DEST")"
   if [[ "$udid" =~ ^[0-9A-F-]{36}$ ]]; then
