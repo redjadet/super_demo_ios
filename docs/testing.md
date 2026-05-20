@@ -18,20 +18,17 @@ adding a deterministic test, mock fixture, preview state, or script.
 ## UI smoke (CI)
 
 The iPhone test lane (`bin/ci-iphone-test.sh`, GitHub Actions `iphone-test`) runs
-unit tests plus primary `superDemoAppUITests` smoke cases in one serial
-`xcodebuild test` invocation. It skips duplicate launch/performance UI cases on
-CI because GitHub Actions repeatedly hangs the XCTest accessibility runner there,
-then retries once after simulator reboot when the runner init times out or a
-bounded `xcodebuild` hang occurs. **Do not** split unit and UI into two
-`xcodebuild test` passes (GitHub Actions accessibility timeout). Run the full UI
-target locally before risky UI releases.
+the iPhone app build plus `superDemoAppTests` in one serial `xcodebuild test`
+invocation. CI does **not** run `superDemoAppUITests` because GitHub Actions
+repeatedly hangs the XCTest accessibility runner before logs are available. Run
+UI smoke locally before risky UI releases.
 
 | UI test | What it proves |
 | --- | --- |
-| `testLaunchShowsAddItemControl` | Items tab chrome (`addItem` / empty / list) |
-| `testDashboardShowsProductionRisks` | Dashboard → Production Risks list |
-| `testUIKitShowcaseCollectionIsReachable` | Dashboard → UIKit showcase collection |
-| `testFeedTabIsReachable` | Feed tab chrome (toolbar, list, empty, or error) |
+| `testLaunchShowsAddItemControl` | Local Items tab chrome (`addItem` / empty / list) |
+| `testDashboardShowsProductionRisks` | Local Dashboard → Production Risks list |
+| `testUIKitShowcaseCollectionIsReachable` | Local Dashboard → UIKit showcase collection |
+| `testFeedTabIsReachable` | Local Feed tab chrome (toolbar, list, empty, or error) |
 | `testLaunch` | Local/full-lane launch duplicate for Items chrome |
 | `testLaunchPerformance` | Local launch performance under `-UITesting` |
 

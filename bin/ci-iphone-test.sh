@@ -48,14 +48,10 @@ XCODEBUILD_TEST_ARGS=(
 )
 
 if [[ "${CI:-}" == "true" ]]; then
-  # GitHub Actions repeatedly hangs the UI runner on duplicate launch/perf cases.
-  # Keep deterministic unit coverage plus primary UI smoke in one xcodebuild pass.
+  # GitHub Actions repeatedly hangs the XCTest accessibility runner on UI tests.
+  # Keep deterministic iPhone build + unit coverage in CI; run UI smoke locally.
   TEST_SELECTION_FLAGS=(
     -only-testing:superDemoAppTests
-    -only-testing:superDemoAppUITests/superDemoAppUITests/testLaunchShowsAddItemControl
-    -only-testing:superDemoAppUITests/superDemoAppUITests/testDashboardShowsProductionRisks
-    -only-testing:superDemoAppUITests/superDemoAppUITests/testUIKitShowcaseCollectionIsReachable
-    -only-testing:superDemoAppUITests/superDemoAppUITests/testFeedTabIsReachable
   )
 fi
 
