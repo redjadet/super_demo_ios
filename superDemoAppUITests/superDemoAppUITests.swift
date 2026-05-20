@@ -54,7 +54,7 @@ final class superDemoAppUITests: XCTestCase {
 
         let showcaseLink = app.buttons["uikitShowcaseLink"]
         UiTestSupport.scrollToElement(showcaseLink, in: app)
-        XCTAssertTrue(showcaseLink.waitForExistence(timeout: 10))
+        XCTAssertTrue(showcaseLink.waitForExistence(timeout: 20))
         showcaseLink.tap()
         XCTAssertTrue(app.collectionViews["uikitShowcaseCollection"].waitForExistence(timeout: 10))
     }

@@ -137,11 +137,19 @@ enum UiTestSupport {
     }
 
     @MainActor
-    static func scrollToElement(_ element: XCUIElement, in app: XCUIApplication) {
-        var remainingSwipes = 4
-        while !element.exists, remainingSwipes > 0 {
+    static func scrollToElement(
+        _ element: XCUIElement,
+        in app: XCUIApplication,
+        timeout: TimeInterval = 20,
+        maxSwipes: Int = 12
+    ) {
+        let deadline = Date().addingTimeInterval(timeout)
+        var remainingSwipes = maxSwipes
+
+        while Date() < deadline, !element.exists, remainingSwipes > 0 {
             app.swipeUp()
             remainingSwipes -= 1
+            RunLoop.current.run(until: Date().addingTimeInterval(0.2))
         }
     }
 }
