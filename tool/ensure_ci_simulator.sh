@@ -79,6 +79,10 @@ boot_simulator_with_timeout() {
   xcrun simctl boot "$udid" 2>/dev/null || true
   if command -v timeout >/dev/null 2>&1; then
     timeout "$timeout_seconds" xcrun simctl bootstatus "$udid" -b
+  elif [[ -f "$ROOT/tool/run_with_timeout.py" ]]; then
+    python3 "$ROOT/tool/run_with_timeout.py" \
+      --timeout "$timeout_seconds" \
+      -- xcrun simctl bootstatus "$udid" -b
   else
     xcrun simctl bootstatus "$udid" -b
   fi

@@ -237,6 +237,10 @@ print('yes' if vt(sdk) > vt(runtime) else 'no')
         refresh_xcodebuild_from_developer_dir
         timeout 900 "$XCODEBUILD" -downloadPlatform iOS \
           || echo "warning: -downloadPlatform iOS failed or timed out; continuing with runtime ${runtime_version}" >&2
+      elif [[ -f "$ROOT/tool/run_with_timeout.py" ]]; then
+        refresh_xcodebuild_from_developer_dir
+        python3 "$ROOT/tool/run_with_timeout.py" --timeout 900 -- "$XCODEBUILD" -downloadPlatform iOS \
+          || echo "warning: -downloadPlatform iOS failed or timed out; continuing with runtime ${runtime_version}" >&2
       else
         refresh_xcodebuild_from_developer_dir
         "$XCODEBUILD" -downloadPlatform iOS \
