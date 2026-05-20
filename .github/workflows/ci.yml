@@ -10,6 +10,9 @@ concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
 jobs:
   lint:
     runs-on: macos-26
@@ -63,6 +66,9 @@ jobs:
           key: >-
             xcode-${{ runner.os }}-${{ runner.arch }}-iphone-${{ hashFiles('**/Package.resolved', '**/*.xcodeproj/project.pbxproj') }}
 
+      - name: Install lint tools (for build phases)
+        run: brew bundle check --file Brewfile || brew bundle --file Brewfile
+
       - name: iPhone tests
         env:
           CI: true
@@ -97,6 +103,9 @@ jobs:
             ${{ runner.temp }}/DerivedData-Mac
           key: >-
             xcode-${{ runner.os }}-${{ runner.arch }}-platform-${{ hashFiles('**/Package.resolved', '**/*.xcodeproj/project.pbxproj') }}
+
+      - name: Install lint tools (for build phases)
+        run: brew bundle check --file Brewfile || brew bundle --file Brewfile
 
       - name: iPad and Mac builds
         env:
