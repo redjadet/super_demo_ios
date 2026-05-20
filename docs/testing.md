@@ -18,10 +18,10 @@ adding a deterministic test, mock fixture, preview state, or script.
 ## UI smoke (CI)
 
 The iPhone test lane (`bin/ci-iphone-test.sh`, GitHub Actions `iphone-test`) runs
-the iPhone app build plus `superDemoAppTests` in one serial `xcodebuild test`
-invocation. CI does **not** run `superDemoAppUITests` because GitHub Actions
-repeatedly hangs the XCTest accessibility runner before logs are available. Run
-UI smoke locally before risky UI releases.
+the iPhone app build on GitHub Actions. CI does **not** run `xcodebuild test`
+because GitHub Actions repeatedly hangs the XCTest runner before logs are
+available, even for unit-only selection. Run unit/UI smoke locally before risky
+releases.
 
 | UI test | What it proves |
 | --- | --- |

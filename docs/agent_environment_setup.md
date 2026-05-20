@@ -128,13 +128,12 @@ the app and tests), and `./bin/ci-platform-builds.sh` for iPad simulator + macOS
 builds as parallel lanes. The `lint-build-test` job is an aggregate required-check
 gate over those lanes (see `.github/workflows/ci.yml`).
 
-The **iphone-test** job runs `./bin/ci-iphone-test.sh` (iPhone app build plus
-`superDemoAppTests`; UI tests are local/full-lane proof because GitHub Actions
-currently hangs the XCTest accessibility runner before logs are available).
-`CI_IPHONE_XCODEBUILD_TIMEOUT_SECONDS` bounds each attempt, default 900.
-Simulator boot/download waits use the same repo timeout helper on macOS runners
-where GNU `timeout` is unavailable. UI tests use `-UITesting` and terminate the
-app between cases — see [`testing.md`](testing.md#ui-smoke-ci).
+The **iphone-test** job runs `./bin/ci-iphone-test.sh` as iPhone build sanity on
+GitHub Actions. Unit/UI tests are local/full-lane proof because GitHub Actions
+currently hangs the XCTest runner before logs are available, even for unit-only
+selection. Simulator boot/download waits use the repo timeout helper on macOS
+runners where GNU `timeout` is unavailable. UI tests use `-UITesting` and
+terminate the app between cases — see [`testing.md`](testing.md#ui-smoke-ci).
 
 ## Cursor (first-time)
 

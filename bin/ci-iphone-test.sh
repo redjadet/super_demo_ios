@@ -47,12 +47,21 @@ XCODEBUILD_TEST_ARGS=(
   ${TEST_SERIAL_FLAGS+"${TEST_SERIAL_FLAGS[@]}"}
 )
 
+XCODEBUILD_BUILD_ARGS=(
+  -project superDemoApp.xcodeproj
+  -scheme superDemoApp
+  -destination "$SIMULATOR_DEST"
+  -configuration Debug
+  ${IPHONE_DERIVED_DATA_PATH+-derivedDataPath "$IPHONE_DERIVED_DATA_PATH"}
+  ${XCODEBUILD_SANDBOX_FLAGS+"${XCODEBUILD_SANDBOX_FLAGS[@]}"}
+)
+
 if [[ "${CI:-}" == "true" ]]; then
-  # GitHub Actions repeatedly hangs the XCTest accessibility runner on UI tests.
-  # Keep deterministic iPhone build + unit coverage in CI; run UI smoke locally.
-  TEST_SELECTION_FLAGS=(
-    -only-testing:superDemoAppTests
-  )
+  echo "==> iPhone build sanity ($XCODEBUILD)"
+  run_xcodebuild \
+    "${XCODEBUILD_BUILD_ARGS[@]}" \
+    build
+  exit 0
 fi
 
 echo "==> iPhone tests (builds app + tests, $XCODEBUILD)"
