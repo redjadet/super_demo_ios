@@ -123,17 +123,18 @@ Run tests:
 xcodebuild -project superDemoApp.xcodeproj -scheme superDemoApp -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.5' test
 ```
 
-GitHub Actions on push/PR to `main` runs lint, iOS Simulator tests (which build
-the app and tests), and `./bin/ci-platform-builds.sh` for iPad simulator + macOS
-builds as parallel lanes. The `lint-build-test` job is an aggregate required-check
-gate over those lanes (see `.github/workflows/ci.yml`).
+GitHub Actions on push/PR to `main` runs lint, generic iOS Simulator build
+sanity, and `./bin/ci-platform-builds.sh` for generic iOS Simulator + macOS
+builds as parallel lanes. The `lint-build-test` job is an aggregate required
+check gate over those lanes (see `.github/workflows/ci.yml`).
 
 The **iphone-test** job runs `./bin/ci-iphone-test.sh` as iPhone build sanity on
-GitHub Actions. Unit/UI tests are local/full-lane proof because GitHub Actions
-currently hangs the XCTest runner before logs are available, even for unit-only
-selection. Simulator boot/download waits use the repo timeout helper on macOS
-runners where GNU `timeout` is unavailable. UI tests use `-UITesting` and
-terminate the app between cases — see [`testing.md`](testing.md#ui-smoke-ci).
+GitHub Actions using `generic/platform=iOS Simulator`. Unit/UI tests are
+local/full-lane proof because GitHub Actions currently hangs the XCTest runner
+before logs are available, even for unit-only selection. Concrete simulator
+boot/download waits use the repo timeout helper on macOS runners where GNU
+`timeout` is unavailable. UI tests use `-UITesting` and terminate the app between
+cases — see [`testing.md`](testing.md#ui-smoke-ci).
 
 ## Cursor (first-time)
 

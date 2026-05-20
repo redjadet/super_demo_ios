@@ -15,7 +15,7 @@ fi
 # shellcheck source=../tool/xcode_env.sh
 source "$ROOT/tool/xcode_env.sh"
 
-if [[ "${CI:-}" == "true" && -z "${CI_SIMULATOR_DEST:-}" ]]; then
+if [[ "${CI:-}" == "true" && -z "${CI_SIMULATOR_DEST:-}" && "${CI_IPHONE_GENERIC_BUILD:-1}" != "1" ]]; then
   CI_PREPARE_IPAD="${CI_PREPARE_IPAD:-0}" source "$ROOT/tool/ensure_ci_simulator.sh" || exit $?
 fi
 
@@ -24,7 +24,11 @@ source "$ROOT/tool/resolve_platform_destination.sh"
 # shellcheck source=../tool/xcodebuild_sandbox_flags.sh
 source "$ROOT/tool/xcodebuild_sandbox_flags.sh"
 
-SIMULATOR_DEST="$(resolve_iphone_destination)"
+if [[ "${CI:-}" == "true" && "${CI_IPHONE_GENERIC_BUILD:-1}" == "1" ]]; then
+  SIMULATOR_DEST="${CI_IPHONE_BUILD_DEST:-generic/platform=iOS Simulator}"
+else
+  SIMULATOR_DEST="$(resolve_iphone_destination)"
+fi
 echo "==> iPhone destination: $SIMULATOR_DEST"
 
 if [[ "${CI_ALLOW_PARALLEL_TESTS:-0}" != "1" ]]; then

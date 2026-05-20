@@ -15,7 +15,7 @@ fi
 # shellcheck source=../tool/xcode_env.sh
 source "$ROOT/tool/xcode_env.sh"
 
-if [[ "${CI:-}" == "true" && -z "${CI_IPAD_DEST:-}" ]]; then
+if [[ "${CI:-}" == "true" && -z "${CI_IPAD_DEST:-}" && "${CI_PLATFORM_GENERIC_BUILDS:-1}" != "1" ]]; then
   CI_PREPARE_IPHONE="${CI_PREPARE_IPHONE:-0}" source "$ROOT/tool/ensure_ci_simulator.sh" || exit $?
 fi
 
@@ -24,7 +24,11 @@ source "$ROOT/tool/resolve_platform_destination.sh"
 # shellcheck source=../tool/xcodebuild_sandbox_flags.sh
 source "$ROOT/tool/xcodebuild_sandbox_flags.sh"
 
-IPAD_DEST="$(resolve_ipad_destination)"
+if [[ "${CI:-}" == "true" && "${CI_PLATFORM_GENERIC_BUILDS:-1}" == "1" ]]; then
+  IPAD_DEST="${CI_IPAD_BUILD_DEST:-generic/platform=iOS Simulator}"
+else
+  IPAD_DEST="$(resolve_ipad_destination)"
+fi
 MAC_DEST="$(resolve_mac_destination)"
 echo "==> iPad destination: $IPAD_DEST"
 echo "==> Mac destination: $MAC_DEST"
