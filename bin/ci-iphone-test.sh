@@ -58,7 +58,10 @@ XCODEBUILD_BUILD_ARGS=(
 
 if [[ "${CI:-}" == "true" ]]; then
   echo "==> iPhone build sanity ($XCODEBUILD)"
-  run_xcodebuild \
+  assert_xcodebuild_matches_developer_dir
+  python3 "$ROOT/tool/run_with_timeout.py" \
+    --timeout "${CI_IPHONE_XCODEBUILD_TIMEOUT_SECONDS:-900}" \
+    -- "$XCODEBUILD" \
     "${XCODEBUILD_BUILD_ARGS[@]}" \
     build
   exit 0

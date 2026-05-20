@@ -29,6 +29,17 @@ MAC_DEST="$(resolve_mac_destination)"
 echo "==> iPad destination: $IPAD_DEST"
 echo "==> Mac destination: $MAC_DEST"
 
+run_platform_xcodebuild() {
+  assert_xcodebuild_matches_developer_dir || return 1
+  if [[ "${CI:-}" == "true" ]]; then
+    python3 "$ROOT/tool/run_with_timeout.py" \
+      --timeout "${CI_PLATFORM_XCODEBUILD_TIMEOUT_SECONDS:-1200}" \
+      -- "$XCODEBUILD" "$@"
+  else
+    "$XCODEBUILD" "$@"
+  fi
+}
+
 run_ipad_build() {
   echo "==> iPad build ($IPAD_DEST)"
   if [[ -n "${IPAD_DERIVED_DATA_PATH:-}" ]]; then
@@ -37,7 +48,7 @@ run_ipad_build() {
     unset IPAD_DERIVED_DATA_FLAGS
   fi
 
-  run_xcodebuild \
+  run_platform_xcodebuild \
     -project superDemoApp.xcodeproj \
     -scheme superDemoApp \
     -destination "$IPAD_DEST" \
@@ -65,7 +76,7 @@ run_mac_build() {
     unset MAC_BUILD_FLAGS
   fi
 
-  run_xcodebuild \
+  run_platform_xcodebuild \
     -project superDemoApp.xcodeproj \
     -scheme superDemoApp \
     -destination "$MAC_DEST" \
