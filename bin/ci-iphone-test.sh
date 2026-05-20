@@ -47,15 +47,6 @@ XCODEBUILD_TEST_ARGS=(
   ${TEST_SERIAL_FLAGS+"${TEST_SERIAL_FLAGS[@]}"}
 )
 
-if [[ "${CI:-}" == "true" ]]; then
-  # LaunchTests duplicates testLaunchShowsAddItemControl; performance test relaunches repeatedly.
-  # A second xcodebuild test pass times out waiting for AX on GHA — keep one test invocation.
-  TEST_SKIP_FLAGS=(
-    -skip-testing:superDemoAppUITests/superDemoAppUITestsLaunchTests
-    -skip-testing:superDemoAppUITests/superDemoAppUITests/testLaunchPerformance
-  )
-fi
-
 echo "==> iPhone tests (builds app + tests, $XCODEBUILD)"
 log_dir="$(mktemp -d)"
 trap 'rm -rf "$log_dir"' EXIT
@@ -64,7 +55,6 @@ test_log="$log_dir/iphone-test.log"
 run_tests() {
   run_xcodebuild \
     "${XCODEBUILD_TEST_ARGS[@]}" \
-    ${TEST_SKIP_FLAGS+"${TEST_SKIP_FLAGS[@]}"} \
     test 2>&1 | tee "$test_log"
 }
 

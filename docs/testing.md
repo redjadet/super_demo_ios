@@ -19,10 +19,10 @@ adding a deterministic test, mock fixture, preview state, or script.
 
 The iPhone test lane (`bin/ci-iphone-test.sh`, GitHub Actions `iphone-test`) runs
 unit tests plus `superDemoAppUITests` in one serial `xcodebuild test` invocation.
-On CI it skips `superDemoAppUITestsLaunchTests` and `testLaunchPerformance` to
-avoid duplicate launch coverage and long performance relaunches. **Do not** split
-unit and UI into two `xcodebuild test` passes (GitHub Actions accessibility
-timeout).
+It keeps launch and performance UI coverage enabled on CI, and retries once after
+simulator reboot when GitHub Actions hits the XCTest runner accessibility-init
+timeout. **Do not** split unit and UI into two `xcodebuild test` passes (GitHub
+Actions accessibility timeout).
 
 | UI test | What it proves |
 | --- | --- |
@@ -30,6 +30,8 @@ timeout).
 | `testDashboardShowsProductionRisks` | Dashboard → Production Risks list |
 | `testUIKitShowcaseCollectionIsReachable` | Dashboard → UIKit showcase collection |
 | `testFeedTabIsReachable` | Feed tab chrome (toolbar, list, empty, or error) |
+| `testLaunch` | App launch reaches Items chrome |
+| `testLaunchPerformance` | Launch performance stays covered under `-UITesting` |
 
 Helpers live in `superDemoAppUITests/UiTestSupport.swift`:
 
