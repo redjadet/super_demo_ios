@@ -53,13 +53,21 @@ jobs:
           ruby-version: "3.3"
           bundler-cache: true
 
-      - name: Install lint tools
-        run: brew bundle check --file Brewfile || brew bundle --file Brewfile
+      - name: Cache Xcode + SwiftPM
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/Library/Caches/org.swift.swiftpm
+            ~/Library/Developer/Xcode/DerivedData
+            ${{ runner.temp }}/DerivedData-iPhone
+          key: >-
+            xcode-${{ runner.os }}-${{ runner.arch }}-iphone-${{ hashFiles('**/Package.resolved', '**/*.xcodeproj/project.pbxproj') }}
 
       - name: iPhone tests
         env:
           CI: true
           CI_PREPARE_IPAD: "0"
+          IPHONE_DERIVED_DATA_PATH: ${{ runner.temp }}/DerivedData-iPhone
         run: ./bin/ci-iphone-test.sh
 
   platform-builds:
@@ -79,14 +87,24 @@ jobs:
           ruby-version: "3.3"
           bundler-cache: true
 
-      - name: Install lint tools
-        run: brew bundle check --file Brewfile || brew bundle --file Brewfile
+      - name: Cache Xcode + SwiftPM
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/Library/Caches/org.swift.swiftpm
+            ~/Library/Developer/Xcode/DerivedData
+            ${{ runner.temp }}/DerivedData-iPad
+            ${{ runner.temp }}/DerivedData-Mac
+          key: >-
+            xcode-${{ runner.os }}-${{ runner.arch }}-platform-${{ hashFiles('**/Package.resolved', '**/*.xcodeproj/project.pbxproj') }}
 
       - name: iPad and Mac builds
         env:
           CI: true
           CI_PREPARE_IPHONE: "0"
-          CI_SERIAL_PLATFORM_BUILDS: "1"
+          CI_SERIAL_PLATFORM_BUILDS: "0"
+          IPAD_DERIVED_DATA_PATH: ${{ runner.temp }}/DerivedData-iPad
+          MAC_DERIVED_DATA_PATH: ${{ runner.temp }}/DerivedData-Mac
         run: ./bin/ci-platform-builds.sh
 
   lint-build-test:

@@ -42,6 +42,7 @@ XCODEBUILD_TEST_ARGS=(
   -scheme superDemoApp
   -destination "$SIMULATOR_DEST"
   -configuration Debug
+  ${IPHONE_DERIVED_DATA_PATH+-derivedDataPath "$IPHONE_DERIVED_DATA_PATH"}
   ${XCODEBUILD_SANDBOX_FLAGS+"${XCODEBUILD_SANDBOX_FLAGS[@]}"}
   ${TEST_SERIAL_FLAGS+"${TEST_SERIAL_FLAGS[@]}"}
 )

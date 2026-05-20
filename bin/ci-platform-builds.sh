@@ -83,8 +83,12 @@ else
   log_dir="$(mktemp -d)"
   trap 'rm -rf "$log_dir"' EXIT
 
-  export IPAD_DERIVED_DATA_PATH="$log_dir/DerivedData-iPad"
-  export MAC_DERIVED_DATA_PATH="$log_dir/DerivedData-Mac"
+  if [[ -z "${IPAD_DERIVED_DATA_PATH:-}" ]]; then
+    export IPAD_DERIVED_DATA_PATH="$log_dir/DerivedData-iPad"
+  fi
+  if [[ -z "${MAC_DERIVED_DATA_PATH:-}" ]]; then
+    export MAC_DERIVED_DATA_PATH="$log_dir/DerivedData-Mac"
+  fi
 
   run_ipad_build >"$log_dir/ipad.log" 2>&1 &
   ipad_pid=$!
