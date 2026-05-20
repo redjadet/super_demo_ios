@@ -57,7 +57,34 @@ if [[ "${CI:-}" == "true" ]]; then
 fi
 
 echo "==> iPhone tests (builds app + tests, $XCODEBUILD)"
-run_xcodebuild \
-  "${XCODEBUILD_TEST_ARGS[@]}" \
-  ${TEST_SKIP_FLAGS+"${TEST_SKIP_FLAGS[@]}"} \
-  test
+log_dir="$(mktemp -d)"
+trap 'rm -rf "$log_dir"' EXIT
+test_log="$log_dir/iphone-test.log"
+
+run_tests() {
+  run_xcodebuild \
+    "${XCODEBUILD_TEST_ARGS[@]}" \
+    ${TEST_SKIP_FLAGS+"${TEST_SKIP_FLAGS[@]}"} \
+    test 2>&1 | tee "$test_log"
+}
+
+test_status=0
+run_tests || test_status=$?
+if ((test_status == 0)); then
+  exit 0
+fi
+
+if [[ "${CI:-}" == "true" ]] && grep -q "Timed out while loading Accessibility" "$test_log"; then
+  echo "warning: UI test runner failed to load Accessibility; retrying once after simulator reboot" >&2
+
+  udid="$(sed -n 's/.*id=\([0-9A-F-]\{36\}\).*/\1/p' <<<"$SIMULATOR_DEST")"
+  if [[ "$udid" =~ ^[0-9A-F-]{36}$ ]]; then
+    xcrun simctl shutdown "$udid" 2>/dev/null || true
+    xcrun simctl boot "$udid" 2>/dev/null || true
+    xcrun simctl bootstatus "$udid" -b 2>/dev/null || true
+  fi
+
+  run_tests || exit $?
+fi
+
+exit "$test_status"
