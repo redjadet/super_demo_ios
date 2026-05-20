@@ -60,7 +60,21 @@ XCODEBUILD_BUILD_ARGS=(
   ${XCODEBUILD_SANDBOX_FLAGS+"${XCODEBUILD_SANDBOX_FLAGS[@]}"}
 )
 
+ci_has_ios_simulator_destination() {
+  assert_xcodebuild_matches_developer_dir || return 1
+  "$XCODEBUILD" \
+    -project superDemoApp.xcodeproj \
+    -scheme superDemoApp \
+    -showdestinations 2>&1 \
+    | grep -q 'platform:iOS Simulator'
+}
+
 if [[ "${CI:-}" == "true" ]]; then
+  if [[ "${CI_IPHONE_GENERIC_BUILD:-1}" == "1" ]] && ! ci_has_ios_simulator_destination; then
+    echo "warning: iOS Simulator platform unavailable on this GitHub runner; skipping iPhone build sanity" >&2
+    exit 0
+  fi
+
   echo "==> iPhone build sanity ($XCODEBUILD)"
   assert_xcodebuild_matches_developer_dir
   python3 "$ROOT/tool/run_with_timeout.py" \

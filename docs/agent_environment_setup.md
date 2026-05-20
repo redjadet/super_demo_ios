@@ -129,12 +129,14 @@ builds as parallel lanes. The `lint-build-test` job is an aggregate required
 check gate over those lanes (see `.github/workflows/ci.yml`).
 
 The **iphone-test** job runs `./bin/ci-iphone-test.sh` as iPhone build sanity on
-GitHub Actions using `generic/platform=iOS Simulator`. Unit/UI tests are
-local/full-lane proof because GitHub Actions currently hangs the XCTest runner
-before logs are available, even for unit-only selection. Concrete simulator
-boot/download waits use the repo timeout helper on macOS runners where GNU
-`timeout` is unavailable. UI tests use `-UITesting` and terminate the app between
-cases — see [`testing.md`](testing.md#ui-smoke-ci).
+GitHub Actions using `generic/platform=iOS Simulator` when the runner image has
+an installed iOS Simulator platform; otherwise it exits with an explicit warning
+and relies on the macOS compile lane plus local/full-lane proof. Unit/UI tests
+are local/full-lane proof because GitHub Actions currently hangs the XCTest
+runner before logs are available, even for unit-only selection. Concrete
+simulator boot/download waits use the repo timeout helper on macOS runners where
+GNU `timeout` is unavailable. UI tests use `-UITesting` and terminate the app
+between cases — see [`testing.md`](testing.md#ui-smoke-ci).
 
 ## Cursor (first-time)
 

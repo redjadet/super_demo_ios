@@ -44,7 +44,21 @@ run_platform_xcodebuild() {
   fi
 }
 
+ci_has_ios_simulator_destination() {
+  assert_xcodebuild_matches_developer_dir || return 1
+  "$XCODEBUILD" \
+    -project superDemoApp.xcodeproj \
+    -scheme superDemoApp \
+    -showdestinations 2>&1 \
+    | grep -q 'platform:iOS Simulator'
+}
+
 run_ipad_build() {
+  if [[ "${CI:-}" == "true" && "${CI_PLATFORM_GENERIC_BUILDS:-1}" == "1" ]] && ! ci_has_ios_simulator_destination; then
+    echo "warning: iOS Simulator platform unavailable on this GitHub runner; skipping iPad build"
+    return 0
+  fi
+
   echo "==> iPad build ($IPAD_DEST)"
   if [[ -n "${IPAD_DERIVED_DATA_PATH:-}" ]]; then
     IPAD_DERIVED_DATA_FLAGS=(-derivedDataPath "$IPAD_DERIVED_DATA_PATH")
