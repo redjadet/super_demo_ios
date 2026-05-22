@@ -68,6 +68,33 @@ final class superDemoAppUITests: XCTestCase {
     }
 
     @MainActor
+    func testFeedAccessibilityChromeRowsAndRetry() {
+        let app = UiTestSupport.launchApplication()
+
+        UiTestSupport.openFeedTab(in: app)
+        XCTAssertTrue(UiTestSupport.waitForFeedChrome(in: app))
+
+        let refresh = app.descendants(matching: .any).matching(identifier: "refreshFeed").firstMatch
+        XCTAssertTrue(refresh.waitForExistence(timeout: 10))
+        XCTAssertEqual(refresh.label, "Refresh Feed")
+
+        let postRow = app.descendants(matching: .any).matching(identifier: "feedPostRow-1").firstMatch
+        XCTAssertTrue(postRow.waitForExistence(timeout: 10))
+        XCTAssertEqual(postRow.label, "UI Test Post. Stable feed content for UI tests and simulator runs.")
+
+        app.terminate()
+        let failingApp = UiTestSupport.launchApplication(extraArguments: ["-UITestingFeedFailure"])
+        UiTestSupport.openFeedTab(in: failingApp)
+        XCTAssertTrue(failingApp.staticTexts["Could Not Load Feed"].waitForExistence(timeout: 10))
+
+        let retry = failingApp.buttons["feedRetry"].firstMatch
+        XCTAssertTrue(retry.waitForExistence(timeout: 10))
+        XCTAssertEqual(retry.label, "Retry")
+        retry.tap()
+        XCTAssertTrue(retry.waitForExistence(timeout: 10))
+    }
+
+    @MainActor
     func testLaunchPerformance() {
         measure(metrics: [XCTApplicationLaunchMetric()]) {
             let app = XCUIApplication()

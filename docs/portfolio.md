@@ -58,7 +58,7 @@ HTTP — no live network on default CI.
 - [x] Feed tab reachable; list, Retry, toolbar refresh (`testFeedTabIsReachable` / `FeedView`)
 - [x] `./bin/ci.sh` passes on merge (lint + iPhone tests + iPad/Mac builds)
 - [x] Previews cover light/dark for `FeedView` (`#Preview` + `UniversalPreviewLayouts`)
-- [ ] VoiceOver on Feed chrome / rows / Retry (manual pass on device/simulator)
+- [x] VoiceOver-relevant Feed chrome / rows / Retry proof (`testFeedAccessibilityChromeRowsAndRetry`)
 
 ## Edge cases (summary)
 

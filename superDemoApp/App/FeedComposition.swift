@@ -10,7 +10,9 @@ enum FeedComposition {
     @MainActor
     static func makeFeatureModel(context: ModelContext) -> FeedFeatureModel {
         let remote: any FeedRepository
-        if AppLaunchConfiguration.isUITesting {
+        if AppLaunchConfiguration.usesFailingFeedFixture {
+            remote = FailingSampleFeedRepository()
+        } else if AppLaunchConfiguration.isUITesting {
             remote = SampleFeedRepository()
         } else {
             let client = LiveFeedAPIClient(session: AppURLSession.makeDefault())

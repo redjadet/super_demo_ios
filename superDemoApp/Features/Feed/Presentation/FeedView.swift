@@ -15,9 +15,13 @@ struct FeedView: View {
     var body: some View {
         FeedNavigationShell {
             self.content
-        }
-        .toolbar {
-            self.feedToolbar
+                .navigationTitle("Feed")
+            #if os(iOS)
+                .navigationBarTitleDisplayMode(.inline)
+            #endif
+                .toolbar {
+                    self.feedToolbar
+                }
         }
         .task {
             await self.model.refreshAndWait()
@@ -101,6 +105,8 @@ struct FeedView: View {
                 .accessibilityElement(children: .combine)
                 .accessibilityLabel("\(post.title). \(post.body)")
             }
+            .accessibilityIdentifier("feedPostRow-\(post.id)")
+            .accessibilityLabel("\(post.title). \(post.body)")
         }
         .featureSidebarColumnWidth()
         .accessibilityIdentifier("feedList")

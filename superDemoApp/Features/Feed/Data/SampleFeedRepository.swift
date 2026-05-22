@@ -18,3 +18,10 @@ struct SampleFeedRepository: FeedRepository {
         ]
     }
 }
+
+struct FailingSampleFeedRepository: FeedRepository {
+    func fetchPosts() async throws -> [FeedPost] {
+        await Task.yield()
+        throw FeedError.invalidResponse
+    }
+}

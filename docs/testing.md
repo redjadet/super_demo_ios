@@ -32,6 +32,7 @@ releases.
 | `testDashboardShowsProductionRisks` | Local Dashboard → Production Risks list |
 | `testUIKitShowcaseCollectionIsReachable` | Local Dashboard → UIKit showcase collection |
 | `testFeedTabIsReachable` | Local Feed tab chrome (toolbar, list, empty, or error) |
+| `testFeedAccessibilityChromeRowsAndRetry` | Feed VoiceOver-relevant refresh chrome, row label, and Retry label/tap |
 | `testLaunch` | Local/full-lane launch duplicate for Items chrome |
 | `testLaunchPerformance` | Local launch performance under `-UITesting` |
 
@@ -51,6 +52,8 @@ When `ProcessInfo` contains `-UITesting` (`AppLaunchConfiguration.isUITesting`):
 - **Production Readiness** uses `SampleProductionReadinessRepository` (no live
   JSONPlaceholder health probe).
 - **Feed** uses `SampleFeedRepository` via `FeedComposition` (no live posts fetch).
+- **Feed failure UI tests** add `-UITestingFeedFailure` to use
+  `FailingSampleFeedRepository` and prove Retry without live network.
 
 Normal app runs still hit JSONPlaceholder for Feed and remote health checks.
 

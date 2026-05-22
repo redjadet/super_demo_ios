@@ -9,4 +9,8 @@ enum AppLaunchConfiguration {
     static var isUITesting: Bool {
         ProcessInfo.processInfo.arguments.contains("-UITesting")
     }
+
+    static var usesFailingFeedFixture: Bool {
+        ProcessInfo.processInfo.arguments.contains("-UITestingFeedFailure")
+    }
 }

@@ -19,9 +19,9 @@ enum UiTestSupport {
 
     /// Launches the app with flags that disable live network in UI-test builds.
     @MainActor
-    static func launchApplication() -> XCUIApplication {
+    static func launchApplication(extraArguments: [String] = []) -> XCUIApplication {
         let app = XCUIApplication()
-        app.launchArguments = ["-UITesting"]
+        app.launchArguments = ["-UITesting"] + extraArguments
         self.terminateApplication(app)
         app.launch()
         XCTAssertTrue(app.wait(for: .runningForeground, timeout: 30))
