@@ -59,6 +59,10 @@ Lane behavior:
 - Set `TESTFLIGHT_SKIP_UPLOAD=1` only to validate archive shape without upload.
 - Set `TESTFLIGHT_SKIP_CI=1` only after a same-commit CI proof already passed.
 - Archive only (no upload): `TESTFLIGHT_BUILD_NUMBER=<n> ./bin/fastlane-run ios build_ipa`.
+- Manual GitHub Actions archive smoke: run **Release Smoke**. It calls
+  `./bin/fastlane-run ios build_ipa`, uploads only the generated IPA artifact,
+  and never uploads to TestFlight. Use it after CI proof on a runner with App
+  Store signing assets.
 
 Optional signing via [match](https://docs.fastlane.tools/actions/match/): copy
 `fastlane/Matchfile.example` to `fastlane/Matchfile`, run `fastlane match appstore`

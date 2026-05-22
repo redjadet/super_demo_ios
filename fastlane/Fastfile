@@ -98,6 +98,7 @@ def build_store_ipa(build_number:)
     configuration: "Release",
     clean: true,
     export_method: "app-store",
+    destination: "generic/platform=iOS",
     output_directory: repo_path(TESTFLIGHT_OUTPUT_REL_DIR),
     output_name: "superDemoApp-#{build_number}.ipa",
     xcargs: "CURRENT_PROJECT_VERSION=#{build_number.shellescape}"

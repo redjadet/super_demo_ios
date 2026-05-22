@@ -1,0 +1,59 @@
+name: Release Smoke
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: release-smoke-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
+jobs:
+  build-ipa:
+    name: Build release IPA
+    runs-on: macos-26
+    timeout-minutes: 90
+    defaults:
+      run:
+        working-directory: .
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.3"
+          bundler-cache: true
+
+      - name: Cache Xcode + SwiftPM
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/Library/Caches/org.swift.swiftpm
+            ~/Library/Developer/Xcode/DerivedData
+          key: >-
+            xcode-${{ runner.os }}-${{ runner.arch }}-release-smoke-${{ hashFiles('**/Package.resolved', '**/*.xcodeproj/project.pbxproj') }}
+
+      - name: Install lint tools (for build phases)
+        run: brew bundle check --file Brewfile || brew bundle --file Brewfile
+
+      - name: Build IPA without upload
+        env:
+          CI: true
+          MATCH_READONLY: "1"
+          TESTFLIGHT_BUILD_NUMBER: ${{ github.run_number }}
+          TESTFLIGHT_SKIP_CI: "1"
+          FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: "120"
+          FASTLANE_XCODEBUILD_SETTINGS_RETRIES: "3"
+        run: ./bin/fastlane-run ios build_ipa
+
+      - name: Upload IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-smoke-ipa
+          path: build/testflight/*.ipa
+          if-no-files-found: error
