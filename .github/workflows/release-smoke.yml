@@ -44,7 +44,11 @@ jobs:
       - name: Build IPA without upload
         env:
           CI: true
+          FASTLANE_USE_MATCH: "1"
           MATCH_READONLY: "1"
+          MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL }}
+          MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
           TESTFLIGHT_BUILD_NUMBER: ${{ github.run_number }}
           TESTFLIGHT_SKIP_CI: "1"
           FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: "120"

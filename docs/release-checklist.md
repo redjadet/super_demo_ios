@@ -62,14 +62,21 @@ Lane behavior:
 - Set `TESTFLIGHT_SKIP_CI=1` only after a same-commit CI proof already passed.
 - Archive only (no upload): `TESTFLIGHT_BUILD_NUMBER=<n> ./bin/fastlane-run ios build_ipa`.
 - Manual GitHub Actions archive smoke: run **Release Smoke**. It calls
-  `./bin/fastlane-run ios build_ipa`, uploads only the generated IPA artifact,
-  and never uploads to TestFlight. Use it after CI proof on a runner with App
-  Store signing assets.
+  `./bin/fastlane-run ios build_ipa`, syncs App Store signing through match,
+  uploads only the generated IPA artifact, and never uploads to TestFlight.
+  Use it after CI proof.
 
 Optional signing via [match](https://docs.fastlane.tools/actions/match/): copy
 `fastlane/Matchfile.example` to `fastlane/Matchfile`, run `fastlane match appstore`
 once, then set `FASTLANE_USE_MATCH=1` (or keep `Matchfile` in repo). CI should use
 `MATCH_READONLY=1` (default when `CI=true`).
+
+GitHub **Release Smoke** secrets:
+
+- `MATCH_GIT_URL`: private signing repo URL.
+- `MATCH_PASSWORD`: match encryption password.
+- `MATCH_GIT_BASIC_AUTHORIZATION`: git auth token/header for the signing repo,
+  unless the runner has equivalent SSH access.
 
 ## App Store
 
