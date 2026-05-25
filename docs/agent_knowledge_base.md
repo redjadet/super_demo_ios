@@ -84,12 +84,10 @@ Check every non-trivial iOS change:
 
 - Architecture boundary: Presentation, Domain, Data dependencies point right way;
   `./bin/lint.sh` layer check passes for any `Features/` paths touched.
-- Apple-native fit: SwiftUI, Observation, SwiftData, Swift Concurrency, Swift Testing, App Intents considered before dependencies.
-- Concurrency: UI mutations on MainActor; shared mutable state isolated; no
-  `Type()` default args on `@MainActor` inits ([`agent_swift_guards.md`](agent_swift_guards.md)).
-- Style: `./bin/verify-swift.sh` after Swift edits; 4-space Swift only — [`agent_swift_guards.md`](agent_swift_guards.md)
-  ([`agent_swift_guards.md`](agent_swift_guards.md)).
-- Persistence: SwiftData changes handle migration, uniqueness, delete behavior, and preview/test fixtures.
+- Apple-native fit: follow [`apple-development-practices.md`](apple-development-practices.md).
+- Concurrency/style: MainActor isolation, strict-concurrency fixes, 4-space Swift,
+  `./bin/verify-swift.sh`, and [`agent_swift_guards.md`](agent_swift_guards.md).
+- Persistence: SwiftData migration, indexes, uniqueness, history, delete behavior, fixtures.
 - Networking: typed request/response, cancellation, retry/idempotency, timeout, offline behavior.
 - UI: follow [`../DESIGN.md`](../DESIGN.md); accessibility, Dynamic Type, **light + dark**
   (semantic colors, paired previews — [`design_system.md`](design_system.md#light-and-dark-mode-required-from-day-one)),
@@ -98,8 +96,8 @@ Check every non-trivial iOS change:
   tests, scripts, fixtures, or release checklists; see [`development-feedback-loop.md`](development-feedback-loop.md).
 - Universal layout: all iPhones, iPads, Mac sizes; shared `AdaptiveNavigationShell`; proof
   via `./bin/ci.sh` iPad + Mac lanes — [`universal-apple-platforms.md`](universal-apple-platforms.md).
-- Privacy/security: no secrets in repo; least permission; user data minimized.
-- Tests: fast unit coverage for logic; integration/UI proof for critical workflows.
+- Privacy/security: no secrets; least permission; user data, manifest, entitlement, required-reason API impact checked.
+- Tests: fast logic coverage; integration/UI proof; parallel-safe Swift Testing fixtures.
 - Universal compile: iPad simulator + macOS builds in `./bin/ci.sh` and GitHub Actions.
 - Performance: no avoidable main-thread hangs, body-time heavy work, or broad invalidation.
 - Operational clarity: future agent can reproduce proof from repo commands.

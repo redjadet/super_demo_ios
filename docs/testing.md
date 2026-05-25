@@ -13,7 +13,11 @@ adding a deterministic test, mock fixture, preview state, or script.
 - Existing XCTest files may stay XCTest.
 - UI tests: XCTest/XCUIAutomation.
 - Performance-sensitive code: add XCTest performance coverage or metric proof.
-- Use parameterized Swift Testing cases for boundary combinations when useful.
+- Swift Testing: use parameterized cases, traits/tags/time limits when useful.
+  Parallelism is default; isolate or serialize shared files, stores, clocks,
+  URLProtocol stubs, process args, and global state.
+- Use Xcode test plans or sanitizer-focused runs for memory, race, main-thread,
+  or undefined-behavior risk.
 
 ## UI smoke (CI)
 
@@ -92,6 +96,7 @@ When stubbing `URLSession` with a custom `URLProtocol` in unit tests:
 - Keep SwiftData tests in-memory unless store migration is the subject.
 - Do not require network for normal test lanes.
 - Do not mix Swift Testing and XCTest APIs in the same test method.
+- Treat strict-concurrency failures/warnings as defects unless owner docs allow a narrow exception.
 
 ## Command
 

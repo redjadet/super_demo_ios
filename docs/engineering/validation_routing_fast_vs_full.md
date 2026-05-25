@@ -27,6 +27,9 @@ Use focused proof first, then broaden only when blast radius requires it.
 | Layering or feature structure | `./tool/check_layer_boundaries.sh` + `./bin/lint.sh` |
 | Shared networking, retry, token refresh, idempotency | targeted networking tests + `./bin/checklist` |
 | SwiftData model/schema changes | targeted persistence tests + migration note + `./bin/checklist` |
+| Privacy manifest, required-reason API, entitlement, keychain, background mode | targeted proof + release/privacy note + `./bin/checklist` |
+| Strict concurrency, actors, shared mutable state | `./bin/verify-swift.sh` + focused async/concurrency tests |
+| Performance, hang, memory, sanitizer risk | focused test/profile/sanitizer proof + `./bin/checklist` when shared |
 | UI layout, navigation, light/dark, universal behavior | targeted UI proof + `./bin/checklist` |
 | Release/Fastlane/signing | relevant `./bin/fastlane-run ...` lane or documented credential blocker |
 
@@ -39,6 +42,8 @@ Typical triggers:
 - shared architecture or dependency-injection changes
 - SwiftData schema/migration work
 - networking, retry, sync, lifecycle, diagnostics, or release changes
+- privacy/signing/entitlement/permission/required-reason API changes
+- strict-concurrency, shared mutable state, performance, memory, sanitizer, or broad OSLog/signpost changes
 - changes spanning multiple features or shared infrastructure
 - UI/navigation work requiring iPhone, iPad, and Mac confidence
 - work where smallest honest proof is broader than one focused test

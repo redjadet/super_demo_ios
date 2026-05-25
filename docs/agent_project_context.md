@@ -73,19 +73,16 @@ Presentation -> Domain <- Data
 
 ## Modern iOS Defaults
 
-- SwiftUI for UI.
-- Universal app behavior across iOS, iPadOS, and macOS.
-- Swift Concurrency (`async`/`await`, `Task`, actors) for async work.
-- SwiftUI Observation for feature state on iOS 17+.
-- `@MainActor` for UI-facing observable models and state mutation.
-- SwiftData for local persistence when it fits app needs.
-- `NavigationStack` / `NavigationSplitView` for declarative navigation.
-- Responsive layout must handle compact phone, regular iPad, split view,
-  Stage Manager, and resizable Mac windows.
-- Swift Testing for new unit/integration tests when target supports it; XCTest for UI tests and existing XCTest coverage.
-- App Intents for stable actions/entities that should work through Spotlight,
-  Shortcuts, Siri, widgets, controls, or Action Button.
-- OSLog for structured diagnostics; avoid `print` as permanent logging.
+Use [`apple-development-practices.md`](apple-development-practices.md) as the
+modern Apple defaults owner. Project-specific short form:
+
+- SwiftUI + Observation + SwiftData + Swift Concurrency.
+- `NavigationStack` / `NavigationSplitView`; responsive iPhone, iPad, Stage
+  Manager, and Mac windows.
+- Swift Testing for new logic tests; XCTest for UI and existing coverage.
+- App Intents only for stable domain actions/entities.
+- `Logger` / OSLog; privacy manifest and required-reason API review when code or
+  dependencies touch covered APIs.
 
 ## Caution Zones
 
@@ -97,3 +94,6 @@ Presentation -> Domain <- Data
 - Do not add broad architecture scaffolding before a feature needs it.
 - Do not ship iPhone-only layout assumptions into shared views.
 - Do not add App Intents for unstable or internal-only actions.
+- Do not suppress concurrency/sendability diagnostics or add entitlements,
+  background modes, keychain groups, tracking, required-reason APIs, or sensitive
+  logging without owner docs and release impact.

@@ -81,7 +81,7 @@ Launch via `UiTestSupport.launchApplication()` (`-UITesting`, terminate between 
 - Start from current diff.
 - Swift indentation is 4 spaces. If Xcode reports `(indent)` or 2-space member
   errors, run `./bin/verify-swift.sh` — see [`agent_swift_guards.md`](agent_swift_guards.md).
-- Use Apple-native frameworks first; document dependency tradeoffs.
+- Apple-native defaults and version-sensitive API checks: [`apple-development-practices.md`](apple-development-practices.md).
 - Keep changes surgical.
 - Prefer `./bin/checklist-fast` for docs/tooling/small Swift edits.
 - Use `./bin/checklist` for SwiftUI layout/navigation/universal UI before handoff.
