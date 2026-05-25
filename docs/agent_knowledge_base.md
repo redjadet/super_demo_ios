@@ -14,7 +14,32 @@ details.
 | Codebase = memory. | Durable conclusions belong in docs, tests, scripts, or plans. |
 | Tools beat prompts. | Prefer Xcode/build/test output over model memory. |
 | Missing capability beats retry. | Repeated failure needs a small doc/test/script/check, not another prompt. |
+| Enforce invariants, not taste. | Automate boundaries; keep local implementation freedom. |
 | Fast feedback is a product constraint. | Use previews, mocks, tests, and platform proof to shorten manual loops. |
+| Harness beats model choice. | Protect context, memory, orchestration, and recovery. |
+
+## AI Productivity Traps
+
+AI can be slower when it produces almost-correct code: polished surface, subtle
+repo mismatch. SwiftUI and Xcode amplify mismatch cost through state ownership,
+platform settings, generated project files, and build-signing constraints.
+
+Repo guardrails:
+
+- Treat AI output as draft; prefer smallest coherent change inside existing
+  seams: SwiftUI/Observation, feature layers, composition roots, repo scripts.
+- Stop re-prompt loops. If two cycles are almost right, switch to evidence:
+  read owning code/docs, implement manually, add missing fixture/test/script.
+- Patch exact failing lines instead of regenerating whole files/views.
+- Run narrowest honest validation early; see
+  [Validation Routing](engineering/validation_routing_fast_vs_full.md).
+- Architecture consistency beats local correctness. Code that works in isolation
+  but violates feature layers or platform support is net loss.
+- Start from feature/domain boundary, dependency graph, and contracts. Avoid
+  screen-centric rewrites, giant feature models, hidden dependencies, and
+  cross-feature leakage.
+- Add abstractions only when they remove repeated behavior or hide an external
+  dependency. Do not add indirection for style.
 
 ## Progressive Disclosure
 
@@ -42,6 +67,8 @@ observe/revise loop.
 ## Execution Contract
 
 - Define Goal / Context / Boundaries / Verification before non-trivial work.
+- Use [Adaptive Execution](agent_kb/adaptive_execution.md) for effort scaling,
+  search budget, ambiguity handling, and stop rules.
 - Keep write set small and reversible.
 - Prefer feature slices that can be built and tested.
 - Use existing app target and scheme unless task proves otherwise.
@@ -49,6 +76,9 @@ observe/revise loop.
 - Before report: self-check request, changed files, validation, blockers, residual risk.
 
 ## iOS Agent Finish Gate
+
+Detailed finish/report rules:
+[Legibility And Finish Gate](agent_kb/legibility_and_finish_gate.md).
 
 Check every non-trivial iOS change:
 
@@ -84,6 +114,25 @@ For feature/refactor/debug:
 4. `rg` for current symbols and patterns
 5. targeted source/test reads
 6. focused build/test command
+
+Unknown file or stale-context recovery:
+[Memory And File Discovery](agent_kb/memory_and_context_ladder.md).
+
+Tool choice and MCP/connector boundaries:
+[Tool Orchestration](agent_kb/tool_orchestration.md).
+
+## Long Session Health
+
+- Treat memory as layers: active facts in context, durable evidence in files,
+  rules in instruction docs.
+- Compact tool output to decisions, evidence, paths, and blockers.
+- Watch circuit-breaker symptoms: repeated contradictions, stale file claims,
+  lost goal, invented tool output, or circular repair attempts.
+- After two failed repair loops or clear context drift, stop generation, reread
+  source files, restate Goal / Context / Boundaries / Verification, then
+  continue from verified state.
+- If reset was needed because repo guidance was missing, add smallest durable
+  capability: doc pointer, script, test, fixture, skill, or automation rule.
 
 ## Durable Learning
 

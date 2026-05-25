@@ -40,7 +40,8 @@ Cursor rules, MCP, team skills:
 6. [`docs/agent_swift_guards.md`](docs/agent_swift_guards.md) — indent, lint, concurrency pitfalls
 7. [`docs/agents_quick_reference.md`](docs/agents_quick_reference.md) — commands, proof
 8. [`docs/ai_code_review_protocol.md`](docs/ai_code_review_protocol.md)
-9. Full index: [`docs/README.md`](docs/README.md)
+9. Validation routing: [`docs/engineering/validation_routing_fast_vs_full.md`](docs/engineering/validation_routing_fast_vs_full.md)
+10. Full index: [`docs/README.md`](docs/README.md)
 
 ## Route by change type
 

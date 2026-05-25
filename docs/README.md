@@ -7,6 +7,10 @@ Source-of-truth docs for `superDemoApp`.
 - **Portfolio / reviewers:** [`portfolio.md`](portfolio.md) (+ [`../README.md`](../README.md) Portfolio section).
 - Agent map (lean links only; detail in `docs/`): [`../AGENTS.md`](../AGENTS.md)
 - AI agent harness: [`agent_knowledge_base.md`](agent_knowledge_base.md)
+- Agent harness shards: [`agent_kb/adaptive_execution.md`](agent_kb/adaptive_execution.md),
+  [`agent_kb/legibility_and_finish_gate.md`](agent_kb/legibility_and_finish_gate.md),
+  [`agent_kb/memory_and_context_ladder.md`](agent_kb/memory_and_context_ladder.md),
+  [`agent_kb/tool_orchestration.md`](agent_kb/tool_orchestration.md)
 - Agent baseline rules: [`agent_baseline.md`](agent_baseline.md)
 - Agent Swift guards (indent, lint, concurrency): [`agent_swift_guards.md`](agent_swift_guards.md)
 - Agent preferences: [`agent_preferences.md`](agent_preferences.md)
@@ -19,6 +23,7 @@ Source-of-truth docs for `superDemoApp`.
 - Team skills pin: [`../skills-lock.json`](../skills-lock.json)
 - Apple development practices: [`apple-development-practices.md`](apple-development-practices.md)
 - Development feedback loop: [`development-feedback-loop.md`](development-feedback-loop.md)
+- Validation routing: [`engineering/validation_routing_fast_vs_full.md`](engineering/validation_routing_fast_vs_full.md)
 - Release checklist: [`release-checklist.md`](release-checklist.md)
 - TestFlight release notes: [`release-notes/testflight.md`](release-notes/testflight.md);
   App Store: [`release-notes/app-store.md`](release-notes/app-store.md)
@@ -56,6 +61,8 @@ Source-of-truth docs for `superDemoApp`.
 - Fast local sanity: `./bin/checklist-fast`
 - Full delivery gate: `./bin/checklist`
 - CI parity (lint + iPhone test + iPad/Mac builds): `./bin/ci.sh`
+- Fast vs full routing:
+  [`engineering/validation_routing_fast_vs_full.md`](engineering/validation_routing_fast_vs_full.md)
 - Cursor rules install: `./tool/install-cursor-rules.sh`
 - Team Apple skills restore: `npx skills experimental_install -y` (from git root; see [`agent_host_notes.md`](agent_host_notes.md))
 

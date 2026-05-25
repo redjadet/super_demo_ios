@@ -16,6 +16,8 @@ XcodeBuildMCP active profile: `superDemoApp`
 
 ## Validation Chooser
 
+Detailed routing: [`engineering/validation_routing_fast_vs_full.md`](engineering/validation_routing_fast_vs_full.md).
+
 | Change type | Minimum proof |
 | --- | --- |
 | Docs / tooling / small Swift | `./bin/checklist-fast` |
