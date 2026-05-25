@@ -107,9 +107,9 @@ struct SampleProductionReadinessRepository: ProductionReadinessRepository {
             ),
             ReleaseChecklistItem(
                 id: "observability",
-                title: "Crash and log hooks are ready",
-                detail: "Sensitive headers are redacted; production failures have OSLog categories.",
-                isComplete: true,
+                title: "OSLog release diagnostics are ready",
+                detail: "Sensitive headers are redacted; crash monitoring stays no-op until a provider is configured.",
+                isComplete: false,
                 owner: "Platform"
             ),
             ReleaseChecklistItem(

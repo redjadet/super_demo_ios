@@ -49,6 +49,16 @@ struct ProductionReadinessTests {
     }
 
     @Test
+    func sampleSnapshotDoesNotClaimCrashProviderIsConfigured() async throws {
+        let snapshot = try await SampleProductionReadinessRepository().loadSnapshot()
+        let observability = try #require(snapshot.checklist.first { $0.id == "observability" })
+
+        #expect(observability.title == "OSLog release diagnostics are ready")
+        #expect(observability.detail.contains("crash monitoring stays no-op"))
+        #expect(observability.isComplete == false)
+    }
+
+    @Test
     @MainActor
     func cancellationDoesNotReplaceFeatureStateWithFailure() async {
         let model = ProductionReadinessFeatureModel(

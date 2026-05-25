@@ -27,9 +27,9 @@ Use before TestFlight or App Store submission.
   Items walkthrough state for TestFlight. Local proof can pass
   `-ReviewerDemoMode` or `SUPERDEMO_REVIEWER_DEMO_MODE=1`; the
   `fastlane ios beta` lane compiles the TestFlight archive with `REVIEWER_DEMO`.
-- Release diagnostics use OSLog categories `release-checks` and
-  `device-only-failures`; crash monitoring is wired through a no-op adapter until
-  a provider is configured.
+- Release diagnostics are OSLog-only today: categories `release-checks` and
+  `device-only-failures` are wired, but the crash monitor adapter is a no-op
+  until Firebase Crashlytics, Sentry, or an equivalent provider is configured.
 - Feature flags or remote config default to safe states.
 - Feedback path is monitored after upload.
 

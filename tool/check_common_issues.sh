@@ -196,6 +196,31 @@ done
 [[ -x bin/fastlane-run ]] || fail "bin/fastlane-run must be executable"
 [[ -x tool/bootstrap_fastlane.sh ]] || fail "tool/bootstrap_fastlane.sh must be executable"
 
+section "Release diagnostics claims"
+crash_provider_matches="$(
+  rg -n \
+    'FirebaseCrashlytics|Crashlytics|Sentry|Bugsnag|PLCrashReporter' \
+    superDemoApp superDemoApp.xcodeproj Package.resolved \
+    2>/dev/null \
+    || true
+)"
+crash_overclaims="$(
+  rg -n \
+    'Crash reporting configured|crash reporting is configured|Crashlytics configured|Sentry configured' \
+    README.md docs \
+    || true
+)"
+if [[ -n "$crash_overclaims" && -z "$crash_provider_matches" ]]; then
+  echo "$crash_overclaims" >&2
+  fail "docs claim crash reporting is configured, but no crash provider is wired in app source or project settings"
+fi
+if [[ -z "$crash_provider_matches" ]]; then
+  rg -q 'OSLog-only today' docs/release-checklist.md \
+    || fail "docs/release-checklist.md must state release diagnostics are OSLog-only while no crash provider is wired"
+  rg -q 'Crash monitoring provider is not configured yet' README.md \
+    || fail "README.md must state crash monitoring is not configured while no crash provider is wired"
+fi
+
 section "Cursor agent template"
 cursor_template_files=(
   tool/cursor-template/README.md
