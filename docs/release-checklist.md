@@ -23,7 +23,10 @@ Use before TestFlight or App Store submission.
 
 - Release notes source: [`docs/release-notes/testflight.md`](release-notes/testflight.md).
   Keep this file as the exact tester-facing text uploaded by `fastlane ios beta`.
-- Demo account or seeded state exists when review/testers need it.
+- Reviewer demo mode seeds deterministic Dashboard, Production Risks, Feed, and
+  Items walkthrough state for TestFlight. Local proof can pass
+  `-ReviewerDemoMode` or `SUPERDEMO_REVIEWER_DEMO_MODE=1`; the
+  `fastlane ios beta` lane compiles the TestFlight archive with `REVIEWER_DEMO`.
 - Release diagnostics use OSLog categories `release-checks` and
   `device-only-failures`; crash monitoring is wired through a no-op adapter until
   a provider is configured.

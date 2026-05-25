@@ -91,7 +91,12 @@ def prepare_release_build
   end
 end
 
-def build_store_ipa(build_number:)
+def build_store_ipa(build_number:, reviewer_demo: false)
+  xcargs = ["CURRENT_PROJECT_VERSION=#{build_number.shellescape}"]
+  if reviewer_demo
+    xcargs << "SWIFT_ACTIVE_COMPILATION_CONDITIONS=#{"$(inherited) REVIEWER_DEMO".shellescape}"
+  end
+
   build_app(
     project: PROJECT,
     scheme: SCHEME,
@@ -101,7 +106,7 @@ def build_store_ipa(build_number:)
     destination: "generic/platform=iOS",
     output_directory: repo_path(TESTFLIGHT_OUTPUT_REL_DIR),
     output_name: "superDemoApp-#{build_number}.ipa",
-    xcargs: "CURRENT_PROJECT_VERSION=#{build_number.shellescape}"
+    xcargs: xcargs.join(" ")
   )
 end
 
@@ -258,7 +263,7 @@ platform :ios do
     build_number = release_build_number
     notes = testflight_release_notes
     prepare_release_build
-    ipa_path = build_store_ipa(build_number: build_number)
+    ipa_path = build_store_ipa(build_number: build_number, reviewer_demo: true)
 
     if ENV["TESTFLIGHT_SKIP_UPLOAD"] == "1"
       UI.important("Built TestFlight archive without upload: #{ipa_path}")

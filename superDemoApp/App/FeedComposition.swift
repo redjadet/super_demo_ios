@@ -12,7 +12,7 @@ enum FeedComposition {
         let remote: any FeedRepository
         if AppLaunchConfiguration.usesFailingFeedFixture {
             remote = FailingSampleFeedRepository()
-        } else if AppLaunchConfiguration.isUITesting {
+        } else if AppLaunchConfiguration.usesSeededSampleState {
             remote = SampleFeedRepository()
         } else {
             let client = LiveFeedAPIClient(session: AppURLSession.makeDefault())

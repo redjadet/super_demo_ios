@@ -9,6 +9,14 @@ import SwiftUI
 enum ItemsComposition {
     @MainActor
     static func makeFeatureModel(context: ModelContext) -> ItemsFeatureModel {
+        if AppLaunchConfiguration.isReviewerDemoMode {
+            do {
+                try ReviewerDemoFixtures.seedItemsIfNeeded(in: context)
+            } catch {
+                assertionFailure("Could not seed reviewer demo Items: \(error)")
+            }
+        }
+
         let repository = SwiftDataItemRepository(context: context)
         return ItemsFeatureModel(
             loadItems: LoadItemsUseCase(repository: repository),

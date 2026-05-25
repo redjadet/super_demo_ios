@@ -24,7 +24,7 @@ enum ProductionReadinessComposition {
     @MainActor
     private static func makeRepository() -> ProductionReadinessRepository {
         let sample = SampleProductionReadinessRepository()
-        if AppLaunchConfiguration.isUITesting {
+        if AppLaunchConfiguration.usesSeededSampleState {
             return sample
         }
         let client = URLSessionAPIClient(session: AppURLSession.makeDefault())
