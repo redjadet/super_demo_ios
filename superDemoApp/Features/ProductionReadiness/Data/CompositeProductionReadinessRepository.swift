@@ -9,17 +9,20 @@ struct CompositeProductionReadinessRepository: ProductionReadinessRepository {
     private let sample: SampleProductionReadinessRepository
     private let remoteHealth: RemoteAPIHealthRepository
     private let remoteEndpoint: URL
+    private let diagnostics: ReleaseDiagnosticsReporting
     private let now: @Sendable () -> Date
 
     init(
         sample: SampleProductionReadinessRepository,
         remoteHealth: RemoteAPIHealthRepository,
         remoteEndpoint: URL,
+        diagnostics: ReleaseDiagnosticsReporting = ReleaseDiagnostics.shared,
         now: @escaping @Sendable () -> Date = Date.init
     ) {
         self.sample = sample
         self.remoteHealth = remoteHealth
         self.remoteEndpoint = remoteEndpoint
+        self.diagnostics = diagnostics
         self.now = now
     }
 
@@ -37,9 +40,16 @@ struct CompositeProductionReadinessRepository: ProductionReadinessRepository {
     }
 
     private func loadRemoteHealthEntry() async -> APIHealthCheck {
+        let check = ReleaseDiagnosticCheck(
+            name: "remote-api-health",
+            metadata: ["endpoint": self.remoteEndpoint.path()]
+        )
         do {
-            return try await self.remoteHealth.loadHealthCheck()
+            let entry = try await self.remoteHealth.loadHealthCheck()
+            self.diagnostics.releaseCheckPassed(check)
+            return entry
         } catch {
+            self.diagnostics.releaseCheckFailed(check, reason: String(describing: error))
             return APIHealthCheck(
                 id: "remote-api",
                 name: "Remote API",

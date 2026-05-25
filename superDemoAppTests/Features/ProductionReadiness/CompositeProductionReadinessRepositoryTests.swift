@@ -63,9 +63,16 @@ struct CompositeProductionReadinessRepositoryTests {
                 ),
                 endpoint: endpoint
             ) { referenceDate },
-            remoteEndpoint: endpoint
+            remoteEndpoint: endpoint,
+            diagnostics: NoopReleaseDiagnostics()
         ) { referenceDate }
     }
+}
+
+private struct NoopReleaseDiagnostics: ReleaseDiagnosticsReporting {
+    func releaseCheckPassed(_: ReleaseDiagnosticCheck) {}
+    func releaseCheckFailed(_: ReleaseDiagnosticCheck, reason _: String) {}
+    func deviceOnlyFailure(_: DeviceOnlyFailure) {}
 }
 
 private struct NoopAPILogger: APILogging {

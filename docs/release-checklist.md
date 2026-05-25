@@ -24,7 +24,9 @@ Use before TestFlight or App Store submission.
 - Release notes source: [`docs/release-notes/testflight.md`](release-notes/testflight.md).
   Keep this file as the exact tester-facing text uploaded by `fastlane ios beta`.
 - Demo account or seeded state exists when review/testers need it.
-- Crash reporting and OSLog categories are enabled.
+- Release diagnostics use OSLog categories `release-checks` and
+  `device-only-failures`; crash monitoring is wired through a no-op adapter until
+  a provider is configured.
 - Feature flags or remote config default to safe states.
 - Feedback path is monitored after upload.
 
