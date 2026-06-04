@@ -23,6 +23,11 @@ Use declarative SwiftUI navigation that adapts across iOS, iPadOS, and macOS.
 
 - Root shell: `AppRootView` (`TabView`) — Dashboard, Items, Feed tabs with
   `accessibilityIdentifier` on each tab (`dashboardTab`, `itemsTab`, `feedTab`).
+- Typed deep-link route: `superdemo://dashboard/risks` opens Dashboard →
+  Production Risks through `AppNavigationState` for cold and warm app delivery.
+  Unsupported `superdemo` URLs fall back to Dashboard and show a user-facing alert.
+- URL registration: `Config/AppInfo.plist`. Parsing stays in
+  `App/AppNavigation.swift`; views only consume typed `AppRoute` values.
 - Feature stacks: Items and Feed use `ItemsNavigationShell` / `FeedNavigationShell`
   → `AdaptiveNavigationShell` for master/detail inside a tab.
 - Shared: `Shared/Presentation/AdaptiveNavigationShell.swift`
@@ -37,5 +42,8 @@ Use declarative SwiftUI navigation that adapts across iOS, iPadOS, and macOS.
 | Dashboard → Production Risks | `testDashboardShowsProductionRisks` |
 | Dashboard → UIKit showcase | `testUIKitShowcaseCollectionIsReachable` |
 | Feed tab | `testFeedTabIsReachable` |
+
+Deep-link parsing and cold/warm navigation-state behavior:
+`superDemoAppTests/Shared/AppNavigationTests.swift`.
 
 Details: [`testing.md`](testing.md#ui-smoke-ci).

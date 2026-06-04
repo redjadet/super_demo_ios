@@ -145,7 +145,7 @@ struct SampleProductionReadinessRepository: ProductionReadinessRepository {
                 "deep-links",
                 "Deep Links",
                 deepLinkDetail,
-                "Add routing fixtures, device notes, and release checklist steps for domain verification.",
+                "Keep custom-scheme routing fixtures; verify associated domains on device before release.",
                 ReadinessStatus.warning
             ),
             (

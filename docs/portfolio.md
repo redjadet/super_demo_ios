@@ -17,6 +17,8 @@ read-through cache.
    see [`changes/2026-05-18_production_readiness_dashboard.md`](changes/2026-05-18_production_readiness_dashboard.md).
 6. **`App/`** — `AppRootView` tabs; composition roots wire DI and feature models.
 7. **`Shared/Presentation/AdaptiveNavigationShell.swift`** — shared chrome.
+8. Open `superdemo://dashboard/risks` to review typed deep-link parsing, cold/warm
+   route handling, and invalid-link fallback in `App/AppNavigation.swift`.
 
 ## Items walkthrough (`Features/Items/`)
 
@@ -51,6 +53,8 @@ HTTP — no live network on default CI.
   [Edge cases (summary)](#edge-cases-summary)).
 - **Tests:** Stub `URLProtocol` / injected session.
 - **Cache:** On fetch failure + stored rows → return stale content (demo OK).
+- **Navigation:** Typed `AppRoute` values; `superdemo://dashboard/risks` opens a
+  meaningful reviewer screen without raw string navigation in views.
 
 ## Reviewer checklist
 

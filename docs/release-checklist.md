@@ -12,7 +12,9 @@ Use before TestFlight or App Store submission.
 ## Device Proof
 
 - Push notifications: APNs token, permission prompt, foreground/background receipt.
-- Deep links: associated domains, cold start, warm start, missing route fallback.
+- Deep links: `superdemo://dashboard/risks` is registered and typed in-app; verify
+  cold start, warm start, and missing-route alert on device. Associated domains and
+  universal links remain separate future work until a production web domain and AASA file exist.
 - Keychain: first install, reinstall, locked device, biometric changes.
 - Permissions: denied, limited, revoked, and Settings return paths.
 - Slow networks: timeout, retry, cancellation, 429, and offline messaging.

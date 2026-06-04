@@ -42,8 +42,9 @@ enum ProductionReadinessComposition {
 
 struct ProductionReadinessRootView: View {
     @State private var model = ProductionReadinessComposition.makeFeatureModel()
+    @Binding var path: [AppRoute]
 
     var body: some View {
-        ProductionReadinessView(model: self.model)
+        ProductionReadinessView(model: self.model, path: self.$path)
     }
 }

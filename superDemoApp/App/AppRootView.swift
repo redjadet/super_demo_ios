@@ -5,18 +5,12 @@
 
 import SwiftUI
 
-private enum AppTab: Hashable {
-    case dashboard
-    case items
-    case feed
-}
-
 struct AppRootView: View {
-    @State private var selection: AppTab = .dashboard
+    @State private var navigation = AppNavigationState()
 
     var body: some View {
-        TabView(selection: self.$selection) {
-            ProductionReadinessRootView()
+        TabView(selection: self.$navigation.selection) {
+            ProductionReadinessRootView(path: self.$navigation.dashboardPath)
                 .tabItem {
                     Label("Dashboard", systemImage: "checklist.checked")
                 }
@@ -36,6 +30,24 @@ struct AppRootView: View {
                 }
                 .tag(AppTab.feed)
                 .accessibilityIdentifier("feedTab")
+        }
+        .onOpenURL { url in
+            self.navigation.handle(url: url)
+        }
+        .alert("Link Not Available", isPresented: self.invalidDeepLinkPresented) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text(self.navigation.invalidDeepLinkMessage ?? "")
+        }
+    }
+
+    private var invalidDeepLinkPresented: Binding<Bool> {
+        Binding {
+            self.navigation.invalidDeepLinkMessage != nil
+        } set: { isPresented in
+            if !isPresented {
+                self.navigation.invalidDeepLinkMessage = nil
+            }
         }
     }
 }

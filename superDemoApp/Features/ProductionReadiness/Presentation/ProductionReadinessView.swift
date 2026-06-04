@@ -7,13 +7,15 @@ import SwiftUI
 
 struct ProductionReadinessView: View {
     @Bindable private var model: ProductionReadinessFeatureModel
+    @Binding private var path: [AppRoute]
 
-    init(model: ProductionReadinessFeatureModel) {
+    init(model: ProductionReadinessFeatureModel, path: Binding<[AppRoute]>) {
         self.model = model
+        self._path = path
     }
 
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: self.$path) {
             self.content
                 .navigationTitle("Production Readiness")
             #if os(iOS)
@@ -30,12 +32,28 @@ struct ProductionReadinessView: View {
                         .disabled(self.model.isInitialLoading)
                     }
                 }
+                .navigationDestination(for: AppRoute.self) { route in
+                    self.destination(for: route)
+                }
         }
         .task {
             await self.model.refreshAndWait()
         }
         .onDisappear {
             self.model.cancelRefresh()
+        }
+    }
+
+    @ViewBuilder
+    private func destination(for route: AppRoute) -> some View {
+        switch route {
+        case .productionRisks:
+            if case let .content(snapshot, _) = self.model.state {
+                ProductionRisksView(risks: snapshot.risks)
+            } else {
+                ProgressView()
+                    .featureScreenFrame()
+            }
         }
     }
 
@@ -313,7 +331,16 @@ private enum ProductionReadinessPreviewFactory {
         let model = ProductionReadinessFeatureModel(
             loadSnapshot: LoadProductionReadinessSnapshotUseCase(repository: repository)
         )
-        return ProductionReadinessView(model: model)
-            .task { await model.refreshAndWait() }
+        return ProductionReadinessPreviewRoot(model: model)
+    }
+}
+
+private struct ProductionReadinessPreviewRoot: View {
+    let model: ProductionReadinessFeatureModel
+    @State private var path: [AppRoute] = []
+
+    var body: some View {
+        ProductionReadinessView(model: self.model, path: self.$path)
+            .task { await self.model.refreshAndWait() }
     }
 }
