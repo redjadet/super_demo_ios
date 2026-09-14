@@ -34,7 +34,7 @@ Defaults:
 projectPath: /Users/ilkersevim/Flutter_SDK/projects/super_demo_ios/superDemoApp/superDemoApp.xcodeproj
 scheme: superDemoApp
 configuration: Debug
-simulatorName: iPhone 17
+simulatorName: iPhone 18 Pro
 simulatorPlatform: iOS Simulator
 bundleId: com.ilkersevim.superDemoApp
 ```
@@ -114,13 +114,13 @@ cloned simulator workers.
 Build app:
 
 ```bash
-xcodebuild -project superDemoApp.xcodeproj -scheme superDemoApp -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.5' build
+xcodebuild -project superDemoApp.xcodeproj -scheme superDemoApp -destination 'platform=iOS Simulator,name=iPhone 18 Pro' build
 ```
 
 Run tests:
 
 ```bash
-xcodebuild -project superDemoApp.xcodeproj -scheme superDemoApp -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.5' test
+xcodebuild -project superDemoApp.xcodeproj -scheme superDemoApp -destination 'platform=iOS Simulator,name=iPhone 18 Pro' test
 ```
 
 GitHub Actions on push/PR to `main` runs lint, generic iOS Simulator build
@@ -163,7 +163,7 @@ Override checklist destinations only when needed:
 
 ```bash
 CHECKLIST_IPHONE_DEST='platform=iOS Simulator,id=<UDID>' ./bin/checklist
-CHECKLIST_PREFERRED_IPHONE='iPhone 17 Pro' ./bin/checklist
+CHECKLIST_PREFERRED_IPHONE='iPhone 18 Pro' ./bin/checklist
 CHECKLIST_SKIP_PLATFORM_BUILDS=1 ./bin/checklist
 CI_SKIP_PLATFORM_BUILDS=1 ./bin/ci.sh
 CHECKLIST_ALLOW_PARALLEL_TESTS=1 ./bin/checklist

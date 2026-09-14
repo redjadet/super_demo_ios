@@ -12,13 +12,14 @@ read-through cache.
    [`docs/feature-template.md`](feature-template.md).
 3. **`Features/Items/`** — Reference (SwiftData, sync repository API).
 4. **`Features/Feed/`** — JSONPlaceholder client + SwiftData read-through cache;
-   see [`changes/2026-05-16_feed-feature-shipped.md`](changes/2026-05-16_feed-feature-shipped.md).
+   see [`changes/2026-05-16_feed-feature-shipped.md`](changes/2026-05-16_feed-feature-shipped.md)
+   and [`changes/2026-09-15_feed-items-diagnostics-hardening.md`](changes/2026-09-15_feed-items-diagnostics-hardening.md).
 5. **`Features/ProductionReadiness/`** — dashboard, networking, UIKit showcase;
    see [`changes/2026-05-18_production_readiness_dashboard.md`](changes/2026-05-18_production_readiness_dashboard.md).
 6. **`App/`** — `AppRootView` tabs; composition roots wire DI and feature models.
 7. **`Shared/Presentation/AdaptiveNavigationShell.swift`** — shared chrome.
-8. Open `superdemo://dashboard/risks` to review typed deep-link parsing, cold/warm
-   route handling, and invalid-link fallback in `App/AppNavigation.swift`.
+8. Deep links: open `superdemo://dashboard/risks`, `superdemo://feed`, or
+   `superdemo://items` to review typed routing in `App/AppNavigation.swift`.
 
 ## Items walkthrough (`Features/Items/`)
 
@@ -26,18 +27,21 @@ read-through cache.
   `DisplayError`. Pure Swift.
 - **Data** — `SwiftDataItemRepository`, `@Model Item`. Imports SwiftData.
 - **Presentation** — `@Observable ItemsFeatureModel`, `ItemsView`,
-  `ItemsNavigationShell`. No persistence imports.
+  `ItemsNavigationShell`. No persistence imports. Refresh cancel restores prior
+  state; `.task` / `.onDisappear` own lifecycle.
 
 Observation + thin use cases on a repository protocol.
 
 ## Feed walkthrough (`Features/Feed/`)
 
-- **Domain** — `FeedPost`, `FeedRepository`, load/refresh use cases,
+- **Domain** — `FeedPost`, `FeedRepository` → `FeedLoadResult` (`posts` +
+  `isStale`), **`RefreshFeedUseCase` only** (no separate load use case),
   typed error surface (`FeedDisplayError`).
 - **Data** — `PostDTO`, `FeedAPIClient` + live `URLSession`, `RemoteFeedRepository`,
-  `CachedFeedPost` + `CachingFeedRepository`.
-- **Presentation** — `FeedFeatureModel` (cancel in-flight refresh), list + retry UX,
-  `FeedNavigationShell`.
+  `CachedFeedPost` + `CachingFeedRepository` (remote fail + non-empty cache →
+  `isStale: true`).
+- **Presentation** — `FeedFeatureModel` (cancel restores prior state; diagnostics on
+  failure/stale), list + Retry + **stale banner**, `FeedNavigationShell`.
 
 **Interview boundary:** Presentation never imports `URLSession`; unit tests stub
 HTTP — no live network on default CI.
@@ -52,9 +56,10 @@ HTTP — no live network on default CI.
 - **Empty vs bug:** Valid `[]` → **empty** UI (see
   [Edge cases (summary)](#edge-cases-summary)).
 - **Tests:** Stub `URLProtocol` / injected session.
-- **Cache:** On fetch failure + stored rows → return stale content (demo OK).
-- **Navigation:** Typed `AppRoute` values; `superdemo://dashboard/risks` opens a
-  meaningful reviewer screen without raw string navigation in views.
+- **Cache:** On fetch failure + stored rows → return content with `isStale`
+  (banner in UI); diagnostics log `feed-cache-fallback`.
+- **Navigation:** Typed `AppTab` / `AppRoute`; custom-scheme deep links for
+  dashboard, risks, feed, and items without raw string navigation in views.
 
 ## Reviewer checklist
 
@@ -63,13 +68,15 @@ HTTP — no live network on default CI.
 - [x] `./bin/ci.sh` passes on merge (lint + iPhone tests + iPad/Mac builds)
 - [x] Previews cover light/dark for `FeedView` (`#Preview` + `UniversalPreviewLayouts`)
 - [x] VoiceOver-relevant Feed chrome / rows / Retry proof (`testFeedAccessibilityChromeRowsAndRetry`)
+- [x] Deep links for Feed / Items (`testDeepLinkOpensFeedTab` / `testDeepLinkOpensItemsTab`)
 
 ## Edge cases (summary)
 
-- **Network / HTTP** — Non-2xx / transport → **failed + Retry**.
+- **Network / HTTP** — Non-2xx / transport → **failed + Retry** (or stale cache).
 - **Decode** — Bad JSON → failure, not a fake-empty list.
 - **`[]` response** — Treat as **empty** success.
-- **Tab / disappear** — **`cancelRefresh()`** drops orphaned work.
+- **Tab / disappear** — **`cancelRefresh()`** restores prior state; drops orphaned work.
+- **SwiftData store failure** — `AppModelContainer` falls back to in-memory + diagnostics.
 
 ## Proof commands
 

@@ -215,10 +215,12 @@ if [[ -n "$crash_overclaims" && -z "$crash_provider_matches" ]]; then
   fail "docs claim crash reporting is configured, but no crash provider is wired in app source or project settings"
 fi
 if [[ -z "$crash_provider_matches" ]]; then
-  rg -q 'OSLog-only today' docs/release-checklist.md \
-    || fail "docs/release-checklist.md must state release diagnostics are OSLog-only while no crash provider is wired"
-  rg -q 'Crash monitoring provider is not configured yet' README.md \
-    || fail "README.md must state crash monitoring is not configured while no crash provider is wired"
+  rg -q 'OSLogCrashMonitor' docs/release-checklist.md \
+    || fail "docs/release-checklist.md must mention OSLogCrashMonitor while no vendor crash SDK is wired"
+  rg -q 'OSLogCrashMonitor' README.md \
+    || fail "README.md must mention OSLogCrashMonitor while no vendor crash SDK is wired"
+  rg -q 'OSLogCrashMonitor' superDemoApp/Shared/Diagnostics/CrashMonitoring.swift \
+    || fail "OSLogCrashMonitor must exist in Shared/Diagnostics while docs claim it"
 fi
 
 section "Cursor agent template"
@@ -243,7 +245,7 @@ cursor_template_files=(
   tool/git-hooks/pre-commit
   tool/cursor-template/hooks/hooks.json
   tool/cursor-template/hooks/format-swift-after-edit.sh
-  tool/select_xcode_26_5.sh
+  tool/select_xcode.sh
   tool/ios_simulator_runtime.sh
 )
 

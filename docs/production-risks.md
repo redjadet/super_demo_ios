@@ -6,7 +6,8 @@ devices, TestFlight, or after App Store release.
 ## Risk Areas
 
 - Push notifications: APNs environment, token rotation, entitlements, user settings.
-- Deep links: associated domains, deferred routing, cold-start restoration.
+- Deep links: custom-scheme fixtures (`superdemo://…`) plus associated domains,
+  deferred routing, cold-start restoration.
 - Background modes: system scheduling, battery policy, entitlement mismatch.
 - Keychain: access groups, protected data, biometric changes, reinstall semantics.
 - Permissions: denied states, limited access, Settings changes.
@@ -21,5 +22,6 @@ devices, TestFlight, or after App Store release.
 - Mock states and sample repositories make failure UI launchable without live services.
 - `Shared/Networking` encodes retry and idempotency rules with tests.
 - UIKit collection view uses reusable cells, prefetching, and cancellation.
-- Dashboard checklist keeps release risk visible in the app, not buried in chat.
+- Dashboard checklist + OSLog release diagnostics / `OSLogCrashMonitor` keep
+  release risk visible before a vendor crash SDK is wired.
 - Docs and UI tests create a short path for humans and AI agents to validate changes.

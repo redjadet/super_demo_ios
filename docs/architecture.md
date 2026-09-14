@@ -78,3 +78,11 @@ Architecture trade-off: this repo uses clear boundaries where behavior needs tes
 does not claim one architecture is always best. Simple screens can stay simple; production
 flows need predictable ownership, controlled dependencies, and explicit failure paths.
 Composition lives in `superDemoApp/App/`.
+
+## Feature-model lifecycle (Feed / Items / Dashboard)
+
+- Prefer a single refresh use case per feature when load and refresh are identical
+  (Feed: `RefreshFeedUseCase` only).
+- Cancel restores prior UI state; do not replace content with a cancel failure.
+- Inject `ReleaseDiagnosticsReporting` at composition/feature-model boundaries for
+  failure and stale-cache signals.

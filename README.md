@@ -78,10 +78,10 @@ xcodebuild -project superDemoApp.xcodeproj -scheme superDemoApp -destination 'pl
 
 ## Monitoring Checklist
 
-- Release diagnostics currently use OSLog categories for networking, release
-  checks, and device-only failures.
-- Crash monitoring provider is not configured yet; the crash monitor adapter is
-  a no-op until Firebase Crashlytics, Sentry, or an equivalent provider is wired.
+- Release diagnostics use OSLog categories for networking, release checks, and
+  device-only failures.
+- `OSLogCrashMonitor` records non-fatals today; swap for Firebase Crashlytics,
+  Sentry, or an equivalent vendor SDK before production crash analytics.
 - No secrets or authorization headers in logs.
 - Feature flags or remote config for risky rollout paths.
 - App Store review notes for permissions, background modes, deep links, and demo accounts.

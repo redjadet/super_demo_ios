@@ -54,7 +54,7 @@ find_iphone_udid_on_runtime() {
 import json, sys
 
 runtime_id = sys.argv[1]
-preferred = ('iPhone 17', 'iPhone 16', 'iPhone 15')
+preferred = ('iPhone 18 Pro', 'iPhone 18', 'iPhone 17', 'iPhone 16', 'iPhone 15')
 data = json.load(sys.stdin)
 devices = data.get('devices', {}).get(runtime_id, [])
 iphones = [d for d in devices if d.get('isAvailable') and 'iPhone' in d.get('name', '')]
@@ -187,7 +187,7 @@ import json, sys
 data = json.load(sys.stdin)
 types = data.get('devicetypes', [])
 iphones = [t for t in types if t.get('productFamily') == 'iPhone']
-preferred = ('iPhone 17', 'iPhone 16', 'iPhone 15')
+preferred = ('iPhone 18 Pro', 'iPhone 18', 'iPhone 17', 'iPhone 16', 'iPhone 15')
 for name in preferred:
     for t in iphones:
         if t.get('name') == name:

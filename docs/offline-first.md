@@ -29,3 +29,10 @@ Before changing a persisted model, answer:
 - Is lightweight migration enough?
 - What happens if migration fails?
 - Which test or manual run proves fresh install and existing-store behavior?
+
+## App container recovery
+
+`App/AppModelContainer.swift` prefers the configured store (disk or in-memory for
+UI tests). If creation fails (corrupt store / schema mismatch), it logs a release
+diagnostic and falls back to an in-memory container so the app can still launch.
+Only a total in-memory failure remains fatal after diagnostics.

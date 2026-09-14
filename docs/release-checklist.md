@@ -12,9 +12,11 @@ Use before TestFlight or App Store submission.
 ## Device Proof
 
 - Push notifications: APNs token, permission prompt, foreground/background receipt.
-- Deep links: `superdemo://dashboard/risks` is registered and typed in-app; verify
-  cold start, warm start, and missing-route alert on device. Associated domains and
-  universal links remain separate future work until a production web domain and AASA file exist.
+- Deep links: custom scheme fixtures cover `superdemo://dashboard`,
+  `superdemo://dashboard/risks`, `superdemo://feed`, and `superdemo://items`
+  (typed in `App/AppNavigation.swift`). Verify cold start, warm start, and
+  missing-route alert on device. Associated domains / universal links remain
+  future work until a production web domain and AASA file exist.
 - Keychain: first install, reinstall, locked device, biometric changes.
 - Permissions: denied, limited, revoked, and Settings return paths.
 - Slow networks: timeout, retry, cancellation, 429, and offline messaging.
@@ -29,9 +31,10 @@ Use before TestFlight or App Store submission.
   Items walkthrough state for TestFlight. Local proof can pass
   `-ReviewerDemoMode` or `SUPERDEMO_REVIEWER_DEMO_MODE=1`; the
   `fastlane ios beta` lane compiles the TestFlight archive with `REVIEWER_DEMO`.
-- Release diagnostics are OSLog-only today: categories `release-checks` and
-  `device-only-failures` are wired, but the crash monitor adapter is a no-op
-  until Firebase Crashlytics, Sentry, or an equivalent provider is configured.
+- Release diagnostics are OSLog-backed today: categories `release-checks` and
+  `device-only-failures`, with `OSLogCrashMonitor` for non-fatals. Replace the
+  monitor with Firebase Crashlytics, Sentry, or an equivalent provider before
+  shipping production crash analytics.
 - Feature flags or remote config default to safe states.
 - Feedback path is monitored after upload.
 
@@ -46,7 +49,9 @@ TESTFLIGHT_BUILD_NUMBER=<unique-build-number> ./bin/fastlane-run ios beta
 Prerequisites:
 
 - `./tool/bootstrap_fastlane.sh` has installed the bundled Fastlane gems.
-- Xcode 26.5.x is installed; the lane calls `tool/select_xcode_26_5.sh`.
+- Local toolchain matches README (**Xcode 27** / **Swift 6.4**). The beta lane
+  still calls `tool/select_xcode.sh` (26.5+/26.6) for CI parity on `macos-26` runners
+  until those runners ship Xcode 27 as default.
 - Apple signing assets can create an App Store archive for
   `com.ilkersevim.superDemoApp` with team `QPG8754DYH`.
 - App Store Connect auth is available through Fastlane. Prefer

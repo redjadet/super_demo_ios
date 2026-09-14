@@ -11,8 +11,12 @@ The **Feed** feature (see [`docs/portfolio.md`](portfolio.md) and
 - Injectable **`URLSession`**; **`timeoutIntervalForRequest` ~ 30s** in app
   composition when using a custom configuration.
 - **`PostDTO` → `FeedPost`** in **`RemoteFeedRepository`**.
-- **`CachingFeedRepository`** / **`CachedFeedPost`**: persist on success,
-  fall back silently on network failure when rows exist.
+- **`CachingFeedRepository`** / **`CachedFeedPost`**: persist on success;
+  on network failure with cached rows, return `FeedLoadResult(isStale: true)`
+  so Presentation can show a stale banner (not a silent success).
+- **Auth path honesty:** production wiring uses `EmptyTokenRefresher` until a real
+  session refresher is injected. `InMemoryDemoTokenRefresher` documents the
+  demo/test refresh path (not Keychain-backed).
 
 **DummyJSON** alternate (`/posts`): wrapper `{ posts: [...], ... }` before DTO map.
 
@@ -22,7 +26,9 @@ instead of `RemoteFeedRepository` so the Feed tab does not open live HTTP during
 `superDemoAppUITests` (see [`testing.md`](testing.md#-uitesting-behavior)).
 
 **Status:** Shipped under `Features/Feed/`; see
-[`changes/2026-05-16_feed-feature-shipped.md`](changes/2026-05-16_feed-feature-shipped.md).
+[`changes/2026-05-16_feed-feature-shipped.md`](changes/2026-05-16_feed-feature-shipped.md)
+and
+[`changes/2026-09-15_feed-items-diagnostics-hardening.md`](changes/2026-09-15_feed-items-diagnostics-hardening.md).
 Core networking rules stay below.
 
 ## Networking Rules

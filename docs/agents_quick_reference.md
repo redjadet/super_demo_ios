@@ -28,7 +28,8 @@ Detailed routing: [`engineering/validation_routing_fast_vs_full.md`](engineering
 
 `CI_SKIP_PLATFORM_BUILDS=1` skips iPad/Mac in `./bin/ci.sh` only when intentionally narrow.
 UI smoke (CI `iphone-test` / `bin/ci-iphone-test.sh`): Items launch, Dashboard →
-Production Risks, UIKit showcase, Feed tab — see [`testing.md`](testing.md#ui-smoke-ci).
+Production Risks, UIKit showcase, Feed tab, Feed/Items deep links — see
+[`testing.md`](testing.md#ui-smoke-ci).
 Launch via `UiTestSupport.launchApplication()` (`-UITesting`, terminate between tests).
 
 | Situation | Command |
@@ -56,10 +57,10 @@ Launch via `UiTestSupport.launchApplication()` (`-UITesting`, terminate between 
 | Install git pre-commit (after clone) | `./tool/install-git-hooks.sh` |
 | Restore team Apple skills from lockfile | `npx skills experimental_install -y` (from git root) |
 | Safe formatting | `./bin/format.sh` |
-| Compile app | `xcodebuild -project superDemoApp.xcodeproj -scheme superDemoApp -destination 'platform=iOS Simulator,name=iPhone 17' build` |
+| Compile app | `xcodebuild -project superDemoApp.xcodeproj -scheme superDemoApp -destination 'platform=iOS Simulator,name=iPhone 18 Pro' build` |
 | iPad build sanity | `xcodebuild -project superDemoApp.xcodeproj -scheme superDemoApp -destination 'platform=iOS Simulator,name=iPad Pro 13-inch (M5)' build` |
 | Mac build sanity | `xcodebuild -project superDemoApp.xcodeproj -scheme superDemoApp -destination 'platform=macOS' build` |
-| Unit + UI test sweep | `xcodebuild -project superDemoApp.xcodeproj -scheme superDemoApp -destination 'platform=iOS Simulator,name=iPhone 17' test` |
+| Unit + UI test sweep | `xcodebuild -project superDemoApp.xcodeproj -scheme superDemoApp -destination 'platform=iOS Simulator,name=iPhone 18 Pro' test` |
 | Available simulators | `xcrun simctl list devices available` |
 | Xcode destinations | `xcodebuild -showdestinations -project superDemoApp.xcodeproj -scheme superDemoApp` |
 | Source search | `rg "pattern" superDemoApp superDemoAppTests superDemoAppUITests docs` |

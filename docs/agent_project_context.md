@@ -12,8 +12,10 @@ Machine-readable project facts for agents.
 
 ## CI and repo tooling
 
-- GitHub Actions runs on `macos-26` and pins **Xcode 26.5.0** via
-  `tool/select_xcode_26_5.sh` (see [`code-style.md`](code-style.md)).
+- **Local toolchain (README badges):** Xcode **27.0**, Swift **6.4**, iOS SDK **27**.
+- **GitHub Actions** runs on `macos-26` and still pins **Xcode 26.5.x** via
+  `tool/select_xcode.sh` (26.6 → 26.5 on `macos-26`). Local uses Xcode 27 when installed
+  (see [`code-style.md`](code-style.md)). Move runners to `xcode-27` when that image is default.
 - `fastlane/README.md` is auto-generated and gitignored; markdownlint skips
   `fastlane/**` in CI (`.markdownlintignore`, `bin/lint-markdown.sh`). For local
   IDE lint on that file, `fastlane/.markdownlint.json` disables MD003/MD041.
@@ -21,11 +23,15 @@ Machine-readable project facts for agents.
   Production Readiness and Feed use sample data only — [`sync-and-networking.md`](sync-and-networking.md),
   [`testing.md`](testing.md).
 
-## Shipped features (tour)
+## Shipped features (current)
 
-- `Features/Items/` — SwiftData reference slice.
-- `Features/Feed/` — JSONPlaceholder + read-through cache.
+- `Features/Items/` — SwiftData reference slice; cancel-safe refresh lifecycle.
+- `Features/Feed/` — JSONPlaceholder + read-through cache with explicit stale UI;
+  `RefreshFeedUseCase` only.
 - `Features/ProductionReadiness/` — dashboard, shared networking, UIKit showcase.
+- Deep links: `superdemo://dashboard|/risks|/feed|/items` via `AppNavigation`.
+- Diagnostics: `ReleaseDiagnostics` + `OSLogCrashMonitor`; ModelContainer
+  in-memory fallback on store failure.
 - Reviewer path: [`portfolio.md`](portfolio.md).
 
 ## Bash scripts (`set -u`)
@@ -56,7 +62,8 @@ Machine-readable project facts for agents.
 - Current source shape: universal SwiftUI + SwiftData with layered reference feature.
 - Reference feature: `Features/Items/{Presentation,Domain,Data}/` (copy this layout).
 - Persistence model: `Features/Items/Data/Item.swift` (`@Model`).
-- Root UI: `App/ItemsComposition.swift` → `ItemsRootView` → `ItemsView`.
+- Root UI: `App/AppRootView.swift` (`TabView`: Dashboard / Items / Feed);
+  composition in `App/*Composition.swift`.
 - Current platform settings include iPhone, iPad, and Mac support.
 
 ## Preferred Growth Direction

@@ -6,8 +6,8 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 
 if [[ "${CI:-}" == "true" ]]; then
-  # shellcheck source=../tool/select_xcode_26_5.sh
-  source "$ROOT/tool/select_xcode_26_5.sh"
+  # shellcheck source=../tool/select_xcode.sh
+  source "$ROOT/tool/select_xcode.sh"
 else
   export PATH="/opt/homebrew/bin:/usr/local/bin:${PATH}"
 fi

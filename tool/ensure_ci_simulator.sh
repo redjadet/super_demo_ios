@@ -31,8 +31,8 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 
 if [[ "${CI:-}" == "true" ]]; then
-  # shellcheck source=select_xcode_26_5.sh
-  source "$ROOT/tool/select_xcode_26_5.sh"
+  # shellcheck source=select_xcode.sh
+  source "$ROOT/tool/select_xcode.sh"
 fi
 
 # shellcheck source=xcode_env.sh

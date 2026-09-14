@@ -23,11 +23,18 @@ Use declarative SwiftUI navigation that adapts across iOS, iPadOS, and macOS.
 
 - Root shell: `AppRootView` (`TabView`) — Dashboard, Items, Feed tabs with
   `accessibilityIdentifier` on each tab (`dashboardTab`, `itemsTab`, `feedTab`).
-- Typed deep-link route: `superdemo://dashboard/risks` opens Dashboard →
-  Production Risks through `AppNavigationState` for cold and warm app delivery.
-  Unsupported `superdemo` URLs fall back to Dashboard and show a user-facing alert.
-- URL registration: `Config/AppInfo.plist`. Parsing stays in
-  `App/AppNavigation.swift`; views only consume typed `AppRoute` values.
+- Typed deep links (scheme `superdemo`, registered in `Config/AppInfo.plist`):
+
+  | URL | Result |
+  | --- | --- |
+  | `superdemo://dashboard` | Dashboard tab, cleared path |
+  | `superdemo://dashboard/risks` | Dashboard → Production Risks |
+  | `superdemo://feed` | Feed tab |
+  | `superdemo://items` | Items tab |
+  | unsupported `superdemo` URL | Dashboard + user-facing alert |
+
+  Parsing stays in `App/AppNavigation.swift` (`AppDeepLink` / `AppNavigationState`);
+  views only consume typed `AppTab` / `AppRoute` values.
 - Feature stacks: Items and Feed use `ItemsNavigationShell` / `FeedNavigationShell`
   → `AdaptiveNavigationShell` for master/detail inside a tab.
 - Shared: `Shared/Presentation/AdaptiveNavigationShell.swift`
@@ -40,8 +47,10 @@ Use declarative SwiftUI navigation that adapts across iOS, iPadOS, and macOS.
 | --- | --- |
 | Items tab | `testLaunchShowsAddItemControl` |
 | Dashboard → Production Risks | `testDashboardShowsProductionRisks` |
-| Dashboard → UIKit showcase | `testUIKitShowcaseCollectionIsReachable` |
+| Dashboard → UIKit showcase (+ detail) | `testUIKitShowcaseCollectionIsReachable` |
 | Feed tab | `testFeedTabIsReachable` |
+| Deep link → Feed | `testDeepLinkOpensFeedTab` |
+| Deep link → Items | `testDeepLinkOpensItemsTab` |
 
 Deep-link parsing and cold/warm navigation-state behavior:
 `superDemoAppTests/Shared/AppNavigationTests.swift`.

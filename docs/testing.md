@@ -34,9 +34,11 @@ releases.
 | --- | --- |
 | `testLaunchShowsAddItemControl` | Local Items tab chrome (`addItem` / empty / list) |
 | `testDashboardShowsProductionRisks` | Local Dashboard → Production Risks list |
-| `testUIKitShowcaseCollectionIsReachable` | Local Dashboard → UIKit showcase collection |
+| `testUIKitShowcaseCollectionIsReachable` | Local Dashboard → UIKit showcase collection + detail |
 | `testFeedTabIsReachable` | Local Feed tab chrome (toolbar, list, empty, or error) |
 | `testFeedAccessibilityChromeRowsAndRetry` | Feed VoiceOver-relevant refresh chrome, row label, and Retry label/tap |
+| `testDeepLinkOpensFeedTab` | `superdemo://feed` selects Feed chrome |
+| `testDeepLinkOpensItemsTab` | `superdemo://items` selects Items chrome |
 | `testLaunch` | Local/full-lane launch duplicate for Items chrome |
 | `testLaunchPerformance` | Local launch performance under `-UITesting` |
 
@@ -45,6 +47,7 @@ Helpers live in `superDemoAppUITests/UiTestSupport.swift`:
 - **`launchApplication()`** — passes `-UITesting`, terminates any running app
   instance, then launches and waits for foreground (avoids CI
   `Failed to terminate` between tests).
+- **`openDeepLink(_:in:)`** — opens a custom-scheme URL against the running app.
 - **`tearDown`** in `superDemoAppUITests` — `@MainActor`, calls
   `terminateApplication` so the next test does not inherit a stuck process
   (SwiftLint: balanced `setUp` / `tearDown`; required for Swift 6 on CI).
@@ -101,7 +104,7 @@ When stubbing `URLSession` with a custom `URLProtocol` in unit tests:
 ## Command
 
 ```bash
-xcodebuild -project superDemoApp.xcodeproj -scheme superDemoApp -destination 'platform=iOS Simulator,name=iPhone 17' test
+xcodebuild -project superDemoApp.xcodeproj -scheme superDemoApp -destination 'platform=iOS Simulator,name=iPhone 18 Pro' test
 ```
 
 For responsive UI build sanity:
@@ -115,4 +118,4 @@ Production Readiness unit coverage:
 `superDemoAppTests/Features/ProductionReadiness` and
 `superDemoAppTests/Shared/Networking`. Feed unit coverage:
 `superDemoAppTests/Features/Feed`. UI smoke covers Items, Dashboard (risks +
-UIKit showcase), and Feed tabs — see table above.
+UIKit showcase), Feed, and Feed/Items deep links — see table above.

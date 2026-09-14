@@ -10,6 +10,8 @@ Errors should be typed, visible at the right layer, and safe to log.
 - Avoid `try?` except when loss is explicitly harmless.
 - Avoid broad `catch` without logging or conversion.
 - Use OSLog for permanent diagnostics; avoid `print`.
+- Feature models may inject `ReleaseDiagnosticsReporting` so failures and
+  stale-cache fallbacks are logged without coupling Presentation to a vendor SDK.
 
 ## Display Errors
 
