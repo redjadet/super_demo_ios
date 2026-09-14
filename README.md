@@ -1,8 +1,8 @@
 # superDemoApp
 
-![Xcode](https://img.shields.io/badge/Xcode-26.5-147EFB?logo=xcode&logoColor=white)
-![Swift](https://img.shields.io/badge/Swift-6.3.2-F05138?logo=swift&logoColor=white)
-![SwiftUI](https://img.shields.io/badge/SwiftUI-SDK%2026-0D96F6?logo=swift&logoColor=white)
+![Xcode](https://img.shields.io/badge/Xcode-27.0-147EFB?logo=xcode&logoColor=white)
+![Swift](https://img.shields.io/badge/Swift-6.4-F05138?logo=swift&logoColor=white)
+![SwiftUI](https://img.shields.io/badge/SwiftUI-SDK%2027-0D96F6?logo=swift&logoColor=white)
 ![Platforms](https://img.shields.io/badge/Platforms-iOS%20%7C%20iPadOS%20%7C%20macOS-000000?logo=apple&logoColor=white)
 ![Minimum OS](https://img.shields.io/badge/Minimum%20OS-26.0-6E6E73?logo=apple&logoColor=white)
 ![SwiftData](https://img.shields.io/badge/Persistence-SwiftData-0A84FF?logo=swift&logoColor=white)
@@ -38,7 +38,7 @@ Command-line proof from repo root:
 
 ```bash
 ./bin/lint.sh
-xcodebuild -project superDemoApp.xcodeproj -scheme superDemoApp -destination 'platform=iOS Simulator,name=iPhone 17' test
+xcodebuild -project superDemoApp.xcodeproj -scheme superDemoApp -destination 'platform=iOS Simulator,name=iPhone 18 Pro' test
 ./bin/ci.sh
 ```
 
