@@ -37,4 +37,3 @@ Local / README: **Xcode 27.0**, **Swift 6.4**, SDK **27**, preferred simulator
 - Replace rigid `select_xcode_26_5.sh` with `tool/select_xcode.sh` (local 27,
   CI 26.6→26.5). Keep `select_xcode_26_5.sh` as a thin wrapper.
 - Prefer **iPhone 18 Pro** in simulator selection helpers.
-
