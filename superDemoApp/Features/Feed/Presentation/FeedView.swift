@@ -16,9 +16,7 @@ struct FeedView: View {
         FeedNavigationShell {
             self.content
                 .navigationTitle("Feed")
-            #if os(iOS)
-                .navigationBarTitleDisplayMode(.inline)
-            #endif
+                .iosInlineNavigationBarTitle()
                 .toolbar {
                     self.feedToolbar
                 }
@@ -99,9 +97,7 @@ struct FeedView: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                     }
                     .navigationTitle("Post")
-                    #if os(iOS)
-                        .navigationBarTitleDisplayMode(.inline)
-                    #endif
+                    .iosInlineNavigationBarTitle()
                 } label: {
                     VStack(alignment: .leading, spacing: 4) {
                         Text(post.title)

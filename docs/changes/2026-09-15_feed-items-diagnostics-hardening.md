@@ -27,8 +27,8 @@ agent_project_context, agent_environment_setup, agents_quick_reference, code-sty
 ## Toolchain note
 
 Local / README: **Xcode 27.0**, **Swift 6.4**, SDK **27**, preferred simulator
-**iPhone 18 Pro**. CI on `macos-26` selects **Xcode 26.5+** via `tool/select_xcode.sh` (26.6 preferred).
-Xcode 27 is local/README until the `xcode-27` runner image is adopted.
+**iPhone 18 Pro**. `tool/select_xcode.sh` picks newest **released** Xcode ≥ 26.5
+(CI `macos-26` typically 26.6; beta/preview only as fallback).
 
 ## CI follow-up
 

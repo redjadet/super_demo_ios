@@ -26,6 +26,26 @@ extension View {
         self.frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
+    /// iOS-only inline navigation title mode; no-op on other platforms.
+    @ViewBuilder
+    func iosInlineNavigationBarTitle() -> some View {
+        #if os(iOS)
+        self.navigationBarTitleDisplayMode(.inline)
+        #else
+        self
+        #endif
+    }
+
+    /// iOS-only large navigation title mode; no-op on other platforms.
+    @ViewBuilder
+    func iosLargeNavigationBarTitle() -> some View {
+        #if os(iOS)
+        self.navigationBarTitleDisplayMode(.large)
+        #else
+        self
+        #endif
+    }
+
     /// Preferred sidebar width on regular-width iPad and Mac split views.
     func featureSidebarColumnWidth(
         min: CGFloat = 180,

@@ -13,9 +13,9 @@ Machine-readable project facts for agents.
 ## CI and repo tooling
 
 - **Local toolchain (README badges):** Xcode **27.0**, Swift **6.4**, iOS SDK **27**.
-- **GitHub Actions** runs on `macos-26` and still pins **Xcode 26.5.x** via
-  `tool/select_xcode.sh` (26.6 → 26.5 on `macos-26`). Local uses Xcode 27 when installed
-  (see [`code-style.md`](code-style.md)). Move runners to `xcode-27` when that image is default.
+- **GitHub Actions** runs on `macos-26`. `tool/select_xcode.sh` picks the **newest
+  released** Xcode ≥ 26.5 on the image (today typically 26.6). Beta/preview only if no
+  released install qualifies. Local picks the newest install (seed OK) for README Xcode 27.
 - `fastlane/README.md` is auto-generated and gitignored; markdownlint skips
   `fastlane/**` in CI (`.markdownlintignore`, `bin/lint-markdown.sh`). For local
   IDE lint on that file, `fastlane/.markdownlint.json` disables MD003/MD041.

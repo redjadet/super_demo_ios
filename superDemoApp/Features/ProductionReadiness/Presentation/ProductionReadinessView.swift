@@ -18,9 +18,7 @@ struct ProductionReadinessView: View {
         NavigationStack(path: self.$path) {
             self.content
                 .navigationTitle("Production Readiness")
-            #if os(iOS)
-                .navigationBarTitleDisplayMode(.large)
-            #endif
+                .iosLargeNavigationBarTitle()
                 .toolbar {
                     ToolbarItem {
                         Button {

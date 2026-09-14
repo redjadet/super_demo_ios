@@ -135,7 +135,7 @@ def run_repo_script(rel_path, extra_env: {})
 end
 
 platform :ios do
-  desc "Pin active Xcode (27 local / 26.5+ on macos-26 CI)"
+  desc "Select newest released Xcode (>= 26.5); beta only if no release qualifies"
   lane :select_xcode do
     run_repo_script("tool/select_xcode.sh")
   end
