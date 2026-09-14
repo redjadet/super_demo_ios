@@ -5,7 +5,7 @@
 
 import Foundation
 
-enum ReadinessStatus: String, CaseIterable {
+nonisolated enum ReadinessStatus: String, CaseIterable {
     case healthy
     case warning
     case blocked
@@ -22,7 +22,7 @@ enum ReadinessStatus: String, CaseIterable {
     }
 }
 
-struct FeatureModule: Identifiable, Equatable {
+nonisolated struct FeatureModule: Identifiable, Equatable {
     let id: String
     let name: String
     let layerBoundary: String
@@ -31,7 +31,7 @@ struct FeatureModule: Identifiable, Equatable {
     let summary: String
 }
 
-struct APIHealthCheck: Identifiable, Equatable {
+nonisolated struct APIHealthCheck: Identifiable, Equatable {
     let id: String
     let name: String
     let endpoint: String
@@ -40,7 +40,7 @@ struct APIHealthCheck: Identifiable, Equatable {
     let lastChecked: Date
 }
 
-struct ReleaseChecklistItem: Identifiable, Equatable {
+nonisolated struct ReleaseChecklistItem: Identifiable, Equatable {
     let id: String
     let title: String
     let detail: String
@@ -48,7 +48,7 @@ struct ReleaseChecklistItem: Identifiable, Equatable {
     let owner: String
 }
 
-struct ProductionRisk: Identifiable, Equatable {
+nonisolated struct ProductionRisk: Identifiable, Equatable {
     let id: String
     let title: String
     let detail: String
@@ -57,14 +57,14 @@ struct ProductionRisk: Identifiable, Equatable {
     let legacyCode: String
 }
 
-struct DesignTokenSample: Identifiable, Equatable {
+nonisolated struct DesignTokenSample: Identifiable, Equatable {
     let id: String
     let name: String
     let value: String
     let rationale: String
 }
 
-struct ProductionReadinessSnapshot: Equatable {
+nonisolated struct ProductionReadinessSnapshot: Equatable {
     let modules: [FeatureModule]
     let apiHealth: [APIHealthCheck]
     let checklist: [ReleaseChecklistItem]

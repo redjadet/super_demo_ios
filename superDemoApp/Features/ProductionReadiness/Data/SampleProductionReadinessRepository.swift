@@ -53,8 +53,8 @@ struct SampleProductionReadinessRepository: ProductionReadinessRepository {
                 name: "UIKit Interop",
                 layerBoundary: "UIKit container hosts SwiftUI detail",
                 owner: "Native iOS",
-                status: .warning,
-                summary: "UIKit remains useful for mature navigation, collection performance, and custom transitions."
+                status: .healthy,
+                summary: "UICollectionView list, spring push/pop, and hosted SwiftUI detail are UI-tested."
             ),
             FeatureModule(
                 id: "release",
@@ -108,8 +108,8 @@ struct SampleProductionReadinessRepository: ProductionReadinessRepository {
             ReleaseChecklistItem(
                 id: "observability",
                 title: "OSLog release diagnostics are ready",
-                detail: "Sensitive headers are redacted; crash monitoring stays no-op until a provider is configured.",
-                isComplete: false,
+                detail: "Sensitive headers redacted; OSLogCrashMonitor records non-fatals until a vendor SDK is wired.",
+                isComplete: true,
                 owner: "Platform"
             ),
             ReleaseChecklistItem(
@@ -145,7 +145,7 @@ struct SampleProductionReadinessRepository: ProductionReadinessRepository {
                 "deep-links",
                 "Deep Links",
                 deepLinkDetail,
-                "Keep custom-scheme routing fixtures; verify associated domains on device before release.",
+                "Custom-scheme fixtures cover dashboard/risks, feed, and items; verify associated domains on device.",
                 ReadinessStatus.warning
             ),
             (

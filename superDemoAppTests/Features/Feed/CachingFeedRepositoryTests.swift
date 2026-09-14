@@ -19,13 +19,13 @@ private final class RemoteFeedRepositorySpy: FeedRepository {
         self.error = error
     }
 
-    func fetchPosts() async throws -> [FeedPost] {
+    func fetchPosts() async throws -> FeedLoadResult {
         self.fetchCount += 1
         await Task.yield()
         if let error {
             throw error
         }
-        return self.posts
+        return FeedLoadResult(posts: self.posts)
     }
 }
 
@@ -44,7 +44,8 @@ struct CachingFeedRepositoryTests {
 
         let fetched = try await repository.fetchPosts()
 
-        #expect(fetched == posts)
+        #expect(fetched.posts == posts)
+        #expect(fetched.isStale == false)
         #expect(remote.fetchCount == 1)
         #expect(try Self.cachedPosts(in: context) == posts)
     }
@@ -62,7 +63,8 @@ struct CachingFeedRepositoryTests {
 
         let fetched = try await repository.fetchPosts()
 
-        #expect(fetched == cachedPosts)
+        #expect(fetched.posts == cachedPosts)
+        #expect(fetched.isStale)
         #expect(remote.fetchCount == 1)
     }
 
@@ -83,7 +85,8 @@ struct CachingFeedRepositoryTests {
 
         let fetched = try await repository.fetchPosts()
 
-        #expect(fetched == remotePosts)
+        #expect(fetched.posts == remotePosts)
+        #expect(fetched.isStale == false)
         #expect(try Self.cachedPosts(in: context) == remotePosts)
     }
 

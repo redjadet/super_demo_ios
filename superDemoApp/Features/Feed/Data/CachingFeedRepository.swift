@@ -16,17 +16,17 @@ final class CachingFeedRepository: FeedRepository {
         self.context = context
     }
 
-    func fetchPosts() async throws -> [FeedPost] {
+    func fetchPosts() async throws -> FeedLoadResult {
         do {
-            let posts = try await self.remote.fetchPosts()
-            try self.replaceCache(with: posts)
-            return posts
+            let result = try await self.remote.fetchPosts()
+            try self.replaceCache(with: result.posts)
+            return FeedLoadResult(posts: result.posts, isStale: false)
         } catch {
             let cached = try self.loadCachedPosts()
             if cached.isEmpty {
                 throw error
             }
-            return cached
+            return FeedLoadResult(posts: cached, isStale: true)
         }
     }
 

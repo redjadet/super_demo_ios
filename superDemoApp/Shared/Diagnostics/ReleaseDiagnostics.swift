@@ -6,13 +6,13 @@
 import Foundation
 import os
 
-protocol ReleaseDiagnosticsReporting: Sendable {
+nonisolated protocol ReleaseDiagnosticsReporting: Sendable {
     func releaseCheckPassed(_ check: ReleaseDiagnosticCheck)
     func releaseCheckFailed(_ check: ReleaseDiagnosticCheck, reason: String)
     func deviceOnlyFailure(_ failure: DeviceOnlyFailure)
 }
 
-struct ReleaseDiagnosticCheck: Equatable {
+nonisolated struct ReleaseDiagnosticCheck: Equatable {
     let name: String
     let metadata: [String: String]
 
@@ -22,7 +22,7 @@ struct ReleaseDiagnosticCheck: Equatable {
     }
 }
 
-struct DeviceOnlyFailure: Equatable {
+nonisolated struct DeviceOnlyFailure: Equatable {
     let area: String
     let reason: String
     let metadata: [String: String]
@@ -34,7 +34,7 @@ struct DeviceOnlyFailure: Equatable {
     }
 }
 
-struct ReleaseDiagnostics: ReleaseDiagnosticsReporting {
+nonisolated struct ReleaseDiagnostics: ReleaseDiagnosticsReporting {
     static let shared = ReleaseDiagnostics()
 
     private let releaseChecksLogger: Logger
@@ -43,7 +43,7 @@ struct ReleaseDiagnostics: ReleaseDiagnosticsReporting {
 
     init(
         subsystem: String = "com.ilkersevim.superDemoApp",
-        crashMonitor: CrashMonitoring = NoopCrashMonitor()
+        crashMonitor: CrashMonitoring = OSLogCrashMonitor()
     ) {
         self.releaseChecksLogger = Logger(subsystem: subsystem, category: "release-checks")
         self.deviceOnlyFailuresLogger = Logger(subsystem: subsystem, category: "device-only-failures")

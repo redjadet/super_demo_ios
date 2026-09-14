@@ -81,11 +81,11 @@ struct RetryPolicy {
     }
 }
 
-protocol RetrySleeping: Sendable {
+nonisolated protocol RetrySleeping: Sendable {
     func sleep(nanoseconds: UInt64) async throws
 }
 
-struct TaskRetrySleeper: RetrySleeping {
+nonisolated struct TaskRetrySleeper: RetrySleeping {
     func sleep(nanoseconds: UInt64) async throws {
         try await Task.sleep(nanoseconds: nanoseconds)
     }

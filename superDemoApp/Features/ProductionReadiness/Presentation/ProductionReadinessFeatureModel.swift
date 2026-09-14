@@ -49,7 +49,16 @@ final class ProductionReadinessFeatureModel {
         self.refreshTask?.cancel()
         self.stateBeforeRefresh = self.state
         self.showLoadingStateIfNeeded()
-        await self.performRefresh()
+
+        let operation = Task { [weak self] in
+            guard let self else { return }
+            await self.performRefresh()
+        }
+        self.refreshTask = operation
+        await operation.value
+        if self.refreshTask == operation {
+            self.refreshTask = nil
+        }
     }
 
     func cancelRefresh() {

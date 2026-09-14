@@ -20,7 +20,10 @@ struct ItemsView: View {
             self.itemsToolbar
         }
         .task {
-            await self.model.refresh()
+            await self.model.refreshAndWait()
+        }
+        .onDisappear {
+            self.model.cancelRefresh()
         }
     }
 
@@ -54,7 +57,7 @@ struct ItemsView: View {
                 Text(error.message)
             } actions: {
                 Button("Retry") {
-                    Task { await self.model.refresh() }
+                    self.model.refresh()
                 }
             }
             .featureScreenFrame()
@@ -65,7 +68,7 @@ struct ItemsView: View {
                 Button("Add Item") {
                     Task { await self.model.addItemNow() }
                 }
-                .accessibilityIdentifier("addItem")
+                .accessibilityIdentifier("addItemEmpty")
             }
             .featureScreenFrame()
         case let .content(items):
@@ -125,7 +128,6 @@ private enum ItemsPreviewFactory {
             deleteItems: DeleteItemsUseCase(repository: repository)
         )
         return ItemsView(model: model)
-            .task { await model.refresh() }
     }
 }
 

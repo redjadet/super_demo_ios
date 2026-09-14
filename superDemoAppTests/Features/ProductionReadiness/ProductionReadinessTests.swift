@@ -49,13 +49,15 @@ struct ProductionReadinessTests {
     }
 
     @Test
-    func sampleSnapshotDoesNotClaimCrashProviderIsConfigured() async throws {
+    func sampleSnapshotClaimsOSLogCrashMonitorIsWired() async throws {
         let snapshot = try await SampleProductionReadinessRepository().loadSnapshot()
         let observability = try #require(snapshot.checklist.first { $0.id == "observability" })
+        let uiKit = try #require(snapshot.modules.first { $0.id == "ui-kit" })
 
         #expect(observability.title == "OSLog release diagnostics are ready")
-        #expect(observability.detail.contains("crash monitoring stays no-op"))
-        #expect(observability.isComplete == false)
+        #expect(observability.detail.contains("OSLogCrashMonitor"))
+        #expect(observability.isComplete == true)
+        #expect(uiKit.status == .healthy)
     }
 
     @Test

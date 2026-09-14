@@ -12,12 +12,12 @@ struct RemoteFeedRepository: FeedRepository {
         self.client = client
     }
 
-    func fetchPosts() async throws -> [FeedPost] {
+    func fetchPosts() async throws -> FeedLoadResult {
         let data = try await self.client.fetchPostsData()
         let decoder = JSONDecoder()
         do {
             let dtos = try decoder.decode([PostDTO].self, from: data)
-            return dtos.map(\.toDomain)
+            return FeedLoadResult(posts: dtos.map(\.toDomain))
         } catch {
             throw FeedError.decodingFailed
         }

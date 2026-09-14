@@ -5,36 +5,50 @@
 
 import Foundation
 
-enum AppTab: Hashable {
+nonisolated enum AppTab: Hashable {
     case dashboard
     case items
     case feed
 }
 
-enum AppRoute: Hashable {
+nonisolated enum AppRoute: Hashable {
     case productionRisks
 }
 
-enum AppDeepLink: Equatable {
+nonisolated enum AppDeepLink: Equatable {
+    case dashboard
     case productionRisks
+    case items
+    case feed
 
     init?(url: URL) {
         guard let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
               components.scheme?.lowercased() == "superdemo",
-              components.host?.lowercased() == "dashboard",
-              components.path == "/risks",
               components.user == nil,
               components.password == nil,
-              components.port == nil
+              components.port == nil,
+              let host = components.host?.lowercased()
         else {
             return nil
         }
 
-        self = .productionRisks
+        let path = components.path.lowercased()
+        switch (host, path) {
+        case ("dashboard", "/risks"):
+            self = .productionRisks
+        case ("dashboard", ""), ("dashboard", "/"):
+            self = .dashboard
+        case ("items", ""), ("items", "/"):
+            self = .items
+        case ("feed", ""), ("feed", "/"):
+            self = .feed
+        default:
+            return nil
+        }
     }
 }
 
-struct AppNavigationState {
+nonisolated struct AppNavigationState {
     var selection: AppTab = .dashboard
     var dashboardPath: [AppRoute] = []
     var invalidDeepLinkMessage: String?
@@ -50,9 +64,18 @@ struct AppNavigationState {
         self.invalidDeepLinkMessage = nil
 
         switch deepLink {
+        case .dashboard:
+            self.selection = .dashboard
+            self.dashboardPath = []
         case .productionRisks:
             self.selection = .dashboard
             self.dashboardPath = [.productionRisks]
+        case .items:
+            self.selection = .items
+            self.dashboardPath = []
+        case .feed:
+            self.selection = .feed
+            self.dashboardPath = []
         }
     }
 }

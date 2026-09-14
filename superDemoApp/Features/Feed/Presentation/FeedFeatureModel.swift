@@ -8,7 +8,7 @@ import Observation
 
 enum FeedState: Equatable {
     case loading
-    case content([FeedPost])
+    case content(posts: [FeedPost], isStale: Bool)
     case empty
     case failed(FeedDisplayError)
 }
@@ -17,13 +17,18 @@ enum FeedState: Equatable {
 @Observable
 final class FeedFeatureModel {
     private let refreshFeed: RefreshFeedUseCase
+    private let diagnostics: ReleaseDiagnosticsReporting
 
     private(set) var state: FeedState = .loading
     private var refreshTask: Task<Void, Never>?
     private var stateBeforeRefresh: FeedState?
 
-    init(refreshFeed: RefreshFeedUseCase) {
+    init(
+        refreshFeed: RefreshFeedUseCase,
+        diagnostics: ReleaseDiagnosticsReporting = ReleaseDiagnostics.shared
+    ) {
         self.refreshFeed = refreshFeed
+        self.diagnostics = diagnostics
     }
 
     func refresh() {
@@ -41,32 +46,68 @@ final class FeedFeatureModel {
         self.refreshTask?.cancel()
         self.stateBeforeRefresh = self.state
         self.showLoadingStateIfNeeded()
-        await self.performRefresh()
+
+        let operation = Task { [weak self] in
+            guard let self else { return }
+            await self.performRefresh()
+        }
+        self.refreshTask = operation
+        await operation.value
+        if self.refreshTask == operation {
+            self.refreshTask = nil
+        }
     }
 
     func cancelRefresh() {
         self.refreshTask?.cancel()
         self.refreshTask = nil
-        if case .loading = self.state, let previous = self.stateBeforeRefresh {
-            self.state = previous
-        }
-        self.stateBeforeRefresh = nil
+        self.restorePriorStateAfterCancelledRefresh()
     }
 
     private func performRefresh() async {
         await Task.yield()
         do {
-            let posts = try await self.refreshFeed()
-            guard !Task.isCancelled else { return }
-            self.state = posts.isEmpty ? .empty : .content(posts)
+            let result = try await self.refreshFeed()
+            guard !Task.isCancelled else {
+                self.restorePriorStateAfterCancelledRefresh()
+                return
+            }
+            if result.posts.isEmpty {
+                self.state = .empty
+            } else {
+                self.state = .content(posts: result.posts, isStale: result.isStale)
+                if result.isStale {
+                    self.diagnostics.releaseCheckFailed(
+                        ReleaseDiagnosticCheck(
+                            name: "feed-cache-fallback",
+                            metadata: ["postCount": String(result.posts.count)]
+                        ),
+                        reason: "Serving cached feed after remote fetch failed"
+                    )
+                }
+            }
             self.stateBeforeRefresh = nil
         } catch is CancellationError {
-            return
+            self.restorePriorStateAfterCancelledRefresh()
         } catch {
-            guard !Task.isCancelled else { return }
+            guard !Task.isCancelled else {
+                self.restorePriorStateAfterCancelledRefresh()
+                return
+            }
+            self.diagnostics.releaseCheckFailed(
+                ReleaseDiagnosticCheck(name: "feed-refresh"),
+                reason: String(describing: error)
+            )
             self.state = .failed(FeedDisplayError(error))
             self.stateBeforeRefresh = nil
         }
+    }
+
+    private func restorePriorStateAfterCancelledRefresh() {
+        if case .loading = self.state, let previous = self.stateBeforeRefresh {
+            self.state = previous
+        }
+        self.stateBeforeRefresh = nil
     }
 
     private func showLoadingStateIfNeeded() {

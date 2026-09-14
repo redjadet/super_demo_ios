@@ -12,7 +12,7 @@ struct RefreshFeedUseCase {
         self.repository = repository
     }
 
-    func callAsFunction() async throws -> [FeedPost] {
+    func callAsFunction() async throws -> FeedLoadResult {
         try await self.repository.fetchPosts()
     }
 }

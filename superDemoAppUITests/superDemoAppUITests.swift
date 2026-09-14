@@ -44,6 +44,22 @@ final class superDemoAppUITests: XCTestCase {
     }
 
     @MainActor
+    func testDeepLinkOpensFeedTab() {
+        let app = UiTestSupport.launchApplication()
+
+        UiTestSupport.openDeepLink("superdemo://feed", in: app)
+        XCTAssertTrue(UiTestSupport.waitForFeedChrome(in: app))
+    }
+
+    @MainActor
+    func testDeepLinkOpensItemsTab() {
+        let app = UiTestSupport.launchApplication()
+
+        UiTestSupport.openDeepLink("superdemo://items", in: app)
+        XCTAssertTrue(UiTestSupport.waitForItemsChrome(in: app))
+    }
+
+    @MainActor
     func testUIKitShowcaseCollectionIsReachable() {
         let app = UiTestSupport.launchApplication()
 
@@ -57,6 +73,14 @@ final class superDemoAppUITests: XCTestCase {
         XCTAssertTrue(showcaseLink.waitForExistence(timeout: 20))
         showcaseLink.tap()
         XCTAssertTrue(app.collectionViews["uikitShowcaseCollection"].waitForExistence(timeout: 10))
+
+        let firstCell = app.collectionViews["uikitShowcaseCollection"].cells.firstMatch
+        XCTAssertTrue(firstCell.waitForExistence(timeout: 5))
+        firstCell.tap()
+        let detail = app.descendants(matching: .any)
+            .matching(identifier: "uikitModuleDetail")
+            .firstMatch
+        XCTAssertTrue(detail.waitForExistence(timeout: 10))
     }
 
     @MainActor

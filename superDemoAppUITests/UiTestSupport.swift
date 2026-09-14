@@ -28,6 +28,16 @@ enum UiTestSupport {
         return app
     }
 
+    /// Opens a custom-scheme deep link against a running app.
+    @MainActor
+    static func openDeepLink(_ urlString: String, in app: XCUIApplication) {
+        guard let url = URL(string: urlString) else {
+            XCTFail("Invalid deep link URL: \(urlString)")
+            return
+        }
+        app.open(url)
+    }
+
     /// Opens the Feed tab when the root shell uses `TabView`.
     @MainActor
     static func openFeedTab(in app: XCUIApplication) {
@@ -52,6 +62,7 @@ enum UiTestSupport {
         while Date() < deadline {
             let refresh = app.buttons["refreshFeed"]
             let refreshToolbar = app.toolbars.buttons["refreshFeed"]
+            let refreshEmpty = app.buttons["refreshFeedEmpty"]
             let refreshLabel = app.buttons["Refresh Feed"]
             let retry = app.buttons["feedRetry"]
             let loading = app.progressIndicators.firstMatch
@@ -63,6 +74,7 @@ enum UiTestSupport {
             let hasFeedUI =
                 refresh.exists
                     || refreshToolbar.exists
+                    || refreshEmpty.exists
                     || refreshLabel.exists
                     || retry.exists
                     || loading.exists
@@ -102,7 +114,8 @@ enum UiTestSupport {
         let deadline = Date().addingTimeInterval(timeout)
         while Date() < deadline {
             let addItem = app.descendants(matching: .any).matching(identifier: "addItem").firstMatch
-            if addItem.exists {
+            let addItemEmpty = app.descendants(matching: .any).matching(identifier: "addItemEmpty").firstMatch
+            if addItem.exists || addItemEmpty.exists {
                 return true
             }
 

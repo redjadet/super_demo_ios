@@ -142,10 +142,14 @@ private struct ModuleUIKitDetailView: View {
             Label(self.module.name, systemImage: self.module.status.symbolName)
                 .font(.title2)
                 .fontWeight(.semibold)
+                .accessibilityIdentifier("uikitModuleDetailTitle")
+            Text(self.module.layerBoundary)
+                .font(.subheadline)
+                .foregroundStyle(.tertiary)
             Text(self.module.summary)
                 .foregroundStyle(.secondary)
             Text(
-                "UIKit controls mature flows well; SwiftUI keeps this detail readable through UIHostingController."
+                "UICollectionView list + spring push/pop transition; SwiftUI detail via UIHostingController."
             )
             .font(.footnote)
             .foregroundStyle(.secondary)
@@ -153,6 +157,7 @@ private struct ModuleUIKitDetailView: View {
         }
         .padding()
         .frame(maxWidth: .infinity, alignment: .leading)
+        .accessibilityIdentifier("uikitModuleDetail")
     }
 }
 

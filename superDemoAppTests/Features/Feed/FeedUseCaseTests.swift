@@ -10,12 +10,13 @@ import Testing
 @MainActor
 private final class FeedRepositorySpy: FeedRepository {
     var posts: [FeedPost] = []
+    var isStale = false
     var fetchCount = 0
 
-    func fetchPosts() async throws -> [FeedPost] {
+    func fetchPosts() async throws -> FeedLoadResult {
         self.fetchCount += 1
         await Task.yield()
-        return self.posts
+        return FeedLoadResult(posts: self.posts, isStale: self.isStale)
     }
 }
 
@@ -29,22 +30,22 @@ struct FeedUseCaseTests {
             FeedPost(id: 1, userID: 2, title: "T", body: "B"),
         ]
 
-        let posts = try await RefreshFeedUseCase(repository: repository)()
+        let result = try await RefreshFeedUseCase(repository: repository)()
 
-        #expect(posts == repository.posts)
+        #expect(result.posts == repository.posts)
+        #expect(result.isStale == false)
         #expect(repository.fetchCount == 1)
     }
 
     @Test
     @MainActor
-    func loadFeedMatchesRefresh() async throws {
+    func refreshFeedReturnsEmptyArray() async throws {
         let repository = FeedRepositorySpy()
         repository.posts = []
 
-        let loadPosts = try await LoadFeedUseCase(repository: repository)()
-        let refreshPosts = try await RefreshFeedUseCase(repository: repository)()
+        let result = try await RefreshFeedUseCase(repository: repository)()
 
-        #expect(loadPosts == refreshPosts)
-        #expect(repository.fetchCount == 2)
+        #expect(result.posts.isEmpty)
+        #expect(repository.fetchCount == 1)
     }
 }

@@ -66,47 +66,61 @@ struct FeedView: View {
                 Button("Refresh") {
                     self.model.refresh()
                 }
-                .accessibilityIdentifier("refreshFeed")
+                .accessibilityIdentifier("refreshFeedEmpty")
             }
             .featureScreenFrame()
-        case let .content(posts):
-            self.postsList(posts)
+        case let .content(posts, isStale):
+            self.postsList(posts, isStale: isStale)
         }
     }
 
-    private func postsList(_ posts: [FeedPost]) -> some View {
-        List(posts) { post in
-            NavigationLink {
-                ScrollView {
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text(post.title)
-                            .font(.title2)
-                            .fontWeight(.semibold)
-                        Text(post.body)
-                            .foregroundStyle(.secondary)
-                    }
-                    .padding()
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                }
-                .navigationTitle("Post")
-                #if os(iOS)
-                    .navigationBarTitleDisplayMode(.inline)
-                #endif
-            } label: {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(post.title)
-                        .font(.headline)
-                        .lineLimit(2)
-                    Text(post.body)
-                        .font(.subheadline)
+    private func postsList(_ posts: [FeedPost], isStale: Bool) -> some View {
+        List {
+            if isStale {
+                Section {
+                    Label("Showing offline cache. Pull to refresh when back online.", systemImage: "wifi.slash")
+                        .font(.footnote)
                         .foregroundStyle(.secondary)
-                        .lineLimit(2)
+                        .accessibilityIdentifier("feedStaleBanner")
                 }
-                .accessibilityElement(children: .combine)
+            }
+
+            ForEach(posts) { post in
+                NavigationLink {
+                    ScrollView {
+                        VStack(alignment: .leading, spacing: 12) {
+                            Text(post.title)
+                                .font(.title2)
+                                .fontWeight(.semibold)
+                            Text(post.body)
+                                .foregroundStyle(.secondary)
+                        }
+                        .padding()
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                    .navigationTitle("Post")
+                    #if os(iOS)
+                        .navigationBarTitleDisplayMode(.inline)
+                    #endif
+                } label: {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(post.title)
+                            .font(.headline)
+                            .lineLimit(2)
+                        Text(post.body)
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                            .lineLimit(2)
+                    }
+                    .accessibilityElement(children: .combine)
+                    .accessibilityLabel("\(post.title). \(post.body)")
+                }
+                .accessibilityIdentifier("feedPostRow-\(post.id)")
                 .accessibilityLabel("\(post.title). \(post.body)")
             }
-            .accessibilityIdentifier("feedPostRow-\(post.id)")
-            .accessibilityLabel("\(post.title). \(post.body)")
+        }
+        .refreshable {
+            await self.model.refreshAndWait()
         }
         .featureSidebarColumnWidth()
         .accessibilityIdentifier("feedList")
@@ -126,6 +140,10 @@ struct FeedView: View {
     FeedPreviewFactory.view(seedPosts: [])
 }
 
+#Preview("Feed — Stale", traits: UniversalPreviewLayouts.iPhonePortrait) {
+    FeedPreviewFactory.staleView(seedPosts: FeedPreviewFactory.samplePosts)
+}
+
 @MainActor
 private enum FeedPreviewFactory {
     static let samplePosts = [
@@ -133,27 +151,34 @@ private enum FeedPreviewFactory {
     ]
 
     static func view(seedPosts: [FeedPost]) -> some View {
-        let repository = PreviewFeedRepository(seedPosts: seedPosts)
+        let repository = PreviewFeedRepository(seedPosts: seedPosts, isStale: false)
         let model = FeedFeatureModel(
             refreshFeed: RefreshFeedUseCase(repository: repository)
         )
         return FeedView(model: model)
-            .task {
-                await model.refreshAndWait()
-            }
+    }
+
+    static func staleView(seedPosts: [FeedPost]) -> some View {
+        let repository = PreviewFeedRepository(seedPosts: seedPosts, isStale: true)
+        let model = FeedFeatureModel(
+            refreshFeed: RefreshFeedUseCase(repository: repository)
+        )
+        return FeedView(model: model)
     }
 }
 
 @MainActor
 private final class PreviewFeedRepository: FeedRepository {
     private var posts: [FeedPost]
+    private let isStale: Bool
 
-    init(seedPosts: [FeedPost]) {
+    init(seedPosts: [FeedPost], isStale: Bool) {
         self.posts = seedPosts
+        self.isStale = isStale
     }
 
-    func fetchPosts() async throws -> [FeedPost] {
+    func fetchPosts() async throws -> FeedLoadResult {
         await Task.yield()
-        return self.posts
+        return FeedLoadResult(posts: self.posts, isStale: self.isStale)
     }
 }
