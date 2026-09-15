@@ -10,7 +10,7 @@ import SwiftData
 @MainActor
 final class CachingFeedRepository: FeedRepository {
     /// Default offline-cache lifetime before a remote failure refuses stale rows.
-    static let defaultCacheTTL: TimeInterval = 15 * 60
+    nonisolated static let defaultCacheTTL: TimeInterval = 15 * 60
 
     private let remote: any FeedRepository
     private let context: ModelContext

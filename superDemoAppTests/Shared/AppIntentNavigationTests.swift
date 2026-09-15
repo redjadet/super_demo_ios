@@ -59,12 +59,13 @@ struct AppIntentNavigationTests {
     @MainActor
     private static func urlPosted(by action: () async throws -> Void) async throws -> URL {
         var received: URL?
+        let urlKey = AppIntentNavigationRouter.urlUserInfoKey
         let token = NotificationCenter.default.addObserver(
             forName: .appIntentNavigation,
             object: nil,
             queue: .main
         ) { note in
-            received = note.userInfo?[AppIntentNavigationRouter.urlUserInfoKey] as? URL
+            received = note.userInfo?[urlKey] as? URL
         }
         defer { NotificationCenter.default.removeObserver(token) }
 

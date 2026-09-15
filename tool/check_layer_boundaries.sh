@@ -17,6 +17,17 @@ section() {
   printf '\n==> %s\n' "$1"
 }
 
+# Prefer ripgrep when present; fall back to grep so Xcode run-script PATH works.
+search_imports() {
+  local pattern="$1"
+  local file="$2"
+  if command -v rg >/dev/null 2>&1; then
+    rg -n "^[[:space:]]*import[[:space:]]+${pattern}\\b" "$file" || true
+  else
+    grep -nE "^[[:space:]]*import[[:space:]]+${pattern}\\b" "$file" || true
+  fi
+}
+
 check_forbidden_imports() {
   local file="$1"
   shift
@@ -26,7 +37,7 @@ check_forbidden_imports() {
   local line
 
   for pattern in "$@"; do
-    line="$(rg -n "^[[:space:]]*import[[:space:]]+${pattern}\\b" "$file" || true)"
+    line="$(search_imports "$pattern" "$file")"
     if [[ -n "$line" ]]; then
       echo "$line" >&2
       fail "${label}: forbidden import ${pattern} in ${file#"$ROOT"/}"
