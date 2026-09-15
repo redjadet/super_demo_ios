@@ -14,7 +14,8 @@ final class CachedFeedPost {
     var title: String
     var body: String
     /// When this row was last written from a successful remote fetch.
-    var cachedAt: Date
+    /// Optional so lightweight migration can add the column to older stores.
+    var cachedAt: Date?
 
     init(postID: Int, userID: Int, title: String, body: String, cachedAt: Date = .now) {
         self.postID = postID
@@ -39,6 +40,11 @@ final class CachedFeedPost {
         self.title = post.title
         self.body = post.body
         self.cachedAt = cachedAt
+    }
+
+    /// Treats missing timestamps as expired for TTL checks.
+    var effectiveCachedAt: Date {
+        self.cachedAt ?? Date.distantPast
     }
 
     var toDomain: FeedPost {

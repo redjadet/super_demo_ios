@@ -85,7 +85,7 @@ final class CachingFeedRepository: FeedRepository {
 
         if let cacheTTL {
             let cutoff = self.now().addingTimeInterval(-cacheTTL)
-            guard let newest = rows.map(\.cachedAt).max(), newest >= cutoff else {
+            guard let newest = rows.map(\.effectiveCachedAt).max(), newest >= cutoff else {
                 return []
             }
         }
