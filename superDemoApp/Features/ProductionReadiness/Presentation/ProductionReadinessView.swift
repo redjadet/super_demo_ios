@@ -108,29 +108,14 @@ private struct ProductionReadinessContent: View {
                 }
             }
 
-            Section("Production Risks") {
+            Section("Engineering demos") {
                 NavigationLink {
                     ProductionRisksView(risks: self.snapshot.risks)
                 } label: {
                     Label("Device-only and App Store risks", systemImage: "exclamationmark.shield")
                 }
                 .accessibilityIdentifier("productionRisksLink")
-            }
 
-            Section("Design Consistency") {
-                ForEach(self.snapshot.designTokens) { token in
-                    DesignTokenRow(token: token)
-                }
-            }
-
-            Section("AI Feedback Loop") {
-                ForEach(self.snapshot.aiFeedbackNotes, id: \.self) { note in
-                    Label(note, systemImage: "checkmark.seal")
-                        .font(.subheadline)
-                }
-            }
-
-            Section("UIKit Showcase") {
                 NavigationLink {
                     UIKitShowcaseEntryView(modules: self.snapshot.modules)
                 } label: {
@@ -147,14 +132,12 @@ private struct ReadinessHero: View {
     let score: Int
 
     private static let summary =
-        "Architecture, UIKit interop, retry policy, release risk, and AI validation."
-    private static let redrawNote =
-        "SwiftUI redraw goal: narrow state ownership, stable identity, fewer dependencies."
+        "Module status, API checks, release checklist, and tracked risks in one view."
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(alignment: .firstTextBaseline) {
-                Text("Senior iOS Demo")
+                Text("Release health")
                     .font(.title2)
                     .fontWeight(.semibold)
                 Spacer()
@@ -162,9 +145,6 @@ private struct ReadinessHero: View {
                     .equatable()
             }
             Text(Self.summary)
-                .foregroundStyle(.secondary)
-            Text(Self.redrawNote)
-                .font(.footnote)
                 .foregroundStyle(.secondary)
         }
     }
@@ -251,20 +231,6 @@ private struct ChecklistRow: View {
             }
         }
         .accessibilityElement(children: .combine)
-    }
-}
-
-private struct DesignTokenRow: View {
-    let token: DesignTokenSample
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text("\(self.token.name): \(self.token.value)")
-                .font(.headline)
-            Text(self.token.rationale)
-                .font(.footnote)
-                .foregroundStyle(.secondary)
-        }
     }
 }
 

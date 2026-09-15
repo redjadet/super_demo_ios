@@ -57,18 +57,9 @@ nonisolated struct ProductionRisk: Identifiable, Equatable {
     let legacyCode: String
 }
 
-nonisolated struct DesignTokenSample: Identifiable, Equatable {
-    let id: String
-    let name: String
-    let value: String
-    let rationale: String
-}
-
 nonisolated struct ProductionReadinessSnapshot: Equatable {
     let modules: [FeatureModule]
     let apiHealth: [APIHealthCheck]
     let checklist: [ReleaseChecklistItem]
     let risks: [ProductionRisk]
-    let designTokens: [DesignTokenSample]
-    let aiFeedbackNotes: [String]
 }
