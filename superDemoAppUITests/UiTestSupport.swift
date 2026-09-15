@@ -38,21 +38,24 @@ enum UiTestSupport {
         app.open(url)
     }
 
+    /// Opens the Dashboard tab across iPhone bottom tabs and iPad top/sidebar tabs.
+    @MainActor
+    static func openDashboardTab(in app: XCUIApplication) {
+        self.openTab(
+            titled: "Dashboard",
+            accessibilityIdentifier: "dashboardTab",
+            in: app
+        )
+    }
+
     /// Opens the Feed tab when the root shell uses `TabView`.
     @MainActor
     static func openFeedTab(in app: XCUIApplication) {
-        let tabBarFeed = app.tabBars.buttons["Feed"]
-        if tabBarFeed.waitForExistence(timeout: 10) {
-            if !tabBarFeed.isSelected {
-                tabBarFeed.tap()
-            }
-            return
-        }
-
-        let feedTabId = app.buttons["feedTab"]
-        if feedTabId.waitForExistence(timeout: 5) {
-            feedTabId.tap()
-        }
+        self.openTab(
+            titled: "Feed",
+            accessibilityIdentifier: "feedTab",
+            in: app
+        )
     }
 
     /// Waits for Feed chrome (toolbar, states, or list). `isSelected` on tab buttons is unreliable on CI.
@@ -94,18 +97,68 @@ enum UiTestSupport {
     /// Opens the Items tab when the root shell uses `TabView`.
     @MainActor
     static func openItemsTab(in app: XCUIApplication) {
-        let tabBarItems = app.tabBars.buttons["Items"]
-        if tabBarItems.waitForExistence(timeout: 10) {
-            if !tabBarItems.isSelected {
-                tabBarItems.tap()
+        self.openTab(
+            titled: "Items",
+            accessibilityIdentifier: "itemsTab",
+            in: app
+        )
+    }
+
+    /// Resolves tabs on iPhone (`tabBars`) and iPad (top bar / sidebar), avoiding ambiguous multi-match taps.
+    @MainActor
+    private static func openTab(
+        titled title: String,
+        accessibilityIdentifier: String,
+        in app: XCUIApplication
+    ) {
+        let tabBarButton = app.tabBars.buttons[title]
+        if tabBarButton.waitForExistence(timeout: 3) {
+            if !tabBarButton.isSelected {
+                tabBarButton.tap()
             }
             return
         }
 
-        let itemsTabId = app.buttons["itemsTab"]
-        if itemsTabId.waitForExistence(timeout: 5) {
-            itemsTabId.tap()
+        // iPadOS 18+ often exposes tabs outside `tabBars` (top bar / sidebar).
+        let titledQuery = app.buttons.matching(NSPredicate(format: "label == %@", title))
+        if titledQuery.firstMatch.waitForExistence(timeout: 3) {
+            let titledCount = titledQuery.count
+            for index in 0 ..< titledCount {
+                let element = titledQuery.element(boundBy: index)
+                if element.exists, element.isHittable {
+                    element.tap()
+                    return
+                }
+            }
         }
+
+        self.tapFirstHittable(matching: accessibilityIdentifier, in: app, timeout: 5)
+    }
+
+    /// Taps the first hittable match for an accessibility id (iPad can expose duplicate tab nodes).
+    @MainActor
+    private static func tapFirstHittable(
+        matching identifier: String,
+        in app: XCUIApplication,
+        timeout: TimeInterval
+    ) {
+        let query = app.descendants(matching: .any).matching(identifier: identifier)
+        guard query.firstMatch.waitForExistence(timeout: timeout) else {
+            return
+        }
+
+        let count = query.count
+        if count > 0 {
+            for index in 0 ..< count {
+                let element = query.element(boundBy: index)
+                if element.exists, element.isHittable {
+                    element.tap()
+                    return
+                }
+            }
+        }
+
+        query.firstMatch.tap()
     }
 
     /// Waits for Items chrome (toolbar, empty-state action, list, or error).

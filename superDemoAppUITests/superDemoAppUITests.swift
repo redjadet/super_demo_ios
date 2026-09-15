@@ -31,9 +31,7 @@ final class superDemoAppUITests: XCTestCase {
     func testDashboardShowsProductionRisks() {
         let app = UiTestSupport.launchApplication()
 
-        let dashboard = app.tabBars.buttons["Dashboard"]
-        XCTAssertTrue(dashboard.waitForExistence(timeout: 10))
-        dashboard.tap()
+        UiTestSupport.openDashboardTab(in: app)
         _ = UiTestSupport.waitForListOrCollection(identifier: "productionReadinessDashboard", in: app)
 
         let risksLink = app.buttons["productionRisksLink"]
@@ -63,9 +61,7 @@ final class superDemoAppUITests: XCTestCase {
     func testUIKitShowcaseCollectionIsReachable() {
         let app = UiTestSupport.launchApplication()
 
-        let dashboard = app.tabBars.buttons["Dashboard"]
-        XCTAssertTrue(dashboard.waitForExistence(timeout: 10))
-        dashboard.tap()
+        UiTestSupport.openDashboardTab(in: app)
         _ = UiTestSupport.waitForListOrCollection(identifier: "productionReadinessDashboard", in: app)
 
         let showcaseLink = app.buttons["uikitShowcaseLink"]
