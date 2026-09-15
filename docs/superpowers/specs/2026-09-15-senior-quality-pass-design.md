@@ -1,7 +1,7 @@
 # Senior Quality Pass — Design Spec
 
 **Date:** 2026-09-15  
-**Status:** Approved in chat; awaiting spec file review before implementation plan  
+**Status:** Approved; implementation plan at `docs/superpowers/plans/2026-09-15-senior-quality-pass.md`  
 **Scope:** Hybrid quality bar — product-grade primary surfaces + polished engineering showcase + shared infra cleanup
 
 ## Problem
