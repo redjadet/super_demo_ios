@@ -31,7 +31,6 @@ struct ProductionReadinessView: View {
                         .disabled(self.model.isInitialLoading)
                     }
                 }
-                .chromeNavigationBarMinimization()
                 .navigationDestination(for: AppRoute.self) { route in
                     self.destination(for: route)
                 }

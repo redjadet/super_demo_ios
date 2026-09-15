@@ -10,7 +10,7 @@ repo review protocol (no glass on content cards).
 - `AppRootView` — migrate to `Tab` API + `tabBarMinimizeBehavior(.automatic)` so
   the system tab bar gets Liquid Glass.
 - `AdaptiveNavigationShell` — `chromeGlassButtonStyle()` (`.buttonStyle(.glass)`)
-  and `chromeNavigationBarMinimization()` (iOS 27+ scroll minimize).
+  only (no iOS 27-only `toolbarMinimizationBehavior` — CI stays on released Xcode 26.x SDK).
 - Feed / Items / Production Readiness toolbars and empty/error actions use the
   chrome helpers; Items separates Edit vs Add with `ToolbarSpacer(.fixed)`.
 - `DESIGN.md` + `docs/design_system.md` document chrome-only Liquid Glass rules.

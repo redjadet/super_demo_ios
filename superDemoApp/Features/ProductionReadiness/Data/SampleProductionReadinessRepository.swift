@@ -152,7 +152,7 @@ struct SampleProductionReadinessRepository: ProductionReadinessRepository {
                 "keychain",
                 "Keychain",
                 keychainDetail,
-                "Wrap keychain access behind a service, test failure states, and verify on locked/unlocked devices.",
+                "Use AccessTokenStore + flag-gated KeychainDemoTokenRefresher; verify locked/unlocked devices.",
                 ReadinessStatus.healthy
             ),
             (

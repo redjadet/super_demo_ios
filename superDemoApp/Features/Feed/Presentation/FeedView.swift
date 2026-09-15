@@ -20,7 +20,6 @@ struct FeedView: View {
                 .toolbar {
                     self.feedToolbar
                 }
-                .chromeNavigationBarMinimization()
         }
         .task {
             await self.model.refreshAndWait()

@@ -4,6 +4,8 @@ Record durable implementation notes after meaningful changes.
 
 ## Entries
 
+- [`2026-09-15_keychain-token-demo.md`](2026-09-15_keychain-token-demo.md)
+  — Flag-gated Keychain token refresher + AccessTokenStore; CI-safe Liquid Glass trim.
 - [`2026-09-15_liquid-glass-chrome.md`](2026-09-15_liquid-glass-chrome.md)
   — Tab API + chrome-only Liquid Glass helpers (toolbars / empty actions).
 - [`2026-09-15_swiftformat-version-pin.md`](2026-09-15_swiftformat-version-pin.md)

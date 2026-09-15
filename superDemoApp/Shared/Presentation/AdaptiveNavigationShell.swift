@@ -68,20 +68,6 @@ extension View {
             self
         }
     }
-
-    /// Lets the navigation bar adopt scroll-minimizing Liquid Glass chrome when the OS supports it.
-    @ViewBuilder
-    func chromeNavigationBarMinimization() -> some View {
-        #if os(iOS)
-        if #available(iOS 27.0, *) {
-            self.toolbarMinimizationBehavior(.onScrollDown, for: .navigationBar)
-        } else {
-            self
-        }
-        #else
-        self
-        #endif
-    }
 }
 
 #if os(iOS)

@@ -276,8 +276,6 @@ Refresh: `.task { await model.refresh() }`; buttons use `Task { await model.... 
   `.chromeGlassButtonStyle()` (shared helper → `.buttonStyle(.glass)`).
 - Edit: `EditButton()` in `.navigationBarTrailing` on iOS when using `onDelete`; separate
   from primary actions with `ToolbarSpacer(.fixed)` so glass groupings stay clear.
-- Apply `.chromeNavigationBarMinimization()` on feature roots (iOS 27+) so the bar can
-  minimize on scroll without custom materials.
 - Never apply Liquid Glass to list rows or content cards.
 - macOS: list delete key / context menu where appropriate.
 

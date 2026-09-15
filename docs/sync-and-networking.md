@@ -14,9 +14,11 @@ The **Feed** feature (see [`docs/portfolio.md`](portfolio.md) and
 - **`CachingFeedRepository`** / **`CachedFeedPost`**: persist on success;
   on network failure with cached rows, return `FeedLoadResult(isStale: true)`
   so Presentation can show a stale banner (not a silent success).
-- **Auth path honesty:** production wiring uses `EmptyTokenRefresher` until a real
-  session refresher is injected. `InMemoryDemoTokenRefresher` documents the
-  demo/test refresh path (not Keychain-backed).
+- **Auth path honesty:** production wiring uses `EmptyTokenRefresher` by default.
+  Opt into Keychain-backed demo refresh with `-KeychainTokenDemo` or
+  `SUPERDEMO_KEYCHAIN_TOKEN_DEMO=1` (`KeychainDemoTokenRefresher` +
+  `KeychainAccessTokenStore`). `InMemoryDemoTokenRefresher` /
+  `InMemoryAccessTokenStore` cover unit tests. Not real OAuth.
 
 **DummyJSON** alternate (`/posts`): wrapper `{ posts: [...], ... }` before DTO map.
 

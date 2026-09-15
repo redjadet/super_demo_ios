@@ -27,7 +27,10 @@ enum ProductionReadinessComposition {
         if AppLaunchConfiguration.usesSeededSampleState {
             return sample
         }
-        let client = URLSessionAPIClient(session: AppURLSession.makeDefault())
+        let client = URLSessionAPIClient(
+            session: AppURLSession.makeDefault(),
+            tokenRefresher: TokenRefreshingFactory.makeDefault()
+        )
         let remoteHealth = RemoteAPIHealthRepository(
             client: client,
             endpoint: self.remoteHealthEndpoint

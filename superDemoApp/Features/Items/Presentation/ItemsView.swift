@@ -19,7 +19,6 @@ struct ItemsView: View {
         .toolbar {
             self.itemsToolbar
         }
-        .chromeNavigationBarMinimization()
         .task {
             await self.model.refreshAndWait()
         }
