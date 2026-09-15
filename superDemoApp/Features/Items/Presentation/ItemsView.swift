@@ -19,6 +19,7 @@ struct ItemsView: View {
         .toolbar {
             self.itemsToolbar
         }
+        .chromeNavigationBarMinimization()
         .task {
             await self.model.refreshAndWait()
         }
@@ -33,6 +34,7 @@ struct ItemsView: View {
             ToolbarItem(placement: .navigationBarTrailing) {
                 EditButton()
             }
+            ToolbarSpacer(.fixed)
         }
         #endif
         ToolbarItem {
@@ -41,6 +43,7 @@ struct ItemsView: View {
             } label: {
                 Label("Add Item", systemImage: "plus")
             }
+            .chromeGlassButtonStyle()
             .accessibilityIdentifier("addItem")
         }
     }
@@ -59,6 +62,7 @@ struct ItemsView: View {
                 Button("Retry") {
                     self.model.refresh()
                 }
+                .chromeGlassButtonStyle()
             }
             .featureScreenFrame()
         case .empty:
@@ -68,6 +72,7 @@ struct ItemsView: View {
                 Button("Add Item") {
                     Task { await self.model.addItemNow() }
                 }
+                .chromeGlassButtonStyle()
                 .accessibilityIdentifier("addItemEmpty")
             }
             .featureScreenFrame()

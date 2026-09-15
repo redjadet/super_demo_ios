@@ -20,6 +20,7 @@ struct FeedView: View {
                 .toolbar {
                     self.feedToolbar
                 }
+                .chromeNavigationBarMinimization()
         }
         .task {
             await self.model.refreshAndWait()
@@ -36,6 +37,7 @@ struct FeedView: View {
             } label: {
                 Label("Refresh Feed", systemImage: "arrow.clockwise")
             }
+            .chromeGlassButtonStyle()
             .accessibilityIdentifier("refreshFeed")
         }
     }
@@ -54,6 +56,7 @@ struct FeedView: View {
                 Button("Retry") {
                     self.model.refresh()
                 }
+                .chromeGlassButtonStyle()
                 .accessibilityIdentifier("feedRetry")
             }
             .featureScreenFrame()
@@ -64,6 +67,7 @@ struct FeedView: View {
                 Button("Refresh") {
                     self.model.refresh()
                 }
+                .chromeGlassButtonStyle()
                 .accessibilityIdentifier("refreshFeedEmpty")
             }
             .featureScreenFrame()

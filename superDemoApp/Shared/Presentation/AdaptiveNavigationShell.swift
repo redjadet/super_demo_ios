@@ -58,6 +58,30 @@ extension View {
         self.modifier(FeatureSidebarColumnWidthModifier(min: min, ideal: ideal, max: max))
         #endif
     }
+
+    /// Liquid Glass for chrome controls (toolbar / empty-state actions). Never use on list rows or cards.
+    @ViewBuilder
+    func chromeGlassButtonStyle() -> some View {
+        if #available(iOS 26.0, macOS 26.0, *) {
+            self.buttonStyle(.glass)
+        } else {
+            self
+        }
+    }
+
+    /// Lets the navigation bar adopt scroll-minimizing Liquid Glass chrome when the OS supports it.
+    @ViewBuilder
+    func chromeNavigationBarMinimization() -> some View {
+        #if os(iOS)
+        if #available(iOS 27.0, *) {
+            self.toolbarMinimizationBehavior(.onScrollDown, for: .navigationBar)
+        } else {
+            self
+        }
+        #else
+        self
+        #endif
+    }
 }
 
 #if os(iOS)

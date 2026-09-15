@@ -26,10 +26,12 @@ struct ProductionReadinessView: View {
                         } label: {
                             Label("Refresh", systemImage: "arrow.clockwise")
                         }
+                        .chromeGlassButtonStyle()
                         .accessibilityIdentifier("refreshProductionReadiness")
                         .disabled(self.model.isInitialLoading)
                     }
                 }
+                .chromeNavigationBarMinimization()
                 .navigationDestination(for: AppRoute.self) { route in
                     self.destination(for: route)
                 }
@@ -69,6 +71,7 @@ struct ProductionReadinessView: View {
                 Button("Retry") {
                     self.model.refresh()
                 }
+                .chromeGlassButtonStyle()
             }
             .featureScreenFrame()
         case let .content(snapshot, score):

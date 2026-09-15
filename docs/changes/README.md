@@ -4,6 +4,8 @@ Record durable implementation notes after meaningful changes.
 
 ## Entries
 
+- [`2026-09-15_liquid-glass-chrome.md`](2026-09-15_liquid-glass-chrome.md)
+  — Tab API + chrome-only Liquid Glass helpers (toolbars / empty actions).
 - [`2026-09-15_swiftformat-version-pin.md`](2026-09-15_swiftformat-version-pin.md)
   — Pin SwiftFormat **0.63.0** in lint/format gates; CI-green audit note.
 - [`2026-09-15_feed-items-diagnostics-hardening.md`](2026-09-15_feed-items-diagnostics-hardening.md)

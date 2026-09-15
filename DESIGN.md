@@ -166,6 +166,11 @@ cards. Compact is not a squeezed desktop layout — stack sections with spacing 
 Prefer **flat hierarchy**: list backgrounds, grouped styles, materials on sheets. Avoid
 custom drop shadows and gradient hero backgrounds. Depth clarifies grouping, not branding.
 
+**Liquid Glass (chrome only):** tab bar and toolbar / empty-state action buttons adopt
+system Liquid Glass via `Tab { … }`, `.chromeGlassButtonStyle()` (`.buttonStyle(.glass)`),
+and optional nav-bar minimization. Do **not** put `glassEffect` on list rows, cards, or
+content panels — that creates hierarchy noise (see review protocol).
+
 ## Shapes
 
 - Grouped panels and cards: **12 pt** continuous corners when custom containers are needed.
@@ -178,17 +183,18 @@ Do not mix sharp and heavily rounded corners in the same component family.
 
 | YAML token | SwiftUI implementation |
 | --- | --- |
-| `button-filled` | `.buttonStyle(.borderedProminent)` |
+| `button-filled` | `.buttonStyle(.borderedProminent)` or chrome `.chromeGlassButtonStyle()` |
 | `button-outlined` | `.buttonStyle(.bordered)` |
 | `list-row` | `NavigationLink` in `List` |
 | `empty-state` | `ContentUnavailableView` |
-| `error-banner` | `ContentUnavailableView` + Retry action |
+| `error-banner` | `ContentUnavailableView` + Retry with `.chromeGlassButtonStyle()` |
 | `status-error` / `status-success` | compact `Label` badges when inline status is needed |
 
-Also: toolbars with `Label` + SF Symbol; `ProgressView` for loading; `Form` for input;
-`AdaptiveNavigationShell` per [`docs/navigation.md`](docs/navigation.md) and
+Also: toolbars with `Label` + SF Symbol + Liquid Glass chrome helpers; `ProgressView` for
+loading; `Form` for input; `AdaptiveNavigationShell` per
+[`docs/navigation.md`](docs/navigation.md) and
 [`docs/design_system.md`](docs/design_system.md#ui-consistency-contract-all-features).
-Reference: `ItemsView` + `Shared/Presentation/AdaptiveNavigationShell.swift`.
+Root tabs use the `Tab` API (`AppRootView`) so the system tab bar gets Liquid Glass.
 
 Extract shared wrappers to `Shared/` (or `Features/Shared/Presentation/`) only when **two
 or more** features need the same shell.

@@ -111,11 +111,11 @@ tokens, reusable components, previews, and review checklists.
 | `rounded.sm` / `rounded.md` | 8 px / 12 px custom containers (use `px` in YAML only) |
 | `spacing.sm` / `md` / `lg` | `.padding(8)`, `.padding(16)`, `.padding(24)` |
 | `spacing.row-min` | min 44 pt touch targets on iOS |
-| `components.button-filled` | `.buttonStyle(.borderedProminent)` |
+| `components.button-filled` | `.buttonStyle(.borderedProminent)` / `.chromeGlassButtonStyle()` for chrome |
 | `components.button-outlined` | `.buttonStyle(.bordered)` |
-| `components.list-row` | `NavigationLink` in `List` |
+| `components.list-row` | `NavigationLink` in `List` (no glass) |
 | `components.empty-state` | `ContentUnavailableView` |
-| `components.error-banner` | `ContentUnavailableView` + Retry |
+| `components.error-banner` | `ContentUnavailableView` + Retry (`.chromeGlassButtonStyle()`) |
 
 ## Rules
 
@@ -272,8 +272,13 @@ Refresh: `.task { await model.refresh() }`; buttons use `Task { await model.... 
 
 ## Toolbars and editing
 
-- Add: trailing toolbar, `plus` symbol, `Label("Add …", systemImage: "plus")`.
-- Edit: `EditButton()` in `.navigationBarTrailing` on iOS when using `onDelete`.
+- Add: trailing toolbar, `plus` symbol, `Label("Add …", systemImage: "plus")`, then
+  `.chromeGlassButtonStyle()` (shared helper → `.buttonStyle(.glass)`).
+- Edit: `EditButton()` in `.navigationBarTrailing` on iOS when using `onDelete`; separate
+  from primary actions with `ToolbarSpacer(.fixed)` so glass groupings stay clear.
+- Apply `.chromeNavigationBarMinimization()` on feature roots (iOS 27+) so the bar can
+  minimize on scroll without custom materials.
+- Never apply Liquid Glass to list rows or content cards.
 - macOS: list delete key / context menu where appropriate.
 
 ## Forms and input

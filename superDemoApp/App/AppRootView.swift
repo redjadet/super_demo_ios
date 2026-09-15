@@ -10,27 +10,22 @@ struct AppRootView: View {
 
     var body: some View {
         TabView(selection: self.$navigation.selection) {
-            ProductionReadinessRootView(path: self.$navigation.dashboardPath)
-                .tabItem {
-                    Label("Dashboard", systemImage: "checklist.checked")
-                }
-                .tag(AppTab.dashboard)
-                .accessibilityIdentifier("dashboardTab")
+            Tab("Dashboard", systemImage: "checklist.checked", value: AppTab.dashboard) {
+                ProductionReadinessRootView(path: self.$navigation.dashboardPath)
+            }
+            .accessibilityIdentifier("dashboardTab")
 
-            ItemsRootView()
-                .tabItem {
-                    Label("Items", systemImage: "list.bullet")
-                }
-                .tag(AppTab.items)
-                .accessibilityIdentifier("itemsTab")
+            Tab("Items", systemImage: "list.bullet", value: AppTab.items) {
+                ItemsRootView()
+            }
+            .accessibilityIdentifier("itemsTab")
 
-            FeedRootView()
-                .tabItem {
-                    Label("Feed", systemImage: "text.bubble")
-                }
-                .tag(AppTab.feed)
-                .accessibilityIdentifier("feedTab")
+            Tab("Feed", systemImage: "text.bubble", value: AppTab.feed) {
+                FeedRootView()
+            }
+            .accessibilityIdentifier("feedTab")
         }
+        .tabBarMinimizeBehavior(.automatic)
         .onOpenURL { url in
             self.navigation.handle(url: url)
         }
