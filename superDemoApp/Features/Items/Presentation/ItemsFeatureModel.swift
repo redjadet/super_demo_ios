@@ -18,55 +18,48 @@ enum ItemsState: Equatable {
 final class ItemsFeatureModel {
     private let loadItems: LoadItemsUseCase
     private let addItem: AddItemUseCase
+    private let updateItem: UpdateItemUseCase
     private let deleteItems: DeleteItemsUseCase
     private let diagnostics: ReleaseDiagnosticsReporting
 
     private(set) var state: ItemsState = .loading
-    private var refreshTask: Task<Void, Never>?
+    private let loadController = AsyncLoadController()
     private var stateBeforeRefresh: ItemsState?
 
     init(
         loadItems: LoadItemsUseCase,
         addItem: AddItemUseCase,
+        updateItem: UpdateItemUseCase,
         deleteItems: DeleteItemsUseCase,
         diagnostics: ReleaseDiagnosticsReporting = ReleaseDiagnostics.shared
     ) {
         self.loadItems = loadItems
         self.addItem = addItem
+        self.updateItem = updateItem
         self.deleteItems = deleteItems
         self.diagnostics = diagnostics
     }
 
     func refresh() {
-        self.refreshTask?.cancel()
         self.stateBeforeRefresh = self.state
         self.showLoadingStateIfNeeded()
-
-        self.refreshTask = Task { [weak self] in
+        self.loadController.run { [weak self] in
             guard let self else { return }
             await self.performRefresh()
         }
     }
 
     func refreshAndWait() async {
-        self.refreshTask?.cancel()
         self.stateBeforeRefresh = self.state
         self.showLoadingStateIfNeeded()
-
-        let operation = Task { [weak self] in
+        await self.loadController.runAndWait { [weak self] in
             guard let self else { return }
             await self.performRefresh()
-        }
-        self.refreshTask = operation
-        await operation.value
-        if self.refreshTask == operation {
-            self.refreshTask = nil
         }
     }
 
     func cancelRefresh() {
-        self.refreshTask?.cancel()
-        self.refreshTask = nil
+        self.loadController.cancel()
         self.restorePriorStateAfterCancelledRefresh()
     }
 
@@ -76,6 +69,16 @@ final class ItemsFeatureModel {
             await self.refreshAndWait()
         } catch {
             self.recordFailure(name: "items-add", error: error)
+            self.state = .failed(DisplayError(error))
+        }
+    }
+
+    func updateItemNow(_ item: ItemEntity) async {
+        do {
+            try self.updateItem(item)
+            await self.refreshAndWait()
+        } catch {
+            self.recordFailure(name: "items-update", error: error)
             self.state = .failed(DisplayError(error))
         }
     }
@@ -119,7 +122,7 @@ final class ItemsFeatureModel {
     private func recordFailure(name: String, error: Error) {
         self.diagnostics.releaseCheckFailed(
             ReleaseDiagnosticCheck(name: name),
-            reason: String(describing: error)
+            reason: ErrorDiagnostics.reason(for: error)
         )
     }
 

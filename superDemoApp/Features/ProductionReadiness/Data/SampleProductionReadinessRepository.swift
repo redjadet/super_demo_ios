@@ -24,9 +24,7 @@ struct SampleProductionReadinessRepository: ProductionReadinessRepository {
             modules: self.makeModules(),
             apiHealth: self.makeAPIHealth(),
             checklist: self.makeChecklist(),
-            risks: risks,
-            designTokens: self.makeDesignTokens(),
-            aiFeedbackNotes: self.makeAIFeedbackNotes()
+            risks: risks
         )
     }
 
@@ -38,7 +36,7 @@ struct SampleProductionReadinessRepository: ProductionReadinessRepository {
                 layerBoundary: "Presentation -> Domain <- Data",
                 owner: "Mobile Platform",
                 status: .healthy,
-                summary: "Feature boundaries stay clear without forcing every simple view into needless abstraction."
+                summary: "Feature ownership and layer boundaries are documented for release triage."
             ),
             FeatureModule(
                 id: "networking",
@@ -46,7 +44,7 @@ struct SampleProductionReadinessRepository: ProductionReadinessRepository {
                 layerBoundary: "Shared client + feature repositories",
                 owner: "API Integration",
                 status: .healthy,
-                summary: "URLSession async/await, typed errors, retry policy, cancellation, redacted logging."
+                summary: "Auth, release, and push endpoints monitored with retry policy and redacted logs."
             ),
             FeatureModule(
                 id: "ui-kit",
@@ -54,7 +52,7 @@ struct SampleProductionReadinessRepository: ProductionReadinessRepository {
                 layerBoundary: "UIKit container hosts SwiftUI detail",
                 owner: "Native iOS",
                 status: .healthy,
-                summary: "UICollectionView list, spring push/pop, and hosted SwiftUI detail are UI-tested."
+                summary: "Native list and transitions validated on device for mixed UI stacks."
             ),
             FeatureModule(
                 id: "release",
@@ -62,7 +60,7 @@ struct SampleProductionReadinessRepository: ProductionReadinessRepository {
                 layerBoundary: "Docs + test fixtures + checklist",
                 owner: "Release",
                 status: .warning,
-                summary: "Device-only risks are tracked before TestFlight instead of discovered after review."
+                summary: "Device-only risks are tracked before TestFlight, not after review."
             ),
         ]
     }
@@ -174,43 +172,5 @@ struct SampleProductionReadinessRepository: ProductionReadinessRepository {
                 legacyCode: self.riskCodeFormatter.code(title: title, owner: "ios")
             )
         }
-    }
-
-    private func makeDesignTokens() -> [DesignTokenSample] {
-        [
-            DesignTokenSample(
-                id: "spacing",
-                name: "Spacing",
-                value: "8 / 16 / 24",
-                rationale: "Shared spacing keeps native iOS and Android rows from drifting over time."
-            ),
-            DesignTokenSample(
-                id: "typography",
-                name: "Typography",
-                value: "System styles",
-                rationale: "Dynamic Type and platform legibility stay intact while design language remains consistent."
-            ),
-            DesignTokenSample(
-                id: "corner-radius",
-                name: "Corner Radius",
-                value: "8 / 12",
-                rationale: "Reusable tokens beat one-off visual decisions across teams."
-            ),
-            DesignTokenSample(
-                id: "component-state",
-                name: "Component States",
-                value: "normal / disabled / warning",
-                rationale: "Flutter has a shared UI layer; native teams need disciplined token and component reuse."
-            ),
-        ]
-    }
-
-    private func makeAIFeedbackNotes() -> [String] {
-        [
-            "Small modules let humans and AI agents validate one behavior without rebuilding the whole mental model.",
-            "Preview fixtures replace repeated manual navigation when iOS lacks Flutter-style hot reload.",
-            "UI tests cover critical entry points; unit tests cover retry rules and domain scoring.",
-            "Feature flags and mock states make risky production paths observable before TestFlight.",
-        ]
     }
 }

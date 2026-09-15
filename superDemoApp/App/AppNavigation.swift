@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import Observation
 
 nonisolated enum AppTab: Hashable {
     case dashboard
@@ -91,14 +92,32 @@ nonisolated enum AppDeepLink: Equatable {
     var customSchemeURL: URL {
         switch self {
         case .dashboard:
-            URL(string: "superdemo://dashboard")!
+            Self.dashboardURL
         case .productionRisks:
-            URL(string: "superdemo://dashboard/risks")!
+            Self.productionRisksURL
         case .items:
-            URL(string: "superdemo://items")!
+            Self.itemsURL
         case .feed:
-            URL(string: "superdemo://feed")!
+            Self.feedURL
         }
+    }
+
+    private static let dashboardURL = customURL(host: "dashboard")
+    private static let productionRisksURL = customURL(host: "dashboard", path: "/risks")
+    private static let itemsURL = customURL(host: "items")
+    private static let feedURL = customURL(host: "feed")
+
+    private static func customURL(host: String, path: String = "") -> URL {
+        var components = URLComponents()
+        components.scheme = "superdemo"
+        components.host = host
+        if !path.isEmpty {
+            components.path = path.hasPrefix("/") ? path : "/" + path
+        }
+        guard let url = components.url else {
+            preconditionFailure("Invalid deep link components for host \(host)")
+        }
+        return url
     }
 }
 
@@ -134,5 +153,30 @@ nonisolated struct AppNavigationState {
             self.selection = .feed
             self.dashboardPath = []
         }
+    }
+}
+
+@MainActor
+@Observable
+final class AppNavigationStore {
+    static let shared = AppNavigationStore()
+    nonisolated(unsafe) static var testingOverride: AppNavigationStore?
+
+    static var current: AppNavigationStore {
+        testingOverride ?? shared
+    }
+
+    var state = AppNavigationState()
+
+    func handle(url: URL) {
+        self.state.handle(url: url)
+    }
+
+    func apply(_ deepLink: AppDeepLink) {
+        self.state.apply(deepLink)
+    }
+
+    func resetForTesting() {
+        self.state = AppNavigationState()
     }
 }

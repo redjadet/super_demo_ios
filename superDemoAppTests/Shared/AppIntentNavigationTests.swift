@@ -7,7 +7,7 @@ import Foundation
 import Testing
 @testable import superDemoApp
 
-@Suite("App intent navigation")
+@Suite("App intent navigation", .serialized)
 struct AppIntentNavigationTests {
     @Test
     func customSchemeURLsRoundTripThroughDeepLinkParser() {
@@ -31,45 +31,41 @@ struct AppIntentNavigationTests {
 
     @Test
     @MainActor
-    func openFeedIntentPostsNavigableURL() async throws {
-        let url = try await Self.urlPosted {
-            _ = try await OpenFeedIntent().perform()
-        }
-        #expect(AppDeepLink(url: url) == .feed)
+    func openFeedIntentAppliesFeedOnNavigationStore() async throws {
+        let store = AppNavigationStore()
+        AppNavigationStore.testingOverride = store
+        defer { AppNavigationStore.testingOverride = nil }
+
+        store.state.selection = .dashboard
+        _ = try await OpenFeedIntent().perform()
+
+        #expect(store.state.selection == .feed)
     }
 
     @Test
     @MainActor
-    func openItemsIntentPostsNavigableURL() async throws {
-        let url = try await Self.urlPosted {
-            _ = try await OpenItemsIntent().perform()
-        }
-        #expect(AppDeepLink(url: url) == .items)
+    func openItemsIntentAppliesItemsOnNavigationStore() async throws {
+        let store = AppNavigationStore()
+        AppNavigationStore.testingOverride = store
+        defer { AppNavigationStore.testingOverride = nil }
+
+        store.state.selection = .dashboard
+        _ = try await OpenItemsIntent().perform()
+
+        #expect(store.state.selection == .items)
     }
 
     @Test
     @MainActor
-    func openProductionRisksIntentPostsNavigableURL() async throws {
-        let url = try await Self.urlPosted {
-            _ = try await OpenProductionRisksIntent().perform()
-        }
-        #expect(AppDeepLink(url: url) == .productionRisks)
-    }
+    func openProductionRisksIntentAppliesDashboardAndPathOnNavigationStore() async throws {
+        let store = AppNavigationStore()
+        AppNavigationStore.testingOverride = store
+        defer { AppNavigationStore.testingOverride = nil }
 
-    @MainActor
-    private static func urlPosted(by action: () async throws -> Void) async throws -> URL {
-        var received: URL?
-        let urlKey = AppIntentNavigationRouter.urlUserInfoKey
-        let token = NotificationCenter.default.addObserver(
-            forName: .appIntentNavigation,
-            object: nil,
-            queue: .main
-        ) { note in
-            received = note.userInfo?[urlKey] as? URL
-        }
-        defer { NotificationCenter.default.removeObserver(token) }
+        store.state.selection = .feed
+        _ = try await OpenProductionRisksIntent().perform()
 
-        try await action()
-        return try #require(received)
+        #expect(store.state.selection == .dashboard)
+        #expect(store.state.dashboardPath == [.productionRisks])
     }
 }

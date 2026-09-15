@@ -20,9 +20,16 @@ private final class ItemsFeatureModelRepositorySpy: ItemRepository {
     }
 
     func addItem(timestamp: Date) throws -> ItemEntity {
-        let item = ItemEntity(id: UUID(), timestamp: timestamp)
+        let item = ItemEntity(id: UUID(), title: "New note", note: "", timestamp: timestamp)
         self.storedItems.append(item)
         return item
+    }
+
+    func updateItem(_ item: ItemEntity) throws {
+        guard let index = self.storedItems.firstIndex(where: { $0.id == item.id }) else {
+            return
+        }
+        self.storedItems[index] = item
     }
 
     func deleteItems(ids: [UUID]) throws {
@@ -57,15 +64,16 @@ struct ItemsFeatureModelTests {
     @MainActor
     func refreshKeepsExistingContentVisible() async {
         let repository = ItemsFeatureModelRepositorySpy()
-        repository.storedItems = [ItemEntity(id: UUID(), timestamp: Date())]
+        repository.storedItems = [ItemEntity(id: UUID(), title: "Note", note: "", timestamp: Date())]
         let model = ItemsFeatureModel(
             loadItems: LoadItemsUseCase(repository: repository),
             addItem: AddItemUseCase(repository: repository),
+            updateItem: UpdateItemUseCase(repository: repository),
             deleteItems: DeleteItemsUseCase(repository: repository)
         )
         await model.refreshAndWait()
 
-        repository.storedItems.append(ItemEntity(id: UUID(), timestamp: Date()))
+        repository.storedItems.append(ItemEntity(id: UUID(), title: "Note", note: "", timestamp: Date()))
         model.refresh()
         await Task.yield()
 
@@ -83,6 +91,7 @@ struct ItemsFeatureModelTests {
         let model = ItemsFeatureModel(
             loadItems: LoadItemsUseCase(repository: repository),
             addItem: AddItemUseCase(repository: repository),
+            updateItem: UpdateItemUseCase(repository: repository),
             deleteItems: DeleteItemsUseCase(repository: repository)
         )
 
@@ -99,10 +108,11 @@ struct ItemsFeatureModelTests {
     @MainActor
     func refreshAndWaitShowsContent() async {
         let repository = ItemsFeatureModelRepositorySpy()
-        repository.storedItems = [ItemEntity(id: UUID(), timestamp: Date())]
+        repository.storedItems = [ItemEntity(id: UUID(), title: "Note", note: "", timestamp: Date())]
         let model = ItemsFeatureModel(
             loadItems: LoadItemsUseCase(repository: repository),
             addItem: AddItemUseCase(repository: repository),
+            updateItem: UpdateItemUseCase(repository: repository),
             deleteItems: DeleteItemsUseCase(repository: repository)
         )
 
@@ -117,6 +127,36 @@ struct ItemsFeatureModelTests {
 
     @Test
     @MainActor
+    func updateItemNowPersistsChanges() async {
+        let repository = ItemsFeatureModelRepositorySpy()
+        let itemID = UUID()
+        repository.storedItems = [
+            ItemEntity(id: itemID, title: "Note", note: "Draft", timestamp: Date()),
+        ]
+        let model = ItemsFeatureModel(
+            loadItems: LoadItemsUseCase(repository: repository),
+            addItem: AddItemUseCase(repository: repository),
+            updateItem: UpdateItemUseCase(repository: repository),
+            deleteItems: DeleteItemsUseCase(repository: repository)
+        )
+
+        await model.refreshAndWait()
+
+        var updated = repository.storedItems[0]
+        updated.title = "Ship checklist"
+        updated.note = "Verify deep links"
+        await model.updateItemNow(updated)
+
+        if case let .content(items) = model.state {
+            #expect(items.first?.title == "Ship checklist")
+            #expect(items.first?.note == "Verify deep links")
+        } else {
+            Issue.record("Expected content state after update")
+        }
+    }
+
+    @Test
+    @MainActor
     func refreshFailureRecordsDiagnostic() async {
         let repository = ItemsFeatureModelRepositorySpy()
         repository.fetchError = NSError(domain: "test", code: 1)
@@ -124,6 +164,7 @@ struct ItemsFeatureModelTests {
         let model = ItemsFeatureModel(
             loadItems: LoadItemsUseCase(repository: repository),
             addItem: AddItemUseCase(repository: repository),
+            updateItem: UpdateItemUseCase(repository: repository),
             deleteItems: DeleteItemsUseCase(repository: repository),
             diagnostics: diagnostics
         )

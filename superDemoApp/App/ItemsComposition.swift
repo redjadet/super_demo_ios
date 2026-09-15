@@ -21,6 +21,7 @@ enum ItemsComposition {
         return ItemsFeatureModel(
             loadItems: LoadItemsUseCase(repository: repository),
             addItem: AddItemUseCase(repository: repository),
+            updateItem: UpdateItemUseCase(repository: repository),
             deleteItems: DeleteItemsUseCase(repository: repository)
         )
     }

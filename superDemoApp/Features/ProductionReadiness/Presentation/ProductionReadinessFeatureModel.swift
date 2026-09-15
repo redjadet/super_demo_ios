@@ -19,7 +19,7 @@ final class ProductionReadinessFeatureModel {
     private let scoreSnapshot: ScoreProductionReadinessUseCase
 
     private(set) var state: ProductionReadinessState = .loading
-    private var refreshTask: Task<Void, Never>?
+    private let loadController = AsyncLoadController()
     private var stateBeforeRefresh: ProductionReadinessState?
 
     var isInitialLoading: Bool {
@@ -29,41 +29,34 @@ final class ProductionReadinessFeatureModel {
         return false
     }
 
-    init(loadSnapshot: LoadProductionReadinessSnapshotUseCase) {
+    init(
+        loadSnapshot: LoadProductionReadinessSnapshotUseCase,
+        scoreSnapshot: ScoreProductionReadinessUseCase = ScoreProductionReadinessUseCase()
+    ) {
         self.loadSnapshot = loadSnapshot
-        self.scoreSnapshot = ScoreProductionReadinessUseCase()
+        self.scoreSnapshot = scoreSnapshot
     }
 
     func refresh() {
-        self.refreshTask?.cancel()
         self.stateBeforeRefresh = self.state
         self.showLoadingStateIfNeeded()
-
-        self.refreshTask = Task { [weak self] in
+        self.loadController.run { [weak self] in
             guard let self else { return }
             await self.performRefresh()
         }
     }
 
     func refreshAndWait() async {
-        self.refreshTask?.cancel()
         self.stateBeforeRefresh = self.state
         self.showLoadingStateIfNeeded()
-
-        let operation = Task { [weak self] in
+        await self.loadController.runAndWait { [weak self] in
             guard let self else { return }
             await self.performRefresh()
-        }
-        self.refreshTask = operation
-        await operation.value
-        if self.refreshTask == operation {
-            self.refreshTask = nil
         }
     }
 
     func cancelRefresh() {
-        self.refreshTask?.cancel()
-        self.refreshTask = nil
+        self.loadController.cancel()
         self.restorePriorStateAfterCancelledRefresh()
     }
 

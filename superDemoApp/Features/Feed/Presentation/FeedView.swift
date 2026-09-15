@@ -88,19 +88,7 @@ struct FeedView: View {
 
             ForEach(posts) { post in
                 NavigationLink {
-                    ScrollView {
-                        VStack(alignment: .leading, spacing: 12) {
-                            Text(post.title)
-                                .font(.title2)
-                                .fontWeight(.semibold)
-                            Text(post.body)
-                                .foregroundStyle(.secondary)
-                        }
-                        .padding()
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    }
-                    .navigationTitle("Post")
-                    .iosInlineNavigationBarTitle()
+                    FeedPostDetailView(post: post)
                 } label: {
                     VStack(alignment: .leading, spacing: 4) {
                         Text(post.title)
@@ -115,7 +103,6 @@ struct FeedView: View {
                     .accessibilityLabel("\(post.title). \(post.body)")
                 }
                 .accessibilityIdentifier("feedPostRow-\(post.id)")
-                .accessibilityLabel("\(post.title). \(post.body)")
             }
         }
         .refreshable {

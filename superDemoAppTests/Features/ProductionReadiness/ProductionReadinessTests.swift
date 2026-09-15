@@ -38,9 +38,7 @@ struct ProductionReadinessTests {
                     status: .blocked,
                     legacyCode: "RISK"
                 ),
-            ],
-            designTokens: [],
-            aiFeedbackNotes: []
+            ]
         )
 
         let score = ScoreProductionReadinessUseCase()(snapshot: snapshot)
@@ -193,9 +191,7 @@ private final class ReadinessModelRepositorySpy: ProductionReadinessRepository {
                     status: .blocked,
                     legacyCode: "RISK"
                 ),
-            ],
-            designTokens: [],
-            aiFeedbackNotes: []
+            ]
         )
     }
 }

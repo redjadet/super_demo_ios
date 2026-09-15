@@ -36,8 +36,11 @@ Use declarative SwiftUI navigation that adapts across iOS, iPadOS, and macOS.
   | unsupported `superdemo` / associated-host HTTPS path | Dashboard + user-facing alert |
 
   Parsing stays in `App/AppNavigation.swift` (`AppDeepLink` / `AppNavigationState`);
-  `AppRootView` handles `onOpenURL` and `NSUserActivityTypeBrowsingWeb`. Views only
-  consume typed `AppTab` / `AppRoute` values. HTTP (non-TLS) hosts are rejected.
+  `@Observable` `AppNavigationStore` owns navigation state for the root shell.
+  `AppRootView` binds the store, handles `onOpenURL` and
+  `NSUserActivityTypeBrowsingWeb`, and applies deep links via `handle(url:)`.
+  Views only consume typed `AppTab` / `AppRoute` values. HTTP (non-TLS) hosts are
+  rejected.
 - Feature stacks: Items and Feed use `ItemsNavigationShell` / `FeedNavigationShell`
   → `AdaptiveNavigationShell` for master/detail inside a tab.
 - Shared: `Shared/Presentation/AdaptiveNavigationShell.swift`
@@ -60,7 +63,7 @@ Deep-link parsing and cold/warm navigation-state behavior:
 
 - App Intents: `OpenFeedIntent`, `OpenItemsIntent`, `OpenProductionRisksIntent`
   (`App/AppIntents/`) open the same typed destinations via
-  `AppIntentNavigationRouter` → `AppRootView`. Phrases registered in
-  `SuperDemoAppShortcuts`.
+  `AppIntentNavigationRouter` → `AppNavigationStore.current.apply(_:)`.
+  Phrases registered in `SuperDemoAppShortcuts`.
 
 Details: [`testing.md`](testing.md#ui-smoke-ci).

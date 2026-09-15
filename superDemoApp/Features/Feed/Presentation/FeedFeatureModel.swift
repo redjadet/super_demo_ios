@@ -20,7 +20,7 @@ final class FeedFeatureModel {
     private let diagnostics: ReleaseDiagnosticsReporting
 
     private(set) var state: FeedState = .loading
-    private var refreshTask: Task<Void, Never>?
+    private let loadController = AsyncLoadController()
     private var stateBeforeRefresh: FeedState?
 
     init(
@@ -32,35 +32,25 @@ final class FeedFeatureModel {
     }
 
     func refresh() {
-        self.refreshTask?.cancel()
         self.stateBeforeRefresh = self.state
         self.showLoadingStateIfNeeded()
-
-        self.refreshTask = Task { [weak self] in
+        self.loadController.run { [weak self] in
             guard let self else { return }
             await self.performRefresh()
         }
     }
 
     func refreshAndWait() async {
-        self.refreshTask?.cancel()
         self.stateBeforeRefresh = self.state
         self.showLoadingStateIfNeeded()
-
-        let operation = Task { [weak self] in
+        await self.loadController.runAndWait { [weak self] in
             guard let self else { return }
             await self.performRefresh()
-        }
-        self.refreshTask = operation
-        await operation.value
-        if self.refreshTask == operation {
-            self.refreshTask = nil
         }
     }
 
     func cancelRefresh() {
-        self.refreshTask?.cancel()
-        self.refreshTask = nil
+        self.loadController.cancel()
         self.restorePriorStateAfterCancelledRefresh()
     }
 
@@ -96,7 +86,7 @@ final class FeedFeatureModel {
             }
             self.diagnostics.releaseCheckFailed(
                 ReleaseDiagnosticCheck(name: "feed-refresh"),
-                reason: String(describing: error)
+                reason: ErrorDiagnostics.reason(for: error)
             )
             self.state = .failed(FeedDisplayError(error))
             self.stateBeforeRefresh = nil

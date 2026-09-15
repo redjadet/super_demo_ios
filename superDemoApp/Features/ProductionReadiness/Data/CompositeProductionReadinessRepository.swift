@@ -33,9 +33,7 @@ struct CompositeProductionReadinessRepository: ProductionReadinessRepository {
             modules: snapshot.modules,
             apiHealth: [remoteEntry] + snapshot.apiHealth,
             checklist: snapshot.checklist,
-            risks: snapshot.risks,
-            designTokens: snapshot.designTokens,
-            aiFeedbackNotes: snapshot.aiFeedbackNotes
+            risks: snapshot.risks
         )
     }
 
