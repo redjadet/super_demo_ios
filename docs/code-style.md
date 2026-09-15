@@ -2,10 +2,10 @@
 
 ## Toolchain
 
-| Tool        | Config              | Install                            |
-| ----------- | ------------------- | ---------------------------------- |
-| SwiftLint   | `.swiftlint.yml`    | `brew bundle --file Brewfile`      |
-| SwiftFormat | `.swiftformat`      | same                               |
+| Tool        | Config / pin                                                         | Install                       |
+| ----------- | -------------------------------------------------------------------- | ----------------------------- |
+| SwiftLint   | `.swiftlint.yml` (`0.65.1`)                                          | `brew bundle --file Brewfile` |
+| SwiftFormat | `.swiftformat` + pin **`0.63.0`** (`tool/expected_tool_versions.sh`) | same                          |
 
 ## Commands (run from `superDemoApp/`)
 

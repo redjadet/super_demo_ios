@@ -15,6 +15,9 @@ require() {
 require swiftlint
 require swiftformat
 
+echo "==> SwiftFormat version pin"
+"$ROOT/tool/check_swiftformat_version.sh"
+
 echo "==> SwiftFormat"
 swiftformat \
   --config "$ROOT/.swiftformat" \

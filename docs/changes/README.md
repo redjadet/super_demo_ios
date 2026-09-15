@@ -4,9 +4,12 @@ Record durable implementation notes after meaningful changes.
 
 ## Entries
 
+- [`2026-09-15_swiftformat-version-pin.md`](2026-09-15_swiftformat-version-pin.md)
+  — Pin SwiftFormat **0.63.0** in lint/format gates; CI-green audit note.
 - [`2026-09-15_feed-items-diagnostics-hardening.md`](2026-09-15_feed-items-diagnostics-hardening.md)
   — Cancel-safe refresh, stale feed cache UI, deep links, OSLog crash monitor,
-  ModelContainer recovery; docs aligned to Xcode 27 / Swift 6.4 (CI still 26.5).
+  ModelContainer recovery; docs aligned to Xcode 27 / Swift 6.4 (CI picks newest
+  released Xcode on `macos-26`).
 - [`2026-05-19_ui-test-ci-stability.md`](2026-05-19_ui-test-ci-stability.md)
   — UI test terminate between launches, Feed sample repo under `-UITesting`, CI fix.
 - [`2026-05-18_fastlane-ci-wrapper-hardening.md`](2026-05-18_fastlane-ci-wrapper-hardening.md)

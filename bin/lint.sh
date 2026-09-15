@@ -15,6 +15,9 @@ require() {
 require swiftlint
 require swiftformat
 
+echo "==> SwiftFormat version pin"
+"$ROOT/tool/check_swiftformat_version.sh"
+
 echo "==> Swift indent (4 spaces)"
 "$ROOT/tool/check_swift_two_space_indent.sh"
 
