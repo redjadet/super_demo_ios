@@ -6,9 +6,11 @@
 
 ## Problem
 
-The app already demonstrates strong Clean Architecture, `@Observable` feature models, networking (retry / token refresh), offline feed cache, App Intents, and solid test coverage. Remaining “amateur” signals are:
+The app already demonstrates strong Clean Architecture, `@Observable` feature models, networking (retry / token refresh), offline feed cache, App
+Intents, and solid test coverage. Remaining “amateur” signals are:
 
-1. **Meta / resume UI** on the Dashboard (“Senior iOS Demo”, “AI Feedback Loop”, design-token laundry lists) that reads as self-praise rather than ops health.
+1. **Meta / resume UI** on the Dashboard (“Senior iOS Demo”, “AI Feedback Loop”, design-token laundry lists) that reads as self-praise rather than ops
+   health.
 2. **Triple-copied refresh / cancel / restore** logic across Feed, Items, and Production Readiness feature models.
 3. **Combine-style Intent handoff** via `NotificationCenter` + `onReceive` despite project preference for Observation / async.
 4. **Thin Items feature** (timestamp-only entities and one-line detail) that undercuts the architecture story.
@@ -46,7 +48,8 @@ Introduce a small `@MainActor` helper under `Shared/Presentation/` (name: `Async
 - `startAndWait(...)`
 - `cancel()`
 
-Each feature model keeps its own **state enum** and maps operation results into that enum. The controller does **not** become a generic state machine for all features — only the cancel / loading / restore choreography.
+Each feature model keeps its own **state enum** and maps operation results into that enum. The controller does **not** become a generic state machine
+for all features — only the cancel / loading / restore choreography.
 
 **Consumers:** `FeedFeatureModel`, `ItemsFeatureModel`, `ProductionReadinessFeatureModel`.
 
@@ -66,9 +69,11 @@ AppIntent → AppNavigationStore.shared.apply(deepLink)  // or environment-injec
 AppRootView binds TabView / path to the store
 ```
 
-Deep links from `onOpenURL` / universal links continue to call the same `apply` / `handle(url:)` API. Remove `Notification.Name.appIntentNavigation` and Combine `onReceive`.
+Deep links from `onOpenURL` / universal links continue to call the same `apply` / `handle(url:)` API. Remove `Notification.Name.appIntentNavigation`
+and Combine `onReceive`.
 
-URL construction for known deep links must be **non-failing** (e.g. static `URL` constants built once, or `URL(string:)` with `precondition` only in DEBUG helpers that tests assert — prefer compile-time-safe constants).
+URL construction for known deep links must be **non-failing** (e.g. static `URL` constants built once, or `URL(string:)` with `precondition` only in
+DEBUG helpers that tests assert — prefer compile-time-safe constants).
 
 ### C. Dashboard content reframing
 
@@ -82,9 +87,11 @@ Keep domain models for modules, API health, checklist, risks. Changes:
 | UIKit Showcase at bottom of main list | Move under **Engineering demos** section |
 | Module / checklist copy that brags about architecture | Rewrite as ops status language |
 
-`ProductionReadinessSnapshot` may drop `aiFeedbackNotes` and `designTokens` if unused after UI change; update sample repository + score use case + tests accordingly. Prefer **delete unused fields** over leaving dead data.
+`ProductionReadinessSnapshot` may drop `aiFeedbackNotes` and `designTokens` if unused after UI change; update sample repository + score use case +
+tests accordingly. Prefer **delete unused fields** over leaving dead data.
 
-Accessibility IDs used by UI tests (`productionReadinessDashboard`, `productionRisksLink`, `uikitShowcaseLink`) **must remain** unless UI tests are updated in the same change.
+Accessibility IDs used by UI tests (`productionReadinessDashboard`, `productionRisksLink`, `uikitShowcaseLink`) **must remain** unless UI tests are
+updated in the same change.
 
 ### D. Items → local notes
 
@@ -99,7 +106,8 @@ struct ItemEntity: Equatable, Identifiable {
 }
 ```
 
-SwiftData `@Model Item`: add `title`, `note` with defaults (`""` / `"Untitled"`) so existing stores migrate; rely on existing `AppModelContainer` recovery patterns if schema drift is already handled for feed.
+SwiftData `@Model Item`: add `title`, `note` with defaults (`""` / `"Untitled"`) so existing stores migrate; rely on existing `AppModelContainer`
+recovery patterns if schema drift is already handled for feed.
 
 Repository / use cases:
 
@@ -147,9 +155,11 @@ Inject `ScoreProductionReadinessUseCase` into `ProductionReadinessFeatureModel` 
 
 ## Testing Strategy
 
-1. **Unit:** AsyncLoadController cancel/restore; navigation store apply without NotificationCenter; Items CRUD + update; score / snapshot after model field removal; existing Feed / networking suites remain green.
+1. **Unit:** AsyncLoadController cancel/restore; navigation store apply without NotificationCenter; Items CRUD + update; score / snapshot after model
+   field removal; existing Feed / networking suites remain green.
 2. **UI:** Keep launch, tabs, deep links, production risks, UIKit showcase paths. Adjust assertions only when labels/copy change by design.
-3. **Migration:** Unit test that SwiftData Item with new attributes reads defaults for legacy rows (or document wipe via existing recovery and assert composition still boots — match current feed schema-drift strategy).
+3. **Migration:** Unit test that SwiftData Item with new attributes reads defaults for legacy rows (or document wipe via existing recovery and assert
+   composition still boots — match current feed schema-drift strategy).
 4. **Gates:** `./bin/lint.sh` / layer boundary script; Xcode unit tests for app test target.
 
 ## Rollout Order

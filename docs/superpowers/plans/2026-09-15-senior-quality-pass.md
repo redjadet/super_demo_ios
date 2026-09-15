@@ -1,10 +1,13 @@
 # Senior Quality Pass Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement
+> this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Raise the app to hybrid senior quality — product-grade Dashboard/Items/Feed, polished engineering demos, shared load/navigation infra, no meta theater.
+**Goal:** Raise the app to hybrid senior quality — product-grade Dashboard/Items/Feed, polished engineering demos, shared load/navigation infra, no
+meta theater.
 
-**Architecture:** Thin `@MainActor` `AsyncLoadController` for cancel/restore; `@Observable` `AppNavigationStore` for Intent + URL routing; trim Production Readiness snapshot/UI to ops framing; evolve Items into local notes; extract Feed detail; rename `@main` type; tighten diagnostics.
+**Architecture:** Thin `@MainActor` `AsyncLoadController` for cancel/restore; `@Observable` `AppNavigationStore` for Intent + URL routing; trim
+Production Readiness snapshot/UI to ops framing; evolve Items into local notes; extract Feed detail; rename `@main` type; tighten diagnostics.
 
 **Tech Stack:** SwiftUI, Observation, SwiftData, App Intents, Swift Testing, XCUITest, Xcode MCP tools (`XcodeWrite`, `BuildProject`, `RunSomeTests`).
 
@@ -12,7 +15,10 @@
 
 ## Global Constraints
 
-- Preserve UI test accessibility IDs: `productionReadinessDashboard`, `productionRisksLink`, `uikitShowcaseLink`, `addItem`, `addItemEmpty`, `refreshFeed`, `feedList`, `dashboardTab`, `itemsTab`, `feedTab`.
+- Preserve UI test accessibility IDs: `productionReadinessDashboard`, `productionRisksLink`, `uikitShowcaseLink`, `addItem`, `addItemEmpty`,
+
+  `refreshFeed`, `feedList`, `dashboardTab`, `itemsTab`, `feedTab`.
+
 - Domain layer: no SwiftUI / SwiftData / UIKit / Combine imports.
 - Presentation layer: no SwiftData / URLSession imports.
 - Prefer Xcode MCP (`XcodeWrite`, `XcodeUpdate`, `BuildProject`, `RunSomeTests`) over raw `xcodebuild` when possible.
@@ -37,13 +43,14 @@
 | `Features/Feed/Presentation/FeedPostDetailView.swift` | Dedicated detail |
 | `Features/Feed/Presentation/FeedView.swift` | Use detail; a11y fix |
 | `superDemoAppApp.swift` | Rename `@main` to `SuperDemoApp` |
-| Matching `*Tests.swift` / UI tests as needed |
+| Matching `*Tests.swift` / UI tests as needed | Update as contracts change |
 
 ---
 
 ### Task 1: AsyncLoadController + feature model refactor
 
 **Files:**
+
 - Create: `superDemoApp/superDemoApp/Shared/Presentation/AsyncLoadController.swift`
 - Create: `superDemoApp/superDemoAppTests/Shared/Presentation/AsyncLoadControllerTests.swift`
 - Modify: `Features/Feed/Presentation/FeedFeatureModel.swift`
@@ -51,6 +58,7 @@
 - Modify: `Features/ProductionReadiness/Presentation/ProductionReadinessFeatureModel.swift`
 
 **Interfaces:**
+
 - Produces: `@MainActor final class AsyncLoadController` with `start`, `startAndWait`, `cancel`
 - Consumes: none (foundation only)
 
@@ -188,7 +196,8 @@ final class AsyncLoadController {
 }
 ```
 
-Refine API during implementation so Feed/Items/ProductionReadiness can call it without `Any` boxing if a cleaner typed design fits (e.g. store `stateBeforeLoad` inside each model and only use controller for `Task` lifecycle). **Preferred final shape if `Any` feels fragile:**
+Refine API during implementation so Feed/Items/ProductionReadiness can call it without `Any` boxing if a cleaner typed design fits (e.g. store
+`stateBeforeLoad` inside each model and only use controller for `Task` lifecycle). **Preferred final shape if `Any` feels fragile:**
 
 ```swift
 @MainActor
@@ -217,11 +226,13 @@ final class AsyncLoadController {
 }
 ```
 
-Keep **stateBeforeLoad / showLoading / restore** in each feature model (already there). Controller only owns Task cancel identity. Update tests to match this thinner API (cancel mid-flight; startAndWait completes). This matches YAGNI and still removes the triple `Task` boilerplate.
+Keep **stateBeforeLoad / showLoading / restore** in each feature model (already there). Controller only owns Task cancel identity. Update tests to
+match this thinner API (cancel mid-flight; startAndWait completes). This matches YAGNI and still removes the triple `Task` boilerplate.
 
 - [ ] **Step 4: Refactor three feature models to use `AsyncLoadController`**
 
-Replace `refreshTask` property with `private let loadController = AsyncLoadController()` (or owned instance). Keep `stateBeforeRefresh`, `showLoadingStateIfNeeded`, `restorePriorStateAfterCancelledRefresh` in each model.
+Replace `refreshTask` property with `private let loadController = AsyncLoadController()` (or owned instance). Keep `stateBeforeRefresh`,
+`showLoadingStateIfNeeded`, `restorePriorStateAfterCancelledRefresh` in each model.
 
 Example Feed:
 
@@ -278,6 +289,7 @@ EOF
 ### Task 2: AppNavigationStore — drop NotificationCenter Intent path
 
 **Files:**
+
 - Modify: `App/AppNavigation.swift`
 - Modify: `App/AppIntents/AppIntentNavigationRouter.swift`
 - Modify: `App/AppRootView.swift`
@@ -285,6 +297,7 @@ EOF
 - Modify: `superDemoAppTests/Shared/AppNavigationTests.swift` (if needed)
 
 **Interfaces:**
+
 - Produces: `@MainActor @Observable final class AppNavigationStore` with `state`, `handle(url:)`, `apply(_:)`, `resetForTesting()`
 - Consumes: `AppNavigationState`, `AppDeepLink`
 
@@ -368,7 +381,9 @@ Delete `Notification.Name.appIntentNavigation` and `urlUserInfoKey`.
 // REMOVE .onReceive(NotificationCenter...)
 ```
 
-Because `AppNavigationState` is a struct inside an `@Observable` class, ensure bindings work (`$navigation.state.selection`). If Observation does not project nested bindings cleanly, store `selection` / `dashboardPath` as direct properties on `AppNavigationStore` instead of nesting the struct — prefer whatever compiles and keeps tests green.
+Because `AppNavigationState` is a struct inside an `@Observable` class, ensure bindings work (`$navigation.state.selection`). If Observation does not
+project nested bindings cleanly, store `selection` / `dashboardPath` as direct properties on `AppNavigationStore` instead of nesting the struct —
+prefer whatever compiles and keeps tests green.
 
 - [ ] **Step 4: Run AppIntentNavigationTests + AppNavigationTests + BuildProject — expect PASS**
 
@@ -387,6 +402,7 @@ EOF
 ### Task 3: Safe deep-link URLs + rename `@main`
 
 **Files:**
+
 - Modify: `App/AppNavigation.swift` (`customSchemeURL`)
 - Modify: `superDemoApp/superDemoAppApp.swift`
 - Modify: `superDemoAppTests/Shared/AppNavigationTests.swift` / Intent round-trip tests (still must pass)
@@ -431,7 +447,8 @@ private static func customURL(host: String, path: String = "") -> URL {
 }
 ```
 
-Use `preconditionFailure` only for programmer error on static known hosts — never `URL(string:)!` in computed property body called at runtime from many sites without tests. Round-trip tests already cover all cases.
+Use `preconditionFailure` only for programmer error on static known hosts — never `URL(string:)!` in computed property body called at runtime from
+many sites without tests. Round-trip tests already cover all cases.
 
 - [ ] **Step 2: Rename `@main`**
 
@@ -466,6 +483,7 @@ EOF
 ### Task 4: Dashboard reframing + snapshot trim
 
 **Files:**
+
 - Modify: `Features/ProductionReadiness/Domain/ProductionReadinessModels.swift`
 - Modify: `Features/ProductionReadiness/Data/SampleProductionReadinessRepository.swift`
 - Modify: `Features/ProductionReadiness/Presentation/ProductionReadinessView.swift`
@@ -487,7 +505,8 @@ nonisolated struct ProductionReadinessSnapshot: Equatable {
 }
 ```
 
-Update `ProductionReadinessTests.scoreReflectsModulesRisksAndChecklist` initializer accordingly (drop trailing empty arrays). Score must remain `66` for same inputs.
+Update `ProductionReadinessTests.scoreReflectsModulesRisksAndChecklist` initializer accordingly (drop trailing empty arrays). Score must remain `66`
+for same inputs.
 
 - [ ] **Step 2: Sample repository ops copy**
 
@@ -497,12 +516,17 @@ Update `ProductionReadinessTests.scoreReflectsModulesRisksAndChecklist` initiali
 
 - [ ] **Step 3: View changes**
 
-- `ReadinessHero`: title `"Release health"` (not `"Senior iOS Demo"`); keep score badge; shorten summary to product ops one-liner; drop redraw-note brag or reword neutrally.
+- `ReadinessHero`: title `"Release health"` (not `"Senior iOS Demo"`); keep score badge; shorten summary to product ops one-liner; drop redraw-note
+
+  brag or reword neutrally.
+
 - Remove Design Consistency + AI Feedback Loop sections.
 - Keep Feature Modules, API Health, Release Checklist.
 - Section **"Engineering demos"** containing:
+
   - Production Risks link (`productionRisksLink`)
   - UIKit Showcase link (`uikitShowcaseLink`)
+
 - Keep `productionReadinessDashboard` on the List.
 
 Inject score use case:
@@ -534,6 +558,7 @@ EOF
 ### Task 5: Items → local notes (domain + data)
 
 **Files:**
+
 - Modify: `Features/Items/Domain/ItemEntity.swift`
 - Modify: `Features/Items/Domain/ItemRepository.swift`
 - Modify: `Features/Items/Domain/AddItemUseCase.swift`
@@ -544,6 +569,7 @@ EOF
 - Modify: `superDemoAppTests/Features/Items/SwiftDataItemRepositoryTests.swift`
 
 **Interfaces:**
+
 - Produces: `ItemEntity(id:title:note:timestamp:)`, `updateItem(_:)` on repository, `UpdateItemUseCase`
 
 - [ ] **Step 1: Failing use case / repository tests for title+note+update**
@@ -608,7 +634,8 @@ func addItem(timestamp: Date) throws -> ItemEntity // creates default title/note
 func updateItem(_ item: ItemEntity) throws
 ```
 
-Schema drift: existing recovery in `AppModelContainer` will recreate store if lightweight migration fails — acceptable per spec; document in commit body if needed.
+Schema drift: existing recovery in `AppModelContainer` will recreate store if lightweight migration fails — acceptable per spec; document in commit
+body if needed.
 
 - [ ] **Step 4: Run Items use case + SwiftData tests — expect PASS**
 
@@ -627,6 +654,7 @@ EOF
 ### Task 6: Items presentation (list + detail)
 
 **Files:**
+
 - Modify: `Features/Items/Presentation/ItemsFeatureModel.swift`
 - Modify: `Features/Items/Presentation/ItemsView.swift`
 - Create: `Features/Items/Presentation/ItemDetailView.swift`
@@ -690,6 +718,7 @@ EOF
 ### Task 7: Feed detail + a11y + diagnostics polish
 
 **Files:**
+
 - Create: `Features/Feed/Presentation/FeedPostDetailView.swift`
 - Modify: `Features/Feed/Presentation/FeedView.swift`
 - Create (optional): `Shared/Diagnostics/ErrorDiagnostics.swift`
@@ -757,6 +786,7 @@ EOF
 ### Task 8: Docs sync + full verification
 
 **Files:**
+
 - Modify if claims false: `docs/architecture.md`, `docs/portfolio.md` (remove “Senior iOS Demo” / AI feedback marketing if present)
 - Update spec status line to Implemented (optional)
 
@@ -814,7 +844,8 @@ EOF
 | G Diagnostics + score DI | Tasks 4 + 7 |
 | Testing / gates | Each task + Task 8 |
 
-No TBD placeholders. Nested bindings risk called out in Task 2 with fallback. Thinner `AsyncLoadController` preferred to avoid `Any` boxing while still deleting Task boilerplate.
+No TBD placeholders. Nested bindings risk called out in Task 2 with fallback. Thinner `AsyncLoadController` preferred to avoid `Any` boxing while
+still deleting Task boilerplate.
 
 ---
 
