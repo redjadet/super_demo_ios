@@ -122,7 +122,7 @@ final class ItemsFeatureModel {
     private func recordFailure(name: String, error: Error) {
         self.diagnostics.releaseCheckFailed(
             ReleaseDiagnosticCheck(name: name),
-            reason: String(describing: error)
+            reason: ErrorDiagnostics.reason(for: error)
         )
     }
 

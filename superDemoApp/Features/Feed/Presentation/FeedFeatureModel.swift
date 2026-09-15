@@ -86,7 +86,7 @@ final class FeedFeatureModel {
             }
             self.diagnostics.releaseCheckFailed(
                 ReleaseDiagnosticCheck(name: "feed-refresh"),
-                reason: String(describing: error)
+                reason: ErrorDiagnostics.reason(for: error)
             )
             self.state = .failed(FeedDisplayError(error))
             self.stateBeforeRefresh = nil
