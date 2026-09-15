@@ -34,7 +34,8 @@ skill text when they conflict.
 
 - Entire `Features/<Name>/` trees before the feature's Domain boundary
 - Duplicate testing essays — use [`../testing.md`](../testing.md)
-- Cursor plan files outside `docs/plans/` unless updating that plan
+- Cursor / agent plan files under `docs/plans/` or `docs/superpowers/plans/`
+  (local-only, gitignored) unless you are editing that plan on disk
 
 ## Discovery refresh
 

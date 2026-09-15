@@ -11,7 +11,8 @@ Next session should be smarter without bloating docs.
 - Treat source docs, plans, changes, tests, scripts, fixtures, and host trackers
   as compiled memory.
 - File reusable conclusions into owning source doc, `docs/changes/`,
-  `docs/plans/`, `docs/audits/`, or local `tasks/codex/todo.md`.
+  local `docs/plans/` (gitignored), `docs/audits/`, or local
+  `tasks/codex/todo.md`.
 - Preserve source-of-truth boundaries: code/tests beat summaries; source docs
   beat host templates; user corrections beat inferred rules.
 - Do not dump chat transcripts or generic summaries. Add compact, cited,
@@ -34,8 +35,9 @@ Use when target file is unknown.
   [README.md](../README.md), task docs.
 - Project context: [agent_project_context.md](../agent_project_context.md) for
   versions, caveats, platform pins, shipped features, and forbidden patterns.
-- Compiled memory: owning docs, `docs/changes/`, `docs/plans/`,
-  `docs/audits/`, local tracker. Chat is pointer only; verify drift-prone facts.
+- Compiled memory: owning docs, `docs/changes/`, local `docs/plans/`
+  (gitignored), `docs/audits/`, local tracker. Chat is pointer only; verify
+  drift-prone facts.
 - Structure: `xcodebuild -list -project superDemoApp.xcodeproj`, `rg --files`,
   and feature folders under `superDemoApp/Features/` and `superDemoApp/Shared/`.
 - Raw files: targeted reads for edit/proof; `rg` when ownership is unclear.

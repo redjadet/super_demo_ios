@@ -130,7 +130,7 @@ Tool choice and MCP/connector boundaries:
 If a verified lesson will matter again, put it in one of:
 
 - `docs/changes/`
-- `docs/plans/`
+- `docs/plans/` (local plan markdown gitignored; see `docs/plans/README.md`)
 - `docs/audits/`
 - local `tasks/codex/todo.md` (gitignored)
 - owning implementation doc under `docs/`

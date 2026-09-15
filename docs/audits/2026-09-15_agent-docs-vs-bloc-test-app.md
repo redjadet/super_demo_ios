@@ -3,8 +3,8 @@
 ## Context
 
 Compare AI-harness docs in `bloc_test_app/flutter_bloc_app` with `superDemoApp`
-and select minimal iOS-adapted patterns. Plan:
-[`../plans/2026-09-15_agent-docs-from-bloc-test-app.md`](../plans/2026-09-15_agent-docs-from-bloc-test-app.md).
+and select minimal iOS-adapted patterns. Executable plan lived locally under
+`docs/plans/` (gitignored; not published).
 
 ## Evidence
 

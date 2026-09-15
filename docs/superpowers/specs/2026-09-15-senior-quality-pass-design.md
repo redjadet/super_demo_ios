@@ -1,7 +1,8 @@
 # Senior Quality Pass — Design Spec
 
 **Date:** 2026-09-15  
-**Status:** Implemented (2026-09-15); plan at `docs/superpowers/plans/2026-09-15-senior-quality-pass.md`  
+**Status:** Implemented (2026-09-15); implementation plan was local-only under
+`docs/superpowers/plans/` (gitignored)
 **Scope:** Hybrid quality bar — product-grade primary surfaces + polished engineering showcase + shared infra cleanup
 
 ## Problem

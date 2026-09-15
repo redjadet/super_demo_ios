@@ -41,7 +41,18 @@ playground.xcworkspace
 tasks/
 **/tasks/
 
+# Agent / Superpowers scratch (regeneratable session ledgers, briefs, diffs)
+.superpowers/
+**/.superpowers/
+
+# Executable plans — local only (never commit; regenerate or keep on disk)
+docs/plans/*
+!docs/plans/README.md
+docs/superpowers/plans/*
+!docs/superpowers/plans/README.md
+
 # Bundler / Fastlane
+.bundle/
 vendor/bundle/
 fastlane/Matchfile
 fastlane/README.md
@@ -49,6 +60,11 @@ fastlane/report.xml
 fastlane/Preview.html
 fastlane/screenshots/
 fastlane/test_output/
+
+# Regeneratable Xcode / test artifacts
+*.xcresult
+TestResults/
+*.xcactivitylog
 
 # Project skills (restored from skills-lock.json via npx skills experimental_install)
 .agents/

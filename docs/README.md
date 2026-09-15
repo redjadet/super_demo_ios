@@ -72,6 +72,6 @@ Source-of-truth docs for `superDemoApp`.
 
 ## History
 
-- Plans: [`plans/README.md`](plans/README.md)
+- Plans (local-only): [`plans/README.md`](plans/README.md)
 - Changes: [`changes/README.md`](changes/README.md)
 - Audits: [`audits/README.md`](audits/README.md)
