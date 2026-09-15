@@ -6,6 +6,10 @@
 import Foundation
 import SwiftData
 
+enum ItemRepositoryError: Error {
+    case itemNotFound(UUID)
+}
+
 @MainActor
 final class SwiftDataItemRepository: ItemRepository {
     private let context: ModelContext
@@ -24,6 +28,17 @@ final class SwiftDataItemRepository: ItemRepository {
         self.context.insert(record)
         try self.context.save()
         return record.toEntity()
+    }
+
+    func updateItem(_ item: ItemEntity) throws {
+        let itemID = item.id
+        let descriptor = FetchDescriptor<Item>(predicate: #Predicate { $0.id == itemID })
+        guard let record = try self.context.fetch(descriptor).first else {
+            throw ItemRepositoryError.itemNotFound(item.id)
+        }
+        record.title = item.title
+        record.note = item.note
+        try self.context.save()
     }
 
     func deleteItems(ids: [UUID]) throws {

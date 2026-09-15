@@ -27,6 +27,8 @@ enum ReviewerDemoFixtures {
                 0x90,
                 0x71
             )),
+            title: "Welcome note",
+            note: "Tap to edit this sample.",
             timestamp: Date(timeIntervalSince1970: 1_779_177_600)
         ),
         ItemEntity(
@@ -48,6 +50,8 @@ enum ReviewerDemoFixtures {
                 0x09,
                 0x62
             )),
+            title: "Second sample",
+            note: "",
             timestamp: Date(timeIntervalSince1970: 1_779_264_000)
         ),
     ]
@@ -60,7 +64,14 @@ enum ReviewerDemoFixtures {
         }
 
         for sample in self.sampleItems {
-            context.insert(Item(timestamp: sample.timestamp, id: sample.id))
+            context.insert(
+                Item(
+                    timestamp: sample.timestamp,
+                    title: sample.title,
+                    note: sample.note,
+                    id: sample.id
+                )
+            )
         }
         try context.save()
     }

@@ -121,7 +121,7 @@ struct ItemsView: View {
 @MainActor
 private enum ItemsPreviewFactory {
     static let sampleItems = [
-        ItemEntity(id: UUID(), timestamp: Date()),
+        ItemEntity(id: UUID(), title: "Sample note", note: "", timestamp: Date()),
     ]
 
     static func view(seedItems: [ItemEntity]) -> some View {
@@ -148,9 +148,16 @@ private final class PreviewItemRepository: ItemRepository {
     }
 
     func addItem(timestamp: Date) throws -> ItemEntity {
-        let item = ItemEntity(id: UUID(), timestamp: timestamp)
+        let item = ItemEntity(id: UUID(), title: "New note", note: "", timestamp: timestamp)
         self.items.append(item)
         return item
+    }
+
+    func updateItem(_ item: ItemEntity) throws {
+        guard let index = self.items.firstIndex(where: { $0.id == item.id }) else {
+            return
+        }
+        self.items[index] = item
     }
 
     func deleteItems(ids: [UUID]) throws {

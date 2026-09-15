@@ -20,9 +20,16 @@ private final class ItemsFeatureModelRepositorySpy: ItemRepository {
     }
 
     func addItem(timestamp: Date) throws -> ItemEntity {
-        let item = ItemEntity(id: UUID(), timestamp: timestamp)
+        let item = ItemEntity(id: UUID(), title: "New note", note: "", timestamp: timestamp)
         self.storedItems.append(item)
         return item
+    }
+
+    func updateItem(_ item: ItemEntity) throws {
+        guard let index = self.storedItems.firstIndex(where: { $0.id == item.id }) else {
+            return
+        }
+        self.storedItems[index] = item
     }
 
     func deleteItems(ids: [UUID]) throws {
@@ -57,7 +64,7 @@ struct ItemsFeatureModelTests {
     @MainActor
     func refreshKeepsExistingContentVisible() async {
         let repository = ItemsFeatureModelRepositorySpy()
-        repository.storedItems = [ItemEntity(id: UUID(), timestamp: Date())]
+        repository.storedItems = [ItemEntity(id: UUID(), title: "Note", note: "", timestamp: Date())]
         let model = ItemsFeatureModel(
             loadItems: LoadItemsUseCase(repository: repository),
             addItem: AddItemUseCase(repository: repository),
@@ -65,7 +72,7 @@ struct ItemsFeatureModelTests {
         )
         await model.refreshAndWait()
 
-        repository.storedItems.append(ItemEntity(id: UUID(), timestamp: Date()))
+        repository.storedItems.append(ItemEntity(id: UUID(), title: "Note", note: "", timestamp: Date()))
         model.refresh()
         await Task.yield()
 
@@ -99,7 +106,7 @@ struct ItemsFeatureModelTests {
     @MainActor
     func refreshAndWaitShowsContent() async {
         let repository = ItemsFeatureModelRepositorySpy()
-        repository.storedItems = [ItemEntity(id: UUID(), timestamp: Date())]
+        repository.storedItems = [ItemEntity(id: UUID(), title: "Note", note: "", timestamp: Date())]
         let model = ItemsFeatureModel(
             loadItems: LoadItemsUseCase(repository: repository),
             addItem: AddItemUseCase(repository: repository),
