@@ -31,7 +31,7 @@ Machine-readable project facts for agents.
 - `Features/ProductionReadiness/` — dashboard, shared networking, UIKit showcase.
 - Deep links: `superdemo://dashboard|/risks|/feed|/items` via `AppNavigation`.
 - Diagnostics: `ReleaseDiagnostics` + `OSLogCrashMonitor`; ModelContainer
-  in-memory fallback on store failure.
+  recovery on store failure (delete + recreate disk store, then in-memory).
 - Reviewer path: [`portfolio.md`](portfolio.md).
 
 ## Bash scripts (`set -u`)

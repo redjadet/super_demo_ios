@@ -1,17 +1,19 @@
 # AGENTS — superDemoApp
 
-**Map only** — route to `docs/` for policy, style, and feature detail. Do not add
-checklists, long bullets, or implementation notes here.
+**Map only** — route to `docs/`. No checklists or learned sections here.
+Target **≤ 70 lines**. Prefs/facts:
+[`docs/agent_preferences.md`](docs/agent_preferences.md),
+[`docs/agent_project_context.md`](docs/agent_project_context.md).
 
-**Only `AGENTS.md` in this repo.** For Cursor, Codex, and other agents.
-Target **~70 lines**; durable prefs and workspace facts belong in
-[`docs/agent_preferences.md`](docs/agent_preferences.md) and
-[`docs/agent_project_context.md`](docs/agent_project_context.md), not here.
+## Start
 
-## Authority
+1. Follow [`docs/ai/context_loading.md`](docs/ai/context_loading.md).
+2. Non-trivial: [`docs/ai/ai_failure_risks.md`](docs/ai/ai_failure_risks.md) +
+   [`docs/agent_kb/agent_safety_contracts.md`](docs/agent_kb/agent_safety_contracts.md).
+3. Workflow: [`docs/agent_knowledge_base.md`](docs/agent_knowledge_base.md).
 
-`AGENTS.md` → `docs/` → source comments when code owns nuance.
-Done means plan, execute, verify, and report proof.
+Authority: `AGENTS.md` → `docs/` → source comments. Done = plan, execute, verify,
+report proof.
 
 ## Workspace
 
@@ -21,45 +23,26 @@ Done means plan, execute, verify, and report proof.
 | Parent `super_demo_ios/` | Optional Cursor workspace root |
 | `superDemoApp/superDemoApp/` | App Swift sources |
 
-Paths, targets, CI pins, repo URL:
-[`docs/agent_project_context.md`](docs/agent_project_context.md).
-Cursor rules, MCP, team skills:
-[`docs/agent_host_notes.md`](docs/agent_host_notes.md),
-[`tool/cursor-template/README.md`](tool/cursor-template/README.md),
+Facts / CI: [`docs/agent_project_context.md`](docs/agent_project_context.md).
+Host / MCP / skills: [`docs/agent_host_notes.md`](docs/agent_host_notes.md),
 [`skills-lock.json`](skills-lock.json).
 
-## Read next (order)
-
-1. [`docs/agent_knowledge_base.md`](docs/agent_knowledge_base.md) — loop, finish gate
-2. [`docs/agent_project_context.md`](docs/agent_project_context.md) — facts, layout
-3. [`docs/apple-development-practices.md`](docs/apple-development-practices.md)
-4. UI: [`DESIGN.md`](DESIGN.md), [`docs/design_system.md`](docs/design_system.md),
-   [`docs/universal-apple-platforms.md`](docs/universal-apple-platforms.md)
-5. `Features/`: [`docs/architecture.md`](docs/architecture.md),
-   [`docs/layers.md`](docs/layers.md)
-6. [`docs/agent_swift_guards.md`](docs/agent_swift_guards.md) — indent, lint, concurrency pitfalls
-7. [`docs/agents_quick_reference.md`](docs/agents_quick_reference.md) — commands, proof
-8. [`docs/ai_code_review_protocol.md`](docs/ai_code_review_protocol.md)
-9. Validation routing: [`docs/engineering/validation_routing_fast_vs_full.md`](docs/engineering/validation_routing_fast_vs_full.md)
-10. Full index: [`docs/README.md`](docs/README.md)
-
-## Route by change type
+## Task map
 
 | Change | Start here |
 | ------ | ------------ |
-| Any Swift edit | [`docs/agent_swift_guards.md`](docs/agent_swift_guards.md), [`docs/code-style.md`](docs/code-style.md); `./bin/verify-swift.sh` |
-| New / layered feature | [`docs/feature-template.md`](docs/feature-template.md), [`docs/module-structure.md`](docs/module-structure.md) |
-| SwiftUI / navigation / light–dark | [`docs/design_system.md`](docs/design_system.md); `Shared/Presentation/AdaptiveNavigationShell.swift` |
-| Fast feedback / device risk | [`docs/development-feedback-loop.md`](docs/development-feedback-loop.md) |
-| Domain / Data / persistence | [`docs/offline-first.md`](docs/offline-first.md), [`docs/dependency-injection.md`](docs/dependency-injection.md) |
+| Any Swift | [`docs/agent_swift_guards.md`](docs/agent_swift_guards.md); `./bin/verify-swift.sh` |
+| Feature / layers | [`docs/feature-template.md`](docs/feature-template.md), [`docs/layers.md`](docs/layers.md) |
+| SwiftUI / light–dark | [`DESIGN.md`](DESIGN.md), [`docs/design_system.md`](docs/design_system.md) |
+| Domain / Data | [`docs/offline-first.md`](docs/offline-first.md), [`docs/dependency-injection.md`](docs/dependency-injection.md) |
 | Tests | [`docs/testing.md`](docs/testing.md) |
-| Commit / PR | [`docs/commit-and-pr-guidelines.md`](docs/commit-and-pr-guidelines.md) |
-| Proof before merge | [`docs/agents_quick_reference.md`](docs/agents_quick_reference.md); `./bin/ci.sh` |
+| Proof / merge | [`docs/agents_quick_reference.md`](docs/agents_quick_reference.md); `./bin/ci.sh` |
 
-Non-negotiables: [`docs/agent_baseline.md`](docs/agent_baseline.md).
-Standing user prefs: [`docs/agent_preferences.md`](docs/agent_preferences.md).
-Shipped-feature tour: [`docs/portfolio.md`](docs/portfolio.md).
+Baseline: [`docs/agent_baseline.md`](docs/agent_baseline.md). Portfolio:
+[`docs/portfolio.md`](docs/portfolio.md). Index: [`docs/README.md`](docs/README.md).
 
-Continual-learning and chat memory: update [`docs/agent_preferences.md`](docs/agent_preferences.md)
-and [`docs/agent_project_context.md`](docs/agent_project_context.md) only—never
-add policy bullets or learned sections here.
+## Finish
+
+1. Validation chooser in [`docs/agents_quick_reference.md`](docs/agents_quick_reference.md).
+2. Review: [`docs/ai_code_review_protocol.md`](docs/ai_code_review_protocol.md).
+3. Report via finish gate in knowledge base / safety contracts.

@@ -43,18 +43,17 @@ Repo guardrails:
 
 ## Progressive Disclosure
 
+Canonical ladder: [`ai/context_loading.md`](ai/context_loading.md).
+
+Short path for most work:
+
 1. [`../AGENTS.md`](../AGENTS.md)
-2. This file
-3. [`apple-development-practices.md`](apple-development-practices.md)
-4. [`../DESIGN.md`](../DESIGN.md), [`design_system.md`](design_system.md), and
-   [`universal-apple-platforms.md`](universal-apple-platforms.md) when touching UI
-5. [`architecture.md`](architecture.md) and [`layers.md`](layers.md) when touching `Features/`
-6. [`agent_project_context.md`](agent_project_context.md)
-7. [`ai_code_review_protocol.md`](ai_code_review_protocol.md)
-8. [`development-feedback-loop.md`](development-feedback-loop.md)
-9. [`agents_quick_reference.md`](agents_quick_reference.md)
-10. task docs from [`README.md`](README.md)
-11. targeted source and tests
+2. This file (workflow / finish gate)
+3. [`ai/ai_failure_risks.md`](ai/ai_failure_risks.md) +
+   [`agent_kb/agent_safety_contracts.md`](agent_kb/agent_safety_contracts.md) for
+   non-trivial tasks
+4. Task-matched owners from the context ladder
+5. Targeted source and tests
 
 ## Agent loop
 
@@ -104,14 +103,8 @@ Check every non-trivial iOS change:
 
 ## Context Ladder
 
-For feature/refactor/debug:
-
-1. `git status --short`
-2. `xcodebuild -list -project superDemoApp.xcodeproj`
-3. owning docs in `docs/`
-4. `rg` for current symbols and patterns
-5. targeted source/test reads
-6. focused build/test command
+Use [`ai/context_loading.md`](ai/context_loading.md). Discovery refresh there
+includes `git status`, `xcodebuild -list`, owning docs, `rg`, then focused proof.
 
 Unknown file or stale-context recovery:
 [Memory And File Discovery](agent_kb/memory_and_context_ladder.md).

@@ -12,6 +12,12 @@ the YAML and prose.
 DesignMD validation: `./tool/check_design_md.sh` (Node `npx`; included in `./bin/checklist`
 and `./bin/checklist-fast`; skips if `npx` missing). Not in `./bin/ci.sh` (merge gate).
 
+YAML color anchors in [`../DESIGN.md`](../DESIGN.md) must pass DesignMD WCAG AA
+(4.5:1) for declared component pairings. Prefer system-adjacent hues that clear
+the gate (`#0066CC` / `#C62828` / `#1F7A37`) over raw systemBlue/systemRed/systemGreen
+hex. Runtime UI still uses semantic SwiftUI / asset colors, not those YAML
+literals.
+
 ## Locations
 
 | Area | Path | Purpose |
