@@ -78,7 +78,8 @@ HTTP — no live network on default CI.
 - **Decode** — Bad JSON → failure, not a fake-empty list.
 - **`[]` response** — Treat as **empty** success.
 - **Tab / disappear** — **`cancelRefresh()`** restores prior state; drops orphaned work.
-- **SwiftData store failure** — `AppModelContainer` falls back to in-memory + diagnostics.
+- **SwiftData store failure** — `AppModelContainer` deletes + recreates the disk
+  store when possible; otherwise in-memory + diagnostics.
 
 ## Proof commands
 

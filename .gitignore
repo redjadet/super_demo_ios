@@ -52,3 +52,4 @@ fastlane/test_output/
 
 # Project skills (restored from skills-lock.json via npx skills experimental_install)
 .agents/
+.context/

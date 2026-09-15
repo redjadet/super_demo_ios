@@ -31,8 +31,11 @@ record the portfolio improvement order that followed.
   - P6 App Intents (Open Feed / Items / Production Risks)
 - Follow-up: MainActor `nonisolated` constants + layer-check `rg`/`grep` fallback
   (`docs/changes/2026-09-15_mainactor-isolation-layer-check.md`).
+- Follow-up: SwiftData store wipe + recreate before in-memory
+  (`c6e38cf`; `docs/changes/2026-09-15_swiftdata-store-recovery.md`).
 - Still deferred (intentional): vendor crash SDK, production auth beyond demo
-  Keychain flag, App Store / TestFlight release packaging.
+  Keychain flag, App Store / TestFlight release packaging,
+  formal `SchemaMigrationPlan`.
 
 ## Risk
 

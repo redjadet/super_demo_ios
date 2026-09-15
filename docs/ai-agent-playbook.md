@@ -1,46 +1,55 @@
 # AI Agent Playbook
 
+Thin router. Ladder: [`ai/context_loading.md`](ai/context_loading.md). Pre-Flight:
+[`ai/ai_failure_risks.md`](ai/ai_failure_risks.md) +
+[`agent_kb/agent_safety_contracts.md`](agent_kb/agent_safety_contracts.md).
+
 ## Start
 
-1. Read [`../AGENTS.md`](../AGENTS.md) and [`agent_swift_guards.md`](agent_swift_guards.md).
-2. Check `git status --short`.
-3. Read [`apple-development-practices.md`](apple-development-practices.md).
-4. Read [`development-feedback-loop.md`](development-feedback-loop.md) for UI,
-   validation, device-only, or release-sensitive work.
-5. Read task-relevant docs.
-6. Inspect current source with `rg`.
-7. Define validation before editing (chooser in [`agents_quick_reference.md`](agents_quick_reference.md)).
+1. [`../AGENTS.md`](../AGENTS.md) → context ladder.
+2. `git status --short`.
+3. [`agent_swift_guards.md`](agent_swift_guards.md) before Swift edits.
+4. [`apple-development-practices.md`](apple-development-practices.md) for API defaults.
+5. [`development-feedback-loop.md`](development-feedback-loop.md) for UI / device /
+   release-sensitive work.
+6. Define validation (`agents_quick_reference.md`) before editing.
 
 ## During Work
 
-- Patch smallest coherent slice.
-- Keep architecture boundaries visible.
-- Prefer compileable checkpoints.
-- Use app-visible proof for UI changes when possible.
-- Add mock states, previews, tests, or scripts when manual recreation would slow the loop.
-- Do not overwrite user changes.
-- Do not invent package APIs; verify in project or official docs.
-- Prefer Apple-native APIs; document tradeoff before adding dependencies.
+- Smallest coherent slice; compileable checkpoints.
+- Architecture boundaries visible (`layers.md`).
+- App-visible proof for UI when possible; previews/mocks for slow manual paths.
+- Do not overwrite user changes; do not invent package APIs.
+- Prefer Apple-native APIs; document tradeoff before dependencies.
 
 ## iOS-Specific Checks
 
-- SwiftUI body has no heavy side effects.
-- UI is universal: compact iPhone, iPad split/regular, and Mac window sizes.
-- Preview fixtures cover important loading, empty, populated, error, and dark states.
-- Feature models are `@Observable` and `@MainActor` when driving UI; no `Type()`
-  default args on those inits.
-- Swift edited with `./bin/format.sh` before `./bin/lint.sh`.
-- Async tasks handle cancellation and stale results.
-- SwiftData context stays out of Domain.
-- Views have accessibility labels/traits for custom controls.
-- Dynamic Type and dark mode do not break layout.
-- App Intents expose only stable, user-meaningful actions/entities.
+- SwiftUI `body`: no heavy side effects.
+- Universal UI: iPhone / iPad / Mac (`universal-apple-platforms.md`).
+- Previews: loading, empty, populated, error, dark.
+- Feature models `@Observable` + `@MainActor`; no `Type()` default args on those inits.
+- `./bin/format.sh` before `./bin/lint.sh` after Swift edits.
+- Async: cancellation + stale-result handling.
+- SwiftData out of Domain.
+- Accessibility labels/traits for custom controls; Dynamic Type + light/dark.
+- App Intents: stable user-meaningful actions only.
 
 ## Report
 
-Final response includes:
+Changed files; exact proof command + result; blocker; residual risk if partial.
 
-- changed files,
-- validation command and result,
-- blocker if any,
-- residual risk if validation was partial.
+## Rule retention
+
+| Rule | Disposition |
+| --- | --- |
+| Start ladder / git status | Keep (above) + `ai/context_loading.md` |
+| Smallest slice / no overwrite / no invented APIs | Keep |
+| Apple-native preference | Keep |
+| MainActor / no `Type()` defaults | Keep |
+| Cancellation / stale results | Keep |
+| Previews + light/dark | Keep |
+| Accessibility / Dynamic Type | Keep |
+| SwiftData out of Domain | Keep |
+| Universal layout | Keep → also `RISK-UNIVERSAL-UI` |
+| Report shape | Keep → SAFETY-REPORT / finish gate |
+| Long progressive list formerly in KB | Moved → `ai/context_loading.md` |

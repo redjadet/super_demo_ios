@@ -4,6 +4,10 @@ Record durable implementation notes after meaningful changes.
 
 ## Entries
 
+- [`2026-09-15_agent-docs-bloc-patterns.md`](2026-09-15_agent-docs-bloc-patterns.md)
+  — Minimal `docs/ai/` routing + safety contracts from bloc_test_app patterns.
+- [`2026-09-15_swiftdata-store-recovery.md`](2026-09-15_swiftdata-store-recovery.md)
+  — ModelContainer wipe + recreate before in-memory fallback.
 - [`2026-09-15_mainactor-isolation-layer-check.md`](2026-09-15_mainactor-isolation-layer-check.md)
   — MainActor `nonisolated` constants + layer-check `rg`/`grep` fallback.
 - [`2026-09-15_app-intents-open-destinations.md`](2026-09-15_app-intents-open-destinations.md)

@@ -5,15 +5,15 @@ description: >-
   Universal SwiftUI demo with clean architecture, native Apple controls, and
   agent-readable design memory for iOS, iPadOS, and macOS.
 colors:
-  primary: "#007AFF"
+  primary: "#0066CC"
   on-primary: "#FFFFFF"
   surface: "#FFFFFF"
   on-surface: "#000000"
   surface-container-low: "#F2F2F7"
   surface-container-highest: "#E5E5EA"
   outline-variant: "#C6C6C8"
-  error: "#FF3B30"
-  success: "#34C759"
+  error: "#C62828"
+  success: "#1F7A37"
 typography:
   large-title:
     fontFamily: System
@@ -118,16 +118,20 @@ brief diverge, fix the implementation first, then update this file and
 ## Colors
 
 YAML hex values are **light-appearance reference anchors** for agents and DesignMD lint.
+They stay near Apple system hues but are darkened enough for **WCAG AA 4.5:1** on
+the component pairings in this file (DesignMD contrast gate). Runtime still prefers
+semantic SwiftUI / system colors — see [`docs/design_system.md`](docs/design_system.md).
 **Every screen ships light and dark from the first commit** — no “add dark later” pass.
 
 In SwiftUI always prefer **semantic APIs**: `Color.accentColor`,
 `foregroundStyle(.primary)`, `Color(.systemBackground)`, and asset catalog **Any,
 Dark** pairs — not YAML literals, `Color.white` / `Color.black`, or fixed hex in views.
 
-- **Primary (#007AFF):** Maps to accent / prominent actions. Use
+- **Primary (#0066CC):** Maps to accent / prominent actions. Use
   `.buttonStyle(.borderedProminent)` or `.tint` — one main action per region.
 - **Surface / containers:** `List`, `Form`, and system backgrounds adapt to `colorScheme`.
-- **Error / success:** Failure and positive status only — not decoration.
+- **Error (#C62828) / success (#1F7A37):** Failure and positive status only — not
+  decoration. Tuned for white-on-fill and error text on `surface-container-low`.
 - **Outline variant:** Dividers and subtle borders via `Divider()` or list separators.
 
 Named colors belong in **Assets.xcassets** with light/dark variants when a role repeats

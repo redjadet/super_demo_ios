@@ -34,6 +34,10 @@ required_files=(
   docs/agent_host_notes.md
   docs/agents_quick_reference.md
   docs/ai_code_review_protocol.md
+  docs/ai/README.md
+  docs/ai/context_loading.md
+  docs/ai/ai_failure_risks.md
+  docs/agent_kb/agent_safety_contracts.md
   docs/apple-development-practices.md
   docs/design_system.md
   docs/architecture.md
@@ -51,6 +55,34 @@ required_files=(
 for path in "${required_files[@]}"; do
   require_file "$path"
 done
+
+section "AGENTS map constraints"
+agents_lines="$(wc -l < AGENTS.md | tr -d '[:space:]')"
+if ((agents_lines > 70)); then
+  fail "AGENTS.md has ${agents_lines} lines; keep map at or below 70"
+fi
+rg -q 'docs/ai/context_loading.md' AGENTS.md \
+  || fail "AGENTS.md must reference docs/ai/context_loading.md"
+
+section "Agent doc cross-links"
+require_contains() {
+  local path="$1"
+  local needle="$2"
+  if [[ ! -f "$path" ]]; then
+    fail "Cannot scan missing file for cross-link: $path"
+    return
+  fi
+  rg -qF -- "$needle" "$path" || fail "$path must reference: $needle"
+}
+
+require_contains docs/README.md "ai/README.md"
+require_contains docs/agent_knowledge_base.md "ai/context_loading.md"
+require_contains docs/agent_knowledge_base.md "agent_kb/agent_safety_contracts.md"
+require_contains docs/ai/README.md "context_loading.md"
+require_contains docs/ai/README.md "ai_failure_risks.md"
+require_contains docs/ai/README.md "agent_safety_contracts.md"
+require_contains docs/ai/context_loading.md "agent_safety_contracts.md"
+require_contains docs/ai/ai_failure_risks.md "agent_safety_contracts.md"
 
 section "Universal Apple platform settings"
 project_file="superDemoApp.xcodeproj/project.pbxproj"
