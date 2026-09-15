@@ -9,10 +9,10 @@ navigation models — reuse typed `AppDeepLink` routing.
 
 - `OpenFeedIntent`, `OpenItemsIntent`, `OpenProductionRisksIntent` (`openAppWhenRun`).
 - `SuperDemoAppShortcuts` phrases (each includes `\(.applicationName)`).
-- `AppIntentNavigationRouter` posts custom-scheme URLs; `AppRootView` applies them.
+- `AppIntentNavigationRouter` calls `AppNavigationStore.current.apply(_:)`.
 - `AppDeepLink.customSchemeURL` + `AppNavigationState.apply(_:)`.
 
 ## Proof
 
-- Unit tests for URL round-trip, apply routing, and intent notification handoff.
+- Unit tests for URL round-trip, apply routing, and intent → store handoff.
 - Build + lint gates.

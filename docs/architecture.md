@@ -64,7 +64,7 @@ Data repository + SwiftData model, Presentation `@Observable` feature model + Sw
 
 ## Production Readiness Dashboard
 
-`Features/ProductionReadiness/` is the senior-level reference slice:
+`Features/ProductionReadiness/` is the release-health reference slice:
 
 - Domain owns dashboard entities, scoring rules, repository protocol, and display errors.
 - Data owns deterministic sample data plus the remote API-health adapter backed by

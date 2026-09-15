@@ -23,7 +23,7 @@ literals.
 | Area | Path | Purpose |
 | ---- | ---- | ------- |
 | Visual brief | [`../DESIGN.md`](../DESIGN.md) | Agent-readable tokens + product UI rules |
-| App entry | `superDemoApp/superDemoAppApp.swift` | `@main`, `WindowGroup`, model container |
+| App entry | `superDemoApp/superDemoAppApp.swift` | `@main struct SuperDemoApp`, `WindowGroup`, model container |
 | Composition | `superDemoApp/App/*Composition.swift` | Wire repositories, use cases, root views |
 | Feature UI | `superDemoApp/Features/<Name>/Presentation/` | Views, feature models, navigation shells |
 | Shared UI | `Shared/Presentation/` | `AdaptiveNavigationShell`, `featureScreenFrame()` |
@@ -98,10 +98,9 @@ Full matrix and finish questions: [`universal-apple-platforms.md`](universal-app
 
 ## Cross-Platform Consistency
 
-The Production Readiness Dashboard includes a Design Consistency section that shows
-spacing, typography, color, radius, and component-state tokens. Flutter's shared UI layer
-is strong for visual consistency; native iOS teams can reduce drift with disciplined
-tokens, reusable components, previews, and review checklists.
+Release-health dashboard and feature screens share spacing, typography, color, radius,
+and component-state tokens via [`../DESIGN.md`](../DESIGN.md) and the token map below.
+Reuse shared Presentation helpers and previews to keep iPhone, iPad, and Mac aligned.
 
 ## Token map (YAML → SwiftUI)
 
