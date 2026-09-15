@@ -84,9 +84,15 @@ struct ItemsView: View {
         List {
             ForEach(items) { item in
                 NavigationLink {
-                    Text("Item at \(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))")
+                    ItemDetailView(item: item, model: self.model)
                 } label: {
-                    Text(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(item.title)
+                            .font(.headline)
+                        Text(item.timestamp, format: .dateTime.month().day().hour().minute())
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
                 }
             }
             .onDelete { offsets in
@@ -129,6 +135,7 @@ private enum ItemsPreviewFactory {
         let model = ItemsFeatureModel(
             loadItems: LoadItemsUseCase(repository: repository),
             addItem: AddItemUseCase(repository: repository),
+            updateItem: UpdateItemUseCase(repository: repository),
             deleteItems: DeleteItemsUseCase(repository: repository)
         )
         return ItemsView(model: model)

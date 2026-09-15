@@ -68,6 +68,7 @@ struct ItemsFeatureModelTests {
         let model = ItemsFeatureModel(
             loadItems: LoadItemsUseCase(repository: repository),
             addItem: AddItemUseCase(repository: repository),
+            updateItem: UpdateItemUseCase(repository: repository),
             deleteItems: DeleteItemsUseCase(repository: repository)
         )
         await model.refreshAndWait()
@@ -90,6 +91,7 @@ struct ItemsFeatureModelTests {
         let model = ItemsFeatureModel(
             loadItems: LoadItemsUseCase(repository: repository),
             addItem: AddItemUseCase(repository: repository),
+            updateItem: UpdateItemUseCase(repository: repository),
             deleteItems: DeleteItemsUseCase(repository: repository)
         )
 
@@ -110,6 +112,7 @@ struct ItemsFeatureModelTests {
         let model = ItemsFeatureModel(
             loadItems: LoadItemsUseCase(repository: repository),
             addItem: AddItemUseCase(repository: repository),
+            updateItem: UpdateItemUseCase(repository: repository),
             deleteItems: DeleteItemsUseCase(repository: repository)
         )
 
@@ -124,6 +127,36 @@ struct ItemsFeatureModelTests {
 
     @Test
     @MainActor
+    func updateItemNowPersistsChanges() async {
+        let repository = ItemsFeatureModelRepositorySpy()
+        let itemID = UUID()
+        repository.storedItems = [
+            ItemEntity(id: itemID, title: "Note", note: "Draft", timestamp: Date()),
+        ]
+        let model = ItemsFeatureModel(
+            loadItems: LoadItemsUseCase(repository: repository),
+            addItem: AddItemUseCase(repository: repository),
+            updateItem: UpdateItemUseCase(repository: repository),
+            deleteItems: DeleteItemsUseCase(repository: repository)
+        )
+
+        await model.refreshAndWait()
+
+        var updated = repository.storedItems[0]
+        updated.title = "Ship checklist"
+        updated.note = "Verify deep links"
+        await model.updateItemNow(updated)
+
+        if case let .content(items) = model.state {
+            #expect(items.first?.title == "Ship checklist")
+            #expect(items.first?.note == "Verify deep links")
+        } else {
+            Issue.record("Expected content state after update")
+        }
+    }
+
+    @Test
+    @MainActor
     func refreshFailureRecordsDiagnostic() async {
         let repository = ItemsFeatureModelRepositorySpy()
         repository.fetchError = NSError(domain: "test", code: 1)
@@ -131,6 +164,7 @@ struct ItemsFeatureModelTests {
         let model = ItemsFeatureModel(
             loadItems: LoadItemsUseCase(repository: repository),
             addItem: AddItemUseCase(repository: repository),
+            updateItem: UpdateItemUseCase(repository: repository),
             deleteItems: DeleteItemsUseCase(repository: repository),
             diagnostics: diagnostics
         )

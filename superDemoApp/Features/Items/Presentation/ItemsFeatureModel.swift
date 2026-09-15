@@ -18,6 +18,7 @@ enum ItemsState: Equatable {
 final class ItemsFeatureModel {
     private let loadItems: LoadItemsUseCase
     private let addItem: AddItemUseCase
+    private let updateItem: UpdateItemUseCase
     private let deleteItems: DeleteItemsUseCase
     private let diagnostics: ReleaseDiagnosticsReporting
 
@@ -28,11 +29,13 @@ final class ItemsFeatureModel {
     init(
         loadItems: LoadItemsUseCase,
         addItem: AddItemUseCase,
+        updateItem: UpdateItemUseCase,
         deleteItems: DeleteItemsUseCase,
         diagnostics: ReleaseDiagnosticsReporting = ReleaseDiagnostics.shared
     ) {
         self.loadItems = loadItems
         self.addItem = addItem
+        self.updateItem = updateItem
         self.deleteItems = deleteItems
         self.diagnostics = diagnostics
     }
@@ -66,6 +69,16 @@ final class ItemsFeatureModel {
             await self.refreshAndWait()
         } catch {
             self.recordFailure(name: "items-add", error: error)
+            self.state = .failed(DisplayError(error))
+        }
+    }
+
+    func updateItemNow(_ item: ItemEntity) async {
+        do {
+            try self.updateItem(item)
+            await self.refreshAndWait()
+        } catch {
+            self.recordFailure(name: "items-update", error: error)
             self.state = .failed(DisplayError(error))
         }
     }
