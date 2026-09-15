@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import Observation
 
 nonisolated enum AppTab: Hashable {
     case dashboard
@@ -134,5 +135,30 @@ nonisolated struct AppNavigationState {
             self.selection = .feed
             self.dashboardPath = []
         }
+    }
+}
+
+@MainActor
+@Observable
+final class AppNavigationStore {
+    static let shared = AppNavigationStore()
+    nonisolated(unsafe) static var testingOverride: AppNavigationStore?
+
+    static var current: AppNavigationStore {
+        testingOverride ?? shared
+    }
+
+    var state = AppNavigationState()
+
+    func handle(url: URL) {
+        self.state.handle(url: url)
+    }
+
+    func apply(_ deepLink: AppDeepLink) {
+        self.state.apply(deepLink)
+    }
+
+    func resetForTesting() {
+        self.state = AppNavigationState()
     }
 }

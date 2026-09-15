@@ -5,22 +5,24 @@
 
 import Foundation
 
-extension Notification.Name {
-    /// Posted when an App Intent asks the UI to open a typed destination.
-    nonisolated static let appIntentNavigation = Notification.Name("com.ilkersevim.superDemoApp.appIntentNavigation")
-}
-
-/// Single handoff path from App Intents into `AppNavigationState`.
+/// Single handoff path from App Intents into `AppNavigationStore`.
 enum AppIntentNavigationRouter {
-    /// Notification userInfo key for the destination URL (safe from any queue).
-    nonisolated static let urlUserInfoKey = "url"
+    nonisolated static func open(_ deepLink: AppDeepLink) {
+        if Thread.isMainThread {
+            MainActor.assumeIsolated {
+                Self.applyOnMain(deepLink)
+            }
+        } else {
+            DispatchQueue.main.sync {
+                MainActor.assumeIsolated {
+                    Self.applyOnMain(deepLink)
+                }
+            }
+        }
+    }
 
     @MainActor
-    static func open(_ deepLink: AppDeepLink) {
-        NotificationCenter.default.post(
-            name: .appIntentNavigation,
-            object: nil,
-            userInfo: [urlUserInfoKey: deepLink.customSchemeURL]
-        )
+    private static func applyOnMain(_ deepLink: AppDeepLink) {
+        AppNavigationStore.current.apply(deepLink)
     }
 }

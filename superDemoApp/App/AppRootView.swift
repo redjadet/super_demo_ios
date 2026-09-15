@@ -6,12 +6,14 @@
 import SwiftUI
 
 struct AppRootView: View {
-    @State private var navigation = AppNavigationState()
+    @State private var navigation = AppNavigationStore.shared
 
     var body: some View {
-        TabView(selection: self.$navigation.selection) {
+        @Bindable var navigation = self.navigation
+
+        TabView(selection: $navigation.state.selection) {
             Tab("Dashboard", systemImage: "checklist.checked", value: AppTab.dashboard) {
-                ProductionReadinessRootView(path: self.$navigation.dashboardPath)
+                ProductionReadinessRootView(path: $navigation.state.dashboardPath)
             }
             .accessibilityIdentifier("dashboardTab")
 
@@ -33,25 +35,19 @@ struct AppRootView: View {
             guard let url = activity.webpageURL else { return }
             self.navigation.handle(url: url)
         }
-        .onReceive(NotificationCenter.default.publisher(for: .appIntentNavigation)) { note in
-            guard let url = note.userInfo?[AppIntentNavigationRouter.urlUserInfoKey] as? URL else {
-                return
-            }
-            self.navigation.handle(url: url)
-        }
         .alert("Link Not Available", isPresented: self.invalidDeepLinkPresented) {
             Button("OK", role: .cancel) {}
         } message: {
-            Text(self.navigation.invalidDeepLinkMessage ?? "")
+            Text(self.navigation.state.invalidDeepLinkMessage ?? "")
         }
     }
 
     private var invalidDeepLinkPresented: Binding<Bool> {
         Binding {
-            self.navigation.invalidDeepLinkMessage != nil
+            self.navigation.state.invalidDeepLinkMessage != nil
         } set: { isPresented in
             if !isPresented {
-                self.navigation.invalidDeepLinkMessage = nil
+                self.navigation.state.invalidDeepLinkMessage = nil
             }
         }
     }
