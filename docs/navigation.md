@@ -23,18 +23,21 @@ Use declarative SwiftUI navigation that adapts across iOS, iPadOS, and macOS.
 
 - Root shell: `AppRootView` (`TabView`) — Dashboard, Items, Feed tabs with
   `accessibilityIdentifier` on each tab (`dashboardTab`, `itemsTab`, `feedTab`).
-- Typed deep links (scheme `superdemo`, registered in `Config/AppInfo.plist`):
+- Typed deep links — custom scheme `superdemo` (`Config/AppInfo.plist`) and
+  HTTPS universal links for `superdemo.app` (Associated Domains entitlement +
+  sample AASA under `Config/associated-domains/`):
 
   | URL | Result |
   | --- | --- |
-  | `superdemo://dashboard` | Dashboard tab, cleared path |
-  | `superdemo://dashboard/risks` | Dashboard → Production Risks |
-  | `superdemo://feed` | Feed tab |
-  | `superdemo://items` | Items tab |
-  | unsupported `superdemo` URL | Dashboard + user-facing alert |
+  | `superdemo://dashboard` / `https://superdemo.app/dashboard` | Dashboard tab, cleared path |
+  | `superdemo://dashboard/risks` / `https://superdemo.app/dashboard/risks` | Dashboard → Production Risks |
+  | `superdemo://feed` / `https://superdemo.app/feed` | Feed tab |
+  | `superdemo://items` / `https://superdemo.app/items` | Items tab |
+  | unsupported `superdemo` / associated-host HTTPS path | Dashboard + user-facing alert |
 
   Parsing stays in `App/AppNavigation.swift` (`AppDeepLink` / `AppNavigationState`);
-  views only consume typed `AppTab` / `AppRoute` values.
+  `AppRootView` handles `onOpenURL` and `NSUserActivityTypeBrowsingWeb`. Views only
+  consume typed `AppTab` / `AppRoute` values. HTTP (non-TLS) hosts are rejected.
 - Feature stacks: Items and Feed use `ItemsNavigationShell` / `FeedNavigationShell`
   → `AdaptiveNavigationShell` for master/detail inside a tab.
 - Shared: `Shared/Presentation/AdaptiveNavigationShell.swift`

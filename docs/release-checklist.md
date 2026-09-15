@@ -15,8 +15,9 @@ Use before TestFlight or App Store submission.
 - Deep links: custom scheme fixtures cover `superdemo://dashboard`,
   `superdemo://dashboard/risks`, `superdemo://feed`, and `superdemo://items`
   (typed in `App/AppNavigation.swift`). Verify cold start, warm start, and
-  missing-route alert on device. Associated domains / universal links remain
-  future work until a production web domain and AASA file exist.
+  missing-route alert on device. Universal links: entitlement
+  `applinks:superdemo.app` + sample AASA in `Config/associated-domains/`;
+  host AASA on the live domain before relying on Safari → app handoff.
 - Keychain: first install, reinstall, locked device, biometric changes.
 - Permissions: denied, limited, revoked, and Settings return paths.
 - Slow networks: timeout, retry, cancellation, 429, and offline messaging.

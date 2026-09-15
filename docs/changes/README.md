@@ -4,6 +4,8 @@ Record durable implementation notes after meaningful changes.
 
 ## Entries
 
+- [`2026-09-15_associated-domains.md`](2026-09-15_associated-domains.md)
+  — Associated Domains entitlement + HTTPS universal-link path parsing.
 - [`2026-09-15_keychain-token-demo.md`](2026-09-15_keychain-token-demo.md)
   — Flag-gated Keychain token refresher + AccessTokenStore; CI-safe Liquid Glass trim.
 - [`2026-09-15_liquid-glass-chrome.md`](2026-09-15_liquid-glass-chrome.md)

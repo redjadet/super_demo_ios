@@ -1,0 +1,17 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": [
+          "QPG8754DYH.com.ilkersevim.superDemoApp"
+        ],
+        "components": [
+          { "/": "/dashboard" },
+          { "/": "/dashboard/risks" },
+          { "/": "/feed" },
+          { "/": "/items" }
+        ]
+      }
+    ]
+  }
+}

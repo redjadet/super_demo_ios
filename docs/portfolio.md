@@ -19,7 +19,8 @@ read-through cache.
 6. **`App/`** — `AppRootView` tabs; composition roots wire DI and feature models.
 7. **`Shared/Presentation/AdaptiveNavigationShell.swift`** — shared chrome.
 8. Deep links: open `superdemo://dashboard/risks`, `superdemo://feed`, or
-   `superdemo://items` to review typed routing in `App/AppNavigation.swift`.
+   `superdemo://items` (or matching `https://superdemo.app/…` paths) to review
+   typed routing in `App/AppNavigation.swift`.
 
 ## Items walkthrough (`Features/Items/`)
 
@@ -58,8 +59,9 @@ HTTP — no live network on default CI.
 - **Tests:** Stub `URLProtocol` / injected session.
 - **Cache:** On fetch failure + stored rows → return content with `isStale`
   (banner in UI); diagnostics log `feed-cache-fallback`.
-- **Navigation:** Typed `AppTab` / `AppRoute`; custom-scheme deep links for
-  dashboard, risks, feed, and items without raw string navigation in views.
+- **Navigation:** Typed `AppTab` / `AppRoute`; custom-scheme + HTTPS universal
+  link parsing for dashboard, risks, feed, and items without raw string
+  navigation in views.
 
 ## Reviewer checklist
 

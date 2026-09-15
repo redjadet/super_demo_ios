@@ -29,6 +29,10 @@ struct AppRootView: View {
         .onOpenURL { url in
             self.navigation.handle(url: url)
         }
+        .onContinueUserActivity(NSUserActivityTypeBrowsingWeb) { activity in
+            guard let url = activity.webpageURL else { return }
+            self.navigation.handle(url: url)
+        }
         .alert("Link Not Available", isPresented: self.invalidDeepLinkPresented) {
             Button("OK", role: .cancel) {}
         } message: {

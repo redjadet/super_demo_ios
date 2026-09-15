@@ -4,6 +4,7 @@ Verify production readiness beta:
 
 - Seeded reviewer walkthrough for Dashboard, Production Risks, Feed, and Items.
 - Typed `superdemo://dashboard/risks` deep link with cold-start, warm-start, and invalid-route fallback.
+- HTTPS universal-link paths on `superdemo.app` parse the same routes (AASA hosting required for Safari handoff).
 - Dashboard, Production Risks, Feed, and Items launch paths.
 - Offline cached feed fallback and networking error states.
 - iPhone, iPad, and Mac layout polish before release sign-off.

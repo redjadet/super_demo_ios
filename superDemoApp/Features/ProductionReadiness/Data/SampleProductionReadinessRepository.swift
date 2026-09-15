@@ -145,8 +145,8 @@ struct SampleProductionReadinessRepository: ProductionReadinessRepository {
                 "deep-links",
                 "Deep Links",
                 deepLinkDetail,
-                "Custom-scheme fixtures cover dashboard/risks, feed, and items; verify associated domains on device.",
-                ReadinessStatus.warning
+                "HTTPS paths mirror custom-scheme routes; host AASA at /.well-known and verify on device.",
+                ReadinessStatus.healthy
             ),
             (
                 "keychain",

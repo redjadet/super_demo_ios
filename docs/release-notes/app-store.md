@@ -27,13 +27,15 @@ proof can also launch with `-ReviewerDemoMode` or
 
 `superdemo://dashboard/risks` opens Dashboard -> Production Risks. Unsupported
 `superdemo` URLs fall back to Dashboard and show a "Link Not Available" alert.
-The app registers only the `superdemo` custom URL scheme; associated domains and
-universal links are not enabled.
+The app registers the `superdemo` custom URL scheme and Associated Domains for
+`applinks:superdemo.app`. HTTPS paths under that host parse the same routes as
+the custom scheme. Full Safari handoff needs the hosted AASA file (see
+`Config/associated-domains/`).
 
 ## Permissions And Background Modes
 
 The current app does not request runtime permissions and does not declare
 background modes, push notifications, keychain access groups, App Groups,
-associated domains, or Sign in with Apple. Networking is limited to the Feed and
+or Sign in with Apple. Networking is limited to the Feed and
 Dashboard health-check demo paths. Release diagnostics are OSLog-only today; no
 Crashlytics, Sentry, or equivalent crash-monitoring provider is configured yet.
