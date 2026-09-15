@@ -4,6 +4,8 @@ Record durable implementation notes after meaningful changes.
 
 ## Entries
 
+- [`2026-09-15_app-intents-open-destinations.md`](2026-09-15_app-intents-open-destinations.md)
+  — App Intents + Shortcuts for Open Feed / Items / Production Risks.
 - [`2026-09-15_signposts-cache-ttl.md`](2026-09-15_signposts-cache-ttl.md)
   — OSSignposter on Feed/UIKit + optional Feed cache TTL.
 - [`2026-09-15_associated-domains.md`](2026-09-15_associated-domains.md)

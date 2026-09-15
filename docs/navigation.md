@@ -58,4 +58,9 @@ Use declarative SwiftUI navigation that adapts across iOS, iPadOS, and macOS.
 Deep-link parsing and cold/warm navigation-state behavior:
 `superDemoAppTests/Shared/AppNavigationTests.swift`.
 
+- App Intents: `OpenFeedIntent`, `OpenItemsIntent`, `OpenProductionRisksIntent`
+  (`App/AppIntents/`) open the same typed destinations via
+  `AppIntentNavigationRouter` → `AppRootView`. Phrases registered in
+  `SuperDemoAppShortcuts`.
+
 Details: [`testing.md`](testing.md#ui-smoke-ci).

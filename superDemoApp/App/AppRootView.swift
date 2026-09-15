@@ -33,6 +33,12 @@ struct AppRootView: View {
             guard let url = activity.webpageURL else { return }
             self.navigation.handle(url: url)
         }
+        .onReceive(NotificationCenter.default.publisher(for: .appIntentNavigation)) { note in
+            guard let url = note.userInfo?[AppIntentNavigationRouter.urlUserInfoKey] as? URL else {
+                return
+            }
+            self.navigation.handle(url: url)
+        }
         .alert("Link Not Available", isPresented: self.invalidDeepLinkPresented) {
             Button("OK", role: .cancel) {}
         } message: {

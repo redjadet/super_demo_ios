@@ -23,6 +23,11 @@ Items data without credentials. TestFlight archives built through
 proof can also launch with `-ReviewerDemoMode` or
 `SUPERDEMO_REVIEWER_DEMO_MODE=1`.
 
+## App Shortcuts
+
+App Shortcuts include Open Feed, Open Items, and Open Production Risks
+(Siri / Shortcuts). They route through the same typed navigation as deep links.
+
 ## Deep Link
 
 `superdemo://dashboard/risks` opens Dashboard -> Production Risks. Unsupported

@@ -60,8 +60,8 @@ HTTP — no live network on default CI.
 - **Cache:** On fetch failure + **fresh** stored rows (15m TTL) → content with
   `isStale` (banner); expired cache rethrows. Signposts mark Feed fetch.
 - **Navigation:** Typed `AppTab` / `AppRoute`; custom-scheme + HTTPS universal
-  link parsing for dashboard, risks, feed, and items without raw string
-  navigation in views.
+  link parsing plus App Intents (Open Feed / Items / Production Risks) without
+  raw string navigation in views.
 
 ## Reviewer checklist
 

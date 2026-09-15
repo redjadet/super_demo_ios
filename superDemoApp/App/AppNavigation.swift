@@ -86,6 +86,20 @@ nonisolated enum AppDeepLink: Equatable {
             return nil
         }
     }
+
+    /// Custom-scheme URL used by App Intents handoff and UI tests.
+    var customSchemeURL: URL {
+        switch self {
+        case .dashboard:
+            URL(string: "superdemo://dashboard")!
+        case .productionRisks:
+            URL(string: "superdemo://dashboard/risks")!
+        case .items:
+            URL(string: "superdemo://items")!
+        case .feed:
+            URL(string: "superdemo://feed")!
+        }
+    }
 }
 
 nonisolated struct AppNavigationState {
@@ -100,7 +114,10 @@ nonisolated struct AppNavigationState {
             self.invalidDeepLinkMessage = "This link is not supported. The Dashboard is open instead."
             return
         }
+        self.apply(deepLink)
+    }
 
+    mutating func apply(_ deepLink: AppDeepLink) {
         self.invalidDeepLinkMessage = nil
 
         switch deepLink {
