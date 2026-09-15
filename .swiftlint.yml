@@ -117,7 +117,6 @@ type_name:
     error: 60
   excluded:
     # Xcode template names — rename to UpperCamelCase in a dedicated refactor.
-    - superDemoAppApp
     - superDemoAppTests
     - superDemoAppUITests
     - superDemoAppUITestsLaunchTests

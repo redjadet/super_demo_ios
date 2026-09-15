@@ -9,7 +9,7 @@ import SwiftData
 import SwiftUI
 
 @main
-struct superDemoAppApp: App {
+struct SuperDemoApp: App {
     var body: some Scene {
         WindowGroup {
             AppRootView()
