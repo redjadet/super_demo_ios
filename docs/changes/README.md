@@ -4,6 +4,8 @@ Record durable implementation notes after meaningful changes.
 
 ## Entries
 
+- [`2026-09-15_mainactor-isolation-layer-check.md`](2026-09-15_mainactor-isolation-layer-check.md)
+  — MainActor `nonisolated` constants + layer-check `rg`/`grep` fallback.
 - [`2026-09-15_app-intents-open-destinations.md`](2026-09-15_app-intents-open-destinations.md)
   — App Intents + Shortcuts for Open Feed / Items / Production Risks.
 - [`2026-09-15_signposts-cache-ttl.md`](2026-09-15_signposts-cache-ttl.md)

@@ -6,7 +6,7 @@ chat.
 ## Entries
 
 - [`2026-09-15_ci-green-baseline.md`](2026-09-15_ci-green-baseline.md) — main CI
-  green after hardening; remaining roadmap notes.
+  green after hardening; P1–P6 complete; no queued P7+.
 
 Keep entries evidence-based:
 
