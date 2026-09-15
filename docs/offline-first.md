@@ -36,3 +36,10 @@ Before changing a persisted model, answer:
 UI tests). If creation fails (corrupt store / schema mismatch), it logs a release
 diagnostic and falls back to an in-memory container so the app can still launch.
 Only a total in-memory failure remains fatal after diagnostics.
+
+## Feed cache TTL
+
+`CachedFeedPost.cachedAt` records the last successful remote write.
+`CachingFeedRepository` defaults to a **15-minute** TTL for offline fallback.
+Pass `cacheTTL: nil` to keep forever-cache behavior. Schema adds require a
+fresh store or the existing `AppModelContainer` in-memory fallback path.

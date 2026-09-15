@@ -11,9 +11,11 @@ The **Feed** feature (see [`docs/portfolio.md`](portfolio.md) and
 - Injectable **`URLSession`**; **`timeoutIntervalForRequest` ~ 30s** in app
   composition when using a custom configuration.
 - **`PostDTO` → `FeedPost`** in **`RemoteFeedRepository`**.
-- **`CachingFeedRepository`** / **`CachedFeedPost`**: persist on success;
-  on network failure with cached rows, return `FeedLoadResult(isStale: true)`
-  so Presentation can show a stale banner (not a silent success).
+- **`CachingFeedRepository`** / **`CachedFeedPost`**: persist on success with
+  `cachedAt`; on network failure with **fresh** cached rows (default TTL
+  15 minutes; `nil` disables expiry), return `FeedLoadResult(isStale: true)`
+  so Presentation can show a stale banner. Expired cache rethrows the remote
+  error. Feed fetch intervals use `OSSignposter` (`AppPerformanceSignposts.feed`).
 - **Auth path honesty:** production wiring uses `EmptyTokenRefresher` by default.
   Opt into Keychain-backed demo refresh with `-KeychainTokenDemo` or
   `SUPERDEMO_KEYCHAIN_TOKEN_DEMO=1` (`KeychainDemoTokenRefresher` +

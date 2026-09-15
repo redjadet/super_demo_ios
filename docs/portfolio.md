@@ -57,8 +57,8 @@ HTTP — no live network on default CI.
 - **Empty vs bug:** Valid `[]` → **empty** UI (see
   [Edge cases (summary)](#edge-cases-summary)).
 - **Tests:** Stub `URLProtocol` / injected session.
-- **Cache:** On fetch failure + stored rows → return content with `isStale`
-  (banner in UI); diagnostics log `feed-cache-fallback`.
+- **Cache:** On fetch failure + **fresh** stored rows (15m TTL) → content with
+  `isStale` (banner); expired cache rethrows. Signposts mark Feed fetch.
 - **Navigation:** Typed `AppTab` / `AppRoute`; custom-scheme + HTTPS universal
   link parsing for dashboard, risks, feed, and items without raw string
   navigation in views.

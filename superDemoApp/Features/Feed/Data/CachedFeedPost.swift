@@ -13,27 +13,32 @@ final class CachedFeedPost {
     var userID: Int
     var title: String
     var body: String
+    /// When this row was last written from a successful remote fetch.
+    var cachedAt: Date
 
-    init(postID: Int, userID: Int, title: String, body: String) {
+    init(postID: Int, userID: Int, title: String, body: String, cachedAt: Date = .now) {
         self.postID = postID
         self.userID = userID
         self.title = title
         self.body = body
+        self.cachedAt = cachedAt
     }
 
-    convenience init(post: FeedPost) {
+    convenience init(post: FeedPost, cachedAt: Date = .now) {
         self.init(
             postID: post.id,
             userID: post.userID,
             title: post.title,
-            body: post.body
+            body: post.body,
+            cachedAt: cachedAt
         )
     }
 
-    func update(with post: FeedPost) {
+    func update(with post: FeedPost, cachedAt: Date = .now) {
         self.userID = post.userID
         self.title = post.title
         self.body = post.body
+        self.cachedAt = cachedAt
     }
 
     var toDomain: FeedPost {

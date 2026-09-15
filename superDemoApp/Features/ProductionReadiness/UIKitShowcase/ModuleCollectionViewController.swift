@@ -4,6 +4,7 @@
 //
 
 #if os(iOS)
+import os
 import SwiftUI
 import UIKit
 
@@ -17,6 +18,7 @@ final class ModuleCollectionViewController: UICollectionViewController, UICollec
     private var dataSource: UICollectionViewDiffableDataSource<SectionID, String>?
     private var modules: [FeatureModule]
     private var prefetchTasks: [String: Task<Void, Never>] = [:]
+    private let signposter = AppPerformanceSignposts.uiKitShowcase
 
     init(modules: [FeatureModule]) {
         self.modules = modules
@@ -56,11 +58,16 @@ final class ModuleCollectionViewController: UICollectionViewController, UICollec
     }
 
     func apply(modules: [FeatureModule]) {
+        let signpostID = self.signposter.makeSignpostID()
+        let interval = self.signposter.beginInterval("applySnapshot", id: signpostID)
+        defer { self.signposter.endInterval("applySnapshot", interval) }
+
         self.modules = modules
         var snapshot = NSDiffableDataSourceSnapshot<SectionID, String>()
         snapshot.appendSections(["main"])
         snapshot.appendItems(modules.map(\.id))
         self.dataSource?.apply(snapshot, animatingDifferences: true)
+        self.signposter.emitEvent("snapshotApplied", id: signpostID)
     }
 
     override func collectionView(_: UICollectionView, didSelectItemAt indexPath: IndexPath) {
