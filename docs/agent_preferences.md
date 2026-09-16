@@ -13,6 +13,9 @@ Continual-learning and agents must update **this file** and
 ## Git
 
 - No `git commit` or `git push` unless the user explicitly asks.
+- Never add Cursor / AI attribution to commits or PRs (no `Co-authored-by: Cursor`,
+  no “Made with Cursor”). Keep `~/.cursor/cli-config.json` attribution flags off:
+  `attributeCommitsToAgent` and `attributePRsToAgent` = `false`.
 
 ## Documentation
 
