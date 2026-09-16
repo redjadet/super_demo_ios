@@ -62,7 +62,8 @@ struct ProductionReadinessTests {
     @MainActor
     func cancellationDoesNotReplaceFeatureStateWithFailure() async {
         let model = ProductionReadinessFeatureModel(
-            loadSnapshot: LoadProductionReadinessSnapshotUseCase(repository: CancellingReadinessRepository())
+            loadSnapshot: LoadProductionReadinessSnapshotUseCase(repository: CancellingReadinessRepository()),
+            scoreSnapshot: ScoreProductionReadinessUseCase()
         )
 
         await model.refreshAndWait()
@@ -75,7 +76,8 @@ struct ProductionReadinessTests {
     func cancelRefreshRestoresPriorContent() async {
         let repository = ReadinessModelRepositorySpy()
         let model = ProductionReadinessFeatureModel(
-            loadSnapshot: LoadProductionReadinessSnapshotUseCase(repository: repository)
+            loadSnapshot: LoadProductionReadinessSnapshotUseCase(repository: repository),
+            scoreSnapshot: ScoreProductionReadinessUseCase()
         )
         await model.refreshAndWait()
 
@@ -97,7 +99,8 @@ struct ProductionReadinessTests {
         let repository = ReadinessModelRepositorySpy()
         repository.shouldThrow = true
         let model = ProductionReadinessFeatureModel(
-            loadSnapshot: LoadProductionReadinessSnapshotUseCase(repository: repository)
+            loadSnapshot: LoadProductionReadinessSnapshotUseCase(repository: repository),
+            scoreSnapshot: ScoreProductionReadinessUseCase()
         )
         await model.refreshAndWait()
 
@@ -125,7 +128,8 @@ struct ProductionReadinessTests {
     func refreshKeepsExistingContentVisible() async {
         let repository = ReadinessModelRepositorySpy()
         let model = ProductionReadinessFeatureModel(
-            loadSnapshot: LoadProductionReadinessSnapshotUseCase(repository: repository)
+            loadSnapshot: LoadProductionReadinessSnapshotUseCase(repository: repository),
+            scoreSnapshot: ScoreProductionReadinessUseCase()
         )
         await model.refreshAndWait()
 

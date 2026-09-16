@@ -292,7 +292,8 @@ private enum ProductionReadinessPreviewFactory {
     static func view() -> some View {
         let repository = SampleProductionReadinessRepository()
         let model = ProductionReadinessFeatureModel(
-            loadSnapshot: LoadProductionReadinessSnapshotUseCase(repository: repository)
+            loadSnapshot: LoadProductionReadinessSnapshotUseCase(repository: repository),
+            scoreSnapshot: ScoreProductionReadinessUseCase()
         )
         return ProductionReadinessPreviewRoot(model: model)
     }

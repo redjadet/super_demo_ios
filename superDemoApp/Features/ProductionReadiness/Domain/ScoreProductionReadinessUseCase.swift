@@ -3,7 +3,7 @@
 //  superDemoApp
 //
 
-struct ScoreProductionReadinessUseCase {
+nonisolated struct ScoreProductionReadinessUseCase {
     func callAsFunction(snapshot: ProductionReadinessSnapshot) -> Int {
         let statusScores = snapshot.modules.map(\.status.score)
             + snapshot.apiHealth.map(\.status.score)

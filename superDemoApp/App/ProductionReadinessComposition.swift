@@ -17,7 +17,8 @@ enum ProductionReadinessComposition {
     static func makeFeatureModel() -> ProductionReadinessFeatureModel {
         let repository = self.makeRepository()
         return ProductionReadinessFeatureModel(
-            loadSnapshot: LoadProductionReadinessSnapshotUseCase(repository: repository)
+            loadSnapshot: LoadProductionReadinessSnapshotUseCase(repository: repository),
+            scoreSnapshot: ScoreProductionReadinessUseCase()
         )
     }
 
