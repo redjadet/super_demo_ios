@@ -16,7 +16,7 @@ final class Item {
 
     init(
         timestamp: Date,
-        title: String = "New note",
+        title: String = String(localized: "New note"),
         note: String = "",
         id: UUID = UUID()
     ) {

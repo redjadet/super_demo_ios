@@ -133,7 +133,12 @@ struct FeedView: View {
 @MainActor
 private enum FeedPreviewFactory {
     static let samplePosts = [
-        FeedPost(id: 1, userID: 1, title: "Preview title", body: "Preview body text."),
+        FeedPost(
+            id: 1,
+            userID: 1,
+            title: String(localized: "Preview title"),
+            body: String(localized: "Preview body text.")
+        ),
     ]
 
     static func view(seedPosts: [FeedPost]) -> some View {

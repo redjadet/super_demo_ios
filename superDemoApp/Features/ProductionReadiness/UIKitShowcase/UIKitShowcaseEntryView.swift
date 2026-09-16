@@ -14,13 +14,10 @@ struct UIKitShowcaseEntryView: View {
             .navigationTitle("UIKit Showcase")
             .navigationBarTitleDisplayMode(.inline)
         #else
-        let message = "UICollectionView and custom transitions are iOS-only. Mac keeps SwiftUI shell."
         ContentUnavailableView {
             Label("UIKit Showcase", systemImage: "rectangle.grid.2x2")
         } description: {
-            Text(
-                message
-            )
+            Text("UICollectionView and custom transitions are iOS-only. Mac keeps SwiftUI shell.")
         }
         #endif
     }

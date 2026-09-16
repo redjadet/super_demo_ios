@@ -50,7 +50,7 @@ struct CompositeProductionReadinessRepository: ProductionReadinessRepository {
             self.diagnostics.releaseCheckFailed(check, reason: String(describing: error))
             return APIHealthCheck(
                 id: "remote-api",
-                name: "Remote API",
+                name: String(localized: "Remote API"),
                 endpoint: self.remoteEndpoint.path(),
                 status: .warning,
                 latencyMilliseconds: 0,

@@ -13,8 +13,8 @@ struct SampleFeedRepository: FeedRepository {
                 FeedPost(
                     id: 1,
                     userID: 1,
-                    title: "UI Test Post",
-                    body: "Stable feed content for UI tests and simulator runs."
+                    title: String(localized: "UI Test Post"),
+                    body: String(localized: "Stable feed content for UI tests and simulator runs.")
                 ),
             ]
         )

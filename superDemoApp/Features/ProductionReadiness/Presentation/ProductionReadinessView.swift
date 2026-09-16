@@ -131,9 +131,6 @@ private struct ProductionReadinessContent: View {
 private struct ReadinessHero: View {
     let score: Int
 
-    private static let summary =
-        "Module status, API checks, release checklist, and tracked risks in one view."
-
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(alignment: .firstTextBaseline) {
@@ -144,7 +141,7 @@ private struct ReadinessHero: View {
                 ReadinessScoreBadge(score: self.score)
                     .equatable()
             }
-            Text(Self.summary)
+            Text("Module status, API checks, release checklist, and tracked risks in one view.")
                 .foregroundStyle(.secondary)
         }
     }
@@ -160,7 +157,7 @@ private struct ReadinessScoreBadge: View, Equatable {
             .padding(.vertical, 8)
             .background(self.score >= 80 ? Color.accentColor.opacity(0.16) : Color.orange.opacity(0.18))
             .clipShape(RoundedRectangle(cornerRadius: 12))
-            .accessibilityLabel("Readiness score \(self.score) percent")
+            .accessibilityLabel(String(localized: "Readiness score \(self.score) percent"))
     }
 }
 
@@ -250,7 +247,7 @@ private struct StatusPill: View {
             .opacity(self.status == .blocked ? 0.9 : 1)
     }
 
-    private var label: String {
+    private var label: LocalizedStringKey {
         switch self.status {
         case .healthy:
             "Healthy"

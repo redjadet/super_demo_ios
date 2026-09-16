@@ -32,35 +32,43 @@ struct SampleProductionReadinessRepository: ProductionReadinessRepository {
         [
             FeatureModule(
                 id: "architecture",
-                name: "Architecture",
-                layerBoundary: "Presentation -> Domain <- Data",
-                owner: "Mobile Platform",
+                name: String(localized: "Architecture"),
+                layerBoundary: String(localized: "Presentation -> Domain <- Data"),
+                owner: String(localized: "Mobile Platform"),
                 status: .healthy,
-                summary: "Feature ownership and layer boundaries are documented for release triage."
+                summary: String(
+                    localized: "Feature ownership and layer boundaries are documented for release triage."
+                )
             ),
             FeatureModule(
                 id: "networking",
-                name: "Networking",
-                layerBoundary: "Shared client + feature repositories",
-                owner: "API Integration",
+                name: String(localized: "Networking"),
+                layerBoundary: String(localized: "Shared client + feature repositories"),
+                owner: String(localized: "API Integration"),
                 status: .healthy,
-                summary: "Auth, release, and push endpoints monitored with retry policy and redacted logs."
+                summary: String(
+                    localized: "Auth, release, and push endpoints monitored with retry policy and redacted logs."
+                )
             ),
             FeatureModule(
                 id: "ui-kit",
-                name: "UIKit Interop",
-                layerBoundary: "UIKit container hosts SwiftUI detail",
-                owner: "Native iOS",
+                name: String(localized: "UIKit Interop"),
+                layerBoundary: String(localized: "UIKit container hosts SwiftUI detail"),
+                owner: String(localized: "Native iOS"),
                 status: .healthy,
-                summary: "Native list and transitions validated on device for mixed UI stacks."
+                summary: String(
+                    localized: "Native list and transitions validated on device for mixed UI stacks."
+                )
             ),
             FeatureModule(
                 id: "release",
-                name: "Release Safety",
-                layerBoundary: "Docs + test fixtures + checklist",
-                owner: "Release",
+                name: String(localized: "Release Safety"),
+                layerBoundary: String(localized: "Docs + test fixtures + checklist"),
+                owner: String(localized: "Release"),
                 status: .warning,
-                summary: "Device-only risks are tracked before TestFlight, not after review."
+                summary: String(
+                    localized: "Device-only risks are tracked before TestFlight, not after review."
+                )
             ),
         ]
     }
@@ -69,7 +77,7 @@ struct SampleProductionReadinessRepository: ProductionReadinessRepository {
         [
             APIHealthCheck(
                 id: "auth",
-                name: "Auth Refresh",
+                name: String(localized: "Auth Refresh"),
                 endpoint: "/v1/session/refresh",
                 status: .healthy,
                 latencyMilliseconds: 118,
@@ -77,7 +85,7 @@ struct SampleProductionReadinessRepository: ProductionReadinessRepository {
             ),
             APIHealthCheck(
                 id: "release",
-                name: "Release Checklist",
+                name: String(localized: "Release Checklist"),
                 endpoint: "/v1/mobile/release-readiness",
                 status: .healthy,
                 latencyMilliseconds: 162,
@@ -85,7 +93,7 @@ struct SampleProductionReadinessRepository: ProductionReadinessRepository {
             ),
             APIHealthCheck(
                 id: "push",
-                name: "Push Token Sync",
+                name: String(localized: "Push Token Sync"),
                 endpoint: "/v1/devices/push-token",
                 status: .warning,
                 latencyMilliseconds: 420,
@@ -94,83 +102,117 @@ struct SampleProductionReadinessRepository: ProductionReadinessRepository {
         ]
     }
 
+    // Sample copy uses long English source keys for String Catalog extraction.
+    // swiftlint:disable line_length
     private func makeChecklist() -> [ReleaseChecklistItem] {
         [
             ReleaseChecklistItem(
                 id: "tests",
-                title: "Fast unit and UI smoke tests pass",
-                detail: "Retry, domain scoring, UIKit entry, and dashboard launch have deterministic coverage.",
+                title: String(localized: "Fast unit and UI smoke tests pass"),
+                detail: String(
+                    localized: "Retry, domain scoring, UIKit entry, and dashboard launch have deterministic coverage."
+                ),
                 isComplete: true,
-                owner: "iOS"
+                owner: String(localized: "iOS")
             ),
             ReleaseChecklistItem(
                 id: "observability",
-                title: "OSLog release diagnostics are ready",
-                detail: "Sensitive headers redacted; OSLogCrashMonitor records non-fatals until a vendor SDK is wired.",
+                title: String(localized: "OSLog release diagnostics are ready"),
+                detail: String(
+                    localized: "Sensitive headers redacted; OSLogCrashMonitor records non-fatals until a vendor SDK is wired."
+                ),
                 isComplete: true,
-                owner: "Platform"
+                owner: String(localized: "Platform")
             ),
             ReleaseChecklistItem(
                 id: "device-proof",
-                title: "Real-device capabilities checked",
-                detail: "Push, deep links, keychain, memory pressure, and permissions need device/TestFlight passes.",
+                title: String(localized: "Real-device capabilities checked"),
+                detail: String(
+                    localized: "Push, deep links, keychain, memory pressure, and permissions need device/TestFlight passes."
+                ),
                 isComplete: false,
-                owner: "QA"
+                owner: String(localized: "QA")
             ),
             ReleaseChecklistItem(
                 id: "review",
-                title: "App Store review notes prepared",
-                detail: "Permission purpose, background modes, and account/demo data are documented.",
+                title: String(localized: "App Store review notes prepared"),
+                detail: String(
+                    localized: "Permission purpose, background modes, and account/demo data are documented."
+                ),
                 isComplete: false,
-                owner: "Release"
+                owner: String(localized: "Release")
             ),
         ]
     }
 
     private func makeRisks() -> [ProductionRisk] {
-        let deepLinkDetail = "Associated Domains and universal link routing can differ by build type."
-        let keychainDetail = "Access groups, biometric state, protected data, and reinstall behavior differ by device."
-        let memoryDetail = "Large feeds, image-heavy collection views, and older devices reveal hidden crashes."
-        let definitions = [
-            (
-                "push-notifications",
-                "Push Notifications",
-                "APNs token, entitlements, notification settings, and environment mismatch often fail only on devices.",
-                "Use mock states locally, then verify sandbox APNs on TestFlight with logs and crash monitoring.",
-                ReadinessStatus.warning
-            ),
-            (
-                "deep-links",
-                "Deep Links",
-                deepLinkDetail,
-                "HTTPS paths mirror custom-scheme routes; host AASA at /.well-known and verify on device.",
-                ReadinessStatus.healthy
-            ),
-            (
-                "keychain",
-                "Keychain",
-                keychainDetail,
-                "Use AccessTokenStore + flag-gated KeychainDemoTokenRefresher; verify locked/unlocked devices.",
-                ReadinessStatus.healthy
-            ),
-            (
-                "memory-pressure",
-                "Memory Pressure",
-                memoryDetail,
-                "Use reusable cells, prefetching, cancellation, and memory pressure scenarios before release.",
-                ReadinessStatus.warning
-            ),
-        ]
-
-        return definitions.map { id, title, detail, mitigation, status in
+        self.riskDefinitions().map { definition in
             ProductionRisk(
-                id: id,
-                title: title,
-                detail: detail,
-                mitigation: mitigation,
-                status: status,
-                legacyCode: self.riskCodeFormatter.code(title: title, owner: "ios")
+                id: definition.id,
+                title: String(localized: String.LocalizationValue(definition.englishTitle)),
+                detail: definition.detail,
+                mitigation: definition.mitigation,
+                status: definition.status,
+                legacyCode: self.riskCodeFormatter.code(title: definition.englishTitle, owner: "ios")
             )
         }
     }
+
+    private func riskDefinitions() -> [SampleRiskDefinition] {
+        [
+            SampleRiskDefinition(
+                id: "push-notifications",
+                englishTitle: "Push Notifications",
+                detail: String(
+                    localized: "APNs token, entitlements, notification settings, and environment mismatch often fail only on devices."
+                ),
+                mitigation: String(
+                    localized: "Use mock states locally, then verify sandbox APNs on TestFlight with logs and crash monitoring."
+                ),
+                status: .warning
+            ),
+            SampleRiskDefinition(
+                id: "deep-links",
+                englishTitle: "Deep Links",
+                detail: String(
+                    localized: "Associated Domains and universal link routing can differ by build type."
+                ),
+                mitigation: String(
+                    localized: "HTTPS paths mirror custom-scheme routes; host AASA at /.well-known and verify on device."
+                ),
+                status: .healthy
+            ),
+            SampleRiskDefinition(
+                id: "keychain",
+                englishTitle: "Keychain",
+                detail: String(
+                    localized: "Access groups, biometric state, protected data, and reinstall behavior differ by device."
+                ),
+                mitigation: String(
+                    localized: "Use AccessTokenStore + flag-gated KeychainDemoTokenRefresher; verify locked/unlocked devices."
+                ),
+                status: .healthy
+            ),
+            SampleRiskDefinition(
+                id: "memory-pressure",
+                englishTitle: "Memory Pressure",
+                detail: String(
+                    localized: "Large feeds, image-heavy collection views, and older devices reveal hidden crashes."
+                ),
+                mitigation: String(
+                    localized: "Use reusable cells, prefetching, cancellation, and memory pressure scenarios before release."
+                ),
+                status: .warning
+            ),
+        ]
+    }
+    // swiftlint:enable line_length
+}
+
+private struct SampleRiskDefinition {
+    let id: String
+    let englishTitle: String
+    let detail: String
+    let mitigation: String
+    let status: ReadinessStatus
 }

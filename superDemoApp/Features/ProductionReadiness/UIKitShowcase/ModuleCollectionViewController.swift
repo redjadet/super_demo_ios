@@ -23,7 +23,7 @@ final class ModuleCollectionViewController: UICollectionViewController, UICollec
     init(modules: [FeatureModule]) {
         self.modules = modules
         super.init(collectionViewLayout: Self.makeLayout())
-        self.title = "UIKit Modules"
+        self.title = String(localized: "UIKit Modules")
     }
 
     @available(*, unavailable)

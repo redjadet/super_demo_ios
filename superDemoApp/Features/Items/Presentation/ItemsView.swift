@@ -127,7 +127,7 @@ struct ItemsView: View {
 @MainActor
 private enum ItemsPreviewFactory {
     static let sampleItems = [
-        ItemEntity(id: UUID(), title: "Sample note", note: "", timestamp: Date()),
+        ItemEntity(id: UUID(), title: String(localized: "Sample note"), note: "", timestamp: Date()),
     ]
 
     static func view(seedItems: [ItemEntity]) -> some View {
@@ -155,7 +155,7 @@ private final class PreviewItemRepository: ItemRepository {
     }
 
     func addItem(timestamp: Date) throws -> ItemEntity {
-        let item = ItemEntity(id: UUID(), title: "New note", note: "", timestamp: timestamp)
+        let item = ItemEntity(id: UUID(), title: String(localized: "New note"), note: "", timestamp: timestamp)
         self.items.append(item)
         return item
     }

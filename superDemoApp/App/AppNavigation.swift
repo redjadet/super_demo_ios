@@ -130,7 +130,9 @@ nonisolated struct AppNavigationState {
         guard let deepLink = AppDeepLink(url: url) else {
             self.selection = .dashboard
             self.dashboardPath = []
-            self.invalidDeepLinkMessage = "This link is not supported. The Dashboard is open instead."
+            self.invalidDeepLinkMessage = String(
+                localized: "This link is not supported. The Dashboard is open instead."
+            )
             return
         }
         self.apply(deepLink)

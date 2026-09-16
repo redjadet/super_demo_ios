@@ -27,8 +27,8 @@ enum ReviewerDemoFixtures {
                 0x90,
                 0x71
             )),
-            title: "Welcome note",
-            note: "Tap to edit this sample.",
+            title: String(localized: "Welcome note"),
+            note: String(localized: "Tap to edit this sample."),
             timestamp: Date(timeIntervalSince1970: 1_779_177_600)
         ),
         ItemEntity(
@@ -50,7 +50,7 @@ enum ReviewerDemoFixtures {
                 0x09,
                 0x62
             )),
-            title: "Second sample",
+            title: String(localized: "Second sample"),
             note: "",
             timestamp: Date(timeIntervalSince1970: 1_779_264_000)
         ),

@@ -26,7 +26,7 @@ struct RemoteAPIHealthRepository {
         let latency = start.duration(to: ContinuousClock.now).wholeMilliseconds
         return APIHealthCheck(
             id: "remote-api",
-            name: "Remote API",
+            name: String(localized: "Remote API"),
             endpoint: self.endpoint.path(),
             status: response.statusCode < 300 ? .healthy : .warning,
             latencyMilliseconds: latency,

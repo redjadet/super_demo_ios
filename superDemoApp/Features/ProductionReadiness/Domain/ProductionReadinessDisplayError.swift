@@ -12,15 +12,23 @@ struct ProductionReadinessDisplayError: Equatable {
         if let apiError = error as? APIError {
             switch apiError {
             case .cancelled:
-                self.message = "Validation was cancelled."
+                self.message = String(localized: "Validation was cancelled.")
             case .unauthorizedAfterRefresh:
-                self.message = "Session refresh failed. Sign in again before release validation."
+                self.message = String(
+                    localized: "Session refresh failed. Sign in again before release validation."
+                )
             case .transport:
-                self.message = "Network unavailable. Use cached sample states or retry on a stable connection."
+                self.message = String(
+                    localized: "Network unavailable. Use cached sample states or retry on a stable connection."
+                )
             case .httpStatus:
-                self.message = "API health check failed. Review server status before release."
+                self.message = String(
+                    localized: "API health check failed. Review server status before release."
+                )
             case .invalidResponse, .decodingFailed:
-                self.message = "API response shape changed. Update mapping and tests before release."
+                self.message = String(
+                    localized: "API response shape changed. Update mapping and tests before release."
+                )
             }
         } else {
             self.message = error.localizedDescription
