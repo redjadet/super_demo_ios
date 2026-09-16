@@ -175,14 +175,19 @@ required_lint_rules=(
   identical_operands
   implicitly_unwrapped_optional
   incompatible_concurrency_annotation
+  indentation_width
   legacy_objc_type
   no_dispatch_main_async
+  no_empty_block
+  no_fixed_appearance_colors
   no_force_try
   no_navigation_view
+  no_observable_object_new_code
   no_print_debug
   no_screen_bounds_layout
   no_task_detached
   no_uiapplication_shared
+  prefer_self_in_static_references
   swift_two_space_member_indent
   prefer_key_path
   private_swiftui_state
@@ -195,6 +200,10 @@ required_lint_rules=(
   test_case_accessibility
   unhandled_throwing_task
   unavailable_function
+  unneeded_escaping
+  unused_parameter
+  variable_shadowing
+  xct_specific_matcher
 )
 
 for rule in "${required_lint_rules[@]}"; do

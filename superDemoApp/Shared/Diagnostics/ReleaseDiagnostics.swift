@@ -35,7 +35,7 @@ nonisolated struct DeviceOnlyFailure: Equatable {
 }
 
 nonisolated struct ReleaseDiagnostics: ReleaseDiagnosticsReporting {
-    static let shared = ReleaseDiagnostics()
+    static let shared = Self()
 
     private let releaseChecksLogger: Logger
     private let deviceOnlyFailuresLogger: Logger

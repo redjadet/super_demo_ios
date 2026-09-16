@@ -101,9 +101,9 @@ struct URLSessionAPIClientTests {
 }
 
 private struct NoopAPILogger: APILogging {
-    func requestStarted(_: APIRequest, attempt _: Int) {}
-    func requestFinished(url _: URL, statusCode _: Int, attempt _: Int) {}
-    func requestFailed(url _: URL, error _: APIError, attempt _: Int) {}
+    func requestStarted(_: APIRequest, attempt _: Int) { /* no-op */ }
+    func requestFinished(url _: URL, statusCode _: Int, attempt _: Int) { /* no-op */ }
+    func requestFailed(url _: URL, error _: APIError, attempt _: Int) { /* no-op */ }
 }
 
 private actor TestRetrySleeper: RetrySleeping {

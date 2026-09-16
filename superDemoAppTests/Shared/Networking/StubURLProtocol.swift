@@ -87,12 +87,12 @@ final class StubURLProtocol: URLProtocol {
             statusCode: Int,
             headers: [String: String] = [:],
             data: Data = Data()
-        ) -> Stub {
-            Stub(statusCode: statusCode, headers: headers, data: data, error: nil)
+        ) -> Self {
+            Self(statusCode: statusCode, headers: headers, data: data, error: nil)
         }
 
-        static func error(_ error: Error) -> Stub {
-            Stub(statusCode: nil, headers: [:], data: Data(), error: error)
+        static func error(_ error: Error) -> Self {
+            Self(statusCode: nil, headers: [:], data: Data(), error: error)
         }
     }
 
@@ -135,7 +135,7 @@ final class StubURLProtocol: URLProtocol {
         self.client?.urlProtocolDidFinishLoading(self)
     }
 
-    override func stopLoading() {}
+    override func stopLoading() { /* no-op */ }
 
     private static func sessionID(from request: URLRequest) -> UUID? {
         guard let value = request.value(forHTTPHeaderField: StubURLSessionFactory.sessionIDHeader)

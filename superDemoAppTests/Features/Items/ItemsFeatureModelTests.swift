@@ -47,7 +47,7 @@ private final class ItemsRecordingDiagnostics: ReleaseDiagnosticsReporting, @unc
         return self.recordedFailedNames
     }
 
-    func releaseCheckPassed(_: ReleaseDiagnosticCheck) {}
+    func releaseCheckPassed(_: ReleaseDiagnosticCheck) { /* no-op */ }
 
     func releaseCheckFailed(_ check: ReleaseDiagnosticCheck, reason _: String) {
         self.lock.lock()
@@ -55,7 +55,7 @@ private final class ItemsRecordingDiagnostics: ReleaseDiagnosticsReporting, @unc
         self.lock.unlock()
     }
 
-    func deviceOnlyFailure(_: DeviceOnlyFailure) {}
+    func deviceOnlyFailure(_: DeviceOnlyFailure) { /* no-op */ }
 }
 
 @Suite("Items feature model")

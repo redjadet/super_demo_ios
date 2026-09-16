@@ -70,15 +70,15 @@ struct CompositeProductionReadinessRepositoryTests {
 }
 
 private struct NoopReleaseDiagnostics: ReleaseDiagnosticsReporting {
-    func releaseCheckPassed(_: ReleaseDiagnosticCheck) {}
-    func releaseCheckFailed(_: ReleaseDiagnosticCheck, reason _: String) {}
-    func deviceOnlyFailure(_: DeviceOnlyFailure) {}
+    func releaseCheckPassed(_: ReleaseDiagnosticCheck) { /* no-op */ }
+    func releaseCheckFailed(_: ReleaseDiagnosticCheck, reason _: String) { /* no-op */ }
+    func deviceOnlyFailure(_: DeviceOnlyFailure) { /* no-op */ }
 }
 
 private struct NoopAPILogger: APILogging {
-    func requestStarted(_: APIRequest, attempt _: Int) {}
-    func requestFinished(url _: URL, statusCode _: Int, attempt _: Int) {}
-    func requestFailed(url _: URL, error _: APIError, attempt _: Int) {}
+    func requestStarted(_: APIRequest, attempt _: Int) { /* no-op */ }
+    func requestFinished(url _: URL, statusCode _: Int, attempt _: Int) { /* no-op */ }
+    func requestFailed(url _: URL, error _: APIError, attempt _: Int) { /* no-op */ }
 }
 
 private struct ImmediateRetrySleeper: RetrySleeping {

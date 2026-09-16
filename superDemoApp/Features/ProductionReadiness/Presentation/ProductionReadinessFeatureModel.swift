@@ -29,9 +29,14 @@ final class ProductionReadinessFeatureModel {
         return false
     }
 
+    init(loadSnapshot: LoadProductionReadinessSnapshotUseCase) {
+        self.loadSnapshot = loadSnapshot
+        self.scoreSnapshot = ScoreProductionReadinessUseCase()
+    }
+
     init(
         loadSnapshot: LoadProductionReadinessSnapshotUseCase,
-        scoreSnapshot: ScoreProductionReadinessUseCase = ScoreProductionReadinessUseCase()
+        scoreSnapshot: ScoreProductionReadinessUseCase
     ) {
         self.loadSnapshot = loadSnapshot
         self.scoreSnapshot = scoreSnapshot

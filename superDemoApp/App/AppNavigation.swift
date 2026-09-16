@@ -73,7 +73,7 @@ nonisolated enum AppDeepLink: Equatable {
         return segments
     }
 
-    private static func link(from segments: [String]) -> AppDeepLink? {
+    private static func link(from segments: [String]) -> Self? {
         switch segments {
         case ["dashboard", "risks"]:
             return .productionRisks

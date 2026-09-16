@@ -125,21 +125,28 @@ Details: [`agent_swift_guards.md`](agent_swift_guards.md).
 | `no_dispatch_main_async`          | Prefer MainActor isolation                            |
 | `no_screen_bounds_layout`         | Ban screen-size layout hacks                          |
 | `no_uiapplication_shared`         | Protect universal app code                            |
+| `no_fixed_appearance_colors`      | Ban `Color`/`UIColor` white/black                     |
+| `no_observable_object_new_code`   | Prefer `@Observable` over Combine observation         |
 | `swiftdata_model_final`           | `@Model` must be `final class`                        |
 
 ## High-signal SwiftLint policy
 
 Enabled opt-in rules prioritize issues AI agents commonly miss:
 
-- Safety: force unwraps, IUOs, force tries, identical operands, unavailable functions.
+- Safety: force unwraps, IUOs, force tries, identical operands, unavailable
+  functions, empty blocks, unused parameters, variable shadowing.
 - Concurrency: async without await, incompatible concurrency annotations,
-  unhandled throwing tasks.
+  unhandled throwing tasks, unneeded `@escaping`.
 - SwiftUI/accessibility: image labels, button traits, private state,
-  no Interface Builder.
+  asset symbols, no Interface Builder.
 - Tests: balanced XCTest lifecycle, no empty tests, no focused/pending tests,
-  final test cases, test access control.
-- Maintainability/performance: optional collections, default-parameter order,
-  key paths, `reduce(into:)`, shorthand optional binding, sorted first/last.
+  final test cases, test access control, XCTest-specific matchers.
+- Maintainability: `Self` in static refs, optional collections, key paths,
+  `reduce(into:)`, shorthand optional binding, sorted first/last,
+  4-space `indentation_width`.
+
+Intentionally **not** enabled: `unneeded_throws_rethrows` (false positives on
+`AppIntent.perform` / throwing protocol stubs).
 
 ## Agent checklist
 

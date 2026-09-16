@@ -36,7 +36,7 @@ struct AppRootView: View {
             self.navigation.handle(url: url)
         }
         .alert("Link Not Available", isPresented: self.invalidDeepLinkPresented) {
-            Button("OK", role: .cancel) {}
+            Button("OK", role: .cancel) { /* dismiss */ }
         } message: {
             Text(self.navigation.state.invalidDeepLinkMessage ?? "")
         }

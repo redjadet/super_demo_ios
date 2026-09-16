@@ -17,7 +17,7 @@ nonisolated struct CrashMonitorFailure: Error, Equatable {
 }
 
 nonisolated struct NoopCrashMonitor: CrashMonitoring {
-    func recordNonFatal(_: CrashMonitorFailure) {}
+    func recordNonFatal(_: CrashMonitorFailure) { /* no-op */ }
 }
 
 /// Lightweight OSLog-backed non-fatal recorder. Swap for a vendor SDK adapter in production.

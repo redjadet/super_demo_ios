@@ -80,7 +80,7 @@ private final class RecordingReleaseDiagnostics: ReleaseDiagnosticsReporting, @u
     private var failed: [ReleaseDiagnosticCheck] = []
     private var devices: [DeviceOnlyFailure] = []
 
-    func releaseCheckPassed(_: ReleaseDiagnosticCheck) {}
+    func releaseCheckPassed(_: ReleaseDiagnosticCheck) { /* no-op */ }
 
     func releaseCheckFailed(_ check: ReleaseDiagnosticCheck, reason _: String) {
         self.lock.lock()

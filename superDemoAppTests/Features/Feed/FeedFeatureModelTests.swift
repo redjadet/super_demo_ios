@@ -37,7 +37,7 @@ private final class RecordingDiagnostics: ReleaseDiagnosticsReporting, @unchecke
         return self.recordedFailedChecks
     }
 
-    func releaseCheckPassed(_: ReleaseDiagnosticCheck) {}
+    func releaseCheckPassed(_: ReleaseDiagnosticCheck) { /* no-op */ }
 
     func releaseCheckFailed(_ check: ReleaseDiagnosticCheck, reason: String) {
         self.lock.lock()
@@ -45,7 +45,7 @@ private final class RecordingDiagnostics: ReleaseDiagnosticsReporting, @unchecke
         self.lock.unlock()
     }
 
-    func deviceOnlyFailure(_: DeviceOnlyFailure) {}
+    func deviceOnlyFailure(_: DeviceOnlyFailure) { /* no-op */ }
 }
 
 @Suite("Feed feature model")
