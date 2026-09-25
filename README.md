@@ -20,7 +20,9 @@ root: `./bin/lint.sh`, `./bin/verify-swift.sh` (format+lint only), `./bin/ci.sh`
 1. **Clean layers** — `Features/*/Presentation|Domain|Data` enforced by
    `./tool/check_layer_boundaries.sh` (via `./bin/lint.sh`).
 2. **Offline Feed** — network → repository → use case → `@Observable` model;
-   stale cache fallback proven in Xcode preview + repository tests (see below).
+   stale cache fallback via `-StaleFeedDemo` / Engineering demos → **Stale Feed
+   cache fallback** (also covered by `#Preview("Feed — Stale")` and
+   `CachingFeedRepositoryTests`).
 3. **Production networking** — retry, 401 refresh, 429, Idempotency-Key, redacted
    logs in `Shared/Networking/`.
 4. **UIKit interop** — collection reuse/prefetch, SwiftUI hosting, custom transition
@@ -31,9 +33,9 @@ root: `./bin/lint.sh`, `./bin/verify-swift.sh` (format+lint only), `./bin/ci.sh`
 ## 3-minute demo path
 
 1. **Dashboard** — release health / scores (`dashboardTab`).
-2. **Feed** — seeded list, Retry, cancel-safe refresh (`feedTab`). Stale-banner
-   behavior: open `#Preview("Feed — Stale")` or run
-   `CachingFeedRepositoryTests` — no guaranteed in-app stale fixture yet.
+2. **Feed** — seeded list, Retry, cancel-safe refresh (`feedTab`). **Stale banner:**
+   launch with `-StaleFeedDemo` / `SUPERDEMO_STALE_FEED_DEMO=1`, or Dashboard →
+   Engineering demos → **Stale Feed cache fallback** (`staleFeedDemoLink`).
 3. **Dashboard → UIKit Showcase** — collection + custom transition
    (`uikitShowcaseLink`).
 4. **Dashboard → Engineering demos → Risks / Diagnostics / Idempotent POST** —
@@ -47,6 +49,7 @@ Deep links: `superdemo://dashboard/risks`, `superdemo://feed`, `superdemo://item
 | --- | --- | --- |
 | `-ReviewerDemoMode` or `SUPERDEMO_REVIEWER_DEMO_MODE=1` | **Launch / env** | Seeded sample Dashboard + Feed + Items |
 | `REVIEWER_DEMO` | **Compile-time** (TestFlight beta via Fastlane) | Same seeded path when built into the binary — not a launch argument |
+| `-StaleFeedDemo` or `SUPERDEMO_STALE_FEED_DEMO=1` | **Launch / env** | Seed Feed SwiftData cache + failing remote → real stale banner via `CachingFeedRepository` |
 | `-UITesting` | Launch | UI-test fixtures / in-memory store |
 | `-KeychainTokenDemo` or `SUPERDEMO_KEYCHAIN_TOKEN_DEMO=1` | Launch / env | Opt-in Keychain-backed token refresher demo |
 
@@ -73,7 +76,9 @@ Also: [`docs/architecture.md`](docs/architecture.md) ·
 [`docs/ci-cd-map.md`](docs/ci-cd-map.md) ·
 [`docs/security-checklist.md`](docs/security-checklist.md) ·
 [`docs/performance-lab.md`](docs/performance-lab.md) ·
-[`docs/engineering-standards.md`](docs/engineering-standards.md)
+[`docs/engineering-standards.md`](docs/engineering-standards.md) ·
+[`docs/sonar-decision.md`](docs/sonar-decision.md) ·
+[`docs/design-token-figma.md`](docs/design-token-figma.md)
 
 ## TestFlight and release
 

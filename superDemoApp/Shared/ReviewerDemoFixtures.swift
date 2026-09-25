@@ -7,6 +7,22 @@ import Foundation
 import SwiftData
 
 enum ReviewerDemoFixtures {
+    /// Posts written into `CachedFeedPost` for the stale-cache demo path.
+    static let sampleFeedPosts: [FeedPost] = [
+        FeedPost(
+            id: 1,
+            userID: 1,
+            title: String(localized: "UI Test Post"),
+            body: String(localized: "Stable feed content for UI tests and simulator runs.")
+        ),
+        FeedPost(
+            id: 2,
+            userID: 1,
+            title: String(localized: "Cached offline post"),
+            body: String(localized: "Shown with the stale banner when remote fetch fails.")
+        ),
+    ]
+
     static let sampleItems: [ItemEntity] = [
         ItemEntity(
             id: UUID(uuid: (
@@ -72,6 +88,24 @@ enum ReviewerDemoFixtures {
                     id: sample.id
                 )
             )
+        }
+        try context.save()
+    }
+
+    /// Replaces the Feed SwiftData cache with fresh sample rows for stale-fallback demos.
+    @MainActor
+    static func seedFeedCache(
+        in context: ModelContext,
+        posts: [FeedPost] = Self.sampleFeedPosts,
+        cachedAt: Date = .now
+    ) throws {
+        let descriptor = FetchDescriptor<CachedFeedPost>()
+        let existing = try context.fetch(descriptor)
+        for row in existing {
+            context.delete(row)
+        }
+        for post in posts {
+            context.insert(CachedFeedPost(post: post, cachedAt: cachedAt))
         }
         try context.save()
     }
