@@ -81,7 +81,7 @@ final class ActivityKitFeedRefreshLiveActivityController: FeedRefreshLiveActivit
         self.endAfterHoldTask = Task { [weak self] in
             try? await Task.sleep(nanoseconds: hold)
             guard !Task.isCancelled else { return }
-            await self?.endCurrentActivity(state: finalState, dismissal: .default)
+            self?.endCurrentActivity(state: finalState, dismissal: .default)
         }
     }
 
