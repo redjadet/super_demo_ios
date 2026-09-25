@@ -42,6 +42,12 @@ fi
 echo "==> Layer boundaries (Features/*)"
 "$ROOT/tool/check_layer_boundaries.sh"
 
+echo "==> Feature folder contract"
+"$ROOT/tool/check_feature_folder_contract.sh"
+
+echo "==> Cross-feature import leaks"
+"$ROOT/tool/check_feature_import_leaks.sh"
+
 echo "==> Engineering quality scorecard"
 "$ROOT/tool/check_engineering_quality_scorecard.sh"
 

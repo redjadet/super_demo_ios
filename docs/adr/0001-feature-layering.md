@@ -21,17 +21,16 @@ Adopt **three-layer features** under `superDemoApp/Features/<Name>/`:
 | Domain | Entities, use cases, repository protocols, pure validation | SwiftUI, SwiftData, UIKit, URLSession types |
 | Data | SwiftData models, DTOs, mappers, API clients, repository impls | UI / product navigation |
 
-Enforce with [`../../tool/check_layer_boundaries.sh`](../../tool/check_layer_boundaries.sh)
+Enforce with [`../../tool/check_layer_boundaries.sh`](../../tool/check_layer_boundaries.sh),
+[`../../tool/check_feature_folder_contract.sh`](../../tool/check_feature_folder_contract.sh),
+and [`../../tool/check_feature_import_leaks.sh`](../../tool/check_feature_import_leaks.sh)
 (via `./bin/lint.sh`). Shared cross-feature code lives in `Shared/` or `App/`
-composition roots — not feature↔feature imports (future modularity guard:
-Flutter-parity FP-P1-A).
+composition roots — not feature↔feature imports. See [`../modularity.md`](../modularity.md).
 
 ## Consequences
 
 - New layered features must ship Presentation / Domain / Data folders when marked
-  layered in the feature template.
+  layered (`tool/config/layered_features.txt` + feature template).
 - Lint failure on illegal imports is a merge blocker, not a style suggestion.
 - Cross-feature reuse goes through Domain protocols + App composition, not
   direct Feature A → Feature B imports.
-- Deeper modularity (folder contract + import-leak scripts) is a later P1 slice;
-  this ADR does not invent those scripts.

@@ -37,8 +37,10 @@ Launch via `UiTestSupport.launchApplication()` (`-UITesting`, terminate between 
 | Project/scheme sanity | `xcodebuild -list -project superDemoApp.xcodeproj` |
 | Swift after edits (agents) | `./bin/verify-swift.sh` (format + lint; **preferred**) |
 | Swift format only | `./bin/format.sh` |
-| Swift lint + layer boundaries | `./bin/lint.sh` (indent + agent patterns + SwiftLint + SwiftFormat) |
+| Swift lint + layer boundaries | `./bin/lint.sh` (indent + agent patterns + SwiftLint + SwiftFormat + modularity) |
 | Layer boundaries only | `./tool/check_layer_boundaries.sh` |
+| Feature folder contract | `./tool/check_feature_folder_contract.sh` (also via `./bin/lint.sh`) |
+| Cross-feature import leaks | `./tool/check_feature_import_leaks.sh` (also via `./bin/lint.sh`) |
 | Engineering scorecard gate | `./tool/check_engineering_quality_scorecard.sh` (also via `./bin/lint.sh`) |
 | Markdown lint gate | `./bin/lint-markdown.sh` |
 | DESIGN.md DesignMD lint (needs Node; in checklists) | `./tool/check_design_md.sh` |
@@ -69,7 +71,9 @@ Launch via `UiTestSupport.launchApplication()` (`-UITesting`, terminate between 
 ## Routing
 
 - Apple defaults: [`apple-development-practices.md`](apple-development-practices.md)
-- Architecture / `Features/` work: [`architecture.md`](architecture.md), [`layers.md`](layers.md), [`module-structure.md`](module-structure.md), [`feature-template.md`](feature-template.md)
+- Architecture / `Features/` work: [`architecture.md`](architecture.md),
+  [`layers.md`](layers.md), [`module-structure.md`](module-structure.md),
+  [`feature-template.md`](feature-template.md), [`modularity.md`](modularity.md)
 - SwiftUI state: [`state-management.md`](state-management.md)
 - Universal/responsive UI: [`universal-apple-platforms.md`](universal-apple-platforms.md)
 - Light/dark policy: [`design_system.md`](design_system.md#light-and-dark-mode-required-from-day-one)
