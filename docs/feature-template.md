@@ -9,8 +9,12 @@ superDemoApp/Features/<FeatureName>/
   Data/
 ```
 
-Imports and folders are enforced by [`../tool/check_layer_boundaries.sh`](../tool/check_layer_boundaries.sh)
-(via `./bin/lint.sh`). Read [`architecture.md`](architecture.md) and [`layers.md`](layers.md) first.
+Imports and folders are enforced by [`../tool/check_layer_boundaries.sh`](../tool/check_layer_boundaries.sh),
+[`../tool/check_feature_folder_contract.sh`](../tool/check_feature_folder_contract.sh), and
+[`../tool/check_feature_import_leaks.sh`](../tool/check_feature_import_leaks.sh) (via `./bin/lint.sh`).
+List the feature in [`../tool/config/layered_features.txt`](../tool/config/layered_features.txt).
+Do not import other features — compose in `App/` (see [`modularity.md`](modularity.md)).
+Read [`architecture.md`](architecture.md) and [`layers.md`](layers.md) first.
 
 ## Goal
 

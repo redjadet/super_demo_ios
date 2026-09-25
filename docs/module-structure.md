@@ -25,6 +25,8 @@ superDemoApp/
 - Extract shared code after two real call sites or one strong platform boundary.
 - Keep feature-private helpers inside feature folder.
 - Move cross-feature contracts to `Shared` only when stable.
+- Feature↔feature type references are forbidden; compose in `App/` — see
+  [`modularity.md`](modularity.md).
 
 ## File Placement
 

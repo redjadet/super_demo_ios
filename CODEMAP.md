@@ -9,7 +9,8 @@ Timed walk: [`docs/architecture-tour.md`](docs/architecture-tour.md).
 | ≤15 min architecture tour | [`docs/architecture-tour.md`](docs/architecture-tour.md) |
 | Portfolio / reviewer map | [`docs/portfolio.md`](docs/portfolio.md), [`README.md`](README.md) |
 | Agent onboard / loop | [`AGENTS.md`](AGENTS.md), [`docs/agent_knowledge_base.md`](docs/agent_knowledge_base.md) |
-| Feature shape / layers | [`docs/feature-template.md`](docs/feature-template.md), [`docs/layers.md`](docs/layers.md), `superDemoApp/Features/<Name>/{Presentation,Domain,Data}/` |
+| Feature shape / layers | [`docs/feature-template.md`](docs/feature-template.md), [`docs/layers.md`](docs/layers.md), [`docs/modularity.md`](docs/modularity.md), `superDemoApp/Features/<Name>/{Presentation,Domain,Data}/` |
+| Modularity / import leaks | [`docs/modularity.md`](docs/modularity.md); `./tool/check_feature_folder_contract.sh`, `./tool/check_feature_import_leaks.sh` |
 | Feed (offline JSON + cache) | `superDemoApp/Features/Feed/`, [`docs/offline-first.md`](docs/offline-first.md), [`docs/offline-invariants.md`](docs/offline-invariants.md), [`docs/sync-and-networking.md`](docs/sync-and-networking.md) |
 | Items (SwiftData reference) | `superDemoApp/Features/Items/` |
 | Production readiness / UIKit | `superDemoApp/Features/ProductionReadiness/`, `…/UIKitShowcase/` |

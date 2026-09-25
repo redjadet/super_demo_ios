@@ -1,0 +1,5 @@
+# Features marked layered — must ship Presentation/, Domain/, and Data/.
+# Add a name when scaffolding a Clean Architecture feature (see docs/feature-template.md).
+Feed
+Items
+ProductionReadiness

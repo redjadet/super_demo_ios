@@ -1,8 +1,9 @@
 # Layers And Responsibilities
 
 Enforced under `superDemoApp/Features/<Name>/` by
-[`../tool/check_layer_boundaries.sh`](../tool/check_layer_boundaries.sh). See
-[`architecture.md`](architecture.md).
+[`../tool/check_layer_boundaries.sh`](../tool/check_layer_boundaries.sh)
+(framework imports) plus folder/modularity gates in [`modularity.md`](modularity.md).
+See [`architecture.md`](architecture.md).
 
 ## Presentation
 

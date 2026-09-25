@@ -52,10 +52,12 @@ Engineering badge, and fix proof before reclaiming 10/10.
 ## Out of scope (this scorecard)
 
 - Measured code-coverage % badges (FP-P1-D).
-- Cross-feature import leak guards (FP-P1-A).
 - Harness scorecard / SAFETY-REPORT template (FP-P1-B).
 - Supply-chain scanners (FP-P2-A).
 - Vendor crash SDK / live SonarCloud / App Store submission.
+
+Modularity folder/import guards (FP-P1-A) live in [`../modularity.md`](../modularity.md)
+and `./bin/lint.sh`; they are not separate scorecard areas.
 
 ## Related
 

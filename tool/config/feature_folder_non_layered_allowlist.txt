@@ -1,0 +1,4 @@
+# Non-layered feature folders (opt-out). One feature directory name per line.
+# Use only for intentionally flat demo folders — prefer layered Features/*.
+# Example:
+# LegacyDemo

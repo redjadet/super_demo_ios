@@ -34,7 +34,7 @@ Host / MCP / skills: [`docs/agent_host_notes.md`](docs/agent_host_notes.md),
 | Find any path | [`CODEMAP.md`](CODEMAP.md) |
 | ≤15 min architecture tour | [`docs/architecture-tour.md`](docs/architecture-tour.md) |
 | Any Swift | [`docs/agent_swift_guards.md`](docs/agent_swift_guards.md); `./bin/verify-swift.sh` |
-| Feature / layers | [`docs/feature-template.md`](docs/feature-template.md), [`docs/layers.md`](docs/layers.md) |
+| Feature / layers | [`docs/feature-template.md`](docs/feature-template.md), [`docs/layers.md`](docs/layers.md), [`docs/modularity.md`](docs/modularity.md) |
 | SwiftUI / light–dark | [`DESIGN.md`](DESIGN.md), [`docs/design_system.md`](docs/design_system.md) |
 | Domain / Data | [`docs/offline-first.md`](docs/offline-first.md), [`docs/dependency-injection.md`](docs/dependency-injection.md) |
 | Tests | [`docs/testing.md`](docs/testing.md) |

@@ -63,6 +63,7 @@ Source-of-truth docs for `superDemoApp`.
 - Development feedback loop: [`development-feedback-loop.md`](development-feedback-loop.md)
 - Code style: [`code-style.md`](code-style.md)
 - Module structure: [`module-structure.md`](module-structure.md)
+- Modularity (feature folder + import leaks): [`modularity.md`](modularity.md)
 - Sync and networking: [`sync-and-networking.md`](sync-and-networking.md)
 - Feature template: [`feature-template.md`](feature-template.md)
 - AI agent playbook: [`ai-agent-playbook.md`](ai-agent-playbook.md)

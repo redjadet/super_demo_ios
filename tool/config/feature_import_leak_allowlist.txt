@@ -1,0 +1,5 @@
+# Time-boxed Feature A → Feature B type exceptions for check_feature_import_leaks.sh.
+# Format: FromFeature|ToFeature|TypeName|reason
+# Prefer moving shared contracts to Shared/ or composing in App/ instead of growing this list.
+# Example:
+# Settings|RemoteConfig|RemoteConfigPort|temporary until Shared/Diagnostics port lands
