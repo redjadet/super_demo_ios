@@ -48,6 +48,27 @@ private final class RecordingDiagnostics: ReleaseDiagnosticsReporting, @unchecke
     func deviceOnlyFailure(_: DeviceOnlyFailure) { /* no-op */ }
 }
 
+@MainActor
+private final class FeedLiveActivitySpy: FeedRefreshLiveActivityControlling {
+    private(set) var events: [String] = []
+
+    func refreshDidStart() {
+        self.events.append("start")
+    }
+
+    func refreshDidSucceed(postCount: Int, isStale: Bool) {
+        self.events.append("succeed:\(postCount):\(isStale)")
+    }
+
+    func refreshDidFail() {
+        self.events.append("fail")
+    }
+
+    func refreshDidCancel() {
+        self.events.append("cancel")
+    }
+}
+
 @Suite("Feed feature model")
 struct FeedFeatureModelTests {
     @Test
@@ -168,5 +189,60 @@ struct FeedFeatureModelTests {
         }
 
         model.cancelRefresh()
+    }
+
+    @Test
+    @MainActor
+    func refreshNotifiesLiveActivityStartAndSucceed() async {
+        let repository = FeedModelRepositorySpy()
+        repository.posts = [FeedPost(id: 1, userID: 1, title: "A", body: "B")]
+        let liveActivity = FeedLiveActivitySpy()
+        let model = FeedFeatureModel(
+            refreshFeed: RefreshFeedUseCase(repository: repository),
+            liveActivity: liveActivity
+        )
+
+        await model.refreshAndWait()
+
+        #expect(liveActivity.events == ["start", "succeed:1:false"])
+    }
+
+    @Test
+    @MainActor
+    func refreshFailureNotifiesLiveActivityFail() async {
+        let repository = FeedModelRepositorySpy()
+        repository.error = FeedError.invalidResponse
+        let liveActivity = FeedLiveActivitySpy()
+        let model = FeedFeatureModel(
+            refreshFeed: RefreshFeedUseCase(repository: repository),
+            liveActivity: liveActivity
+        )
+
+        await model.refreshAndWait()
+
+        #expect(liveActivity.events == ["start", "fail"])
+    }
+
+    @Test
+    @MainActor
+    func cancelRefreshNotifiesLiveActivityCancel() async {
+        let repository = FeedModelRepositorySpy()
+        repository.posts = [FeedPost(id: 1, userID: 1, title: "A", body: "B")]
+        repository.delayNanoseconds = 500_000_000
+        let liveActivity = FeedLiveActivitySpy()
+        let model = FeedFeatureModel(
+            refreshFeed: RefreshFeedUseCase(repository: repository),
+            liveActivity: liveActivity
+        )
+        await model.refreshAndWait()
+        liveActivity.events.removeAll()
+
+        model.refresh()
+        try? await Task.sleep(nanoseconds: 50_000_000)
+        model.cancelRefresh()
+
+        #expect(liveActivity.events.contains("start"))
+        #expect(liveActivity.events.contains("cancel"))
+        #expect(!liveActivity.events.contains { $0.hasPrefix("succeed") })
     }
 }

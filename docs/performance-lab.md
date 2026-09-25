@@ -78,10 +78,37 @@ GHA compiles the extension; it does not Profile it.
 
 ## Live Activity / Dynamic Island
 
-**Pending JP-P1-A.** ActivityKit is not in the repo yet. Do **not** invent a
-Live Activity Instruments recipe, fake attributes, or placeholder timings.
-When JP-P1-A lands, add a recipe here that mirrors Feed start/update/end (and
-cancel/fail) with the same honesty rule.
+Feed refresh Live Activity (JP-P1-A, **gate A**): spans refresh + ~2.5s
+post-complete hold, then ends. Cancel ends immediately and Feed UI still
+restores prior content.
+
+**Contract pointers:** attributes
+`FeedRefreshActivityAttributes` in `FeedWidgetShared/`; app controller
+`ActivityKitFeedRefreshLiveActivityController` (wired from `FeedComposition`);
+UI `FeedRefreshLiveActivity` in `superDemoAppWidget/` (same WidgetBundle as the
+Home Screen widget). Info.plist `NSSupportsLiveActivities`. Details:
+[`changes/2026-09-25_live-activity-feed-refresh.md`](changes/2026-09-25_live-activity-feed-refresh.md).
+
+### Recipe (Feed Live Activity)
+
+1. Install the app on an **iPhone Simulator or device** that supports Live
+   Activities (Dynamic Island presentation needs a capable device — do not claim
+   Island UI from hosted CI alone).
+2. Confirm Settings → Face ID & Passcode / Live Activities (or Focus) allow
+   Live Activities for the app when testing on device.
+3. Xcode → Product → Profile the **app** → **Time Profiler** (optional Points of
+   Interest if you add a dedicated signpost later).
+4. Workload: open Feed → pull to refresh → watch lock screen / Island update
+   through **refreshing → completed (hold) → dismissed**. Repeat with mid-flight
+   cancel (navigate away / cancel) and confirm prior Feed content restores and
+   the activity ends without a long hold.
+5. Record host, configuration, whether `ActivityAuthorizationInfo` allowed
+   activities, and that you are **not** publishing FPS numbers.
+
+**Do not** claim Dynamic Island device verification from hosted GHA. GHA
+compiles ActivityKit sources with the widget extension; it does not Profile or
+screenshot the Island. Silent no-op when activities are disabled is an honest
+outcome.
 
 ## Concurrency talk track (reviewers)
 
@@ -90,11 +117,12 @@ no invented numbers.
 
 | Topic | Where to point | What to say |
 | --- | --- | --- |
-| Cancel-safe refresh | `Shared/Presentation/AsyncLoadController.swift`; Feed / Items / Dashboard feature models | One in-flight `Task`; `cancel()` drops work; cancel restores prior UI — not a Retry failure (`CancellationError`) |
+| Cancel-safe refresh | `Shared/Presentation/AsyncLoadController.swift`; Feed / Items / Dashboard feature models | One in-flight `Task`; `cancel()` drops work; cancel restores prior UI — not a Retry failure (`CancellationError`); Feed Live Activity ends on cancel |
 | Structured loads | Feature models + `.task` / disappear cancel | Prefer structured tasks over detached fire-and-forget; lifetime tied to the screen |
 | Actors / tokens | Networking token refreshers under `Shared/` | Actor isolation for shared credentials; no ad-hoc locks on the hot path |
 | Signposts vs concurrency | `AppPerformanceSignposts.feed` around `fetchPosts` | Interval bounds the repository fetch; cancel mid-flight should end the interval via `defer` without blaming the server |
 | Widget boundary | App publisher vs widget `TimelineProvider` | App owns write + reload; widget process is read-only App Group — memory story is “small DTO,” not shared SwiftData |
+| Live Activity boundary | `FeedFeatureModel` → composition controller → widget `ActivityConfiguration` | App owns start/update/end; extension renders attributes only; Mac / disabled ActivityKit = no-op |
 | Strict concurrency | Swift 6 / `Sendable` on boundaries | Treat diagnostics as design feedback; do not silence without an ownership reason |
 
 **Demo path:** Feed pull-to-refresh → cancel mid-flight (disappear / cancel
@@ -104,5 +132,4 @@ Home Screen widget updating from the same cache honesty.
 ## Honesty rule
 
 If profiling cannot run in the agent/CI environment, keep this as a **recipe
-only** and omit FPS / latency claims. Never invent benchmarks. Never invent a
-Live Activity recipe before JP-P1-A.
+only** and omit FPS / latency claims. Never invent benchmarks.

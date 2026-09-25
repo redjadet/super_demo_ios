@@ -11,6 +11,8 @@
 		A1FEED010000000000000010 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1FEED01000000000000000F /* WidgetKit.framework */; };
 		A1FEED010000000000000012 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1FEED010000000000000011 /* WidgetKit.framework */; };
 		A1FEED010000000000000014 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1FEED010000000000000013 /* SwiftUI.framework */; };
+		A1LIVE010000000000000002 /* ActivityKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1LIVE010000000000000001 /* ActivityKit.framework */; platformFilter = ios; };
+		A1LIVE010000000000000004 /* ActivityKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1LIVE010000000000000003 /* ActivityKit.framework */; };
 /* End PBXBuildFile section */
 
 
@@ -60,6 +62,8 @@
 		A1FEED01000000000000000F /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		A1FEED010000000000000011 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		A1FEED010000000000000013 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		A1LIVE010000000000000001 /* ActivityKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ActivityKit.framework; path = System/Library/Frameworks/ActivityKit.framework; sourceTree = SDKROOT; };
+		A1LIVE010000000000000003 /* ActivityKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ActivityKit.framework; path = System/Library/Frameworks/ActivityKit.framework; sourceTree = SDKROOT; };
 		A1STOREKIT010000000000001 /* Products.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = Products.storekit; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -97,6 +101,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A1FEED010000000000000010 /* WidgetKit.framework in Frameworks */,
+				A1LIVE010000000000000002 /* ActivityKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -106,6 +111,7 @@
 			files = (
 				A1FEED010000000000000012 /* WidgetKit.framework in Frameworks */,
 				A1FEED010000000000000014 /* SwiftUI.framework in Frameworks */,
+				A1LIVE010000000000000004 /* ActivityKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

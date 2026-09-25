@@ -13,7 +13,7 @@ Canon: [`engineering/checklist_gate.md`](engineering/checklist_gate.md).
 | Lint (+ DesignMD) | Yes — job `lint` → `bundle exec fastlane ci_lint` | Yes (checklist lint slice / Fastlane `ci`) | Optional | — |
 | Unit / UI smoke | Job `iphone-test` → `./bin/ci-iphone-test.sh` (often **build + limited UI**; see [`testing.md`](testing.md) — do not assume full suite parity with every local run) | Yes — same script; warnings as errors | Optional targeted `xcodebuild test` | — |
 | Platform builds | Job `platform-builds` → `./bin/ci-platform-builds.sh` (iPad + Mac) | Yes (unless `CHECKLIST_SKIP_PLATFORM_BUILDS=1` / `CI_SKIP_PLATFORM_BUILDS=1`) | — | — |
-| Widget extension | Built/embedded with iPhone/iPad app targets (`superDemoAppWidget`, App Group snapshot); **not** embedded on Mac (`platformFilter = ios`) | Same as app lanes | — | Device App Group signing may need team |
+| Widget extension | Built/embedded with iPhone/iPad app targets (`superDemoAppWidget`, App Group snapshot + Feed refresh Live Activity UI); **not** embedded on Mac (`platformFilter = ios`) | Same as app lanes | — | Device App Group / Live Activity Island may need device; GHA compiles only |
 | Gate | Job **`checklist`** requires the three macos jobs | `./bin/checklist` (single-command) or `./bin/ci.sh` | — | — |
 | Archive | **Not** normal PR CI | Optional local archive | [`release-smoke.yml`](../.github/workflows/release-smoke.yml) `build-ipa` (manual `workflow_dispatch`) | Clean archive inside beta lane |
 | TestFlight upload | Needs signing + App Store Connect credentials — **not** on every PR | — | — | `./bin/fastlane-run ios beta` |

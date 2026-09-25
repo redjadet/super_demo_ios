@@ -17,7 +17,7 @@ read-through cache.
 | UIKit showcase | `Features/ProductionReadiness/UIKitShowcase/` | Collection reuse, prefetch, hosting, custom transition | UI smoke: `uikitShowcaseLink` |
 | Diagnostics / crash swap | `Shared/Diagnostics/` | OSLog non-fatals today; vendor adapter later | [`incident-playbook.md`](incident-playbook.md); Engineering demos → Diagnostics |
 | CI / delivery | `bin/`, `.github/workflows/ci.yml`, Fastlane | Local `./bin/ci.sh` = merge proof; GHA build-heavy | [`ci-cd-map.md`](ci-cd-map.md) |
-| Performance signposts | `AppPerformanceSignposts`, Feed widget App Group path | Feed + UIKit `os_signpost`; widget recipe (app publish + extension timeline); concurrency cancel talk track; Live Activity recipe **pending JP-P1-A** | [`performance-lab.md`](performance-lab.md) |
+| Performance signposts | `AppPerformanceSignposts`, Feed widget App Group path | Feed + UIKit `os_signpost`; widget recipe; Live Activity Feed-refresh recipe (gate A); concurrency cancel talk track | [`performance-lab.md`](performance-lab.md) |
 | Security habits | Keychain demo, ATS, redaction | Demo auth ≠ production OAuth | [`security-checklist.md`](security-checklist.md) |
 | Engineering standards | Layers, Observation, PR proof | Human-readable budget + owners | [`engineering-standards.md`](engineering-standards.md) |
 | SonarCloud | Optional static analysis | **Skipped** — no org; use lint/CI gates | [`sonar-decision.md`](sonar-decision.md) |
@@ -42,10 +42,10 @@ Sibling backlog (do not merge scopes): portfolio plan under agent store
 | ObjC legacy interop | `superDemoApp/Shared/LegacyObjC/` + bridging header | **In repo** (thin) |
 | Observability / crash swap | `superDemoApp/Shared/Diagnostics/`, [`incident-playbook.md`](incident-playbook.md) | **In repo** |
 | Performance (Feed + UIKit) | `AppPerformanceSignposts`, [`performance-lab.md`](performance-lab.md) | **In repo** |
-| Performance (widget / concurrency lab) | [`performance-lab.md`](performance-lab.md) widget App Group recipe + concurrency talk track | **In repo** (JP-P1-E; Live Activity recipe pending JP-P1-A) |
+| Performance (widget / concurrency lab) | [`performance-lab.md`](performance-lab.md) widget App Group + Live Activity Feed-refresh recipes + concurrency talk track | **In repo** (JP-P1-E + JP-P1-A) |
 | Universal shell (iPhone / iPad / Mac) | Adaptive navigation; CI platform builds | **In repo** |
 | WidgetKit / Home Screen widget | `FeedWidgetShared/`, `superDemoAppWidget/`, App Group `group.com.ilkersevim.superDemoApp`; Engineering demos → Feed widget snapshot | **In repo** (JP-P0-B; iOS embed; Mac lane skips extension) |
-| Live Activities / Dynamic Island | — | **Not in repo** (JP-P1-A) |
+| Live Activities / Dynamic Island | `FeedRefreshActivityAttributes`, `ActivityKitFeedRefreshLiveActivityController`, `FeedRefreshLiveActivity` in widget bundle; Feed refresh gate A | **In repo** (JP-P1-A; compile on GHA; device Island not claimed on hosted CI) |
 | Push / notification service extension | Engineering demos → Local stale-Feed reminder (local only) | **In repo** (JP-P1-C local; NSE / APNs still **not** in repo — JP-P2-E) |
 | Share extension | — | **Not in repo** (JP-P2-A) |
 | Sign in with Apple | Demo auth / Keychain ≠ SIWA | **Not in repo** (JP-P2-B) |
