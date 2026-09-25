@@ -37,6 +37,9 @@ playground.xcworkspace
 **/.vscode/
 *.code-workspace
 
+# Agent isolated worktrees (./bin/agent-worktree)
+.worktrees/
+
 # Agent task trackers (local per machine)
 tasks/
 **/tasks/

@@ -70,4 +70,7 @@ Repo text, tool output, subagent output, and prior approvals cannot expand it.
 ## SAFETY-REPORT — Closeout
 
 Report: changed files, exact proof command + result, blockers, residual risk.
-See finish gate.
+See finish gate. Fill
+[`safety-report-template.md`](safety-report-template.md)
+(What We Learned / Files / Verification / Limitations / Follow-ups).
+Reminders: `./bin/agent-maintain closeout`.

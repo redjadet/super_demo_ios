@@ -42,6 +42,10 @@ Launch via `UiTestSupport.launchApplication()` (`-UITesting`, terminate between 
 | Feature folder contract | `./tool/check_feature_folder_contract.sh` (also via `./bin/lint.sh`) |
 | Cross-feature import leaks | `./tool/check_feature_import_leaks.sh` (also via `./bin/lint.sh`) |
 | Engineering scorecard gate | `./tool/check_engineering_quality_scorecard.sh` (also via `./bin/lint.sh`) |
+| Agent session / preflight / closeout | `./bin/agent-maintain session\|preflight\|closeout` — [`agent_kb/host-maintenance.md`](agent_kb/host-maintenance.md) |
+| Isolated agent worktree | `./bin/agent-worktree --name <slug> [--apply]` → `.worktrees/<slug>`, branch `cursor/<slug>` |
+| Harness scorecard (agent) | [`ai/harness-scorecard.md`](ai/harness-scorecard.md) |
+| SAFETY-REPORT template | [`agent_kb/safety-report-template.md`](agent_kb/safety-report-template.md) |
 | Markdown lint gate | `./bin/lint-markdown.sh` |
 | DESIGN.md DesignMD lint (needs Node; in checklists) | `./tool/check_design_md.sh` |
 | Fast checklist (markdown + DesignMD + lint + sanity) | `./bin/checklist-fast` |
