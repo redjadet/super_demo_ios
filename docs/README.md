@@ -4,7 +4,9 @@ Source-of-truth docs for `superDemoApp`.
 
 ## Start Here
 
-- **Portfolio / reviewers:** [`portfolio.md`](portfolio.md) (+ [`../README.md`](../README.md) Portfolio section).
+- **Task → path:** [`../CODEMAP.md`](../CODEMAP.md)
+- **≤15 min architecture tour:** [`architecture-tour.md`](architecture-tour.md)
+- **Portfolio / reviewers:** [`portfolio.md`](portfolio.md) (+ [`../README.md`](../README.md)).
 - Agent map (lean links only; detail in `docs/`): [`../AGENTS.md`](../AGENTS.md)
 - AI routing (`docs/ai/`): [`ai/README.md`](ai/README.md) —
   [`ai/context_loading.md`](ai/context_loading.md),

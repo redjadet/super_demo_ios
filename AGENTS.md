@@ -31,6 +31,8 @@ Host / MCP / skills: [`docs/agent_host_notes.md`](docs/agent_host_notes.md),
 
 | Change | Start here |
 | ------ | ------------ |
+| Find any path | [`CODEMAP.md`](CODEMAP.md) |
+| ≤15 min architecture tour | [`docs/architecture-tour.md`](docs/architecture-tour.md) |
 | Any Swift | [`docs/agent_swift_guards.md`](docs/agent_swift_guards.md); `./bin/verify-swift.sh` |
 | Feature / layers | [`docs/feature-template.md`](docs/feature-template.md), [`docs/layers.md`](docs/layers.md) |
 | SwiftUI / light–dark | [`DESIGN.md`](DESIGN.md), [`docs/design_system.md`](docs/design_system.md) |

@@ -1,0 +1,26 @@
+# superDemoApp AI context
+
+## Workspace
+
+- Git root: .
+- App sources: superDemoApp/
+- Tests: superDemoAppTests/, superDemoAppUITests/
+
+## Start
+
+- AGENTS.md
+- CODEMAP.md
+- docs/architecture-tour.md (≤15 min tour)
+- docs/portfolio.md
+- docs/agents_quick_reference.md
+
+## Validation
+
+- Fast: ./bin/checklist-fast
+- Lint / layers: ./bin/lint.sh
+- Merge: ./bin/ci.sh
+
+## Canon
+
+- Behavior: docs/
+- Evidence: docs/changes/
