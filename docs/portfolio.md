@@ -25,7 +25,7 @@ read-through cache.
 
 ## How to read this repo (cold reviewer)
 
-1. [`../README.md`](../README.md) — what it proves + 3-minute path + flags.
+1. [`../README.md`](../README.md) — what it proves + 3-minute path.
 2. [`architecture.md`](architecture.md) + [`feature-template.md`](feature-template.md).
 3. **`Features/Items/`** — Reference (SwiftData, sync repository API).
 4. **`Features/Feed/`** — JSONPlaceholder client + SwiftData read-through cache;
@@ -38,6 +38,19 @@ read-through cache.
 8. Deep links: open `superdemo://dashboard/risks`, `superdemo://feed`, or
    `superdemo://items` (or matching `https://superdemo.app/…` paths) to review
    typed routing in `App/AppNavigation.swift`.
+
+## Launch and build flags
+
+Source: `Shared/AppLaunchConfiguration.swift`.
+
+| Flag | Kind | Effect |
+| --- | --- | --- |
+| `-ReviewerDemoMode` or `SUPERDEMO_REVIEWER_DEMO_MODE=1` | **Launch / env** | Seeded sample Dashboard + Feed + Items |
+| `REVIEWER_DEMO` | **Compile-time** (TestFlight beta via Fastlane) | Same seeded path when built into the binary — not a launch argument |
+| `-StaleFeedDemo` or `SUPERDEMO_STALE_FEED_DEMO=1` | **Launch / env** | Seed Feed SwiftData cache + failing remote → real stale banner via `CachingFeedRepository` |
+| `-UITesting` | Launch | UI-test fixtures / in-memory store |
+| `-UITestingFeedFailure` | Launch | Failing remote without cache seed (error + Retry UI) |
+| `-KeychainTokenDemo` or `SUPERDEMO_KEYCHAIN_TOKEN_DEMO=1` | Launch / env | Opt-in Keychain-backed token refresher demo |
 
 ## Items walkthrough (`Features/Items/`)
 
