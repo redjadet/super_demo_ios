@@ -30,8 +30,8 @@ struct FeedRefreshActivityAttributes: ActivityAttributes {
             case cancelled
         }
 
-        static func refreshing() -> ContentState {
-            ContentState(
+        static func refreshing() -> Self {
+            Self(
                 phase: .refreshing,
                 postCount: nil,
                 isStale: false,
@@ -39,25 +39,25 @@ struct FeedRefreshActivityAttributes: ActivityAttributes {
             )
         }
 
-        static func completed(postCount: Int, isStale: Bool) -> ContentState {
-            let detail: String
+        static func completed(postCount: Int, isStale: Bool) -> Self {
+            let summary: String
             if postCount == 0 {
-                detail = "Feed empty"
+                summary = "Feed empty"
             } else if isStale {
-                detail = "\(postCount) posts (stale cache)"
+                summary = "\(postCount) posts (stale cache)"
             } else {
-                detail = "\(postCount) posts"
+                summary = "\(postCount) posts"
             }
-            return ContentState(
+            return Self(
                 phase: .completed,
                 postCount: postCount,
                 isStale: isStale,
-                detail: detail
+                detail: summary
             )
         }
 
-        static func failed() -> ContentState {
-            ContentState(
+        static func failed() -> Self {
+            Self(
                 phase: .failed,
                 postCount: nil,
                 isStale: false,
@@ -65,8 +65,8 @@ struct FeedRefreshActivityAttributes: ActivityAttributes {
             )
         }
 
-        static func cancelled() -> ContentState {
-            ContentState(
+        static func cancelled() -> Self {
+            Self(
                 phase: .cancelled,
                 postCount: nil,
                 isStale: false,

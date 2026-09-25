@@ -22,8 +22,19 @@ protocol FeedRefreshLiveActivityControlling: AnyObject {
 /// Default for unit tests and platforms without ActivityKit.
 @MainActor
 final class NoOpFeedRefreshLiveActivityController: FeedRefreshLiveActivityControlling {
-    func refreshDidStart() {}
-    func refreshDidSucceed(postCount _: Int, isStale _: Bool) {}
-    func refreshDidFail() {}
-    func refreshDidCancel() {}
+    func refreshDidStart() {
+        // Intentionally empty — tests / platforms without ActivityKit.
+    }
+
+    func refreshDidSucceed(postCount _: Int, isStale _: Bool) {
+        // Intentionally empty — tests / platforms without ActivityKit.
+    }
+
+    func refreshDidFail() {
+        // Intentionally empty — tests / platforms without ActivityKit.
+    }
+
+    func refreshDidCancel() {
+        // Intentionally empty — tests / platforms without ActivityKit.
+    }
 }

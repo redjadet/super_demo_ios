@@ -243,6 +243,6 @@ struct FeedFeatureModelTests {
 
         #expect(liveActivity.events.contains("start"))
         #expect(liveActivity.events.contains("cancel"))
-        #expect(!liveActivity.events.contains(where: { $0.hasPrefix("succeed") }))
+        #expect(!liveActivity.events.contains { $0.hasPrefix("succeed") })
     }
 }

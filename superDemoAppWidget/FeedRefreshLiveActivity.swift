@@ -79,14 +79,17 @@ private extension FeedRefreshActivityAttributes.ContentState {
 
     var compactTrailing: String {
         switch self.phase {
-        case .refreshing: "…"
+        case .refreshing:
+            return "…"
         case .completed:
             if let postCount {
                 return "\(postCount)"
             }
             return "OK"
-        case .failed: "!"
-        case .cancelled: "×"
+        case .failed:
+            return "!"
+        case .cancelled:
+            return "×"
         }
     }
 

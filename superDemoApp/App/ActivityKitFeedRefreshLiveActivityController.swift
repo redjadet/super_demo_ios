@@ -107,10 +107,21 @@ final class ActivityKitFeedRefreshLiveActivityController: FeedRefreshLiveActivit
 
 @MainActor
 final class ActivityKitFeedRefreshLiveActivityController: FeedRefreshLiveActivityControlling {
-    func refreshDidStart() {}
-    func refreshDidSucceed(postCount _: Int, isStale _: Bool) {}
-    func refreshDidFail() {}
-    func refreshDidCancel() {}
+    func refreshDidStart() {
+        // Intentionally empty — ActivityKit unavailable (Mac / Catalyst / etc.).
+    }
+
+    func refreshDidSucceed(postCount _: Int, isStale _: Bool) {
+        // Intentionally empty — ActivityKit unavailable (Mac / Catalyst / etc.).
+    }
+
+    func refreshDidFail() {
+        // Intentionally empty — ActivityKit unavailable (Mac / Catalyst / etc.).
+    }
+
+    func refreshDidCancel() {
+        // Intentionally empty — ActivityKit unavailable (Mac / Catalyst / etc.).
+    }
 }
 
 #endif
