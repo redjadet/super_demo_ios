@@ -122,6 +122,22 @@ private struct ProductionReadinessContent: View {
                     Label("Collection view, prefetching, hosting, custom transition", systemImage: "rectangle.grid.2x2")
                 }
                 .accessibilityIdentifier("uikitShowcaseLink")
+
+                NavigationLink {
+                    DiagnosticsDemoView()
+                } label: {
+                    Label("OSLog diagnostics and crash-monitor swap point", systemImage: "waveform.path.ecg")
+                }
+                .accessibilityIdentifier("diagnosticsDemoLink")
+
+                NavigationLink {
+                    IdempotentPostDemoView(
+                        model: ProductionReadinessComposition.makeIdempotentPostDemoModel()
+                    )
+                } label: {
+                    Label("Idempotent POST (simulated duplicate-safe)", systemImage: "arrow.triangle.2.circlepath")
+                }
+                .accessibilityIdentifier("idempotentPostDemoLink")
             }
         }
         .accessibilityIdentifier("productionReadinessDashboard")

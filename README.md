@@ -5,94 +5,85 @@
 ![SwiftUI](https://img.shields.io/badge/SwiftUI-SDK%2027-0D96F6?logo=swift&logoColor=white)
 ![Platforms](https://img.shields.io/badge/Platforms-iOS%20%7C%20iPadOS%20%7C%20macOS-000000?logo=apple&logoColor=white)
 ![Minimum OS](https://img.shields.io/badge/Minimum%20OS-26.0-6E6E73?logo=apple&logoColor=white)
-![SwiftData](https://img.shields.io/badge/Persistence-SwiftData-0A84FF?logo=swift&logoColor=white)
-![Testing](https://img.shields.io/badge/Tests-Swift%20Testing-F05138?logo=swift&logoColor=white)
 
-`superDemoApp` is a universal Apple app for iPhone, iPad, and Mac. It demonstrates a
-polished SwiftUI experience, offline-capable data flows, production-minded networking,
-UIKit interoperability, and a maintainable project foundation suitable for continued
-product work.
+Universal SwiftUI + SwiftData portfolio demo (iPhone / iPad / Mac). **Not** a
+production vertical client — architecture, networking, offline Feed, UIKit interop,
+and CI proof you can run locally.
 
-## Highlights
+**Stack:** Swift 6 / SwiftUI Observation / Clean Architecture layers / URLSession
+async networking / SwiftData cache / Fastlane + GitHub Actions. Proof from repo
+root: `./bin/lint.sh`, `./bin/verify-swift.sh` (format+lint only), `./bin/ci.sh`
+(merge gate).
 
-- Native Apple interface across iOS, iPadOS, and macOS.
-- Clean feature organization with room for growth.
-- Production Readiness Dashboard for architecture, API health, release risk, design
-  consistency, and AI-assisted validation.
-- URLSession async/await client with typed errors, retry policy, token refresh, 429
-  handling, cancellation, idempotency protection, and redacted logging hooks.
-- UIKit collection-view showcase with reusable cells, prefetching, SwiftUI detail hosting,
-  and custom UINavigationController transitions.
-- Objective-C interoperability through a narrow legacy utility bridge.
-- Local persistence, remote feed loading, and cached fallback behavior.
-- Automated quality checks for development and review.
+## What this repo proves
 
-## Get Started
+1. **Clean layers** — `Features/*/Presentation|Domain|Data` enforced by
+   `./tool/check_layer_boundaries.sh` (via `./bin/lint.sh`).
+2. **Offline Feed** — network → repository → use case → `@Observable` model;
+   stale cache fallback proven in Xcode preview + repository tests (see below).
+3. **Production networking** — retry, 401 refresh, 429, Idempotency-Key, redacted
+   logs in `Shared/Networking/`.
+4. **UIKit interop** — collection reuse/prefetch, SwiftUI hosting, custom transition
+   (Dashboard → UIKit Showcase).
+5. **CI / delivery proof** — `./bin/ci.sh` mirrors GitHub Actions lint + iPhone +
+   platform builds; map in [`docs/ci-cd-map.md`](docs/ci-cd-map.md).
 
-Open `superDemoApp.xcodeproj` in Xcode.
+## 3-minute demo path
 
-For setup, validation, architecture, and implementation details, use the documentation
-index: [`docs/README.md`](docs/README.md).
+1. **Dashboard** — release health / scores (`dashboardTab`).
+2. **Feed** — seeded list, Retry, cancel-safe refresh (`feedTab`). Stale-banner
+   behavior: open `#Preview("Feed — Stale")` or run
+   `CachingFeedRepositoryTests` — no guaranteed in-app stale fixture yet.
+3. **Dashboard → UIKit Showcase** — collection + custom transition
+   (`uikitShowcaseLink`).
+4. **Dashboard → Engineering demos → Risks / Diagnostics / Idempotent POST** —
+   production risks, OSLog diagnostics story, simulated duplicate-safe POST demo.
 
-Command-line proof from repo root:
+Deep links: `superdemo://dashboard/risks`, `superdemo://feed`, `superdemo://items`.
+
+## Launch and build flags
+
+| Flag | Kind | Effect |
+| --- | --- | --- |
+| `-ReviewerDemoMode` or `SUPERDEMO_REVIEWER_DEMO_MODE=1` | **Launch / env** | Seeded sample Dashboard + Feed + Items |
+| `REVIEWER_DEMO` | **Compile-time** (TestFlight beta via Fastlane) | Same seeded path when built into the binary — not a launch argument |
+| `-UITesting` | Launch | UI-test fixtures / in-memory store |
+| `-KeychainTokenDemo` or `SUPERDEMO_KEYCHAIN_TOKEN_DEMO=1` | Launch / env | Opt-in Keychain-backed token refresher demo |
+
+Source: `Shared/AppLaunchConfiguration.swift`.
+
+## Get started
+
+Open `superDemoApp.xcodeproj` in Xcode. Index: [`docs/README.md`](docs/README.md).
 
 ```bash
 ./bin/lint.sh
-xcodebuild -project superDemoApp.xcodeproj -scheme superDemoApp -destination 'platform=iOS Simulator,name=iPhone 18 Pro' test
-./bin/ci.sh
+./bin/checklist-fast   # docs / fast sanity
+./bin/ci.sh            # before merge
 ```
 
-## Reviewer Tour
+## Reviewer map
 
-1. Open the **Dashboard** tab first. It is the senior iOS assessment surface.
-2. Review `Features/ProductionReadiness/` for feature/domain/data boundaries and
-   SwiftUI state ownership.
-3. Review `Shared/Networking/` for retry, token refresh, idempotency, cancellation, and
-   redacted logging.
-4. Open **UIKit Showcase** from Dashboard to see collection view reuse/prefetching,
-   SwiftUI-in-UIKit hosting, and a custom push/pop transition.
-5. Review `Shared/LegacyObjC/` for Objective-C interop with nullability and a narrow
-   Swift wrapper.
+Full table (theme → path → talk track → proof): [`docs/portfolio.md`](docs/portfolio.md).
 
-## Adding A Feature Module
+Also: [`docs/architecture.md`](docs/architecture.md) ·
+[`docs/testing.md`](docs/testing.md) ·
+[`docs/sync-and-networking.md`](docs/sync-and-networking.md) ·
+[`docs/incident-playbook.md`](docs/incident-playbook.md) ·
+[`docs/ci-cd-map.md`](docs/ci-cd-map.md) ·
+[`docs/security-checklist.md`](docs/security-checklist.md) ·
+[`docs/performance-lab.md`](docs/performance-lab.md) ·
+[`docs/engineering-standards.md`](docs/engineering-standards.md)
 
-- Start with `Features/<FeatureName>/{Presentation,Domain,Data}` only when the feature has
-  rules, side effects, or testable business logic.
-- Keep Domain pure Swift; keep SwiftUI in Presentation; keep URLSession/SwiftData in Data
-  or Shared adapters.
-- Wire dependencies in `App/*Composition.swift`.
-- Add deterministic unit tests and preview/sample states before relying on manual launch.
+## TestFlight and release
 
-## TestFlight And Release
+- Archive / upload: `TESTFLIGHT_BUILD_NUMBER=<n> ./bin/fastlane-run ios beta`
+- Checklist: [`docs/release-checklist.md`](docs/release-checklist.md) ·
+  risks: [`docs/production-risks.md`](docs/production-risks.md)
+- Hosted GHA does **not** archive or upload TestFlight on every PR — see CI/CD map.
 
-- Archive with Xcode or `TESTFLIGHT_BUILD_NUMBER=<unique-build-number> ./bin/fastlane-run ios beta`.
-- Fastlane beta runs existing CI proof, builds a clean App Store archive, uploads to
-  TestFlight, and uses release notes from `docs/release-notes/testflight.md`.
-- App Store upload: `./bin/fastlane-run ios release` with notes from
-  `docs/release-notes/app-store.md` (review submission is opt-in via
-  `APP_STORE_SUBMIT_FOR_REVIEW=1`).
-- Suggested GitHub Actions gate: lint, unit/UI tests on iPhone simulator, iPad build,
-  macOS build, then archive on a signed release runner.
-- Before TestFlight, complete [`docs/release-checklist.md`](docs/release-checklist.md) and
-  [`docs/production-risks.md`](docs/production-risks.md).
+## Scope line
 
-## Monitoring Checklist
-
-- Release diagnostics use OSLog categories for networking, release checks, and
-  device-only failures.
-- `OSLogCrashMonitor` records non-fatals today; swap for Firebase Crashlytics,
-  Sentry, or an equivalent vendor SDK before production crash analytics.
-- No secrets or authorization headers in logs.
-- Feature flags or remote config for risky rollout paths.
-- App Store review notes for permissions, background modes, deep links, and demo accounts.
-
-## Documentation
-
-- Product and reviewer tour: [`docs/portfolio.md`](docs/portfolio.md)
-- Architecture: [`docs/architecture.md`](docs/architecture.md)
-- Design system: [`DESIGN.md`](DESIGN.md) and [`docs/design_system.md`](docs/design_system.md)
-- Release checklist: [`docs/release-checklist.md`](docs/release-checklist.md)
-- Production risks: [`docs/production-risks.md`](docs/production-risks.md)
-- Universal platform support: [`docs/universal-apple-platforms.md`](docs/universal-apple-platforms.md)
-- Development workflow: [`docs/agents_quick_reference.md`](docs/agents_quick_reference.md)
-- AI-assisted development notes: [`AGENTS.md`](AGENTS.md)
+Portfolio demo for architecture and delivery review. Demo auth, sample checklist
+scores, and simulated idempotency dedupe are labeled as such — not a shipped
+App Store product claim.

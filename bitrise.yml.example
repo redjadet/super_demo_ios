@@ -1,0 +1,38 @@
+# Optional Bitrise sketch (not live)
+
+This repository runs CI on **GitHub Actions** + local `./bin/ci.sh`. The workflow
+below is an **equivalent** sketch only — it is not connected to a Bitrise app.
+
+```yaml
+# bitrise.yml.example — DO NOT treat as active CI
+format_version: "11"
+default_step_lib_source: https://github.com/bitrise-io/bitrise-steplib.git
+
+workflows:
+  primary:
+    steps:
+      - script:
+          title: Lint
+          inputs:
+            - content: |-
+                #!/usr/bin/env bash
+                set -euo pipefail
+                ./bin/lint.sh
+      - script:
+          title: iPhone test lane
+          inputs:
+            - content: |-
+                #!/usr/bin/env bash
+                set -euo pipefail
+                ./bin/ci-iphone-test.sh
+      - script:
+          title: Platform builds
+          inputs:
+            - content: |-
+                #!/usr/bin/env bash
+                set -euo pipefail
+                ./bin/ci-platform-builds.sh
+```
+
+Prefer documenting parity in [`docs/ci-cd-map.md`](docs/ci-cd-map.md) over
+standing up a second CI host for the portfolio demo.

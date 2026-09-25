@@ -51,33 +51,38 @@ nonisolated struct ReleaseDiagnostics: ReleaseDiagnosticsReporting {
     }
 
     func releaseCheckPassed(_ check: ReleaseDiagnosticCheck) {
+        let metadata = DiagnosticRedaction.sanitizeMetadata(check.metadata)
         self.releaseChecksLogger.info(
-            "release check passed name=\(check.name, privacy: .public) metadata=\(Self.format(check.metadata), privacy: .public)"
+            "release check passed name=\(check.name, privacy: .public) metadata=\(Self.format(metadata), privacy: .public)"
         )
     }
 
     func releaseCheckFailed(_ check: ReleaseDiagnosticCheck, reason: String) {
+        let safeReason = DiagnosticRedaction.sanitizeText(reason)
+        let metadata = DiagnosticRedaction.sanitizeMetadata(check.metadata)
         self.releaseChecksLogger.error(
-            "release check failed name=\(check.name, privacy: .public) reason=\(reason, privacy: .public) metadata=\(Self.format(check.metadata), privacy: .public)"
+            "release check failed name=\(check.name, privacy: .public) reason=\(safeReason, privacy: .public) metadata=\(Self.format(metadata), privacy: .public)"
         )
         self.crashMonitor.recordNonFatal(
             CrashMonitorFailure(
                 source: "release-checks",
-                reason: "\(check.name): \(reason)",
-                metadata: check.metadata
+                reason: "\(check.name): \(safeReason)",
+                metadata: metadata
             )
         )
     }
 
     func deviceOnlyFailure(_ failure: DeviceOnlyFailure) {
+        let safeReason = DiagnosticRedaction.sanitizeText(failure.reason)
+        let metadata = DiagnosticRedaction.sanitizeMetadata(failure.metadata)
         self.deviceOnlyFailuresLogger.error(
-            "device-only failure area=\(failure.area, privacy: .public) reason=\(failure.reason, privacy: .public) metadata=\(Self.format(failure.metadata), privacy: .public)"
+            "device-only failure area=\(failure.area, privacy: .public) reason=\(safeReason, privacy: .public) metadata=\(Self.format(metadata), privacy: .public)"
         )
         self.crashMonitor.recordNonFatal(
             CrashMonitorFailure(
                 source: "device-only-failures",
-                reason: "\(failure.area): \(failure.reason)",
-                metadata: failure.metadata
+                reason: "\(failure.area): \(safeReason)",
+                metadata: metadata
             )
         )
     }
