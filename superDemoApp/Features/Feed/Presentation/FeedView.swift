@@ -22,9 +22,11 @@ struct FeedView: View {
                 }
         }
         .task {
+            FeedRefreshCoordinator.register(self.model)
             await self.model.refreshAndWait()
         }
         .onDisappear {
+            FeedRefreshCoordinator.unregister(self.model)
             self.model.cancelRefresh()
         }
     }
