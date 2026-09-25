@@ -115,6 +115,32 @@ final class superDemoAppUITests: XCTestCase {
     }
 
     @MainActor
+    func testStaleFeedFixtureShowsBannerOnFeedTab() {
+        let app = UiTestSupport.launchApplication(extraArguments: ["-StaleFeedDemo"])
+        UiTestSupport.openFeedTab(in: app)
+        XCTAssertTrue(UiTestSupport.waitForFeedChrome(in: app))
+
+        let banner = app.descendants(matching: .any).matching(identifier: "feedStaleBanner").firstMatch
+        XCTAssertTrue(banner.waitForExistence(timeout: 10))
+
+        let postRow = app.descendants(matching: .any).matching(identifier: "feedPostRow-1").firstMatch
+        XCTAssertTrue(postRow.waitForExistence(timeout: 10))
+    }
+
+    @MainActor
+    func testStaleFeedEngineeringDemoShowsBanner() {
+        let app = UiTestSupport.launchApplication()
+        UiTestSupport.openDashboardTab(in: app)
+
+        let staleLink = app.descendants(matching: .any).matching(identifier: "staleFeedDemoLink").firstMatch
+        XCTAssertTrue(staleLink.waitForExistence(timeout: 15))
+        staleLink.tap()
+
+        let banner = app.descendants(matching: .any).matching(identifier: "feedStaleBanner").firstMatch
+        XCTAssertTrue(banner.waitForExistence(timeout: 15))
+    }
+
+    @MainActor
     func testLaunchPerformance() {
         measure(metrics: [XCTApplicationLaunchMetric()]) {
             let app = XCUIApplication()

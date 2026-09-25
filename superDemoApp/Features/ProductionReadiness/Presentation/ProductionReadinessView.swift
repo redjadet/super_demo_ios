@@ -138,6 +138,13 @@ private struct ProductionReadinessContent: View {
                     Label("Idempotent POST (simulated duplicate-safe)", systemImage: "arrow.triangle.2.circlepath")
                 }
                 .accessibilityIdentifier("idempotentPostDemoLink")
+
+                NavigationLink {
+                    StaleFeedDemoView(session: FeedComposition.makeStaleDemoSession())
+                } label: {
+                    Label("Stale Feed cache fallback", systemImage: "externaldrive.badge.exclamationmark")
+                }
+                .accessibilityIdentifier("staleFeedDemoLink")
             }
         }
         .accessibilityIdentifier("productionReadinessDashboard")

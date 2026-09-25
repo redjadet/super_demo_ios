@@ -25,6 +25,15 @@ enum AppLaunchConfiguration {
         ProcessInfo.processInfo.arguments.contains("-UITestingFeedFailure")
     }
 
+    /// Deterministic Feed stale-cache demo: seed SwiftData cache + failing remote.
+    /// Launch with `-StaleFeedDemo` or `SUPERDEMO_STALE_FEED_DEMO=1`.
+    static var usesStaleFeedFixture: Bool {
+        self.usesStaleFeedFixture(
+            arguments: ProcessInfo.processInfo.arguments,
+            environment: ProcessInfo.processInfo.environment
+        )
+    }
+
     /// Opt-in Keychain-backed demo token refresher for portfolio auth wiring.
     /// Launch with `-KeychainTokenDemo` or `SUPERDEMO_KEYCHAIN_TOKEN_DEMO=1`.
     static var usesKeychainTokenDemo: Bool {
@@ -32,6 +41,16 @@ enum AppLaunchConfiguration {
             arguments: ProcessInfo.processInfo.arguments,
             environment: ProcessInfo.processInfo.environment
         )
+    }
+
+    static func usesStaleFeedFixture(
+        arguments: [String],
+        environment: [String: String]
+    ) -> Bool {
+        if arguments.contains("-StaleFeedDemo") {
+            return true
+        }
+        return environment["SUPERDEMO_STALE_FEED_DEMO"] == "1"
     }
 
     static func usesKeychainTokenDemo(

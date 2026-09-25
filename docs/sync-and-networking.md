@@ -16,6 +16,10 @@ The **Feed** feature (see [`docs/portfolio.md`](portfolio.md) and
   15 minutes; `nil` disables expiry), return `FeedLoadResult(isStale: true)`
   so Presentation can show a stale banner. Expired cache rethrows the remote
   error. Feed fetch intervals use `OSSignposter` (`AppPerformanceSignposts.feed`).
+- **Deterministic stale demo:** `-StaleFeedDemo` / `SUPERDEMO_STALE_FEED_DEMO=1`
+  (or Dashboard → Engineering demos → Stale Feed) seeds the cache via
+  `ReviewerDemoFixtures.seedFeedCache` and uses `FailingSampleFeedRepository`
+  through `CachingFeedRepository` — same production fallback path.
 - **Auth path honesty:** production wiring uses `EmptyTokenRefresher` by default.
   Opt into Keychain-backed demo refresh with `-KeychainTokenDemo` or
   `SUPERDEMO_KEYCHAIN_TOKEN_DEMO=1` (`KeychainDemoTokenRefresher` +

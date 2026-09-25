@@ -55,4 +55,28 @@ struct AppLaunchConfigurationTests {
             environment: [:]
         ))
     }
+
+    @Test
+    func staleFeedFixtureUsesLaunchArgument() {
+        #expect(AppLaunchConfiguration.usesStaleFeedFixture(
+            arguments: ["-StaleFeedDemo"],
+            environment: [:]
+        ))
+    }
+
+    @Test
+    func staleFeedFixtureUsesEnvironmentValue() {
+        #expect(AppLaunchConfiguration.usesStaleFeedFixture(
+            arguments: [],
+            environment: ["SUPERDEMO_STALE_FEED_DEMO": "1"]
+        ))
+    }
+
+    @Test
+    func staleFeedFixtureStaysOffForNormalLaunches() {
+        #expect(!AppLaunchConfiguration.usesStaleFeedFixture(
+            arguments: [],
+            environment: [:]
+        ))
+    }
 }

@@ -11,7 +11,7 @@ read-through cache.
 | --- | --- | --- | --- |
 | Layer boundaries | `Features/*/`, `docs/layers.md` | Presentation → Domain ← Data; composition in `App/` | `./bin/lint.sh` → `tool/check_layer_boundaries.sh` |
 | Concurrency cancel | `Shared/Presentation/AsyncLoadController.swift`, Feed/Items/Dashboard models | Cancel restores prior state; `CancellationError` not a Retry failure | Unit tests on feature models; UI Retry IDs |
-| Stale cache | `Features/Feed/Data/CachingFeedRepository.swift`, `FeedView` | Remote fail + fresh cache → `isStale` banner | `#Preview("Feed — Stale")`; `CachingFeedRepositoryTests` — not yet a seeded in-app path |
+| Stale cache | `Features/Feed/Data/CachingFeedRepository.swift`, `FeedView`, `App/FeedComposition.swift` | Remote fail + fresh cache → `isStale` banner | `-StaleFeedDemo` / Engineering demos → Stale Feed; `#Preview("Feed — Stale")`; `CachingFeedRepositoryTests` |
 | Networking retry / 401 / 429 | `Shared/Networking/` | Injectable session; redacted logger | `URLSessionAPIClientTests`, `RetryPolicyTests` |
 | Idempotency | `APIRequest.idempotencyKey` + Dashboard **Idempotent POST** demo | Header enables POST retry; **simulated** duplicate-safe transport in Data | Demo UI + `IdempotentPostDemo*` tests |
 | UIKit showcase | `Features/ProductionReadiness/UIKitShowcase/` | Collection reuse, prefetch, hosting, custom transition | UI smoke: `uikitShowcaseLink` |
@@ -20,10 +20,12 @@ read-through cache.
 | Performance signposts | `AppPerformanceSignposts` | Feed + UIKit Instruments categories | [`performance-lab.md`](performance-lab.md) |
 | Security habits | Keychain demo, ATS, redaction | Demo auth ≠ production OAuth | [`security-checklist.md`](security-checklist.md) |
 | Engineering standards | Layers, Observation, PR proof | Human-readable budget + owners | [`engineering-standards.md`](engineering-standards.md) |
+| SonarCloud | Optional static analysis | **Skipped** — no org; use lint/CI gates | [`sonar-decision.md`](sonar-decision.md) |
+| Design tokens | `DESIGN.md` ↔ SwiftUI roles | Local table; Figma optional later | [`design-token-figma.md`](design-token-figma.md) |
 
 ## How to read this repo (cold reviewer)
 
-1. [`../README.md`](../README.md) — what it proves + 3-minute path + flags.
+1. [`../README.md`](../README.md) — what it proves + 3-minute path.
 2. [`architecture.md`](architecture.md) + [`feature-template.md`](feature-template.md).
 3. **`Features/Items/`** — Reference (SwiftData, sync repository API).
 4. **`Features/Feed/`** — JSONPlaceholder client + SwiftData read-through cache;
@@ -36,6 +38,19 @@ read-through cache.
 8. Deep links: open `superdemo://dashboard/risks`, `superdemo://feed`, or
    `superdemo://items` (or matching `https://superdemo.app/…` paths) to review
    typed routing in `App/AppNavigation.swift`.
+
+## Launch and build flags
+
+Source: `Shared/AppLaunchConfiguration.swift`.
+
+| Flag | Kind | Effect |
+| --- | --- | --- |
+| `-ReviewerDemoMode` or `SUPERDEMO_REVIEWER_DEMO_MODE=1` | **Launch / env** | Seeded sample Dashboard + Feed + Items |
+| `REVIEWER_DEMO` | **Compile-time** (TestFlight beta via Fastlane) | Same seeded path when built into the binary — not a launch argument |
+| `-StaleFeedDemo` or `SUPERDEMO_STALE_FEED_DEMO=1` | **Launch / env** | Seed Feed SwiftData cache + failing remote → real stale banner via `CachingFeedRepository` |
+| `-UITesting` | Launch | UI-test fixtures / in-memory store |
+| `-UITestingFeedFailure` | Launch | Failing remote without cache seed (error + Retry UI) |
+| `-KeychainTokenDemo` or `SUPERDEMO_KEYCHAIN_TOKEN_DEMO=1` | Launch / env | Opt-in Keychain-backed token refresher demo |
 
 ## Items walkthrough (`Features/Items/`)
 
@@ -62,10 +77,11 @@ Observation + thin use cases on a repository protocol.
 **Reviewer boundary:** Presentation never imports `URLSession`; unit tests stub
 HTTP — no live network on default CI.
 
-**Stale demo honesty:** Seeded / reviewer mode returns a successful Feed list.
-For stale fallback, use `#Preview("Feed — Stale")` and
-`CachingFeedRepositoryTests` until a deterministic in-app failure+cache fixture
-exists.
+**Stale demo:** Launch with `-StaleFeedDemo` / `SUPERDEMO_STALE_FEED_DEMO=1`
+(Feed tab), or open Dashboard → Engineering demos → **Stale Feed cache fallback**.
+Both seed a fresh SwiftData cache and fail remote through existing
+`CachingFeedRepository`. Preview `#Preview("Feed — Stale")` and
+`CachingFeedRepositoryTests` remain valid proofs.
 
 ## Reviewer talking points (5–7)
 
