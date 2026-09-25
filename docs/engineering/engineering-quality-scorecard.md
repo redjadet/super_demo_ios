@@ -13,8 +13,8 @@ other.
 - **Overall = minimum** of all area scores below.
 - Each area is binary for now: **10** when its proof criteria hold, otherwise
   **0**.
-- Never invent coverage `%` badges here or on README — coverage honesty is
-  FP-P1-D (`docs/code-quality.md` later).
+- Never invent coverage `%` badges here or on README — coverage honesty:
+  [`../code-quality.md`](../code-quality.md).
 
 ## Areas
 
@@ -51,7 +51,8 @@ Engineering badge, and fix proof before reclaiming 10/10.
 
 ## Out of scope (this scorecard)
 
-- Measured code-coverage % badges (FP-P1-D).
+- Measured code-coverage % badges — see [`../code-quality.md`](../code-quality.md)
+  (currently documented unavailable).
 - Harness scorecard / SAFETY-REPORT template — see
   [`../ai/harness-scorecard.md`](../ai/harness-scorecard.md),
   [`../agent_kb/safety-report-template.md`](../agent_kb/safety-report-template.md).

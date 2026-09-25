@@ -34,6 +34,7 @@ Source-of-truth docs for `superDemoApp`.
 - Harness scorecard (agent): [`ai/harness-scorecard.md`](ai/harness-scorecard.md)
 - Agent worktrees / maintain: [`agent_kb/host-maintenance.md`](agent_kb/host-maintenance.md)
 - SAFETY-REPORT template: [`agent_kb/safety-report-template.md`](agent_kb/safety-report-template.md)
+- Code quality overview / coverage honesty: [`code-quality.md`](code-quality.md)
 - Release checklist: [`release-checklist.md`](release-checklist.md)
 - TestFlight release notes: [`release-notes/testflight.md`](release-notes/testflight.md);
   App Store: [`release-notes/app-store.md`](release-notes/app-store.md)
@@ -67,6 +68,7 @@ Source-of-truth docs for `superDemoApp`.
 - Code style: [`code-style.md`](code-style.md)
 - Module structure: [`module-structure.md`](module-structure.md)
 - Modularity (feature folder + import leaks): [`modularity.md`](modularity.md)
+- Code quality overview: [`code-quality.md`](code-quality.md)
 - Sync and networking: [`sync-and-networking.md`](sync-and-networking.md)
 - Feature template: [`feature-template.md`](feature-template.md)
 - AI agent playbook: [`ai-agent-playbook.md`](ai-agent-playbook.md)

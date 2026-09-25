@@ -17,6 +17,13 @@ repo does not run on Bitrise today. Optional sketch: [`../bitrise.yml.example`](
 **Merge proof:** local `./bin/ci.sh`. Record local test results separately from
 hosted CI build results when they diverge.
 
+## Coverage honesty
+
+Measured code-coverage `%` is **documented unavailable** on this portfolio demo:
+GHA `iphone-test` is build-heavy and does not run `xcodebuild test` (see
+[`testing.md`](testing.md)). Do **not** add a coverage `%` badge to README until
+a real artifact exists. Overview: [`code-quality.md`](code-quality.md).
+
 ## Real identifiers
 
 | Piece | Where |

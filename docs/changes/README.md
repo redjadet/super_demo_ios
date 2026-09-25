@@ -4,6 +4,8 @@ Record durable implementation notes after meaningful changes.
 
 ## Entries
 
+- [`2026-09-25_code-quality-overview.md`](2026-09-25_code-quality-overview.md)
+  — FP-P1-D code quality overview + coverage honesty (no fake `%` badge).
 - [`2026-09-25_agent-worktree-maintain.md`](2026-09-25_agent-worktree-maintain.md)
   — FP-P1-C agent-worktree + thin agent-maintain; FP-P1-B harness scorecard +
   SAFETY-REPORT template.
