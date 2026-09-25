@@ -78,6 +78,10 @@ observe/revise loop.
 
 Detailed finish/report rules:
 [Legibility And Finish Gate](agent_kb/legibility_and_finish_gate.md).
+Closeout template: [`agent_kb/safety-report-template.md`](agent_kb/safety-report-template.md)
+(`./bin/agent-maintain closeout`). Worktrees / thin maintain:
+[`agent_kb/host-maintenance.md`](agent_kb/host-maintenance.md).
+Harness (≠ Engineering): [`ai/harness-scorecard.md`](ai/harness-scorecard.md).
 
 Check every non-trivial iOS change:
 

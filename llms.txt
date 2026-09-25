@@ -19,6 +19,8 @@
 - Fast: ./bin/checklist-fast
 - Lint / layers: ./bin/lint.sh
 - Merge: ./bin/ci.sh
+- Agent: ./bin/agent-maintain preflight|closeout
+- Worktree: ./bin/agent-worktree --name <slug> [--apply]
 
 ## Canon
 

@@ -31,6 +31,9 @@ Source-of-truth docs for `superDemoApp`.
 - Development feedback loop: [`development-feedback-loop.md`](development-feedback-loop.md)
 - Validation routing: [`engineering/validation_routing_fast_vs_full.md`](engineering/validation_routing_fast_vs_full.md)
 - Engineering quality scorecard: [`engineering/engineering-quality-scorecard.md`](engineering/engineering-quality-scorecard.md)
+- Harness scorecard (agent): [`ai/harness-scorecard.md`](ai/harness-scorecard.md)
+- Agent worktrees / maintain: [`agent_kb/host-maintenance.md`](agent_kb/host-maintenance.md)
+- SAFETY-REPORT template: [`agent_kb/safety-report-template.md`](agent_kb/safety-report-template.md)
 - Release checklist: [`release-checklist.md`](release-checklist.md)
 - TestFlight release notes: [`release-notes/testflight.md`](release-notes/testflight.md);
   App Store: [`release-notes/app-store.md`](release-notes/app-store.md)

@@ -40,6 +40,7 @@ Host / MCP / skills: [`docs/agent_host_notes.md`](docs/agent_host_notes.md),
 | Tests | [`docs/testing.md`](docs/testing.md) |
 | Proof / merge | [`docs/agents_quick_reference.md`](docs/agents_quick_reference.md); `./bin/ci.sh` |
 | Engineering scorecard | [`docs/engineering/engineering-quality-scorecard.md`](docs/engineering/engineering-quality-scorecard.md) |
+| Agent worktree / maintain | `./bin/agent-worktree`; `./bin/agent-maintain`; [`docs/agent_kb/host-maintenance.md`](docs/agent_kb/host-maintenance.md) |
 
 Baseline: [`docs/agent_baseline.md`](docs/agent_baseline.md). Portfolio:
 [`docs/portfolio.md`](docs/portfolio.md). Index: [`docs/README.md`](docs/README.md).

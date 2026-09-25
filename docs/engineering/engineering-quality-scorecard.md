@@ -52,7 +52,9 @@ Engineering badge, and fix proof before reclaiming 10/10.
 ## Out of scope (this scorecard)
 
 - Measured code-coverage % badges (FP-P1-D).
-- Harness scorecard / SAFETY-REPORT template (FP-P1-B).
+- Harness scorecard / SAFETY-REPORT template — see
+  [`../ai/harness-scorecard.md`](../ai/harness-scorecard.md),
+  [`../agent_kb/safety-report-template.md`](../agent_kb/safety-report-template.md).
 - Supply-chain scanners (FP-P2-A).
 - Vendor crash SDK / live SonarCloud / App Store submission.
 

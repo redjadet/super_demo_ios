@@ -36,6 +36,10 @@ Agents reason over inspectable state.
 
 ## Finish Gate
 
+Closeout template: [`safety-report-template.md`](safety-report-template.md).
+Reminders: `./bin/agent-maintain closeout`. Host ops:
+[`host-maintenance.md`](host-maintenance.md).
+
 Before final report or commit, self-verify:
 
 - Edge cases: empty, malformed, duplicate, concurrent, offline/resume,

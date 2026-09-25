@@ -1,0 +1,139 @@
+#!/usr/bin/env bash
+# Thin agent session helpers: session | preflight | closeout.
+# No Flutter-style host sync / install / trim on day one.
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$ROOT"
+
+show_help() {
+  cat <<'EOF'
+Usage: ./bin/agent-maintain <command>
+
+Thin agent ops for superDemoApp (no host-sync / install day-one).
+
+Commands:
+  session     Read-only session map (entry docs + proof lanes)
+  preflight   Print validation chooser + safety contract paths
+  closeout    Finish-gate reminders + SAFETY-REPORT template pointer
+  list        List commands
+  help        Show this help
+
+Canon: docs/agent_kb/host-maintenance.md
+
+Examples:
+  ./bin/agent-maintain session
+  ./bin/agent-maintain preflight
+  ./bin/agent-maintain closeout
+
+Isolated slices: ./bin/agent-worktree --name <slug> [--apply]
+EOF
+}
+
+print_session() {
+  cat <<EOF
+session|repo|$ROOT
+session|map|AGENTS.md
+session|map|CODEMAP.md
+session|context|docs/ai/context_loading.md
+session|workflow|docs/agent_knowledge_base.md
+session|validation|docs/agents_quick_reference.md
+session|validation_detail|docs/engineering/validation_routing_fast_vs_full.md
+session|safety|docs/agent_kb/agent_safety_contracts.md
+session|finish|docs/agent_kb/legibility_and_finish_gate.md
+session|host|docs/agent_kb/host-maintenance.md
+session|harness|docs/ai/harness-scorecard.md
+session|worktree|./bin/agent-worktree --name <slug> [--apply]
+session|proof_fast|./bin/checklist-fast
+session|proof_lint|./bin/lint.sh
+session|proof_merge|./bin/ci.sh
+EOF
+}
+
+print_preflight() {
+  cat <<'EOF'
+preflight|start|agent maintain preflight (read-only)
+
+== Validation chooser (minimum proof) ==
+| Change type                         | Minimum proof                          |
+| Docs / tooling / small Swift        | ./bin/checklist-fast                   |
+| Domain / Data logic                 | ./bin/verify-swift.sh + targeted tests |
+| SwiftUI / universal UI / light-dark | ./bin/checklist                        |
+| Before merge / PR                   | ./bin/ci.sh                            |
+
+Detail: docs/agents_quick_reference.md
+Routing: docs/engineering/validation_routing_fast_vs_full.md
+
+== Safety contracts ==
+Index: docs/agent_kb/agent_safety_contracts.md
+Risks: docs/ai/ai_failure_risks.md (Pre-Flight)
+Finish: docs/agent_kb/legibility_and_finish_gate.md
+Closeout template: docs/agent_kb/safety-report-template.md
+
+== Session map ==
+EOF
+  print_session
+  cat <<'EOF'
+preflight|hint|run ./bin/agent-maintain closeout before claiming non-trivial work done
+preflight|ok
+EOF
+}
+
+print_closeout() {
+  cat <<'EOF'
+closeout|start|finish-gate reminders (read-only)
+
+== Before claim done ==
+1. Choose proof via docs/agents_quick_reference.md (do not invent a lane).
+2. Run the chosen command; empty/truncated output is not proof.
+3. Self-check: edge cases, failure paths, drift (docs vs code vs tests).
+4. Fill SAFETY-REPORT from docs/agent_kb/safety-report-template.md
+   (What We Learned / Files / Verification / Limitations / Follow-ups).
+5. Link finish gate: docs/agent_kb/legibility_and_finish_gate.md
+6. Safety index: docs/agent_kb/agent_safety_contracts.md (SAFETY-REPORT)
+
+== Proof lanes (copy into Verification) ==
+Docs/tooling: ./bin/checklist-fast
+Swift format+lint: ./bin/verify-swift.sh
+Lint + layers: ./bin/lint.sh
+Merge: ./bin/ci.sh
+
+== Harness vs Engineering ==
+Harness: docs/ai/harness-scorecard.md (agent maturity)
+Engineering: docs/engineering/engineering-quality-scorecard.md (app quality)
+Do not substitute one for the other.
+
+closeout|template|docs/agent_kb/safety-report-template.md
+closeout|ok
+EOF
+}
+
+cmd="${1:-}"
+case "$cmd" in
+  ""|-h|--help|help)
+    show_help
+    exit 0
+    ;;
+  list)
+    echo "session preflight closeout list help"
+    exit 0
+    ;;
+  session|bootstrap)
+    print_session
+    exit 0
+    ;;
+  preflight)
+    print_preflight
+    exit 0
+    ;;
+  closeout|auto)
+    print_closeout
+    exit 0
+    ;;
+  *)
+    echo "error: unknown command: $cmd" >&2
+    echo "Thin surface only: session | preflight | closeout" >&2
+    show_help >&2
+    exit 2
+    ;;
+esac
