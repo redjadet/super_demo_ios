@@ -2,6 +2,10 @@
 
 Default product posture: local data first, sync opportunistically.
 
+**Named invariants (Feed / Items / store recovery):** see
+[`offline-invariants.md`](offline-invariants.md) — OI-01…OI-07 mapped to
+`CachingFeedRepository`, Items local writes, and tests.
+
 ## Principles
 
 - Reads should work from local storage when possible.
