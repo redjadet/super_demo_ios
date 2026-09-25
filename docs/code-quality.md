@@ -35,9 +35,13 @@ Aligned with [`ci-cd-map.md`](ci-cd-map.md) and
 
 | Lane | Role | Do not claim |
 | --- | --- | --- |
-| GHA `lint` / `iphone-test` / `platform-builds` → `lint-build-test` | Hosted PR gate | “Full unit/UI suite ran on every PR” |
-| Local `./bin/ci.sh` | Authoritative **merge proof** | That GHA alone proved every local test |
+| GHA `lint` / `iphone-test` / `platform-builds` → **`checklist`** | Hosted PR / merge gate | “Full unit/UI suite ran on every PR” |
+| Local `./bin/checklist` | Authoritative **delivery / merge proof** | That GHA alone proved every local test |
+| Local `./bin/ci` | Fastlane-orchestrated same lanes | Duplicate of checklist when both already green |
 | Docs / tooling | `./bin/checklist-fast` | Merge readiness without naming the command |
+
+Script name map (Flutter → iOS): [`tooling_map.md`](tooling_map.md).
+Gate detail: [`engineering/checklist_gate.md`](engineering/checklist_gate.md).
 
 Record local test results separately when they diverge from hosted build
 results. Bitrise rows in the CI map are equivalents only — not live.

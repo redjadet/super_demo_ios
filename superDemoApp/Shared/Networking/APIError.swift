@@ -5,7 +5,7 @@
 
 import Foundation
 
-enum APIError: Error, Equatable, LocalizedError {
+nonisolated enum APIError: Error, Equatable, LocalizedError, Sendable {
     case invalidResponse
     case transport(URLError.Code)
     case httpStatus(Int)
@@ -31,7 +31,7 @@ enum APIError: Error, Equatable, LocalizedError {
     }
 }
 
-struct APIResponse {
+nonisolated struct APIResponse: Sendable {
     let data: Data
     let statusCode: Int
     let headers: [String: String]

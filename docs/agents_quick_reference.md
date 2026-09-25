@@ -21,9 +21,9 @@ Detailed routing: [`engineering/validation_routing_fast_vs_full.md`](engineering
 | Change type | Minimum proof |
 | --- | --- |
 | Docs / tooling / small Swift | `./bin/checklist-fast` |
-| Domain / Data logic | `./bin/verify-swift.sh` + targeted tests |
+| Domain / Data logic | `./bin/verify` + targeted tests |
 | SwiftUI layout, navigation, universal UI, light/dark | `./bin/checklist` |
-| Before merge / PR | `./bin/ci.sh` or `./bin/fastlane-run ci` (same proof lanes as GitHub Actions) |
+| Before merge / PR | `./bin/checklist` (local) + GHA **`checklist`** green — [`engineering/checklist_gate.md`](engineering/checklist_gate.md) |
 | Fastlane lanes (lint, test, builds, CI, beta) | `./bin/fastlane-run <lane>` — see `fastlane/Fastfile` |
 
 `CI_SKIP_PLATFORM_BUILDS=1` skips iPad/Mac in `./bin/ci.sh` only when intentionally narrow.
@@ -35,22 +35,26 @@ Launch via `UiTestSupport.launchApplication()` (`-UITesting`, terminate between 
 | Situation | Command |
 | --- | --- |
 | Project/scheme sanity | `xcodebuild -list -project superDemoApp.xcodeproj` |
-| Swift after edits (agents) | `./bin/verify-swift.sh` (format + lint; **preferred**) |
-| Swift format only | `./bin/format.sh` |
-| Swift lint + layer boundaries | `./bin/lint.sh` (indent + agent patterns + SwiftLint + SwiftFormat + modularity) |
+| Swift after edits (agents) | `./bin/verify` (format + lint; **preferred**) |
+| Swift format only | `./bin/format` |
+| Swift lint + layer boundaries | `./bin/lint` (indent + agent patterns + SwiftLint + SwiftFormat + modularity) |
 | Layer boundaries only | `./tool/check_layer_boundaries.sh` |
 | Feature folder contract | `./tool/check_feature_folder_contract.sh` (also via `./bin/lint.sh`) |
 | Cross-feature import leaks | `./tool/check_feature_import_leaks.sh` (also via `./bin/lint.sh`) |
 | Engineering scorecard gate | `./tool/check_engineering_quality_scorecard.sh` (also via `./bin/lint.sh`) |
-| Agent session / preflight / closeout | `./bin/agent-maintain session\|preflight\|closeout` — [`agent_kb/host-maintenance.md`](agent_kb/host-maintenance.md) |
+| Clean build caches (dry-run) | `./bin/clean-build-caches` |
+| Prune stale worktrees/branches (dry-run) | `./bin/prune-git-stale` |
+| Install git hooks | `./bin/install-git-hooks` |
+| Checklist re-run + optional format | `./bin/checklist_fix` |
+| Flutter → iOS script map | [`tooling_map.md`](tooling_map.md) |
 | Isolated agent worktree | `./bin/agent-worktree --name <slug> [--apply]` → `.worktrees/<slug>`, branch `cursor/<slug>` |
 | Harness scorecard (agent) | [`ai/harness-scorecard.md`](ai/harness-scorecard.md) |
 | SAFETY-REPORT template | [`agent_kb/safety-report-template.md`](agent_kb/safety-report-template.md) |
 | Markdown lint gate | `./bin/lint-markdown.sh` |
-| DESIGN.md DesignMD lint (needs Node; in checklists) | `./tool/check_design_md.sh` |
+| DESIGN.md DesignMD lint (needs Node; in checklists + CI lint) | `./tool/check_design_md.sh` |
 | Fast checklist (markdown + DesignMD + lint + sanity) | `./bin/checklist-fast` |
-| Full checklist (above + iPhone test + iPad/Mac) | `./bin/checklist` |
-| Full local CI | `./bin/ci.sh` (`./bin/fastlane-run ci`) |
+| Full delivery checklist (merge gate; warnings as errors) | `./bin/checklist` — [`engineering/checklist_gate.md`](engineering/checklist_gate.md) |
+| Full local CI (Fastlane) | `./bin/ci.sh` (`./bin/fastlane-run ci`) |
 | TestFlight beta lane | `TESTFLIGHT_BUILD_NUMBER=<unique-build-number> ./bin/fastlane-run ios beta` |
 | App Store upload lane | `TESTFLIGHT_BUILD_NUMBER=<unique-build-number> ./bin/fastlane-run ios release` |
 | Release IPA only (no upload) | `TESTFLIGHT_BUILD_NUMBER=<n> ./bin/fastlane-run ios build_ipa` |
@@ -61,9 +65,9 @@ Launch via `UiTestSupport.launchApplication()` (`-UITesting`, terminate between 
 | iPhone build/test lane only | `./bin/ci-iphone-test.sh` |
 | iPad + Mac builds only | `./bin/ci-platform-builds.sh` |
 | Install Cursor rules + hooks (after clone) | `./tool/install-cursor-rules.sh` |
-| Install git pre-commit (after clone) | `./tool/install-git-hooks.sh` |
+| Install git pre-commit | `./bin/install-git-hooks` |
 | Restore team Apple skills from lockfile | `npx skills experimental_install -y` (from git root) |
-| Safe formatting | `./bin/format.sh` |
+| Safe formatting | `./bin/format` |
 | Compile app | `xcodebuild -project superDemoApp.xcodeproj -scheme superDemoApp -destination 'platform=iOS Simulator,name=iPhone 18 Pro' build` |
 | iPad build sanity | `xcodebuild -project superDemoApp.xcodeproj -scheme superDemoApp -destination 'platform=iOS Simulator,name=iPad Pro 13-inch (M5)' build` |
 | Mac build sanity | `xcodebuild -project superDemoApp.xcodeproj -scheme superDemoApp -destination 'platform=macOS' build` |
@@ -97,7 +101,9 @@ Launch via `UiTestSupport.launchApplication()` (`-UITesting`, terminate between 
 - Apple-native defaults and version-sensitive API checks: [`apple-development-practices.md`](apple-development-practices.md).
 - Keep changes surgical.
 - Prefer `./bin/checklist-fast` for docs/tooling/small Swift edits.
-- Use `./bin/checklist` for SwiftUI layout/navigation/universal UI before handoff.
+- Use `./bin/checklist` for delivery proof before PR; merge only when GHA
+  **checklist** is green — [`engineering/checklist_gate.md`](engineering/checklist_gate.md).
+- Script names vs Flutter: [`tooling_map.md`](tooling_map.md).
 - Use `./bin/ci.sh` before merge/PR (same lint, iPhone test, iPad build, and Mac build proof as CI).
 - `./bin/checklist` resolves an available iPhone simulator automatically; set `CHECKLIST_IPHONE_DEST` only when a specific destination is required.
 - `./bin/checklist` and `./bin/ci.sh` disable parallel test workers by default;

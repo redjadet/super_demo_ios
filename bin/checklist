@@ -1,5 +1,18 @@
 #!/usr/bin/env bash
-# Full local delivery checklist for superDemoApp.
+# Delivery checklist — local single-command merge gate.
+#
+# Role (Flutter ./bin/checklist parity): agents/humans run this before opening a
+# PR. GitHub Actions parallelizes the same lanes in .github/workflows/ci.yml;
+# merge only when the hosted `checklist` job is green.
+#
+# Lanes (same scripts CI uses):
+#   markdown → DesignMD → Swift lint/modularity → common checks → scheme list
+#   → iPhone tests (bin/ci-iphone-test.sh) → iPad/Mac builds (bin/ci-platform-builds.sh)
+#
+# Xcode warnings are errors by default (tool/xcode_warnings_as_errors_flags.sh).
+# Escape: XCODEBUILD_ALLOW_WARNINGS=1 or CHECKLIST_SKIP_PLATFORM_BUILDS=1
+#
+# Usage: ./bin/checklist [--help]
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -7,23 +20,42 @@ cd "$ROOT"
 
 export PATH="/opt/homebrew/bin:/usr/local/bin:${PATH}"
 
-# shellcheck source=../tool/resolve_platform_destination.sh
-source "$ROOT/tool/resolve_platform_destination.sh"
-# shellcheck source=../tool/xcodebuild_sandbox_flags.sh
-source "$ROOT/tool/xcodebuild_sandbox_flags.sh"
+show_help() {
+  cat <<'EOF'
+Usage: ./bin/checklist [--help]
 
-IPHONE_DEST="$(resolve_iphone_destination)"
-IPAD_DEST="$(resolve_ipad_destination)"
-MAC_DEST="$(resolve_mac_destination)"
-if [[ "${CHECKLIST_ALLOW_PARALLEL_TESTS:-0}" != "1" ]]; then
-  TEST_SERIAL_FLAGS=(
-    -parallel-testing-enabled NO
-    -parallel-testing-worker-count 1
-    -maximum-parallel-testing-workers 1
-    -maximum-concurrent-test-simulator-destinations 1
-    -maximum-concurrent-test-device-destinations 1
-  )
-fi
+Full local delivery checklist (merge gate):
+  - Markdown lint
+  - DESIGN.md DesignMD lint
+  - Swift lint + modularity + engineering scorecard (./bin/lint.sh)
+  - Common issue checks
+  - Xcode project/scheme listing
+  - iPhone unit/UI tests (./bin/ci-iphone-test.sh) — warnings as errors
+  - iPad + Mac builds (./bin/ci-platform-builds.sh) — unless skipped
+
+Env:
+  CHECKLIST_SKIP_PLATFORM_BUILDS=1  Skip iPad/Mac builds
+  XCODEBUILD_ALLOW_WARNINGS=1       Do not treat Xcode warnings as errors
+
+Narrow docs/tooling: ./bin/checklist-fast
+Hosted PR gate:      GHA job `checklist` (parallel lint + iphone-test + platform-builds)
+Docs:                docs/engineering/checklist_gate.md
+EOF
+}
+
+case "${1:-}" in
+  -h|--help|help)
+    show_help
+    exit 0
+    ;;
+  "")
+    ;;
+  *)
+    echo "error: unknown option: $1" >&2
+    show_help >&2
+    exit 2
+    ;;
+esac
 
 echo "==> Markdown lint"
 ./bin/lint-markdown.sh
@@ -40,20 +72,16 @@ echo "==> Common issue checks"
 echo "==> Project/scheme sanity"
 xcodebuild -list -project superDemoApp.xcodeproj
 
-echo "==> iPhone tests ($IPHONE_DEST; builds app + tests)"
-xcodebuild \
-  -project superDemoApp.xcodeproj \
-  -scheme superDemoApp \
-  -configuration Debug \
-  -destination "$IPHONE_DEST" \
-  ${XCODEBUILD_SANDBOX_FLAGS+"${XCODEBUILD_SANDBOX_FLAGS[@]}"} \
-  ${TEST_SERIAL_FLAGS+"${TEST_SERIAL_FLAGS[@]}"} \
-  test
+echo "==> iPhone tests (./bin/ci-iphone-test.sh; warnings as errors)"
+./bin/ci-iphone-test.sh
 
 if [[ "${CHECKLIST_SKIP_PLATFORM_BUILDS:-0}" != "1" ]]; then
+  echo "==> iPad + Mac builds (./bin/ci-platform-builds.sh; warnings as errors)"
   ./bin/ci-platform-builds.sh
 else
   echo "info: skipping iPad/Mac builds because CHECKLIST_SKIP_PLATFORM_BUILDS=1"
 fi
 
 echo "Checklist passed."
+echo "Next: open PR; merge only when GHA job checklist is green."
+echo "See: docs/engineering/checklist_gate.md"

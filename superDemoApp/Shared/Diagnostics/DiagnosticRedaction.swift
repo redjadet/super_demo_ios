@@ -7,7 +7,7 @@ import Foundation
 
 /// Backstop redaction for diagnostic metadata and reasons.
 /// Prefer omitting secrets at call sites; approved fields live in docs/incident-playbook.md.
-enum DiagnosticRedaction {
+nonisolated enum DiagnosticRedaction {
     private static let sensitiveKeys: Set<String> = [
         "authorization",
         "token",

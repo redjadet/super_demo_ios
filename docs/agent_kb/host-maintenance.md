@@ -13,6 +13,8 @@ Day-one surface only — **no** Flutter-style host sync / install / trim.
 | `./bin/agent-maintain preflight` | Validation chooser + safety contract paths |
 | `./bin/agent-maintain closeout` | Finish-gate reminders + SAFETY-REPORT template pointer |
 
+Also see Flutter→iOS script map: [`../tooling_map.md`](../tooling_map.md).
+
 ## Worktrees
 
 Defaults (override with flags):

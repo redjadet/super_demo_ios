@@ -165,11 +165,12 @@ platform :ios do
     run_repo_script("bin/format.sh")
   end
 
-  desc "Lint job lane for GitHub Actions"
+  desc "Lint job lane for GitHub Actions (checklist lint slice + DesignMD)"
   lane :ci_lint do
     select_xcode if ci?
     lint
     lint_markdown
+    lint_design_md
     common_checks
   end
 
@@ -205,12 +206,13 @@ platform :ios do
     )
   end
 
-  desc "Full local/CI proof: lint, common checks, platform builds, iPhone tests"
+  desc "Full local/CI proof: lint, DesignMD, common checks, platform builds, iPhone tests"
   lane :ci do
     ENV["CI"] = "true" unless ENV.key?("CI")
     # Xcode pin happens inside ci-iphone-test / ci-platform-builds when CI=true.
     lint
     lint_markdown
+    lint_design_md
     common_checks
 
     if ENV["CI_SKIP_PLATFORM_BUILDS"] == "1"

@@ -14,7 +14,11 @@ env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
 
 jobs:
+  # Delivery checklist (Flutter ./bin/checklist role), parallelized for macos runners.
+  # Local single-command equivalent: ./bin/checklist
+  # Docs: docs/engineering/checklist_gate.md
   lint:
+    name: Checklist · lint
     runs-on: macos-26
     timeout-minutes: 15
     defaults:
@@ -34,12 +38,13 @@ jobs:
       - name: Install lint tools
         run: brew bundle check --file Brewfile || brew bundle --file Brewfile
 
-      - name: Lint
+      - name: Lint (Swift + markdown + DesignMD + common)
         env:
           CI: true
         run: bundle exec fastlane ci_lint
 
   iphone-test:
+    name: Checklist · iPhone test
     runs-on: macos-26
     timeout-minutes: 60
     defaults:
@@ -69,7 +74,7 @@ jobs:
       - name: Install lint tools (for build phases)
         run: brew bundle check --file Brewfile || brew bundle --file Brewfile
 
-      - name: iPhone tests
+      - name: iPhone tests (warnings as errors)
         env:
           CI: true
           CI_PREPARE_IPAD: "0"
@@ -77,6 +82,7 @@ jobs:
         run: ./bin/ci-iphone-test.sh
 
   platform-builds:
+    name: Checklist · platform builds
     runs-on: macos-26
     timeout-minutes: 45
     defaults:
@@ -107,7 +113,7 @@ jobs:
       - name: Install lint tools (for build phases)
         run: brew bundle check --file Brewfile || brew bundle --file Brewfile
 
-      - name: iPad and Mac builds
+      - name: iPad and Mac builds (warnings as errors)
         env:
           CI: true
           CI_PREPARE_IPHONE: "0"
@@ -116,24 +122,26 @@ jobs:
           MAC_DERIVED_DATA_PATH: ${{ runner.temp }}/DerivedData-Mac
         run: ./bin/ci-platform-builds.sh
 
-  lint-build-test:
+  checklist:
+    name: Delivery checklist
     runs-on: ubuntu-latest
     timeout-minutes: 5
     needs: [lint, iphone-test, platform-builds]
     if: ${{ always() }}
     steps:
-      - name: Check CI lanes
+      - name: Check checklist lanes
         run: |
           if [[ "${{ needs.lint.result }}" != "success" ]]; then
-            echo "lint failed or did not complete"
+            echo "checklist lane failed: lint"
             exit 1
           fi
           if [[ "${{ needs['iphone-test'].result }}" != "success" ]]; then
-            echo "iphone-test failed or did not complete"
+            echo "checklist lane failed: iphone-test"
             exit 1
           fi
           if [[ "${{ needs['platform-builds'].result }}" != "success" ]]; then
-            echo "platform-builds failed or did not complete"
+            echo "checklist lane failed: platform-builds"
             exit 1
           fi
-          echo "CI lanes passed."
+          echo "Delivery checklist gate passed (lint + iphone-test + platform-builds)."
+          echo "Local equivalent: ./bin/checklist — see docs/engineering/checklist_gate.md"

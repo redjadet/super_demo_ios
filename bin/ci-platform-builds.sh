@@ -23,6 +23,8 @@ fi
 source "$ROOT/tool/resolve_platform_destination.sh"
 # shellcheck source=../tool/xcodebuild_sandbox_flags.sh
 source "$ROOT/tool/xcodebuild_sandbox_flags.sh"
+# shellcheck source=../tool/xcode_warnings_as_errors_flags.sh
+source "$ROOT/tool/xcode_warnings_as_errors_flags.sh"
 
 if [[ "${CI:-}" == "true" && "${CI_PLATFORM_GENERIC_BUILDS:-1}" == "1" ]]; then
   IPAD_DEST="${CI_IPAD_BUILD_DEST:-generic/platform=iOS Simulator}"
@@ -72,6 +74,7 @@ run_ipad_build() {
     -destination "$IPAD_DEST" \
     -configuration Debug \
     ${XCODEBUILD_SANDBOX_FLAGS+"${XCODEBUILD_SANDBOX_FLAGS[@]}"} \
+    ${XCODEBUILD_WARNINGS_AS_ERRORS_FLAGS+"${XCODEBUILD_WARNINGS_AS_ERRORS_FLAGS[@]}"} \
     ${IPAD_DERIVED_DATA_FLAGS+"${IPAD_DERIVED_DATA_FLAGS[@]}"} \
     build
 }
@@ -100,6 +103,7 @@ run_mac_build() {
     -destination "$MAC_DEST" \
     -configuration Debug \
     ${XCODEBUILD_SANDBOX_FLAGS+"${XCODEBUILD_SANDBOX_FLAGS[@]}"} \
+    ${XCODEBUILD_WARNINGS_AS_ERRORS_FLAGS+"${XCODEBUILD_WARNINGS_AS_ERRORS_FLAGS[@]}"} \
     ${MAC_DERIVED_DATA_FLAGS+"${MAC_DERIVED_DATA_FLAGS[@]}"} \
     ${MAC_BUILD_FLAGS+"${MAC_BUILD_FLAGS[@]}"} \
     build
