@@ -26,6 +26,7 @@ Timed walk: [`docs/architecture-tour.md`](docs/architecture-tour.md).
 | Agent worktree / maintain | `./bin/agent-worktree`, `./bin/agent-maintain`; [`docs/agent_kb/host-maintenance.md`](docs/agent_kb/host-maintenance.md) |
 | Harness scorecard (agent) | [`docs/ai/harness-scorecard.md`](docs/ai/harness-scorecard.md) — separate from Engineering |
 | SAFETY-REPORT closeout | [`docs/agent_kb/safety-report-template.md`](docs/agent_kb/safety-report-template.md); `./bin/agent-maintain closeout` |
+| Code quality / coverage honesty | [`docs/code-quality.md`](docs/code-quality.md) — no fake `%` badges |
 | CI / CD map | [`docs/ci-cd-map.md`](docs/ci-cd-map.md), `.github/workflows/` |
 | Architecture decisions (ADR) | [`docs/adr/README.md`](docs/adr/README.md) |
 | Sonar deferral | [`docs/sonar-decision.md`](docs/sonar-decision.md), [`docs/adr/0004-sonarcloud-skip.md`](docs/adr/0004-sonarcloud-skip.md) |
