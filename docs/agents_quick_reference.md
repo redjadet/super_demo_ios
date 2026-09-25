@@ -39,6 +39,7 @@ Launch via `UiTestSupport.launchApplication()` (`-UITesting`, terminate between 
 | Swift format only | `./bin/format.sh` |
 | Swift lint + layer boundaries | `./bin/lint.sh` (indent + agent patterns + SwiftLint + SwiftFormat) |
 | Layer boundaries only | `./tool/check_layer_boundaries.sh` |
+| Engineering scorecard gate | `./tool/check_engineering_quality_scorecard.sh` (also via `./bin/lint.sh`) |
 | Markdown lint gate | `./bin/lint-markdown.sh` |
 | DESIGN.md DesignMD lint (needs Node; in checklists) | `./tool/check_design_md.sh` |
 | Fast checklist (markdown + DesignMD + lint + sanity) | `./bin/checklist-fast` |

@@ -30,6 +30,7 @@ Source-of-truth docs for `superDemoApp`.
 - Apple development practices: [`apple-development-practices.md`](apple-development-practices.md)
 - Development feedback loop: [`development-feedback-loop.md`](development-feedback-loop.md)
 - Validation routing: [`engineering/validation_routing_fast_vs_full.md`](engineering/validation_routing_fast_vs_full.md)
+- Engineering quality scorecard: [`engineering/engineering-quality-scorecard.md`](engineering/engineering-quality-scorecard.md)
 - Release checklist: [`release-checklist.md`](release-checklist.md)
 - TestFlight release notes: [`release-notes/testflight.md`](release-notes/testflight.md);
   App Store: [`release-notes/app-store.md`](release-notes/app-store.md)

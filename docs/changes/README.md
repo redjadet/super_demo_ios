@@ -4,6 +4,8 @@ Record durable implementation notes after meaningful changes.
 
 ## Entries
 
+- [`2026-09-25_engineering-quality-scorecard.md`](2026-09-25_engineering-quality-scorecard.md)
+  — FP-P0-B Engineering scorecard (min-of-areas) + honest gate + README badge.
 - [`2026-09-25_adr-bootstrap.md`](2026-09-25_adr-bootstrap.md)
   — FP-P0-D ADR index (layering, offline, crash deferral, Sonar skip, CI honesty).
 - [`2026-09-25_codemap_architecture_tour.md`](2026-09-25_codemap_architecture_tour.md)

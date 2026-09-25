@@ -42,4 +42,7 @@ fi
 echo "==> Layer boundaries (Features/*)"
 "$ROOT/tool/check_layer_boundaries.sh"
 
+echo "==> Engineering quality scorecard"
+"$ROOT/tool/check_engineering_quality_scorecard.sh"
+
 echo "Lint passed."

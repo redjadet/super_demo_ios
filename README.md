@@ -1,6 +1,7 @@
 # superDemoApp
 
 ![CI](https://github.com/redjadet/super_demo_ios/actions/workflows/ci.yml/badge.svg?branch=main)
+![Engineering](https://img.shields.io/badge/Engineering-10%2F10-0A7A3E)
 ![Xcode](https://img.shields.io/badge/Xcode-27.0-147EFB?logo=xcode&logoColor=white)
 ![Swift](https://img.shields.io/badge/Swift-6.4-F05138?logo=swift&logoColor=white)
 ![SwiftUI](https://img.shields.io/badge/SwiftUI-SDK%2027-0D96F6?logo=swift&logoColor=white)
@@ -20,8 +21,10 @@ shipped App Store product.
 5. Merge proof via `./bin/ci.sh` / GitHub Actions (see CI map)
 
 Task → path: [`CODEMAP.md`](CODEMAP.md). Timed walk:
-[`docs/architecture-tour.md`](docs/architecture-tour.md). Talk tracks:
-[`docs/portfolio.md`](docs/portfolio.md).
+[`docs/architecture-tour.md`](docs/architecture-tour.md). Engineering score
+(min of areas; not agent harness):
+[`docs/engineering/engineering-quality-scorecard.md`](docs/engineering/engineering-quality-scorecard.md).
+Talk tracks: [`docs/portfolio.md`](docs/portfolio.md).
 
 ## 3-minute path
 
