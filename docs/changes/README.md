@@ -4,6 +4,8 @@ Record durable implementation notes after meaningful changes.
 
 ## Entries
 
+- [`2026-09-25_offline-invariants-matrix.md`](2026-09-25_offline-invariants-matrix.md)
+  — FP-P0-C named offline invariants (OI-01…OI-07) + link from offline-first.
 - [`2026-09-15_agent-docs-bloc-patterns.md`](2026-09-15_agent-docs-bloc-patterns.md)
   — Minimal `docs/ai/` routing + safety contracts from bloc_test_app patterns.
 - [`2026-09-15_swiftdata-store-recovery.md`](2026-09-15_swiftdata-store-recovery.md)
