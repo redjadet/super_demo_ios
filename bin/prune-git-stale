@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# Thin wrapper — Flutter bin/prune-git-stale naming.
+set -euo pipefail
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+exec bash "$ROOT/tool/prune_git_stale.sh" "$@"

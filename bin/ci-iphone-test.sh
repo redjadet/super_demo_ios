@@ -23,6 +23,8 @@ fi
 source "$ROOT/tool/resolve_platform_destination.sh"
 # shellcheck source=../tool/xcodebuild_sandbox_flags.sh
 source "$ROOT/tool/xcodebuild_sandbox_flags.sh"
+# shellcheck source=../tool/xcode_warnings_as_errors_flags.sh
+source "$ROOT/tool/xcode_warnings_as_errors_flags.sh"
 
 if [[ "${CI:-}" == "true" && "${CI_IPHONE_GENERIC_BUILD:-1}" == "1" ]]; then
   SIMULATOR_DEST="${CI_IPHONE_BUILD_DEST:-generic/platform=iOS Simulator}"
@@ -48,6 +50,7 @@ XCODEBUILD_TEST_ARGS=(
   -configuration Debug
   ${IPHONE_DERIVED_DATA_PATH+-derivedDataPath "$IPHONE_DERIVED_DATA_PATH"}
   ${XCODEBUILD_SANDBOX_FLAGS+"${XCODEBUILD_SANDBOX_FLAGS[@]}"}
+  ${XCODEBUILD_WARNINGS_AS_ERRORS_FLAGS+"${XCODEBUILD_WARNINGS_AS_ERRORS_FLAGS[@]}"}
   ${TEST_SERIAL_FLAGS+"${TEST_SERIAL_FLAGS[@]}"}
 )
 
@@ -58,6 +61,7 @@ XCODEBUILD_BUILD_ARGS=(
   -configuration Debug
   ${IPHONE_DERIVED_DATA_PATH+-derivedDataPath "$IPHONE_DERIVED_DATA_PATH"}
   ${XCODEBUILD_SANDBOX_FLAGS+"${XCODEBUILD_SANDBOX_FLAGS[@]}"}
+  ${XCODEBUILD_WARNINGS_AS_ERRORS_FLAGS+"${XCODEBUILD_WARNINGS_AS_ERRORS_FLAGS[@]}"}
 )
 
 ci_has_ios_simulator_destination() {

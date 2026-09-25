@@ -51,11 +51,13 @@ Typical triggers:
 Commands:
 
 ```bash
-./bin/checklist
-./bin/ci.sh
+./bin/checklist          # preferred local delivery / merge gate
+./bin/ci.sh              # Fastlane-orchestrated same lanes
 ./bin/fastlane-run ci
 ```
 
+Hosted merge gate: GHA job **`checklist`** must be green
+([`checklist_gate.md`](checklist_gate.md)).
 ## Docs And Agent Guidance Path
 
 For `AGENTS.md`, `docs/agent*`, `docs/ai_code_review_protocol.md`,

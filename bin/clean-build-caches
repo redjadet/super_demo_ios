@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# Thin wrapper — Flutter bin/clean-build-caches naming.
+set -euo pipefail
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+exec bash "$ROOT/tool/clean_build_caches.sh" "$@"

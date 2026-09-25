@@ -44,9 +44,12 @@ session|finish|docs/agent_kb/legibility_and_finish_gate.md
 session|host|docs/agent_kb/host-maintenance.md
 session|harness|docs/ai/harness-scorecard.md
 session|worktree|./bin/agent-worktree --name <slug> [--apply]
+session|tooling|docs/tooling_map.md
+session|checklist_gate|docs/engineering/checklist_gate.md
 session|proof_fast|./bin/checklist-fast
-session|proof_lint|./bin/lint.sh
-session|proof_merge|./bin/ci.sh
+session|proof_lint|./bin/lint
+session|proof_merge|./bin/checklist
+session|proof_hosted|GHA job checklist
 EOF
 }
 
@@ -57,11 +60,13 @@ preflight|start|agent maintain preflight (read-only)
 == Validation chooser (minimum proof) ==
 | Change type                         | Minimum proof                          |
 | Docs / tooling / small Swift        | ./bin/checklist-fast                   |
-| Domain / Data logic                 | ./bin/verify-swift.sh + targeted tests |
+| Domain / Data logic                 | ./bin/verify + targeted tests          |
 | SwiftUI / universal UI / light-dark | ./bin/checklist                        |
-| Before merge / PR                   | ./bin/ci.sh                            |
+| Before merge / PR                   | ./bin/checklist + GHA checklist green  |
 
 Detail: docs/agents_quick_reference.md
+Gate: docs/engineering/checklist_gate.md
+Tooling map: docs/tooling_map.md
 Routing: docs/engineering/validation_routing_fast_vs_full.md
 
 == Safety contracts ==
@@ -94,9 +99,11 @@ closeout|start|finish-gate reminders (read-only)
 
 == Proof lanes (copy into Verification) ==
 Docs/tooling: ./bin/checklist-fast
-Swift format+lint: ./bin/verify-swift.sh
-Lint + layers: ./bin/lint.sh
-Merge: ./bin/ci.sh
+Swift format+lint: ./bin/verify
+Lint + layers: ./bin/lint
+Delivery / merge: ./bin/checklist
+Hosted gate: GHA job checklist
+Tooling map: docs/tooling_map.md
 
 == Harness vs Engineering ==
 Harness: docs/ai/harness-scorecard.md (agent maturity)

@@ -5,6 +5,8 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 
+export PATH="/opt/homebrew/bin:/usr/local/bin:${PATH}"
+
 show_help() {
   cat <<'EOF'
 Usage: ./bin/checklist-fast [--help]
@@ -16,7 +18,8 @@ Fast local sanity lane:
 - focused common issue checks
 - Xcode project/scheme listing
 
-Use ./bin/checklist for full build/test/platform proof.
+Use ./bin/checklist for full build/test/platform proof (merge gate).
+See docs/engineering/checklist_gate.md.
 EOF
 }
 

@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+# Re-run delivery checklist with optional format between passes (Flutter checklist_fix spirit).
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$ROOT"
+
+export PATH="/opt/homebrew/bin:/usr/local/bin:${PATH}"
+
+MAX_PASSES="${MAX_PASSES:-3}"
+CHECKLIST_FIX_APPLY="${CHECKLIST_FIX_APPLY:-0}"
+CHECKLIST_CMD="${CHECKLIST_CMD:-./bin/checklist}"
+
+if ! [[ "$MAX_PASSES" =~ ^[1-9][0-9]*$ ]]; then
+  echo "checklist_fix: MAX_PASSES must be a positive integer" >&2
+  exit 2
+fi
+
+echo "checklist_fix: run $CHECKLIST_CMD (max passes: $MAX_PASSES)"
+echo "checklist_fix: set CHECKLIST_FIX_APPLY=1 to ./bin/format between passes"
+echo "checklist_fix: narrow lane example: CHECKLIST_CMD=./bin/checklist-fast ./bin/checklist_fix"
+
+pass=1
+while true; do
+  echo
+  echo "Pass $pass/$MAX_PASSES: $CHECKLIST_CMD"
+  if $CHECKLIST_CMD; then
+    echo
+    echo "checklist_fix: checklist passed"
+    exit 0
+  fi
+
+  if [[ "$pass" -ge "$MAX_PASSES" ]]; then
+    echo
+    echo "checklist_fix: still failing after $MAX_PASSES pass(es)"
+    echo "   Fix remaining errors, then re-run: ./bin/checklist_fix"
+    exit 1
+  fi
+
+  if [[ "$CHECKLIST_FIX_APPLY" != "1" ]]; then
+    echo
+    echo "checklist_fix: stopping before auto-fix."
+    echo "   Re-run with CHECKLIST_FIX_APPLY=1 to format Swift between passes."
+    exit 1
+  fi
+
+  echo
+  echo "checklist_fix: ./bin/format between passes"
+  ./bin/format || true
+  pass=$((pass + 1))
+done

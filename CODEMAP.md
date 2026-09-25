@@ -24,7 +24,9 @@ Timed walk: [`docs/architecture-tour.md`](docs/architecture-tour.md).
 | Launch / demo flags | `superDemoApp/Shared/AppLaunchConfiguration.swift` |
 | Design / tokens | [`DESIGN.md`](DESIGN.md), [`docs/design_system.md`](docs/design_system.md) |
 | Tests | [`docs/testing.md`](docs/testing.md), `superDemoAppTests/` |
-| Validation / proof commands | [`docs/agents_quick_reference.md`](docs/agents_quick_reference.md); `./bin/checklist-fast`, `./bin/lint.sh`, `./bin/ci.sh` |
+| Validation / proof commands | [`docs/agents_quick_reference.md`](docs/agents_quick_reference.md); `./bin/checklist-fast`, `./bin/checklist`, `./bin/lint`, `./bin/ci` |
+| Delivery checklist gate | [`docs/engineering/checklist_gate.md`](docs/engineering/checklist_gate.md) — local `./bin/checklist`; GHA job `checklist` |
+| Flutter → iOS tooling map | [`docs/tooling_map.md`](docs/tooling_map.md) |
 | Engineering quality scorecard | [`docs/engineering/engineering-quality-scorecard.md`](docs/engineering/engineering-quality-scorecard.md); `./tool/check_engineering_quality_scorecard.sh` |
 | Agent worktree / maintain | `./bin/agent-worktree`, `./bin/agent-maintain`; [`docs/agent_kb/host-maintenance.md`](docs/agent_kb/host-maintenance.md) |
 | Harness scorecard (agent) | [`docs/ai/harness-scorecard.md`](docs/ai/harness-scorecard.md) — separate from Engineering |

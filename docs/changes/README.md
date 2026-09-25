@@ -4,6 +4,8 @@ Record durable implementation notes after meaningful changes.
 
 ## Entries
 
+- [`2026-09-25_checklist_gate.md`](2026-09-25_checklist_gate.md)
+  — Delivery checklist gate + Flutter-named bin/tooling parity (`tooling_map.md`).
 - [`2026-09-25_native-host-bridge.md`](2026-09-25_native-host-bridge.md)
   — JP-P0-C native host-bridge contract (`feed.cacheStatus`) + Engineering demo.
 - [`2026-09-25_widgetkit-feed-snapshot.md`](2026-09-25_widgetkit-feed-snapshot.md)
