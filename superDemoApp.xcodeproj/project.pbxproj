@@ -60,6 +60,7 @@
 		A1FEED01000000000000000F /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		A1FEED010000000000000011 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		A1FEED010000000000000013 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		A1STOREKIT010000000000001 /* Products.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = Products.storekit; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -128,6 +129,7 @@
 		56D79ACD2FB7787300B9E63E = {
 			isa = PBXGroup;
 			children = (
+				A1STOREKIT010000000000002 /* Config */,
 				56D79AD82FB7787300B9E63E /* superDemoApp */,
 				A1FEED010000000000000002 /* FeedWidgetShared */,
 				A1FEED010000000000000003 /* superDemoAppWidget */,
@@ -146,6 +148,14 @@
 				56D79AEF2FB7787400B9E63E /* superDemoAppUITests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		A1STOREKIT010000000000002 /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				A1STOREKIT010000000000001 /* Products.storekit */,
+			);
+			path = Config;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
