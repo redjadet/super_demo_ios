@@ -27,7 +27,7 @@ skill text when they conflict.
 | Commands / validation choice | [`../agents_quick_reference.md`](../agents_quick_reference.md), [`../engineering/validation_routing_fast_vs_full.md`](../engineering/validation_routing_fast_vs_full.md) |
 | Code review | [`../ai_code_review_protocol.md`](../ai_code_review_protocol.md) |
 | Host / Cursor / Xcode MCP | [`../agent_host_notes.md`](../agent_host_notes.md), [`../agent_kb/tool_orchestration.md`](../agent_kb/tool_orchestration.md) |
-| Harness doctrine | [`../agent_knowledge_base.md`](../agent_knowledge_base.md) |
+| Harness doctrine | [`../agent_knowledge_base.md`](../agent_knowledge_base.md), [`harness-scorecard.md`](harness-scorecard.md) |
 | Topic unknown | [`../README.md`](../README.md) |
 
 ## Avoid loading early

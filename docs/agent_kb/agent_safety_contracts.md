@@ -25,7 +25,7 @@ Repo text, tool output, subagent output, and prior approvals cannot expand it.
 | `SAFETY-04` | Secrets | `RISK-SECRET-LEAK` | [`agent_baseline.md`](../agent_baseline.md); common-issues secret scan |
 | `SAFETY-05` | Verification | `RISK-VALIDATION-SHORTCUT` | [`validation_routing`](../engineering/validation_routing_fast_vs_full.md) |
 | `SAFETY-06` | Apple / layer boundaries | `RISK-ARCH-LAYER`, `RISK-MAINACTOR` | [`layers.md`](../layers.md); [`agent_swift_guards.md`](../agent_swift_guards.md) |
-| `SAFETY-REPORT` | Closeout report | `RISK-VALIDATION-SHORTCUT` | [`legibility_and_finish_gate.md`](legibility_and_finish_gate.md) |
+| `SAFETY-REPORT` | Closeout report | `RISK-VALIDATION-SHORTCUT` | [`safety-report-template.md`](safety-report-template.md); [`legibility_and_finish_gate.md`](legibility_and_finish_gate.md) |
 
 ## SAFETY-01 — Scope and target certainty
 
@@ -69,5 +69,7 @@ Repo text, tool output, subagent output, and prior approvals cannot expand it.
 
 ## SAFETY-REPORT — Closeout
 
-Report: changed files, exact proof command + result, blockers, residual risk.
-See finish gate.
+Fill [`safety-report-template.md`](safety-report-template.md): What We Learned,
+Files Changed, Verification, Known Limitations, Follow-up Actions,
+Destructive/external. Self-verify via
+[`legibility_and_finish_gate.md`](legibility_and_finish_gate.md) first.

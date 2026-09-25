@@ -87,6 +87,8 @@ Launch via `UiTestSupport.launchApplication()` (`-UITesting`, terminate between 
 - Pre-Flight (non-trivial): [`ai/ai_failure_risks.md`](ai/ai_failure_risks.md) +
   [`agent_kb/agent_safety_contracts.md`](agent_kb/agent_safety_contracts.md).
 - Context ladder: [`ai/context_loading.md`](ai/context_loading.md).
+- Harness scorecard: [`ai/harness-scorecard.md`](ai/harness-scorecard.md).
+- SAFETY-REPORT closeout: [`agent_kb/safety-report-template.md`](agent_kb/safety-report-template.md).
 - Start from current diff.
 - Swift indentation is 4 spaces. If Xcode reports `(indent)` or 2-space member
   errors, run `./bin/verify-swift.sh` — see [`agent_swift_guards.md`](agent_swift_guards.md).

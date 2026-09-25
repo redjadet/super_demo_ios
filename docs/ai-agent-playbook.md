@@ -51,5 +51,5 @@ Changed files; exact proof command + result; blocker; residual risk if partial.
 | Accessibility / Dynamic Type | Keep |
 | SwiftData out of Domain | Keep |
 | Universal layout | Keep → also `RISK-UNIVERSAL-UI` |
-| Report shape | Keep → SAFETY-REPORT / finish gate |
+| Report shape | Keep → [`agent_kb/safety-report-template.md`](agent_kb/safety-report-template.md) / finish gate |
 | Long progressive list formerly in KB | Moved → `ai/context_loading.md` |

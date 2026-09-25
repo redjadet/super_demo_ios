@@ -10,9 +10,11 @@ Source-of-truth docs for `superDemoApp`.
 - Agent map (lean links only; detail in `docs/`): [`../AGENTS.md`](../AGENTS.md)
 - AI routing (`docs/ai/`): [`ai/README.md`](ai/README.md) —
   [`ai/context_loading.md`](ai/context_loading.md),
-  [`ai/ai_failure_risks.md`](ai/ai_failure_risks.md)
+  [`ai/ai_failure_risks.md`](ai/ai_failure_risks.md),
+  [`ai/harness-scorecard.md`](ai/harness-scorecard.md)
 - AI agent harness: [`agent_knowledge_base.md`](agent_knowledge_base.md)
 - Safety contracts: [`agent_kb/agent_safety_contracts.md`](agent_kb/agent_safety_contracts.md)
+- SAFETY-REPORT template: [`agent_kb/safety-report-template.md`](agent_kb/safety-report-template.md)
 - Agent harness shards: [`agent_kb/adaptive_execution.md`](agent_kb/adaptive_execution.md),
   [`agent_kb/legibility_and_finish_gate.md`](agent_kb/legibility_and_finish_gate.md),
   [`agent_kb/memory_and_context_ladder.md`](agent_kb/memory_and_context_ladder.md),

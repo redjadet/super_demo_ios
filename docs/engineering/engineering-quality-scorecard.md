@@ -3,8 +3,8 @@
 Measured contract for claiming **Engineering X/10** on `superDemoApp`.
 
 This is **not** the agent harness score (AGENTS / finish gate / safety contracts).
-Harness maturity is tracked separately (FP-P1-B). Do not substitute one for the
-other.
+Harness maturity: [`../ai/harness-scorecard.md`](../ai/harness-scorecard.md).
+Do not substitute one for the other.
 
 ## Scoring rule
 
@@ -52,7 +52,6 @@ Engineering badge, and fix proof before reclaiming 10/10.
 ## Out of scope (this scorecard)
 
 - Measured code-coverage % badges (FP-P1-D).
-- Harness scorecard / SAFETY-REPORT template (FP-P1-B).
 - Supply-chain scanners (FP-P2-A).
 - Vendor crash SDK / live SonarCloud / App Store submission.
 

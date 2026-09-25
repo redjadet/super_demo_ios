@@ -4,6 +4,8 @@ Record durable implementation notes after meaningful changes.
 
 ## Entries
 
+- [`2026-09-25_harness-scorecard-safety-report.md`](2026-09-25_harness-scorecard-safety-report.md)
+  — FP-P1-B harness scorecard + SAFETY-REPORT closeout template.
 - [`2026-09-25_feature-modularity-guards.md`](2026-09-25_feature-modularity-guards.md)
   — FP-P1-A feature folder contract + cross-feature import leak checks in lint.
 - [`2026-09-25_engineering-quality-scorecard.md`](2026-09-25_engineering-quality-scorecard.md)

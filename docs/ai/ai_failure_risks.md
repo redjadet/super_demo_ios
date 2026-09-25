@@ -35,4 +35,6 @@ architecture policy). Map the task to rows below before first edit.
 ## Related
 
 - Finish gate: [`../agent_kb/legibility_and_finish_gate.md`](../agent_kb/legibility_and_finish_gate.md)
+- SAFETY-REPORT template: [`../agent_kb/safety-report-template.md`](../agent_kb/safety-report-template.md)
+- Harness scorecard: [`harness-scorecard.md`](harness-scorecard.md)
 - Commands: [`../agents_quick_reference.md`](../agents_quick_reference.md)

@@ -6,7 +6,9 @@ Thin routing for agents. Behavior canon stays in parent [`docs/`](../README.md).
 | --- | --- |
 | [`context_loading.md`](context_loading.md) | Canonical context ladder + conditional owners |
 | [`ai_failure_risks.md`](ai_failure_risks.md) | Pre-Flight risk → proof index |
+| [`harness-scorecard.md`](harness-scorecard.md) | Agent harness score (≠ Engineering) |
 | [`../agent_kb/agent_safety_contracts.md`](../agent_kb/agent_safety_contracts.md) | SAFETY contracts |
+| [`../agent_kb/safety-report-template.md`](../agent_kb/safety-report-template.md) | SAFETY-REPORT closeout template |
 
 Workflow / finish: [`../agent_knowledge_base.md`](../agent_knowledge_base.md),
 [`../agent_kb/legibility_and_finish_gate.md`](../agent_kb/legibility_and_finish_gate.md).

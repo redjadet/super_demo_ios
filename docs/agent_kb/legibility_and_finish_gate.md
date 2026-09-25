@@ -48,3 +48,8 @@ Before final report or commit, self-verify:
 - Breakage impact: first failure signal, blast radius, detection, and safe
   recovery path.
 - Drift: intent, spec, docs, tests, and implementation still match after patch.
+
+Then close out with a **SAFETY-REPORT** using
+[`safety-report-template.md`](safety-report-template.md) (What We Learned /
+Files / Verification / Limitations / Follow-ups). Harness maturity (separate
+from app Engineering): [`../ai/harness-scorecard.md`](../ai/harness-scorecard.md).

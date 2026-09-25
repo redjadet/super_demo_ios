@@ -40,6 +40,7 @@ Host / MCP / skills: [`docs/agent_host_notes.md`](docs/agent_host_notes.md),
 | Tests | [`docs/testing.md`](docs/testing.md) |
 | Proof / merge | [`docs/agents_quick_reference.md`](docs/agents_quick_reference.md); `./bin/ci.sh` |
 | Engineering scorecard | [`docs/engineering/engineering-quality-scorecard.md`](docs/engineering/engineering-quality-scorecard.md) |
+| Harness / SAFETY-REPORT | [`docs/ai/harness-scorecard.md`](docs/ai/harness-scorecard.md); [`docs/agent_kb/safety-report-template.md`](docs/agent_kb/safety-report-template.md) |
 
 Baseline: [`docs/agent_baseline.md`](docs/agent_baseline.md). Portfolio:
 [`docs/portfolio.md`](docs/portfolio.md). Index: [`docs/README.md`](docs/README.md).
@@ -48,4 +49,4 @@ Baseline: [`docs/agent_baseline.md`](docs/agent_baseline.md). Portfolio:
 
 1. Validation chooser in [`docs/agents_quick_reference.md`](docs/agents_quick_reference.md).
 2. Review: [`docs/ai_code_review_protocol.md`](docs/ai_code_review_protocol.md).
-3. Report via finish gate in knowledge base / safety contracts.
+3. Report via finish gate + [`docs/agent_kb/safety-report-template.md`](docs/agent_kb/safety-report-template.md).
