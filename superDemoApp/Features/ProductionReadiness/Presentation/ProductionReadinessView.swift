@@ -159,6 +159,13 @@ private struct ProductionReadinessContent: View {
                     Label("Host bridge ping (feed.cacheStatus)", systemImage: "cable.connector")
                 }
                 .accessibilityIdentifier("hostBridgePingDemoLink")
+
+                NavigationLink {
+                    LocalNotificationDemoView()
+                } label: {
+                    Label("Local stale-Feed reminder (not APNs)", systemImage: "bell.badge")
+                }
+                .accessibilityIdentifier("localNotificationDemoLink")
             }
         }
         .accessibilityIdentifier("productionReadinessDashboard")

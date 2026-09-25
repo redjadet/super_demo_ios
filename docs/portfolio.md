@@ -46,7 +46,7 @@ Sibling backlog (do not merge scopes): portfolio plan under agent store
 | Universal shell (iPhone / iPad / Mac) | Adaptive navigation; CI platform builds | **In repo** |
 | WidgetKit / Home Screen widget | `FeedWidgetShared/`, `superDemoAppWidget/`, App Group `group.com.ilkersevim.superDemoApp`; Engineering demos → Feed widget snapshot | **In repo** (JP-P0-B; iOS embed; Mac lane skips extension) |
 | Live Activities / Dynamic Island | — | **Not in repo** (JP-P1-A) |
-| Push / notification service extension | Release checklist mentions push only | **Not in repo** (JP-P1-C local; JP-P2-E APNs) |
+| Push / notification service extension | Engineering demos → Local stale-Feed reminder (local only) | **In repo** (JP-P1-C local; NSE / APNs still **not** in repo — JP-P2-E) |
 | Share extension | — | **Not in repo** (JP-P2-A) |
 | Sign in with Apple | Demo auth / Keychain ≠ SIWA | **Not in repo** (JP-P2-B) |
 | StoreKit 2 | — | **Not in repo** (JP-P1-D) |

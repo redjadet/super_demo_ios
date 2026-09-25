@@ -4,6 +4,8 @@ Record durable implementation notes after meaningful changes.
 
 ## Entries
 
+- [`2026-09-25_local-notification-demo.md`](2026-09-25_local-notification-demo.md)
+  — JP-P1-C local stale-Feed reminder demo (not APNs).
 - [`2026-09-25_checklist_gate.md`](2026-09-25_checklist_gate.md)
   — Delivery checklist gate + Flutter-named bin/tooling parity (`tooling_map.md`).
 - [`2026-09-25_native-host-bridge.md`](2026-09-25_native-host-bridge.md)

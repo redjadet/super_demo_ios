@@ -18,6 +18,7 @@ Timed walk: [`docs/architecture-tour.md`](docs/architecture-tour.md).
 | DI composition roots | `superDemoApp/App/*Composition.swift`, [`docs/dependency-injection.md`](docs/dependency-injection.md) |
 | Tabs / deep links / App Intents | `superDemoApp/App/AppRootView.swift`, `AppNavigation.swift`, `App/AppIntents/` |
 | Feed Home Screen widget | `FeedWidgetShared/`, `superDemoAppWidget/`, App Group snapshot; demo in ProductionReadiness |
+| Local notifications (demo) | `Shared/Notifications/`, Engineering demos → Local stale-Feed reminder (not APNs) |
 | Native host bridge (no Flutter SDK) | `superDemoApp/Shared/HostBridge/`, [`docs/native-host-boundary.md`](docs/native-host-boundary.md); Engineering demos → Host bridge ping |
 | Networking (retry / 401 / 429 / idempotency) | `superDemoApp/Shared/Networking/`, [`docs/sync-and-networking.md`](docs/sync-and-networking.md) |
 | Diagnostics / crash swap point | `superDemoApp/Shared/Diagnostics/`, [`docs/incident-playbook.md`](docs/incident-playbook.md) |
