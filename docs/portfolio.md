@@ -17,7 +17,7 @@ read-through cache.
 | UIKit showcase | `Features/ProductionReadiness/UIKitShowcase/` | Collection reuse, prefetch, hosting, custom transition | UI smoke: `uikitShowcaseLink` |
 | Diagnostics / crash swap | `Shared/Diagnostics/` | OSLog non-fatals today; vendor adapter later | [`incident-playbook.md`](incident-playbook.md); Engineering demos → Diagnostics |
 | CI / delivery | `bin/`, `.github/workflows/ci.yml`, Fastlane | Local `./bin/ci.sh` = merge proof; GHA build-heavy | [`ci-cd-map.md`](ci-cd-map.md) |
-| Performance signposts | `AppPerformanceSignposts` | Feed + UIKit Instruments categories | [`performance-lab.md`](performance-lab.md) |
+| Performance signposts | `AppPerformanceSignposts`, Feed widget App Group path | Feed + UIKit `os_signpost`; widget recipe (app publish + extension timeline); concurrency cancel talk track; Live Activity recipe **pending JP-P1-A** | [`performance-lab.md`](performance-lab.md) |
 | Security habits | Keychain demo, ATS, redaction | Demo auth ≠ production OAuth | [`security-checklist.md`](security-checklist.md) |
 | Engineering standards | Layers, Observation, PR proof | Human-readable budget + owners | [`engineering-standards.md`](engineering-standards.md) |
 | SonarCloud | Optional static analysis | **Skipped** — no org; use lint/CI gates | [`sonar-decision.md`](sonar-decision.md) |
@@ -42,7 +42,7 @@ Sibling backlog (do not merge scopes): portfolio plan under agent store
 | ObjC legacy interop | `superDemoApp/Shared/LegacyObjC/` + bridging header | **In repo** (thin) |
 | Observability / crash swap | `superDemoApp/Shared/Diagnostics/`, [`incident-playbook.md`](incident-playbook.md) | **In repo** |
 | Performance (Feed + UIKit) | `AppPerformanceSignposts`, [`performance-lab.md`](performance-lab.md) | **In repo** |
-| Performance (extensions / Live Activities) | — | **Not in repo** (JP-P1-E) |
+| Performance (widget / concurrency lab) | [`performance-lab.md`](performance-lab.md) widget App Group recipe + concurrency talk track | **In repo** (JP-P1-E; Live Activity recipe pending JP-P1-A) |
 | Universal shell (iPhone / iPad / Mac) | Adaptive navigation; CI platform builds | **In repo** |
 | WidgetKit / Home Screen widget | `FeedWidgetShared/`, `superDemoAppWidget/`, App Group `group.com.ilkersevim.superDemoApp`; Engineering demos → Feed widget snapshot | **In repo** (JP-P0-B; iOS embed; Mac lane skips extension) |
 | Live Activities / Dynamic Island | — | **Not in repo** (JP-P1-A) |
