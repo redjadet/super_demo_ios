@@ -23,6 +23,15 @@ enum ProductionReadinessComposition {
     }
 
     @MainActor
+    static func makeIdempotentPostDemoModel() -> IdempotentPostDemoModel {
+        IdempotentPostDemoModel(
+            submit: SubmitIdempotentPostDemoUseCase(
+                transport: SimulatedIdempotentPostTransport()
+            )
+        )
+    }
+
+    @MainActor
     private static func makeRepository() -> ProductionReadinessRepository {
         let sample = SampleProductionReadinessRepository()
         if AppLaunchConfiguration.usesSeededSampleState {

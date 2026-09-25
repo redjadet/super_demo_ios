@@ -5,16 +5,31 @@ with a **Feed** trajectory: network client → repository → use cases →
 `@Observable` feature model → SwiftUI, DI, cancellation, optional SwiftData
 read-through cache.
 
+## Reviewer map
+
+| Quality theme | Path | Talk track | Proof |
+| --- | --- | --- | --- |
+| Layer boundaries | `Features/*/`, `docs/layers.md` | Presentation → Domain ← Data; composition in `App/` | `./bin/lint.sh` → `tool/check_layer_boundaries.sh` |
+| Concurrency cancel | `Shared/Presentation/AsyncLoadController.swift`, Feed/Items/Dashboard models | Cancel restores prior state; `CancellationError` not a Retry failure | Unit tests on feature models; UI Retry IDs |
+| Stale cache | `Features/Feed/Data/CachingFeedRepository.swift`, `FeedView` | Remote fail + fresh cache → `isStale` banner | `#Preview("Feed — Stale")`; `CachingFeedRepositoryTests` — not yet a seeded in-app path |
+| Networking retry / 401 / 429 | `Shared/Networking/` | Injectable session; redacted logger | `URLSessionAPIClientTests`, `RetryPolicyTests` |
+| Idempotency | `APIRequest.idempotencyKey` + Dashboard **Idempotent POST** demo | Header enables POST retry; **simulated** duplicate-safe transport in Data | Demo UI + `IdempotentPostDemo*` tests |
+| UIKit showcase | `Features/ProductionReadiness/UIKitShowcase/` | Collection reuse, prefetch, hosting, custom transition | UI smoke: `uikitShowcaseLink` |
+| Diagnostics / crash swap | `Shared/Diagnostics/` | OSLog non-fatals today; vendor adapter later | [`incident-playbook.md`](incident-playbook.md); Engineering demos → Diagnostics |
+| CI / delivery | `bin/`, `.github/workflows/ci.yml`, Fastlane | Local `./bin/ci.sh` = merge proof; GHA build-heavy | [`ci-cd-map.md`](ci-cd-map.md) |
+| Performance signposts | `AppPerformanceSignposts` | Feed + UIKit Instruments categories | [`performance-lab.md`](performance-lab.md) |
+| Security habits | Keychain demo, ATS, redaction | Demo auth ≠ production OAuth | [`security-checklist.md`](security-checklist.md) |
+| Engineering standards | Layers, Observation, PR proof | Human-readable budget + owners | [`engineering-standards.md`](engineering-standards.md) |
+
 ## How to read this repo (cold reviewer)
 
-1. [`AGENTS.md`](../AGENTS.md) — agent map; `./bin/*` proof commands.
-2. [`docs/architecture.md`](architecture.md) +
-   [`docs/feature-template.md`](feature-template.md).
+1. [`../README.md`](../README.md) — what it proves + 3-minute path + flags.
+2. [`architecture.md`](architecture.md) + [`feature-template.md`](feature-template.md).
 3. **`Features/Items/`** — Reference (SwiftData, sync repository API).
 4. **`Features/Feed/`** — JSONPlaceholder client + SwiftData read-through cache;
    see [`changes/2026-05-16_feed-feature-shipped.md`](changes/2026-05-16_feed-feature-shipped.md)
    and [`changes/2026-09-15_feed-items-diagnostics-hardening.md`](changes/2026-09-15_feed-items-diagnostics-hardening.md).
-5. **`Features/ProductionReadiness/`** — dashboard, networking, UIKit showcase;
+5. **`Features/ProductionReadiness/`** — dashboard, networking demos, UIKit showcase;
    see [`changes/2026-05-18_production_readiness_dashboard.md`](changes/2026-05-18_production_readiness_dashboard.md).
 6. **`App/`** — `AppRootView` tabs; composition roots wire DI and feature models.
 7. **`Shared/Presentation/AdaptiveNavigationShell.swift`** — shared chrome.
@@ -44,10 +59,15 @@ Observation + thin use cases on a repository protocol.
 - **Presentation** — `FeedFeatureModel` (cancel restores prior state; diagnostics on
   failure/stale), list + Retry + **stale banner**, `FeedNavigationShell`.
 
-**Interview boundary:** Presentation never imports `URLSession`; unit tests stub
+**Reviewer boundary:** Presentation never imports `URLSession`; unit tests stub
 HTTP — no live network on default CI.
 
-## Interview talking points (5–7)
+**Stale demo honesty:** Seeded / reviewer mode returns a successful Feed list.
+For stale fallback, use `#Preview("Feed — Stale")` and
+`CachingFeedRepositoryTests` until a deterministic in-app failure+cache fixture
+exists.
+
+## Reviewer talking points (5–7)
 
 - **Layers:** `Presentation → Domain ← Data`; `./tool/check_layer_boundaries.sh`.
 - **DI:** Injectable `URLSession` + URLs in Data; wired in composition.
@@ -81,12 +101,23 @@ HTTP — no live network on default CI.
 - **SwiftData store failure** — `AppModelContainer` deletes + recreates the disk
   store when possible; otherwise in-memory + diagnostics.
 
+## Related docs
+
+- [`incident-playbook.md`](incident-playbook.md)
+- [`ci-cd-map.md`](ci-cd-map.md)
+- [`security-checklist.md`](security-checklist.md)
+- [`performance-lab.md`](performance-lab.md)
+- [`engineering-standards.md`](engineering-standards.md)
+
 ## Proof commands
 
 From **`superDemoApp/`**:
 
 ```bash
 ./bin/lint.sh
-./bin/checklist    # SwiftUI universal / checklist scenarios
-./bin/ci.sh       # Before merge / PR
+./bin/checklist-fast   # docs / fast sanity
+./bin/checklist        # fuller local delivery (incl. tests when not skipped)
+./bin/ci.sh            # Before merge / PR
 ```
+
+Note: `./bin/verify-swift.sh` = format + lint only (does not build or test).

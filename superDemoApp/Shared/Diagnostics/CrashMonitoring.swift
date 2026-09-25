@@ -29,9 +29,10 @@ nonisolated struct OSLogCrashMonitor: CrashMonitoring {
     }
 
     func recordNonFatal(_ failure: CrashMonitorFailure) {
-        let metadata = Self.format(failure.metadata)
+        let safeReason = DiagnosticRedaction.sanitizeText(failure.reason)
+        let metadata = Self.format(DiagnosticRedaction.sanitizeMetadata(failure.metadata))
         self.logger.error(
-            "nonfatal source=\(failure.source, privacy: .public) reason=\(failure.reason, privacy: .public) metadata=\(metadata, privacy: .public)"
+            "nonfatal source=\(failure.source, privacy: .public) reason=\(safeReason, privacy: .public) metadata=\(metadata, privacy: .public)"
         )
     }
 

@@ -32,6 +32,11 @@ Source-of-truth docs for `superDemoApp`.
 - TestFlight release notes: [`release-notes/testflight.md`](release-notes/testflight.md);
   App Store: [`release-notes/app-store.md`](release-notes/app-store.md)
 - Production risks: [`production-risks.md`](production-risks.md)
+- Incident playbook: [`incident-playbook.md`](incident-playbook.md)
+- CI/CD map: [`ci-cd-map.md`](ci-cd-map.md)
+- Security checklist: [`security-checklist.md`](security-checklist.md)
+- Performance lab: [`performance-lab.md`](performance-lab.md)
+- Engineering standards: [`engineering-standards.md`](engineering-standards.md)
 
 ## Design (SwiftUI)
 
