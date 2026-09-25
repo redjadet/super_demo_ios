@@ -10,3 +10,5 @@
 | Non-goals | Do not commit Sonar tokens, do not add unpaid cloud analysis that cannot run in CI. |
 
 Existing gates remain authoritative: `./bin/verify-swift.sh`, `./bin/lint.sh` (including `tool/check_layer_boundaries.sh`), local/`GHA` CI map in [`ci-cd-map.md`](ci-cd-map.md).
+
+ADR index entry: [`adr/0004-sonarcloud-skip.md`](adr/0004-sonarcloud-skip.md).

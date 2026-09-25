@@ -49,6 +49,7 @@ Source-of-truth docs for `superDemoApp`.
 ## iOS Engineering
 
 - Architecture: [`architecture.md`](architecture.md)
+- Architecture decisions (ADR): [`adr/README.md`](adr/README.md)
 - Apple development practices: [`apple-development-practices.md`](apple-development-practices.md)
 - Layers: [`layers.md`](layers.md)
 - State management: [`state-management.md`](state-management.md) - SwiftUI Observation-first for iOS 17+

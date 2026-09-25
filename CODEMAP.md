@@ -22,7 +22,8 @@ Timed walk: [`docs/architecture-tour.md`](docs/architecture-tour.md).
 | Tests | [`docs/testing.md`](docs/testing.md), `superDemoAppTests/` |
 | Validation / proof commands | [`docs/agents_quick_reference.md`](docs/agents_quick_reference.md); `./bin/checklist-fast`, `./bin/lint.sh`, `./bin/ci.sh` |
 | CI / CD map | [`docs/ci-cd-map.md`](docs/ci-cd-map.md), `.github/workflows/` |
-| Sonar deferral | [`docs/sonar-decision.md`](docs/sonar-decision.md) |
+| Architecture decisions (ADR) | [`docs/adr/README.md`](docs/adr/README.md) |
+| Sonar deferral | [`docs/sonar-decision.md`](docs/sonar-decision.md), [`docs/adr/0004-sonarcloud-skip.md`](docs/adr/0004-sonarcloud-skip.md) |
 | Change evidence | [`docs/changes/`](docs/changes/README.md) |
 
 ## Top-level layout
