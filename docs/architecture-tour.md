@@ -23,12 +23,15 @@ full demo script. Companion to [`portfolio.md`](portfolio.md) (theme table) and
 | “Full reviewer talk tracks?” | [`portfolio.md`](portfolio.md) |
 | “Items as SwiftData reference?” | `superDemoApp/Features/Items/` |
 | “UIKit interop?” | `superDemoApp/Features/ProductionReadiness/UIKitShowcase/` |
-| “Diagnostics / crash later?” | `superDemoApp/Shared/Diagnostics/`, [`incident-playbook.md`](incident-playbook.md) |
+| “Diagnostics / crash later?” | `superDemoApp/Shared/Diagnostics/`, [`incident-playbook.md`](incident-playbook.md), [`adr/0003-crash-vendor-deferred.md`](adr/0003-crash-vendor-deferred.md) |
 | “Validation chooser?” | [`agents_quick_reference.md`](agents_quick_reference.md), [`engineering/validation_routing_fast_vs_full.md`](engineering/validation_routing_fast_vs_full.md) |
+| “Why layering / offline / Sonar / CI honesty?” | [`adr/README.md`](adr/README.md) |
 
 ## Honesty
 
 - Portfolio demo — not a shipped App Store product claim ([`../README.md`](../README.md) scope).
-- SonarCloud skipped for this demo ([`sonar-decision.md`](sonar-decision.md)).
+- SonarCloud skipped for this demo ([`sonar-decision.md`](sonar-decision.md),
+  [`adr/0004-sonarcloud-skip.md`](adr/0004-sonarcloud-skip.md)).
 - Stale Feed is deterministic under `-StaleFeedDemo` / Engineering demos — see portfolio map.
-- PR-lane vs local-test honesty: [`ci-cd-map.md`](ci-cd-map.md).
+- PR-lane vs local-test honesty: [`ci-cd-map.md`](ci-cd-map.md),
+  [`adr/0005-ci-pr-vs-local-honesty.md`](adr/0005-ci-pr-vs-local-honesty.md).
