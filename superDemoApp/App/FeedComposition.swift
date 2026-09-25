@@ -99,7 +99,7 @@ private struct FeedRootContent: View {
 struct StaleFeedDemoView: View {
     private let session: FeedComposition.StaleDemoSession
 
-    init(session: FeedComposition.StaleDemoSession = FeedComposition.makeStaleDemoSession()) {
+    init(session: FeedComposition.StaleDemoSession) {
         self.session = session
     }
 

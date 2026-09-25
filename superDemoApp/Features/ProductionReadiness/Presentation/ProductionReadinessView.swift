@@ -140,7 +140,7 @@ private struct ProductionReadinessContent: View {
                 .accessibilityIdentifier("idempotentPostDemoLink")
 
                 NavigationLink {
-                    StaleFeedDemoView()
+                    StaleFeedDemoView(session: FeedComposition.makeStaleDemoSession())
                 } label: {
                     Label("Stale Feed cache fallback", systemImage: "externaldrive.badge.exclamationmark")
                 }
