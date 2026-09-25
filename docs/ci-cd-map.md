@@ -10,6 +10,7 @@ repo does not run on Bitrise today. Optional sketch: [`../bitrise.yml.example`](
 | Lint | Yes — job `lint` → `bundle exec fastlane ci_lint` | Yes (via Fastlane `ci`) | Optional | — |
 | Unit / UI smoke | Job `iphone-test` → `./bin/ci-iphone-test.sh` (often **build + limited UI**; see [`testing.md`](testing.md) — do not assume full suite parity with every local run) | Yes — same Fastlane CI lanes as GHA | Optional targeted `xcodebuild test` | — |
 | Platform builds | Job `platform-builds` → `./bin/ci-platform-builds.sh` (iPad + Mac) | Yes (unless `CI_SKIP_PLATFORM_BUILDS=1`) | — | — |
+| Widget extension | Built/embedded with iPhone/iPad app targets (`superDemoAppWidget`, App Group snapshot); **not** embedded on Mac (`platformFilter = ios`) | Same as app lanes | — | Device App Group signing may need team |
 | Gate | Job `lint-build-test` requires the three macos jobs | Author re-runs `./bin/ci.sh` | — | — |
 | Archive | **Not** normal PR CI | Optional local archive | [`release-smoke.yml`](../.github/workflows/release-smoke.yml) `build-ipa` (manual `workflow_dispatch`) | Clean archive inside beta lane |
 | TestFlight upload | Needs signing + App Store Connect credentials — **not** on every PR | — | — | `./bin/fastlane-run ios beta` |

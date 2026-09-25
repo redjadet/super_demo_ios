@@ -32,6 +32,8 @@ if ! swiftformat \
   --lint \
   --config "$ROOT/.swiftformat" \
   "$ROOT/superDemoApp" \
+  "$ROOT/FeedWidgetShared" \
+  "$ROOT/superDemoAppWidget" \
   "$ROOT/superDemoAppTests" \
   "$ROOT/superDemoAppUITests"
 then

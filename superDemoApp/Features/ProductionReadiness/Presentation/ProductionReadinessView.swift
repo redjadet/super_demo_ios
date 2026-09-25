@@ -145,6 +145,13 @@ private struct ProductionReadinessContent: View {
                     Label("Stale Feed cache fallback", systemImage: "externaldrive.badge.exclamationmark")
                 }
                 .accessibilityIdentifier("staleFeedDemoLink")
+
+                NavigationLink {
+                    FeedWidgetSnapshotDemoView()
+                } label: {
+                    Label("Feed widget App Group snapshot", systemImage: "rectangle.on.rectangle")
+                }
+                .accessibilityIdentifier("feedWidgetSnapshotDemoLink")
             }
         }
         .accessibilityIdentifier("productionReadinessDashboard")
