@@ -18,6 +18,7 @@ Timed walk: [`docs/architecture-tour.md`](docs/architecture-tour.md).
 | DI composition roots | `superDemoApp/App/*Composition.swift`, [`docs/dependency-injection.md`](docs/dependency-injection.md) |
 | Tabs / deep links / App Intents | `superDemoApp/App/AppRootView.swift`, `AppNavigation.swift`, `App/AppIntents/` (incl. parameterized Refresh Feed) |
 | Feed Home Screen widget | `FeedWidgetShared/`, `superDemoAppWidget/`, App Group snapshot; demo in ProductionReadiness |
+| Feed refresh Live Activity | `FeedWidgetShared/FeedRefreshActivityAttributes.swift`, `App/ActivityKitFeedRefreshLiveActivityController.swift`, `superDemoAppWidget/FeedRefreshLiveActivity.swift` |
 | Local notifications (demo) | `Shared/Notifications/`, Engineering demos → Local stale-Feed reminder (not APNs) |
 | StoreKit 2 product query (demo) | `Config/Products.storekit`, `Shared/StoreKit/`, Engineering demos → StoreKit 2 product query (no purchase) |
 | Native host bridge (no Flutter SDK) | `superDemoApp/Shared/HostBridge/`, [`docs/native-host-boundary.md`](docs/native-host-boundary.md); Engineering demos → Host bridge ping |

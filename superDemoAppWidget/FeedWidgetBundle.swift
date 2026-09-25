@@ -10,5 +10,6 @@ import WidgetKit
 struct FeedWidgetBundle: WidgetBundle {
     var body: some Widget {
         FeedWidget()
+        FeedRefreshLiveActivity()
     }
 }

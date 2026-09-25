@@ -43,13 +43,15 @@ enum FeedComposition {
             snapshotPublisher: WidgetKitFeedSnapshotPublisher()
         )
         return FeedFeatureModel(
-            refreshFeed: RefreshFeedUseCase(repository: repository)
+            refreshFeed: RefreshFeedUseCase(repository: repository),
+            liveActivity: ActivityKitFeedRefreshLiveActivityController()
         )
     }
 
     /// Seeds a fresh cache and wires `FailingSampleFeedRepository` through
     /// `CachingFeedRepository` so the real stale banner path runs.
     /// Intentionally does **not** publish to the live App Group widget snapshot.
+    /// Live Activity uses NoOp so Engineering demos do not start Island sessions.
     @MainActor
     static func makeStaleDemoFeatureModel(context: ModelContext) -> FeedFeatureModel {
         do {
@@ -63,7 +65,8 @@ enum FeedComposition {
             snapshotPublisher: NoOpFeedWidgetSnapshotPublisher()
         )
         return FeedFeatureModel(
-            refreshFeed: RefreshFeedUseCase(repository: repository)
+            refreshFeed: RefreshFeedUseCase(repository: repository),
+            liveActivity: NoOpFeedRefreshLiveActivityController()
         )
     }
 

@@ -18,34 +18,38 @@ enum FeedState: Equatable {
 final class FeedFeatureModel {
     private let refreshFeed: RefreshFeedUseCase
     private let diagnostics: ReleaseDiagnosticsReporting
+    private let liveActivity: FeedRefreshLiveActivityControlling
 
     private(set) var state: FeedState = .loading
     private let loadController = AsyncLoadController()
     private var stateBeforeRefresh: FeedState?
+    /// Bumps on each `refresh` / `refreshAndWait` so a superseded in-flight
+    /// task cannot restore UI or end a newer Live Activity.
+    private var refreshGeneration = 0
 
     init(
         refreshFeed: RefreshFeedUseCase,
-        diagnostics: ReleaseDiagnosticsReporting = ReleaseDiagnostics.shared
+        diagnostics: ReleaseDiagnosticsReporting = ReleaseDiagnostics.shared,
+        liveActivity: FeedRefreshLiveActivityControlling = NoOpFeedRefreshLiveActivityController()
     ) {
         self.refreshFeed = refreshFeed
         self.diagnostics = diagnostics
+        self.liveActivity = liveActivity
     }
 
     func refresh() {
-        self.stateBeforeRefresh = self.state
-        self.showLoadingStateIfNeeded()
+        let generation = self.beginRefresh()
         self.loadController.run { [weak self] in
             guard let self else { return }
-            await self.performRefresh()
+            await self.performRefresh(generation: generation)
         }
     }
 
     func refreshAndWait() async {
-        self.stateBeforeRefresh = self.state
-        self.showLoadingStateIfNeeded()
+        let generation = self.beginRefresh()
         await self.loadController.runAndWait { [weak self] in
             guard let self else { return }
-            await self.performRefresh()
+            await self.performRefresh(generation: generation)
         }
     }
 
@@ -54,10 +58,19 @@ final class FeedFeatureModel {
         self.restorePriorStateAfterCancelledRefresh()
     }
 
-    private func performRefresh() async {
+    private func beginRefresh() -> Int {
+        self.refreshGeneration += 1
+        self.stateBeforeRefresh = self.state
+        self.showLoadingStateIfNeeded()
+        self.liveActivity.refreshDidStart()
+        return self.refreshGeneration
+    }
+
+    private func performRefresh(generation: Int) async {
         await Task.yield()
         do {
             let result = try await self.refreshFeed()
+            guard generation == self.refreshGeneration else { return }
             guard !Task.isCancelled else {
                 self.restorePriorStateAfterCancelledRefresh()
                 return
@@ -76,10 +89,16 @@ final class FeedFeatureModel {
                     )
                 }
             }
+            self.liveActivity.refreshDidSucceed(
+                postCount: result.posts.count,
+                isStale: result.isStale
+            )
             self.stateBeforeRefresh = nil
         } catch is CancellationError {
+            guard generation == self.refreshGeneration else { return }
             self.restorePriorStateAfterCancelledRefresh()
         } catch {
+            guard generation == self.refreshGeneration else { return }
             guard !Task.isCancelled else {
                 self.restorePriorStateAfterCancelledRefresh()
                 return
@@ -89,6 +108,7 @@ final class FeedFeatureModel {
                 reason: ErrorDiagnostics.reason(for: error)
             )
             self.state = .failed(FeedDisplayError(error))
+            self.liveActivity.refreshDidFail()
             self.stateBeforeRefresh = nil
         }
     }
@@ -98,6 +118,7 @@ final class FeedFeatureModel {
             self.state = previous
         }
         self.stateBeforeRefresh = nil
+        self.liveActivity.refreshDidCancel()
     }
 
     private func showLoadingStateIfNeeded() {
