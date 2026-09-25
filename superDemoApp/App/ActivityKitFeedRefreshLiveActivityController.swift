@@ -8,7 +8,7 @@
 
 import Foundation
 
-#if canImport(ActivityKit)
+#if canImport(ActivityKit) && os(iOS)
 import ActivityKit
 #endif
 
@@ -18,7 +18,7 @@ private enum FeedRefreshLiveActivityTiming {
     static let postCompleteHoldNanoseconds: UInt64 = 2_500_000_000
 }
 
-#if canImport(ActivityKit)
+#if canImport(ActivityKit) && os(iOS)
 
 @MainActor
 final class ActivityKitFeedRefreshLiveActivityController: FeedRefreshLiveActivityControlling {

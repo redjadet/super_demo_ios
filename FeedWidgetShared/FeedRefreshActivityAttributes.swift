@@ -8,7 +8,7 @@
 
 import Foundation
 
-#if canImport(ActivityKit)
+#if canImport(ActivityKit) && os(iOS)
 import ActivityKit
 
 /// Live Activity attributes for a single Feed refresh cycle (gate A: refresh

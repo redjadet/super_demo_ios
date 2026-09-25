@@ -30,11 +30,13 @@ final class FeedFeatureModel {
     init(
         refreshFeed: RefreshFeedUseCase,
         diagnostics: ReleaseDiagnosticsReporting = ReleaseDiagnostics.shared,
-        liveActivity: FeedRefreshLiveActivityControlling = NoOpFeedRefreshLiveActivityController()
+        liveActivity: FeedRefreshLiveActivityControlling? = nil
     ) {
         self.refreshFeed = refreshFeed
         self.diagnostics = diagnostics
-        self.liveActivity = liveActivity
+        // Resolve NoOp inside MainActor init — default args are nonisolated under
+        // SWIFT_DEFAULT_ACTOR_ISOLATION=MainActor.
+        self.liveActivity = liveActivity ?? NoOpFeedRefreshLiveActivityController()
     }
 
     func refresh() {
