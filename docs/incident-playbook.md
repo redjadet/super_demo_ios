@@ -33,7 +33,8 @@ optional and prefer Console + local reproduction.
 ## Signposts
 
 `AppPerformanceSignposts` — Instruments `os_signpost` categories `Feed` and
-`UIKitShowcase`. Recipe: [`performance-lab.md`](performance-lab.md).
+`UIKitShowcase`. Widget App Group path + concurrency talk track (no Live
+Activity recipe until JP-P1-A): [`performance-lab.md`](performance-lab.md).
 
 ## Approved diagnostic fields
 

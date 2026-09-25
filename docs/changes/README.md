@@ -4,6 +4,9 @@ Record durable implementation notes after meaningful changes.
 
 ## Entries
 
+- [`2026-09-25_performance-lab-widget-concurrency.md`](2026-09-25_performance-lab-widget-concurrency.md)
+  — JP-P1-E performance lab: widget App Group recipe + concurrency talk track;
+  Live Activity pending JP-P1-A.
 - [`2026-09-25_local-notification-demo.md`](2026-09-25_local-notification-demo.md)
   — JP-P1-C local stale-Feed reminder demo (not APNs).
 - [`2026-09-25_refresh-feed-app-intent.md`](2026-09-25_refresh-feed-app-intent.md)
