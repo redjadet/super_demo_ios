@@ -25,6 +25,7 @@ full demo script. Companion to [`portfolio.md`](portfolio.md) (theme table) and
 | “UIKit interop?” | `superDemoApp/Features/ProductionReadiness/UIKitShowcase/` |
 | “Diagnostics / crash later?” | `superDemoApp/Shared/Diagnostics/`, [`incident-playbook.md`](incident-playbook.md), [`adr/0003-crash-vendor-deferred.md`](adr/0003-crash-vendor-deferred.md) |
 | “Validation chooser?” | [`agents_quick_reference.md`](agents_quick_reference.md), [`engineering/validation_routing_fast_vs_full.md`](engineering/validation_routing_fast_vs_full.md) |
+| “Engineering X/10?” | [`engineering/engineering-quality-scorecard.md`](engineering/engineering-quality-scorecard.md) |
 | “Why layering / offline / Sonar / CI honesty?” | [`adr/README.md`](adr/README.md) |
 
 ## Honesty

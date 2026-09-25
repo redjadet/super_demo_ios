@@ -21,6 +21,7 @@ Timed walk: [`docs/architecture-tour.md`](docs/architecture-tour.md).
 | Design / tokens | [`DESIGN.md`](DESIGN.md), [`docs/design_system.md`](docs/design_system.md) |
 | Tests | [`docs/testing.md`](docs/testing.md), `superDemoAppTests/` |
 | Validation / proof commands | [`docs/agents_quick_reference.md`](docs/agents_quick_reference.md); `./bin/checklist-fast`, `./bin/lint.sh`, `./bin/ci.sh` |
+| Engineering quality scorecard | [`docs/engineering/engineering-quality-scorecard.md`](docs/engineering/engineering-quality-scorecard.md); `./tool/check_engineering_quality_scorecard.sh` |
 | CI / CD map | [`docs/ci-cd-map.md`](docs/ci-cd-map.md), `.github/workflows/` |
 | Architecture decisions (ADR) | [`docs/adr/README.md`](docs/adr/README.md) |
 | Sonar deferral | [`docs/sonar-decision.md`](docs/sonar-decision.md), [`docs/adr/0004-sonarcloud-skip.md`](docs/adr/0004-sonarcloud-skip.md) |
