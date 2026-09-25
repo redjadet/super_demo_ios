@@ -11,8 +11,12 @@ import UserNotifications
 struct LocalNotificationDemoView: View {
     @State private var model: LocalNotificationDemoModel
 
-    init(scheduler: any LocalNotificationScheduling = SystemLocalNotificationScheduler()) {
-        self._model = State(initialValue: LocalNotificationDemoModel(scheduler: scheduler))
+    /// - Parameter scheduler: Injected for tests/previews. `nil` builds the system
+    ///   scheduler in this MainActor init body (avoids default-arg isolation under
+    ///   `SWIFT_DEFAULT_ACTOR_ISOLATION=MainActor`).
+    init(scheduler: (any LocalNotificationScheduling)? = nil) {
+        let resolved = scheduler ?? SystemLocalNotificationScheduler()
+        self._model = State(initialValue: LocalNotificationDemoModel(scheduler: resolved))
     }
 
     var body: some View {

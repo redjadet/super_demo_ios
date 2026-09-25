@@ -20,3 +20,11 @@ denied UI. Explicitly **not** APNs / NSE / production push.
 - `./bin/verify-swift.sh`
 - Hosted GHA compile; local `xcodebuild` may require a non-Cursor Terminal on
   this host (seatbelt FSEvents limitation)
+
+## Follow-up (MainActor default-arg)
+
+`SystemLocalNotificationScheduler` / `LocalNotificationDemoView` construct
+`UNUserNotificationCenter.current()` and the system scheduler **inside**
+MainActor init bodies (`center:` / `scheduler:` optional `nil` defaults), matching
+the FeatureModel / CachingFeedRepository pattern under
+`SWIFT_DEFAULT_ACTOR_ISOLATION=MainActor` (GHA warnings-as-errors).

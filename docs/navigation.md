@@ -61,9 +61,11 @@ Use declarative SwiftUI navigation that adapts across iOS, iPadOS, and macOS.
 Deep-link parsing and cold/warm navigation-state behavior:
 `superDemoAppTests/Shared/AppNavigationTests.swift`.
 
-- App Intents: `OpenFeedIntent`, `OpenItemsIntent`, `OpenProductionRisksIntent`
-  (`App/AppIntents/`) open the same typed destinations via
-  `AppIntentNavigationRouter` → `AppNavigationStore.current.apply(_:)`.
-  Phrases registered in `SuperDemoAppShortcuts`.
+- App Intents: `OpenFeedIntent`, `OpenItemsIntent`, `OpenProductionRisksIntent`,
+  and parameterized `RefreshFeedIntent` (`openFeedTab`) via
+  `AppIntentNavigationRouter` → `FeedRefreshCoordinator` +
+  `AppNavigationStore.requestFeedRefresh(openFeedTab:)`. Coordinator refreshes a
+  registered `FeedFeatureModel` when present; cold start relies on Feed `.task`
+  after the tab opens. Phrases in `SuperDemoAppShortcuts`.
 
 Details: [`testing.md`](testing.md#ui-smoke-ci).

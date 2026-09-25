@@ -44,6 +44,26 @@ struct OpenProductionRisksIntent: AppIntent {
     }
 }
 
+/// Parameterized Feed refresh via typed navigation + app-owned coordinator (JP-P1-B).
+/// Requests a refresh; does not wait for network completion.
+struct RefreshFeedIntent: AppIntent {
+    static var title: LocalizedStringResource = "Refresh Feed"
+    static var description = IntentDescription(
+        "Opens the Feed tab (optional) and requests a Feed refresh."
+    )
+    static var openAppWhenRun = true
+
+    @Parameter(title: "Open Feed tab", default: true)
+    var openFeedTab: Bool
+
+    @MainActor
+    func perform() async throws -> some IntentResult {
+        await Task.yield()
+        AppIntentNavigationRouter.requestFeedRefresh(openFeedTab: self.openFeedTab)
+        return .result()
+    }
+}
+
 struct SuperDemoAppShortcuts: AppShortcutsProvider {
     static var shortcutTileColor: ShortcutTileColor = .blue
 
@@ -74,6 +94,15 @@ struct SuperDemoAppShortcuts: AppShortcutsProvider {
             ],
             shortTitle: "Open Risks",
             systemImageName: "exclamationmark.triangle"
+        )
+        AppShortcut(
+            intent: RefreshFeedIntent(),
+            phrases: [
+                "Refresh Feed in \(.applicationName)",
+                "Update Feed in \(.applicationName)",
+            ],
+            shortTitle: "Refresh Feed",
+            systemImageName: "arrow.clockwise"
         )
     }
 }

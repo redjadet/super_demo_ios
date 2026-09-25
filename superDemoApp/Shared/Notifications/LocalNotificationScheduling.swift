@@ -16,7 +16,7 @@ protocol LocalNotificationScheduling: AnyObject {
     func cancelStaleFeedReminder() async
 }
 
-enum LocalNotificationDemoIDs {
+nonisolated enum LocalNotificationDemoIDs {
     static let staleFeedReminder = "com.ilkersevim.superDemoApp.local.stale-feed-reminder"
 }
 
@@ -24,8 +24,11 @@ enum LocalNotificationDemoIDs {
 final class SystemLocalNotificationScheduler: LocalNotificationScheduling {
     private let center: UNUserNotificationCenter
 
-    init(center: UNUserNotificationCenter = .current()) {
-        self.center = center
+    /// - Parameter center: Injected for tests. `nil` uses `.current()` inside this
+    ///   MainActor init body (default args are nonisolated under
+    ///   `SWIFT_DEFAULT_ACTOR_ISOLATION=MainActor`).
+    init(center: UNUserNotificationCenter? = nil) {
+        self.center = center ?? .current()
     }
 
     func authorizationStatus() async -> UNAuthorizationStatus {
