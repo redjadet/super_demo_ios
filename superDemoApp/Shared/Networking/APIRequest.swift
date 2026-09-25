@@ -5,14 +5,18 @@
 
 import Foundation
 
-enum HTTPMethod: String {
+/// Wire method — value type used from Sendable / nonisolated networking paths.
+nonisolated enum HTTPMethod: String, Sendable {
     case get = "GET"
     case post = "POST"
     case put = "PUT"
     case delete = "DELETE"
 }
 
-struct APIRequest {
+/// Immutable HTTP request model — must stay nonisolated under
+/// `SWIFT_DEFAULT_ACTOR_ISOLATION=MainActor` so `@Sendable` transports and
+/// retry policies can construct it without hopping to the main actor.
+nonisolated struct APIRequest: Sendable {
     let url: URL
     let method: HTTPMethod
     let headers: [String: String]

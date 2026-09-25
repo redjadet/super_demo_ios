@@ -5,7 +5,7 @@
 
 import Foundation
 
-struct RetryPolicy {
+nonisolated struct RetryPolicy: Sendable {
     let maxAttempts: Int
     let baseDelayNanoseconds: UInt64
     let maxDelayNanoseconds: UInt64
