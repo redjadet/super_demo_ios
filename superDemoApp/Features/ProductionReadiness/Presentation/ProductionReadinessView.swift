@@ -152,6 +152,13 @@ private struct ProductionReadinessContent: View {
                     Label("Feed widget App Group snapshot", systemImage: "rectangle.on.rectangle")
                 }
                 .accessibilityIdentifier("feedWidgetSnapshotDemoLink")
+
+                NavigationLink {
+                    HostBridgePingDemoView()
+                } label: {
+                    Label("Host bridge ping (feed.cacheStatus)", systemImage: "cable.connector")
+                }
+                .accessibilityIdentifier("hostBridgePingDemoLink")
             }
         }
         .accessibilityIdentifier("productionReadinessDashboard")
