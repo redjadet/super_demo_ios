@@ -23,6 +23,41 @@ read-through cache.
 | SonarCloud | Optional static analysis | **Skipped** — no org; use lint/CI gates | [`sonar-decision.md`](sonar-decision.md) |
 | Design tokens | `DESIGN.md` ↔ SwiftUI roles | Local table; Figma optional later | [`design-token-figma.md`](design-token-figma.md) |
 
+## Platform surfaces
+
+Apple-platform / hybrid-native skill map for reviewers (inventory after
+`origin/main` @ `6abb79a`, 2026-09-25). Honest “not in repo” beats a broken link.
+Sibling backlog (do not merge scopes): portfolio plan under agent store
+`job-4472017039-portfolio-plan.md`; Flutter quality-system maturity is separate
+(`flutter-parity-quality-plan.md`).
+
+| Skill | Current path / proof | Status |
+| --- | --- | --- |
+| Clean layers + modularity | `superDemoApp/Features/*/`, [`layers.md`](layers.md), [`modularity.md`](modularity.md), `./tool/check_layer_boundaries.sh` | **In repo** |
+| SwiftUI + Observation + DI | Feed / Items / ProductionReadiness; `App/*Composition.swift` | **In repo** |
+| Swift Concurrency | `async`/`await` networking; actor token refreshers; `AsyncLoadController` | **In repo** |
+| Offline / networking | `CachingFeedRepository`, [`offline-first.md`](offline-first.md), [`offline-invariants.md`](offline-invariants.md), [`sync-and-networking.md`](sync-and-networking.md) | **In repo** |
+| App Intents (open-tab) | `superDemoApp/App/AppIntents/` + Shortcuts; tests | **In repo** (thin) |
+| Parameterized Feed/Items intents | — | **Not in repo** (JP-P1-B) |
+| ObjC legacy interop | `superDemoApp/Shared/LegacyObjC/` + bridging header | **In repo** (thin) |
+| Observability / crash swap | `superDemoApp/Shared/Diagnostics/`, [`incident-playbook.md`](incident-playbook.md) | **In repo** |
+| Performance (Feed + UIKit) | `AppPerformanceSignposts`, [`performance-lab.md`](performance-lab.md) | **In repo** |
+| Performance (extensions / Live Activities) | — | **Not in repo** (JP-P1-E) |
+| Universal shell (iPhone / iPad / Mac) | Adaptive navigation; CI platform builds | **In repo** |
+| WidgetKit / Home Screen widget | — | **Not in repo** (JP-P0-B) |
+| Live Activities / Dynamic Island | — | **Not in repo** (JP-P1-A) |
+| Push / notification service extension | Release checklist mentions push only | **Not in repo** (JP-P1-C local; JP-P2-E APNs) |
+| Share extension | — | **Not in repo** (JP-P2-A) |
+| Sign in with Apple | Demo auth / Keychain ≠ SIWA | **Not in repo** (JP-P2-B) |
+| StoreKit 2 | — | **Not in repo** (JP-P1-D) |
+| Native↔Flutter host bridge | — | **Not in repo** (JP-P0-C contract) |
+| Core ML / Vision / Speech / Apple Intelligence | — | **Not in repo** (JP-P2-C; no AI entitlement claims) |
+| watchOS / visionOS / tvOS companion | Project may mention xr; no reviewer demo | **Not in repo** (JP-P2-F) |
+| App Store–shipped product | README honesty | **Not claimed** |
+
+**Maps:** [`../CODEMAP.md`](../CODEMAP.md) · [`architecture-tour.md`](architecture-tour.md) ·
+[`engineering/engineering-quality-scorecard.md`](engineering/engineering-quality-scorecard.md).
+
 ## How to read this repo (cold reviewer)
 
 1. [`../README.md`](../README.md) — what it proves + 3-minute path.

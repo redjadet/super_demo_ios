@@ -4,6 +4,8 @@ Record durable implementation notes after meaningful changes.
 
 ## Entries
 
+- [`2026-09-25_platform-skill-map.md`](2026-09-25_platform-skill-map.md)
+  — JP-P0-A platform surfaces inventory on portfolio map (honest not-in-repo rows).
 - [`2026-09-25_code-quality-overview.md`](2026-09-25_code-quality-overview.md)
   — FP-P1-D code quality overview + coverage honesty (no fake `%` badge).
 - [`2026-09-25_agent-worktree-maintain.md`](2026-09-25_agent-worktree-maintain.md)
