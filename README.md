@@ -57,5 +57,6 @@ Launch flags (ReviewerDemo, StaleFeed, UITesting, Keychain demo, compile-time
 | Task → path router | [`CODEMAP.md`](CODEMAP.md) |
 | ≤15 min architecture tour | [`docs/architecture-tour.md`](docs/architecture-tour.md) |
 | Reviewer map / talk tracks | [`docs/portfolio.md`](docs/portfolio.md) |
+| Platform surfaces inventory | [`docs/portfolio.md`](docs/portfolio.md#platform-surfaces) |
 | Code quality / coverage honesty | [`docs/code-quality.md`](docs/code-quality.md) |
 | Full index | [`docs/README.md`](docs/README.md) |
