@@ -166,6 +166,13 @@ private struct ProductionReadinessContent: View {
                     Label("Local stale-Feed reminder (not APNs)", systemImage: "bell.badge")
                 }
                 .accessibilityIdentifier("localNotificationDemoLink")
+
+                NavigationLink {
+                    StoreKitProductQueryDemoView()
+                } label: {
+                    Label("StoreKit 2 product query (demo)", systemImage: "bag")
+                }
+                .accessibilityIdentifier("storeKitProductQueryDemoLink")
             }
         }
         .accessibilityIdentifier("productionReadinessDashboard")

@@ -49,7 +49,7 @@ Sibling backlog (do not merge scopes): portfolio plan under agent store
 | Push / notification service extension | Engineering demos → Local stale-Feed reminder (local only) | **In repo** (JP-P1-C local; NSE / APNs still **not** in repo — JP-P2-E) |
 | Share extension | — | **Not in repo** (JP-P2-A) |
 | Sign in with Apple | Demo auth / Keychain ≠ SIWA | **Not in repo** (JP-P2-B) |
-| StoreKit 2 | — | **Not in repo** (JP-P1-D) |
+| StoreKit 2 | `Config/Products.storekit`; `Shared/StoreKit/`; Engineering demos → StoreKit 2 product query (demo) | **In repo** (JP-P1-D query-only; no purchase / charge path) |
 | Native↔Flutter host bridge | `Shared/HostBridge/`, [`native-host-boundary.md`](native-host-boundary.md); Engineering demos → Host bridge ping | **In repo** (JP-P0-C contract only; Flutter module not vendored) |
 | Core ML / Vision / Speech / Apple Intelligence | — | **Not in repo** (JP-P2-C; no AI entitlement claims) |
 | watchOS / visionOS / tvOS companion | Project may mention xr; no reviewer demo | **Not in repo** (JP-P2-F) |
