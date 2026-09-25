@@ -37,8 +37,8 @@ Sibling backlog (do not merge scopes): portfolio plan under agent store
 | SwiftUI + Observation + DI | Feed / Items / ProductionReadiness; `App/*Composition.swift` | **In repo** |
 | Swift Concurrency | `async`/`await` networking; actor token refreshers; `AsyncLoadController` | **In repo** |
 | Offline / networking | `CachingFeedRepository`, [`offline-first.md`](offline-first.md), [`offline-invariants.md`](offline-invariants.md), [`sync-and-networking.md`](sync-and-networking.md) | **In repo** |
-| App Intents (open-tab) | `superDemoApp/App/AppIntents/` + Shortcuts; tests | **In repo** (thin) |
-| Parameterized Feed/Items intents | — | **Not in repo** (JP-P1-B) |
+| App Intents (open-tab) | `superDemoApp/App/AppIntents/` + Shortcuts; tests | **In repo** |
+| Parameterized Feed/Items intents | `RefreshFeedIntent` (`openFeedTab`) → `FeedRefreshCoordinator` + `feedRefreshRequestID`; tests | **In repo** (JP-P1-B) |
 | ObjC legacy interop | `superDemoApp/Shared/LegacyObjC/` + bridging header | **In repo** (thin) |
 | Observability / crash swap | `superDemoApp/Shared/Diagnostics/`, [`incident-playbook.md`](incident-playbook.md) | **In repo** |
 | Performance (Feed + UIKit) | `AppPerformanceSignposts`, [`performance-lab.md`](performance-lab.md) | **In repo** |
@@ -133,8 +133,8 @@ Both seed a fresh SwiftData cache and fail remote through existing
 - **Cache:** On fetch failure + **fresh** stored rows (15m TTL) → content with
   `isStale` (banner); expired cache rethrows. Signposts mark Feed fetch.
 - **Navigation:** Typed `AppTab` / `AppRoute`; custom-scheme + HTTPS universal
-  link parsing plus App Intents (Open Feed / Items / Production Risks) without
-  raw string navigation in views.
+  link parsing plus App Intents (Open Feed / Items / Production Risks /
+  Refresh Feed) without raw string navigation in views.
 
 ## Reviewer checklist
 

@@ -125,6 +125,9 @@ nonisolated struct AppNavigationState {
     var selection: AppTab = .dashboard
     var dashboardPath: [AppRoute] = []
     var invalidDeepLinkMessage: String?
+    /// Bumped by App Intents / typed callers to request a Feed refresh.
+    /// `FeedView` observes this; deep links do not touch it.
+    var feedRefreshRequestID: UInt = 0
 
     mutating func handle(url: URL) {
         guard let deepLink = AppDeepLink(url: url) else {
@@ -156,6 +159,16 @@ nonisolated struct AppNavigationState {
             self.dashboardPath = []
         }
     }
+
+    /// Requests a Feed refresh via typed navigation state (not string routes).
+    mutating func requestFeedRefresh(openFeedTab: Bool = true) {
+        self.invalidDeepLinkMessage = nil
+        if openFeedTab {
+            self.selection = .feed
+            self.dashboardPath = []
+        }
+        self.feedRefreshRequestID &+= 1
+    }
 }
 
 @MainActor
@@ -176,6 +189,10 @@ final class AppNavigationStore {
 
     func apply(_ deepLink: AppDeepLink) {
         self.state.apply(deepLink)
+    }
+
+    func requestFeedRefresh(openFeedTab: Bool = true) {
+        self.state.requestFeedRefresh(openFeedTab: openFeedTab)
     }
 
     func resetForTesting() {
