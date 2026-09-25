@@ -26,16 +26,18 @@ read-through cache.
 ## How to read this repo (cold reviewer)
 
 1. [`../README.md`](../README.md) — what it proves + 3-minute path.
-2. [`architecture.md`](architecture.md) + [`feature-template.md`](feature-template.md).
-3. **`Features/Items/`** — Reference (SwiftData, sync repository API).
-4. **`Features/Feed/`** — JSONPlaceholder client + SwiftData read-through cache;
+2. [`../CODEMAP.md`](../CODEMAP.md) — task → path; timed walk
+   [`architecture-tour.md`](architecture-tour.md).
+3. [`architecture.md`](architecture.md) + [`feature-template.md`](feature-template.md).
+4. **`Features/Items/`** — Reference (SwiftData, sync repository API).
+5. **`Features/Feed/`** — JSONPlaceholder client + SwiftData read-through cache;
    see [`changes/2026-05-16_feed-feature-shipped.md`](changes/2026-05-16_feed-feature-shipped.md)
    and [`changes/2026-09-15_feed-items-diagnostics-hardening.md`](changes/2026-09-15_feed-items-diagnostics-hardening.md).
-5. **`Features/ProductionReadiness/`** — dashboard, networking demos, UIKit showcase;
+6. **`Features/ProductionReadiness/`** — dashboard, networking demos, UIKit showcase;
    see [`changes/2026-05-18_production_readiness_dashboard.md`](changes/2026-05-18_production_readiness_dashboard.md).
-6. **`App/`** — `AppRootView` tabs; composition roots wire DI and feature models.
-7. **`Shared/Presentation/AdaptiveNavigationShell.swift`** — shared chrome.
-8. Deep links: open `superdemo://dashboard/risks`, `superdemo://feed`, or
+7. **`App/`** — `AppRootView` tabs; composition roots wire DI and feature models.
+8. **`Shared/Presentation/AdaptiveNavigationShell.swift`** — shared chrome.
+9. Deep links: open `superdemo://dashboard/risks`, `superdemo://feed`, or
    `superdemo://items` (or matching `https://superdemo.app/…` paths) to review
    typed routing in `App/AppNavigation.swift`.
 

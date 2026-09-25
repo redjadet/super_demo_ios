@@ -19,7 +19,9 @@ shipped App Store product.
 4. UIKit collection showcase hosted from SwiftUI
 5. Merge proof via `./bin/ci.sh` / GitHub Actions (see CI map)
 
-Details and talk tracks: [`docs/portfolio.md`](docs/portfolio.md).
+Task → path: [`CODEMAP.md`](CODEMAP.md). Timed walk:
+[`docs/architecture-tour.md`](docs/architecture-tour.md). Talk tracks:
+[`docs/portfolio.md`](docs/portfolio.md).
 
 ## 3-minute path
 
@@ -49,13 +51,7 @@ Launch flags (ReviewerDemo, StaleFeed, UITesting, Keychain demo, compile-time
 
 | Topic | Doc |
 | --- | --- |
-| Reviewer map | [`docs/portfolio.md`](docs/portfolio.md) |
-| Architecture / layers | [`docs/architecture.md`](docs/architecture.md) |
-| Testing | [`docs/testing.md`](docs/testing.md) |
-| Networking / offline Feed | [`docs/sync-and-networking.md`](docs/sync-and-networking.md) |
-| CI / CD | [`docs/ci-cd-map.md`](docs/ci-cd-map.md) |
-| Diagnostics | [`docs/incident-playbook.md`](docs/incident-playbook.md) |
-| Security / performance / standards | [`docs/security-checklist.md`](docs/security-checklist.md) · [`docs/performance-lab.md`](docs/performance-lab.md) · [`docs/engineering-standards.md`](docs/engineering-standards.md) |
-| Design | [`DESIGN.md`](DESIGN.md) · [`docs/design_system.md`](docs/design_system.md) · [`docs/design-token-figma.md`](docs/design-token-figma.md) |
-| Release | [`docs/release-checklist.md`](docs/release-checklist.md) · [`docs/production-risks.md`](docs/production-risks.md) |
-| Index | [`docs/README.md`](docs/README.md) |
+| Task → path router | [`CODEMAP.md`](CODEMAP.md) |
+| ≤15 min architecture tour | [`docs/architecture-tour.md`](docs/architecture-tour.md) |
+| Reviewer map / talk tracks | [`docs/portfolio.md`](docs/portfolio.md) |
+| Full index | [`docs/README.md`](docs/README.md) |
