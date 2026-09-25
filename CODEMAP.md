@@ -17,6 +17,7 @@ Timed walk: [`docs/architecture-tour.md`](docs/architecture-tour.md).
 | Production readiness / UIKit | `superDemoApp/Features/ProductionReadiness/`, `…/UIKitShowcase/` |
 | DI composition roots | `superDemoApp/App/*Composition.swift`, [`docs/dependency-injection.md`](docs/dependency-injection.md) |
 | Tabs / deep links / App Intents | `superDemoApp/App/AppRootView.swift`, `AppNavigation.swift`, `App/AppIntents/` |
+| Feed Home Screen widget | `FeedWidgetShared/`, `superDemoAppWidget/`, App Group snapshot; demo in ProductionReadiness |
 | Networking (retry / 401 / 429 / idempotency) | `superDemoApp/Shared/Networking/`, [`docs/sync-and-networking.md`](docs/sync-and-networking.md) |
 | Diagnostics / crash swap point | `superDemoApp/Shared/Diagnostics/`, [`docs/incident-playbook.md`](docs/incident-playbook.md) |
 | Launch / demo flags | `superDemoApp/Shared/AppLaunchConfiguration.swift` |

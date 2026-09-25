@@ -35,7 +35,13 @@ enum FeedComposition {
             let client = LiveFeedAPIClient(session: AppURLSession.makeDefault())
             remote = RemoteFeedRepository(client: client)
         }
-        let repository = CachingFeedRepository(remote: remote, context: context)
+        // Live / review Feed path publishes App Group widget snapshot.
+        // StaleFeedDemo / in-memory fixtures keep NoOp publisher (isolated).
+        let repository = CachingFeedRepository(
+            remote: remote,
+            context: context,
+            snapshotPublisher: WidgetKitFeedSnapshotPublisher()
+        )
         return FeedFeatureModel(
             refreshFeed: RefreshFeedUseCase(repository: repository)
         )
@@ -43,6 +49,7 @@ enum FeedComposition {
 
     /// Seeds a fresh cache and wires `FailingSampleFeedRepository` through
     /// `CachingFeedRepository` so the real stale banner path runs.
+    /// Intentionally does **not** publish to the live App Group widget snapshot.
     @MainActor
     static func makeStaleDemoFeatureModel(context: ModelContext) -> FeedFeatureModel {
         do {
@@ -52,7 +59,8 @@ enum FeedComposition {
         }
         let repository = CachingFeedRepository(
             remote: FailingSampleFeedRepository(),
-            context: context
+            context: context,
+            snapshotPublisher: NoOpFeedWidgetSnapshotPublisher()
         )
         return FeedFeatureModel(
             refreshFeed: RefreshFeedUseCase(repository: repository)

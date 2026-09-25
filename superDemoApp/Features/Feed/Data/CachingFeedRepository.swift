@@ -17,14 +17,18 @@ final class CachingFeedRepository: FeedRepository {
     private let cacheTTL: TimeInterval?
     private let now: @Sendable () -> Date
     private let signposter: OSSignposter
+    private let snapshotPublisher: any FeedWidgetSnapshotPublishing
 
     /// - Parameters:
     ///   - cacheTTL: Max age for offline fallback. `nil` keeps cache forever (prior behavior).
+    ///   - snapshotPublisher: Publishes App Group widget snapshot after cache updates.
+    ///     Defaults to no-op (unit tests / in-memory demos stay isolated from live App Group).
     init(
         remote: any FeedRepository,
         context: ModelContext,
         cacheTTL: TimeInterval? = CachingFeedRepository.defaultCacheTTL,
         signposter: OSSignposter = AppPerformanceSignposts.feed,
+        snapshotPublisher: any FeedWidgetSnapshotPublishing = NoOpFeedWidgetSnapshotPublisher(),
         now: @escaping @Sendable () -> Date = Date.init
     ) {
         self.remote = remote
@@ -32,6 +36,7 @@ final class CachingFeedRepository: FeedRepository {
         self.cacheTTL = cacheTTL
         self.now = now
         self.signposter = signposter
+        self.snapshotPublisher = snapshotPublisher
     }
 
     func fetchPosts() async throws -> FeedLoadResult {
@@ -42,6 +47,7 @@ final class CachingFeedRepository: FeedRepository {
         do {
             let result = try await self.remote.fetchPosts()
             try self.replaceCache(with: result.posts)
+            self.publishSnapshot(posts: result.posts, isStale: false)
             self.signposter.emitEvent("remoteSuccess", id: signpostID)
             return FeedLoadResult(posts: result.posts, isStale: false)
         } catch {
@@ -50,9 +56,23 @@ final class CachingFeedRepository: FeedRepository {
                 self.signposter.emitEvent("cacheMiss", id: signpostID)
                 throw error
             }
+            self.publishSnapshot(posts: cached, isStale: true)
             self.signposter.emitEvent("cacheFallback", id: signpostID)
             return FeedLoadResult(posts: cached, isStale: true)
         }
+    }
+
+    private func publishSnapshot(posts: [FeedPost], isStale: Bool) {
+        let titles = posts.prefix(5).map { post in
+            FeedWidgetSnapshot.FeedWidgetSnapshotTitle(id: post.id, title: post.title)
+        }
+        let snapshot = FeedWidgetSnapshot(
+            writtenAt: self.now(),
+            cacheTTLSeconds: self.cacheTTL,
+            isStale: isStale,
+            titles: Array(titles)
+        )
+        self.snapshotPublisher.publish(snapshot)
     }
 
     private func replaceCache(with posts: [FeedPost]) throws {

@@ -22,6 +22,8 @@ echo "==> SwiftFormat"
 swiftformat \
   --config "$ROOT/.swiftformat" \
   "$ROOT/superDemoApp" \
+  "$ROOT/FeedWidgetShared" \
+  "$ROOT/superDemoAppWidget" \
   "$ROOT/superDemoAppTests" \
   "$ROOT/superDemoAppUITests"
 

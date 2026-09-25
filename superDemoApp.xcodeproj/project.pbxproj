@@ -6,6 +6,14 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		A1FEED01000000000000000C /* superDemoAppWidget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = A1FEED010000000000000001 /* superDemoAppWidget.appex */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		A1FEED010000000000000010 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1FEED01000000000000000F /* WidgetKit.framework */; };
+		A1FEED010000000000000012 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1FEED010000000000000011 /* WidgetKit.framework */; };
+		A1FEED010000000000000014 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1FEED010000000000000013 /* SwiftUI.framework */; };
+/* End PBXBuildFile section */
+
+
 /* Begin PBXContainerItemProxy section */
 		56D79AE62FB7787400B9E63E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -21,12 +29,37 @@
 			remoteGlobalIDString = 56D79AD52FB7787300B9E63E;
 			remoteInfo = superDemoApp;
 		};
+		A1FEED01000000000000000D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 56D79ACE2FB7787300B9E63E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A1FEED010000000000000004;
+			remoteInfo = superDemoAppWidget;
+		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		A1FEED01000000000000000B /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				A1FEED01000000000000000C /* superDemoAppWidget.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		56D79AD62FB7787300B9E63E /* superDemoApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = superDemoApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		56D79AE52FB7787400B9E63E /* superDemoAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = superDemoAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		56D79AEF2FB7787400B9E63E /* superDemoAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = superDemoAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		A1FEED010000000000000001 /* superDemoAppWidget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = superDemoAppWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		A1FEED01000000000000000F /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		A1FEED010000000000000011 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		A1FEED010000000000000013 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -45,6 +78,16 @@
 			path = superDemoAppUITests;
 			sourceTree = "<group>";
 		};
+		A1FEED010000000000000002 /* FeedWidgetShared */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = FeedWidgetShared;
+			sourceTree = "<group>";
+		};
+		A1FEED010000000000000003 /* superDemoAppWidget */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = superDemoAppWidget;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -52,6 +95,16 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A1FEED010000000000000010 /* WidgetKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A1FEED010000000000000006 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A1FEED010000000000000012 /* WidgetKit.framework in Frameworks */,
+				A1FEED010000000000000014 /* SwiftUI.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -76,6 +129,8 @@
 			isa = PBXGroup;
 			children = (
 				56D79AD82FB7787300B9E63E /* superDemoApp */,
+				A1FEED010000000000000002 /* FeedWidgetShared */,
+				A1FEED010000000000000003 /* superDemoAppWidget */,
 				56D79AE82FB7787400B9E63E /* superDemoAppTests */,
 				56D79AF22FB7787400B9E63E /* superDemoAppUITests */,
 				56D79AD72FB7787300B9E63E /* Products */,
@@ -86,6 +141,7 @@
 			isa = PBXGroup;
 			children = (
 				56D79AD62FB7787300B9E63E /* superDemoApp.app */,
+				A1FEED010000000000000001 /* superDemoAppWidget.appex */,
 				56D79AE52FB7787400B9E63E /* superDemoAppTests.xctest */,
 				56D79AEF2FB7787400B9E63E /* superDemoAppUITests.xctest */,
 			);
@@ -103,13 +159,16 @@
 				56D79AD22FB7787300B9E63E /* Sources */,
 				56D79AD32FB7787300B9E63E /* Frameworks */,
 				56D79AD42FB7787300B9E63E /* Resources */,
+				A1FEED01000000000000000B /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				A1FEED01000000000000000E /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				56D79AD82FB7787300B9E63E /* superDemoApp */,
+				A1FEED010000000000000002 /* FeedWidgetShared */,
 			);
 			name = superDemoApp;
 			packageProductDependencies = (
@@ -164,6 +223,29 @@
 			productReference = 56D79AEF2FB7787400B9E63E /* superDemoAppUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
+		A1FEED010000000000000004 /* superDemoAppWidget */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A1FEED010000000000000008 /* Build configuration list for PBXNativeTarget "superDemoAppWidget" */;
+			buildPhases = (
+				A1FEED010000000000000005 /* Sources */,
+				A1FEED010000000000000006 /* Frameworks */,
+				A1FEED010000000000000007 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				A1FEED010000000000000002 /* FeedWidgetShared */,
+				A1FEED010000000000000003 /* superDemoAppWidget */,
+			);
+			name = superDemoAppWidget;
+			packageProductDependencies = (
+			);
+			productName = superDemoAppWidget;
+			productReference = A1FEED010000000000000001 /* superDemoAppWidget.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -185,6 +267,9 @@
 						CreatedOnToolsVersion = 26.5;
 						TestTargetID = 56D79AD52FB7787300B9E63E;
 					};
+					A1FEED010000000000000004 = {
+						CreatedOnToolsVersion = 26.5;
+					};
 				};
 			};
 			buildConfigurationList = 56D79AD12FB7787300B9E63E /* Build configuration list for PBXProject "superDemoApp" */;
@@ -203,6 +288,7 @@
 			projectRoot = "";
 			targets = (
 				56D79AD52FB7787300B9E63E /* superDemoApp */,
+				A1FEED010000000000000004 /* superDemoAppWidget */,
 				56D79AE42FB7787400B9E63E /* superDemoAppTests */,
 				56D79AEE2FB7787400B9E63E /* superDemoAppUITests */,
 			);
@@ -231,6 +317,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		A1FEED010000000000000007 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
@@ -248,6 +341,8 @@
 				"${SRCROOT}/bin/lint.sh",
 				"${SRCROOT}/Scripts/xcode-lint.sh",
 				"${SRCROOT}/superDemoApp",
+				"${SRCROOT}/FeedWidgetShared",
+				"${SRCROOT}/superDemoAppWidget",
 				"${SRCROOT}/superDemoAppTests",
 				"${SRCROOT}/superDemoAppUITests",
 			);
@@ -286,6 +381,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		A1FEED010000000000000005 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -298,6 +400,12 @@
 			isa = PBXTargetDependency;
 			target = 56D79AD52FB7787300B9E63E /* superDemoApp */;
 			targetProxy = 56D79AF02FB7787400B9E63E /* PBXContainerItemProxy */;
+		};
+		A1FEED01000000000000000E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			platformFilter = ios;
+			target = A1FEED010000000000000004 /* superDemoAppWidget */;
+			targetProxy = A1FEED01000000000000000D /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -616,6 +724,73 @@
 			};
 			name = Release;
 		};
+		A1FEED010000000000000009 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = superDemoAppWidget/superDemoAppWidget.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = QPG8754DYH;
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Feed;
+				INFOPLIST_KEY_NSExtension_NSExtensionPointIdentifier = com.apple.widgetkit-extension;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © superDemoApp";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ilkersevim.superDemoApp.FeedWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		A1FEED01000000000000000A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = superDemoAppWidget/superDemoAppWidget.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = QPG8754DYH;
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Feed;
+				INFOPLIST_KEY_NSExtension_NSExtensionPointIdentifier = com.apple.widgetkit-extension;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © superDemoApp";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ilkersevim.superDemoApp.FeedWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -651,6 +826,15 @@
 			buildConfigurations = (
 				56D79B002FB7787400B9E63E /* Debug */,
 				56D79B012FB7787400B9E63E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A1FEED010000000000000008 /* Build configuration list for PBXNativeTarget "superDemoAppWidget" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A1FEED010000000000000009 /* Debug */,
+				A1FEED01000000000000000A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

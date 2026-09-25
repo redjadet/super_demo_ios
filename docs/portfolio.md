@@ -44,7 +44,7 @@ Sibling backlog (do not merge scopes): portfolio plan under agent store
 | Performance (Feed + UIKit) | `AppPerformanceSignposts`, [`performance-lab.md`](performance-lab.md) | **In repo** |
 | Performance (extensions / Live Activities) | — | **Not in repo** (JP-P1-E) |
 | Universal shell (iPhone / iPad / Mac) | Adaptive navigation; CI platform builds | **In repo** |
-| WidgetKit / Home Screen widget | — | **Not in repo** (JP-P0-B) |
+| WidgetKit / Home Screen widget | `FeedWidgetShared/`, `superDemoAppWidget/`, App Group `group.com.ilkersevim.superDemoApp`; Engineering demos → Feed widget snapshot | **In repo** (JP-P0-B; iOS embed; Mac lane skips extension) |
 | Live Activities / Dynamic Island | — | **Not in repo** (JP-P1-A) |
 | Push / notification service extension | Release checklist mentions push only | **Not in repo** (JP-P1-C local; JP-P2-E APNs) |
 | Share extension | — | **Not in repo** (JP-P2-A) |
