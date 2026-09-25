@@ -8,18 +8,20 @@ import SwiftData
 
 enum ReviewerDemoFixtures {
     /// Posts written into `CachedFeedPost` for the stale-cache demo path.
-    static let sampleFeedPosts: [FeedPost] = [
+    /// Plain strings (not `String(localized:)`) so this stays usable from
+    /// nonisolated default-argument contexts under `SWIFT_DEFAULT_ACTOR_ISOLATION=MainActor`.
+    nonisolated static let sampleFeedPosts: [FeedPost] = [
         FeedPost(
             id: 1,
             userID: 1,
-            title: String(localized: "UI Test Post"),
-            body: String(localized: "Stable feed content for UI tests and simulator runs.")
+            title: "UI Test Post",
+            body: "Stable feed content for UI tests and simulator runs."
         ),
         FeedPost(
             id: 2,
             userID: 1,
-            title: String(localized: "Cached offline post"),
-            body: String(localized: "Shown with the stale banner when remote fetch fails.")
+            title: "Cached offline post",
+            body: "Shown with the stale banner when remote fetch fails."
         ),
     ]
 

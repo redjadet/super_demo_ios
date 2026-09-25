@@ -5,7 +5,7 @@
 
 import Foundation
 
-struct FeedPost: Equatable, Identifiable {
+nonisolated struct FeedPost: Equatable, Identifiable, Sendable {
     let id: Int
     let userID: Int
     let title: String

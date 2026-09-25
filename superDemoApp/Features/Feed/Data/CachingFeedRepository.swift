@@ -23,12 +23,14 @@ final class CachingFeedRepository: FeedRepository {
     ///   - cacheTTL: Max age for offline fallback. `nil` keeps cache forever (prior behavior).
     ///   - snapshotPublisher: Publishes App Group widget snapshot after cache updates.
     ///     Defaults to no-op (unit tests / in-memory demos stay isolated from live App Group).
+    ///     Optional avoids MainActor default-arg evaluation under
+    ///     `SWIFT_DEFAULT_ACTOR_ISOLATION=MainActor`.
     init(
         remote: any FeedRepository,
         context: ModelContext,
         cacheTTL: TimeInterval? = CachingFeedRepository.defaultCacheTTL,
         signposter: OSSignposter = AppPerformanceSignposts.feed,
-        snapshotPublisher: any FeedWidgetSnapshotPublishing = NoOpFeedWidgetSnapshotPublisher(),
+        snapshotPublisher: (any FeedWidgetSnapshotPublishing)? = nil,
         now: @escaping @Sendable () -> Date = Date.init
     ) {
         self.remote = remote
@@ -36,7 +38,7 @@ final class CachingFeedRepository: FeedRepository {
         self.cacheTTL = cacheTTL
         self.now = now
         self.signposter = signposter
-        self.snapshotPublisher = snapshotPublisher
+        self.snapshotPublisher = snapshotPublisher ?? NoOpFeedWidgetSnapshotPublisher()
     }
 
     func fetchPosts() async throws -> FeedLoadResult {

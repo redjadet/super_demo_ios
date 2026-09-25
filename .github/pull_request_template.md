@@ -1,4 +1,4 @@
-## Delivery checklist (required)
+# Delivery checklist (required)
 
 - [ ] Ran local proof: `./bin/checklist-fast` (docs/tooling) **or** `./bin/checklist` (code / pre-merge)
 - [ ] Zero Xcode errors **and** warnings on proof builds (warnings treated as errors)

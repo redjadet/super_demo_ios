@@ -58,6 +58,7 @@ Commands:
 
 Hosted merge gate: GHA job **`checklist`** must be green
 ([`checklist_gate.md`](checklist_gate.md)).
+
 ## Docs And Agent Guidance Path
 
 For `AGENTS.md`, `docs/agent*`, `docs/ai_code_review_protocol.md`,

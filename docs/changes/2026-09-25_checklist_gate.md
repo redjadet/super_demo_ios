@@ -42,5 +42,10 @@ surface (not a blind copy of Dart scanners).
 ./bin/agent-maintain preflight
 ./bin/clean-build-caches
 ./bin/prune-git-stale
-./bin/lint          # or ./bin/checklist-fast when Node/npm reachable
+./bin/lint-markdown.sh
+./bin/lint
 ```
+
+Follow-up commit: MainActor fixes for `DiagnosticRedaction`, `FeedPost`,
+`ReviewerDemoFixtures.sampleFeedPosts`, and `CachingFeedRepository` default
+publisher arg (warnings-as-errors under `SWIFT_DEFAULT_ACTOR_ISOLATION=MainActor`).
