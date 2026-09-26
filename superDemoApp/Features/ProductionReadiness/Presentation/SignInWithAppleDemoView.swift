@@ -122,7 +122,9 @@ final class SignInWithAppleDemoModel {
     private(set) var state: State = .idle
     private(set) var isBusy = false
 
-    var usesInjectedDemo: Bool { self.demo != nil }
+    var usesInjectedDemo: Bool {
+        self.demo != nil
+    }
 
     init(demo: (any SignInWithAppleDemoing)?) {
         self.demo = demo
