@@ -29,9 +29,10 @@ iPhone 18 Pro Max → Pro → Plus → base, then generation-ranked fallback.
 
 Escape hatch: set `CI_IPHONE_GENERIC_BUILD=1` for the legacy
 `generic/platform=iOS Simulator` **build-only** path (no XCTest). The lane
-retries once after a simulator reboot on Accessibility load timeouts. This
-Linux/cloud agent cannot execute simulators — Mac Codex / GHA `macos-26`
-runners provide proof.
+retries once after a simulator reboot on Accessibility load timeouts only
+(hard `xcodebuild` timeouts do **not** re-run the full suite — that can lose
+the hosted runner). On CI, `testLaunchPerformance` is skipped. This Linux/cloud
+agent cannot execute simulators — GHA `xcode-27` (or Mac) provides proof.
 
 | UI test | What it proves |
 | --- | --- |

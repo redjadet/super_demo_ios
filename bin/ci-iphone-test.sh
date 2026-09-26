@@ -101,6 +101,15 @@ log_dir="$(mktemp -d)"
 trap 'rm -rf "$log_dir"' EXIT
 test_log="$log_dir/iphone-test.log"
 
+# Hosted runners: skip the XCTest performance case (long/noisy) and never retry a
+# hard xcodebuild timeout — a second full suite can starve the runner (lost comms).
+TEST_SELECTION_FLAGS=("${TEST_SELECTION_FLAGS[@]+"${TEST_SELECTION_FLAGS[@]}"}")
+if [[ "${CI:-}" == "true" ]]; then
+  TEST_SELECTION_FLAGS+=(
+    -skip-testing:superDemoAppUITests/superDemoAppUITests/testLaunchPerformance
+  )
+fi
+
 run_xcodebuild_with_ci_timeout() {
   assert_xcodebuild_matches_developer_dir || return 1
   if [[ "${CI:-}" == "true" ]]; then
@@ -113,10 +122,15 @@ run_xcodebuild_with_ci_timeout() {
 }
 
 run_tests() {
+  # Preserve xcodebuild/timeout status through tee (pipefail alone uses last cmd).
+  set +e
   run_xcodebuild_with_ci_timeout \
     "${XCODEBUILD_TEST_ARGS[@]}" \
     ${TEST_SELECTION_FLAGS+"${TEST_SELECTION_FLAGS[@]}"} \
     test 2>&1 | tee "$test_log"
+  local status=${PIPESTATUS[0]}
+  set -e
+  return "$status"
 }
 
 test_status=0
@@ -125,10 +139,14 @@ if ((test_status == 0)); then
   exit 0
 fi
 
-if [[ "${CI:-}" == "true" ]] && {
-  ((test_status == 124)) || grep -q "Timed out while loading Accessibility" "$test_log"
-}; then
-  echo "warning: UI test runner failed or timed out; retrying once after simulator reboot" >&2
+if ((test_status == 124)); then
+  echo "error: iPhone xcodebuild timed out (no full-suite retry on hard timeout)" >&2
+  exit 124
+fi
+
+# Accessibility load flakes only — reboot simulator once, then retry.
+if [[ "${CI:-}" == "true" ]] && grep -q "Timed out while loading Accessibility" "$test_log"; then
+  echo "warning: UI test runner Accessibility timeout; retrying once after simulator reboot" >&2
 
   udid="$(sed -n 's/.*id=\([0-9A-F-]\{36\}\).*/\1/p' <<<"$SIMULATOR_DEST")"
   if [[ "$udid" =~ ^[0-9A-F-]{36}$ ]]; then
@@ -138,6 +156,7 @@ if [[ "${CI:-}" == "true" ]] && {
   fi
 
   run_tests || exit $?
+  exit 0
 fi
 
 exit "$test_status"
