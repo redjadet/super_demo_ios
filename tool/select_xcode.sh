@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
-# Select Xcode under /Applications (floor: 26.5).
+# Select Xcode under /Applications (floor: 26.5; GHA Delivery sets SUPER_DEMO_XCODE_MIN_VERSION=27).
 # CI: newest *released* first; beta/preview only if no released install qualifies.
 # Local: newest install (released or seed) for README toolchain parity.
+#
+# Escape hatches:
+#   SUPER_DEMO_XCODE_MIN_VERSION=26.5  — allow older hosts / macos-26 images
+#   SUPER_DEMO_XCODE_SELECTED=1 + DEVELOPER_DIR — skip re-selection
 set -euo pipefail
 
 MIN_VERSION="${SUPER_DEMO_XCODE_MIN_VERSION:-26.5}"
@@ -34,6 +38,16 @@ xcode_build_number() {
 is_beta_xcode() {
   local app="$1"
   local base info short build
+  # Apple seed/beta ProductBuildVersion ends with a letter (e.g. 27A266a);
+  # GM/release builds end in digits (e.g. 17F113, 27A9269). Trust the build
+  # number over path labels — GHA may keep `_beta` in the app name after GM.
+  build="$(xcode_build_number "$app")"
+  if [[ -n "$build" ]]; then
+    if [[ "$build" =~ [A-Za-z]$ ]]; then
+      return 0
+    fi
+    return 1
+  fi
   base="$(basename "$app")"
   if [[ "$base" == *[Bb]eta* || "$base" == *[Pp]review* ]]; then
     return 0
@@ -44,11 +58,6 @@ is_beta_xcode() {
   fi
   short="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$app/Contents/Info.plist" 2>/dev/null || true)"
   if [[ "$short" == *[Bb]eta* || "$short" == *[Pp]review* ]]; then
-    return 0
-  fi
-  # Apple seed/beta ProductBuildVersion ends with a letter (e.g. 27A266a); GM builds end in digits (e.g. 17F113).
-  build="$(xcode_build_number "$app")"
-  if [[ "$build" =~ [A-Za-z]$ ]]; then
     return 0
   fi
   return 1

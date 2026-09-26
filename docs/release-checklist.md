@@ -89,7 +89,8 @@ Prerequisites:
 
 - `./tool/bootstrap_fastlane.sh` has installed the bundled Fastlane gems.
 - Local toolchain matches README (**Xcode 27** / **Swift 6.4**). Release/CI lanes call
-  `tool/select_xcode.sh`, which prefers the newest **released** Xcode ≥ 26.5 on the host.
+  `tool/select_xcode.sh`, which prefers the newest **released** Xcode ≥ 27 on the
+  hosted `xcode-27` image (floor override: `SUPER_DEMO_XCODE_MIN_VERSION`).
 - Apple signing assets can create an App Store archive for
   `com.ilkersevim.superDemoApp` with team `QPG8754DYH`.
 - App Store Connect auth is available through Fastlane. Prefer

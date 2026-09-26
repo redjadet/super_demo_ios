@@ -12,6 +12,9 @@ concurrency:
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+  # Newest released Xcode on the xcode-27 image (GM build preferred over seed/beta).
+  # Escape: runs-on macos-26 + SUPER_DEMO_XCODE_MIN_VERSION=26.5 (see docs/ci-cd-map.md).
+  SUPER_DEMO_XCODE_MIN_VERSION: "27"
 
 jobs:
   # Delivery checklist (Flutter ./bin/checklist role), parallelized for macos runners.
@@ -19,7 +22,7 @@ jobs:
   # Docs: docs/engineering/checklist_gate.md
   lint:
     name: Checklist · lint
-    runs-on: macos-26
+    runs-on: xcode-27
     timeout-minutes: 15
     defaults:
       run:
@@ -28,6 +31,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v5
+
+      - name: Select latest released Xcode
+        env:
+          CI: true
+        run: source ./tool/select_xcode.sh
 
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
@@ -45,7 +53,7 @@ jobs:
 
   iphone-test:
     name: Checklist · iPhone test
-    runs-on: macos-26
+    runs-on: xcode-27
     timeout-minutes: 90
     defaults:
       run:
@@ -54,6 +62,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v5
+
+      - name: Select latest released Xcode
+        env:
+          CI: true
+        run: source ./tool/select_xcode.sh
 
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
@@ -76,7 +89,7 @@ jobs:
             ${{ runner.temp }}/DerivedData-iPhone
             Flutter
           key: >-
-            xcode-${{ runner.os }}-${{ runner.arch }}-iphone-flutter-${{ hashFiles('**/Package.resolved', '**/*.xcodeproj/project.pbxproj', 'flutter_module/pubspec.lock', 'flutter_module/lib/**') }}
+            xcode27-${{ runner.os }}-${{ runner.arch }}-iphone-flutter-${{ hashFiles('**/Package.resolved', '**/*.xcodeproj/project.pbxproj', 'flutter_module/pubspec.lock', 'flutter_module/lib/**') }}
 
       - name: Install lint tools (for build phases)
         run: brew bundle check --file Brewfile || brew bundle --file Brewfile
@@ -100,7 +113,7 @@ jobs:
 
   platform-builds:
     name: Checklist · platform builds
-    runs-on: macos-26
+    runs-on: xcode-27
     timeout-minutes: 75
     defaults:
       run:
@@ -109,6 +122,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v5
+
+      - name: Select latest released Xcode
+        env:
+          CI: true
+        run: source ./tool/select_xcode.sh
 
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
@@ -132,7 +150,7 @@ jobs:
             ${{ runner.temp }}/DerivedData-Mac
             Flutter
           key: >-
-            xcode-${{ runner.os }}-${{ runner.arch }}-platform-flutter-${{ hashFiles('**/Package.resolved', '**/*.xcodeproj/project.pbxproj', 'flutter_module/pubspec.lock', 'flutter_module/lib/**') }}
+            xcode27-${{ runner.os }}-${{ runner.arch }}-platform-flutter-${{ hashFiles('**/Package.resolved', '**/*.xcodeproj/project.pbxproj', 'flutter_module/pubspec.lock', 'flutter_module/lib/**') }}
 
       - name: Install lint tools (for build phases)
         run: brew bundle check --file Brewfile || brew bundle --file Brewfile

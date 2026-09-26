@@ -13,17 +13,22 @@ import ActivityKit
 
 /// Live Activity attributes for a single Feed refresh cycle (gate A: refresh
 /// + short post-complete hold, then end).
-struct FeedRefreshActivityAttributes: ActivityAttributes {
+///
+/// `nonisolated` — ActivityKit APIs call into these types from `@concurrent`
+/// contexts; under `SWIFT_DEFAULT_ACTOR_ISOLATION=MainActor` an isolated
+/// `ActivityAttributes` conformance fails on Xcode 27 / Swift 6.4
+/// (`#IsolatedConformances`).
+nonisolated struct FeedRefreshActivityAttributes: ActivityAttributes {
     /// Fixed per activity instance (when the refresh began).
     var startedAt: Date
 
-    struct ContentState: Codable, Hashable, Sendable {
+    nonisolated struct ContentState: Codable, Hashable, Sendable {
         var phase: Phase
         var postCount: Int?
         var isStale: Bool
         var detail: String
 
-        enum Phase: String, Codable, Hashable, Sendable {
+        nonisolated enum Phase: String, Codable, Hashable, Sendable {
             case refreshing
             case completed
             case failed
