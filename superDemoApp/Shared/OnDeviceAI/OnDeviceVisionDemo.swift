@@ -45,7 +45,8 @@ final class SystemOnDeviceVisionDemo: OnDeviceVisionDemoing {
                 """
             )
         }
-        // Demo-sized OCR; keep structured (no Task.detached).
+        // Demo-sized OCR on a structured task (no Task.detached).
+        await Task.yield()
         return try Self.recognizeText(in: cgImage)
     }
 
