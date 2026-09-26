@@ -24,7 +24,7 @@ Native codec/facade without Flutter remains at
 | Dart MethodChannel UI | `flutter_module/lib/main.dart` |
 | Native channel + engine | `superDemoApp/Shared/FlutterEmbed/` |
 | Engineering demo | Production Readiness → **Flutter add-to-app module** |
-| Prepare frameworks | `./tool/prepare_flutter_embed.sh` |
+| Prepare frameworks | `./tool/prepare_flutter_embed.sh` (flattens XCFramework slices → `Flutter/<Config>/{iphoneos,iphonesimulator}/*.framework` for the linker) |
 | Embed script (Xcode) | `Scripts/embed-flutter-frameworks.sh` |
 | Optional xcconfig | `Config/FlutterEmbed.local.xcconfig` (gitignored) |
 
