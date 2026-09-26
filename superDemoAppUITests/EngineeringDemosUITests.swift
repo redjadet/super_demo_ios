@@ -223,6 +223,30 @@ final class EngineeringDemosUITests: XCTestCase {
     }
 
     @MainActor
+    func testFlutterAddToAppDemoIsReachable() {
+        let app = UiTestSupport.launchApplication()
+        UiTestSupport.openEngineeringDemo(
+            linkIdentifier: "flutterAddToAppDemoLink",
+            screenIdentifier: "flutterAddToAppDemoScreen",
+            in: app
+        )
+
+        // CI iPhone lane embeds Flutter; Mac / missing frameworks show unavailable chrome.
+        XCTAssertTrue(
+            UiTestSupport.waitForAnyIdentifier(
+                [
+                    "flutterAddToAppEmbedded",
+                    "flutterAddToAppUnavailable",
+                    "flutterAddToAppUnavailableScreen",
+                    "flutterAddToAppHostBridgeLink",
+                ],
+                in: app,
+                timeout: 20
+            )
+        )
+    }
+
+    @MainActor
     func testDiagnosticsDemoIsReachable() {
         let app = UiTestSupport.launchApplication()
         UiTestSupport.openEngineeringDemo(

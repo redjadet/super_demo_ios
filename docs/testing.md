@@ -48,6 +48,7 @@ runners provide proof.
 | `testSignInWithAppleDemoIsReachable` | SIWA Engineering demo chrome (Simulator-honest) |
 | `testOnDeviceVisionDemoRecognizesOrReportsHonestState` | Vision OCR run → lines or honest failure |
 | `testHostBridgePingDemoReturnsResponse` | Host bridge ping returns non-placeholder JSON |
+| `testFlutterAddToAppDemoIsReachable` | Flutter add-to-app demo (embedded or unavailable) |
 | `testFeedWidgetSnapshotDemoIsReachable` | Feed widget App Group snapshot demo |
 | `testStoreKitProductQueryDemoIsReachable` | StoreKit 2 product query demo |
 | `testLocalNotificationDemoIsReachable` | Local stale-Feed reminder demo chrome |
