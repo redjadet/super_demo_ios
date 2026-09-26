@@ -11,5 +11,9 @@
 	<array>
 		<string>group.com.ilkersevim.superDemoApp</string>
 	</array>
+	<key>com.apple.developer.applesignin</key>
+	<array>
+		<string>Default</string>
+	</array>
 </dict>
 </plist>
