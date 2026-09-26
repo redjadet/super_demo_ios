@@ -86,7 +86,7 @@ struct ItemsFeatureModelTests {
 
     @Test
     @MainActor
-    func cancelRefreshRestoresPriorLoadingState() async {
+    func cancelRefreshRestoresPriorLoadingState() {
         let repository = ItemsFeatureModelRepositorySpy()
         let model = ItemsFeatureModel(
             loadItems: LoadItemsUseCase(repository: repository),
