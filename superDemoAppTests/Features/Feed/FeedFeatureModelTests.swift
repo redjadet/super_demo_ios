@@ -52,6 +52,10 @@ private final class RecordingDiagnostics: ReleaseDiagnosticsReporting, @unchecke
 private final class FeedLiveActivitySpy: FeedRefreshLiveActivityControlling {
     private(set) var events: [String] = []
 
+    func resetEvents() {
+        self.events.removeAll()
+    }
+
     func refreshDidStart() {
         self.events.append("start")
     }
@@ -235,7 +239,7 @@ struct FeedFeatureModelTests {
             liveActivity: liveActivity
         )
         await model.refreshAndWait()
-        liveActivity.events.removeAll()
+        liveActivity.resetEvents()
 
         model.refresh()
         try? await Task.sleep(nanoseconds: 50_000_000)
