@@ -166,7 +166,7 @@ struct HostBridgeCodecTests {
     }
 }
 
-nonisolated private struct FixedFeedCacheStatusProvider: FeedCacheStatusProviding {
+nonisolated struct FixedFeedCacheStatusProvider: FeedCacheStatusProviding {
     let result: FeedCacheStatusResult
     func cacheStatus(now _: Date) -> FeedCacheStatusResult {
         self.result
