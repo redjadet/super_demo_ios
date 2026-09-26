@@ -29,6 +29,13 @@ iPhone 18 **Pro** → Pro Max → Plus → base (skip Duo/Fold/Air), then
 generation-ranked fallback. UDID hex is normalized uppercase for destination
 matching. Local Mac prefers a booted iPhone 18 Pro when present.
 
+**Early gate (before UI / manual Simulator):**
+`./tool/check_simulator_runtime_compat.sh` runs from `check_common_issues`
+(checklist-fast / lint) and again at the start of `ci-iphone-test`. It fails when
+the global preferred device type is missing from the newest runtime’s
+`supportedDeviceTypes` (simctl **403 Incompatible device** class) and when no
+runtime can provision a standard iPhone. Fixture mode: `--self-test`.
+
 Escape hatch: set `CI_IPHONE_GENERIC_BUILD=1` for the legacy
 `generic/platform=iOS Simulator` **build-only** path (no XCTest). The lane
 retries once after a simulator reboot on Accessibility load timeouts only

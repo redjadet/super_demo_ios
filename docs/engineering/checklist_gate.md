@@ -11,7 +11,7 @@ merge — not a second parallel theater.
 | Markdown lint | `./bin/lint-markdown.sh` | job `lint` → Fastlane `ci_lint` |
 | DESIGN.md (DesignMD) | `./tool/check_design_md.sh` | job `lint` → `ci_lint` (includes DesignMD) |
 | Swift lint + modularity + scorecard | `./bin/lint.sh` | job `lint` |
-| Common issues | `./tool/check_common_issues.sh` | job `lint` |
+| Common issues | `./tool/check_common_issues.sh` (incl. simulator runtime ↔ device-type compat) | job `lint` |
 | iPhone build/test | `./bin/ci-iphone-test.sh` | job `iphone-test` |
 | iPad + Mac + watchOS builds | `./bin/ci-platform-builds.sh` (watch: `./bin/ci-watch-build.sh`) | job `platform-builds` |
 | Aggregate gate | `./bin/checklist` (single command) | job **`checklist`** (needs the three macos jobs) |

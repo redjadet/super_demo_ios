@@ -288,6 +288,7 @@ cursor_template_files=(
   tool/cursor-template/hooks/format-swift-after-edit.sh
   tool/select_xcode.sh
   tool/ios_simulator_runtime.sh
+  tool/check_simulator_runtime_compat.sh
 )
 
 for path in "${cursor_template_files[@]}"; do
@@ -303,6 +304,13 @@ if [[ -f "$mcp_config" ]]; then
     || fail "XcodeBuildMCP config exists but scheme is not superDemoApp"
 else
   echo "info: XcodeBuildMCP config not found at $mcp_config; skipping host-local MCP check."
+fi
+
+section "Simulator runtime ↔ device-type compat"
+if [[ -x tool/check_simulator_runtime_compat.sh ]]; then
+  ./tool/check_simulator_runtime_compat.sh || fail "simulator runtime compat check failed"
+else
+  fail "tool/check_simulator_runtime_compat.sh must be executable"
 fi
 
 if ((failures > 0)); then

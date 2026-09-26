@@ -52,7 +52,7 @@ Launch via `UiTestSupport.launchApplication()` (`-UITesting`, terminate between 
 | SAFETY-REPORT template | [`agent_kb/safety-report-template.md`](agent_kb/safety-report-template.md) |
 | Markdown lint gate | `./bin/lint-markdown.sh` |
 | DESIGN.md DesignMD lint (needs Node; in checklists + CI lint) | `./tool/check_design_md.sh` |
-| Fast checklist (markdown + DesignMD + lint + sanity) | `./bin/checklist-fast` |
+| Fast checklist (markdown + DesignMD + lint + sanity + sim runtime compat) | `./bin/checklist-fast` |
 | Full delivery checklist (merge gate; warnings as errors) | `./bin/checklist` — [`engineering/checklist_gate.md`](engineering/checklist_gate.md) |
 | Full local CI (Fastlane) | `./bin/ci.sh` (`./bin/fastlane-run ci`) |
 | TestFlight beta lane | `TESTFLIGHT_BUILD_NUMBER=<unique-build-number> ./bin/fastlane-run ios beta` |
