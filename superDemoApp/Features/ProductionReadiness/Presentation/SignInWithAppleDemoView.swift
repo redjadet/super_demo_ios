@@ -12,9 +12,9 @@ import SwiftUI
 struct SignInWithAppleDemoView: View {
     @State private var model: SignInWithAppleDemoModel
 
+    /// - Parameter demo: Injected for tests/previews. `nil` uses button-driven live SIWA.
     init(demo: (any SignInWithAppleDemoing)? = nil) {
-        let resolved = demo ?? SystemSignInWithAppleDemo()
-        self._model = State(initialValue: SignInWithAppleDemoModel(demo: resolved))
+        self._model = State(initialValue: SignInWithAppleDemoModel(demo: demo))
     }
 
     var body: some View {
@@ -33,17 +33,29 @@ struct SignInWithAppleDemoView: View {
             }
 
             Section("Sign in") {
-                Button("Run Sign in with Apple request") {
-                    Task { await self.model.signIn() }
+                if self.model.usesInjectedDemo {
+                    Button("Run injected SIWA demo") {
+                        Task { await self.model.signInWithInjectedDemo() }
+                    }
+                    .disabled(self.model.isBusy)
+                    .accessibilityIdentifier("signInWithAppleRun")
+                } else {
+                    SignInWithAppleButton(.signIn) { request in
+                        request.requestedScopes = [.fullName, .email]
+                    } onCompletion: { result in
+                        Task { await self.model.handleAuthorization(result) }
+                    }
+                    .signInWithAppleButtonStyle(.black)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 44)
+                    .accessibilityIdentifier("signInWithAppleButton")
                 }
-                .disabled(self.model.isBusy)
-                .accessibilityIdentifier("signInWithAppleRun")
             }
 
             switch self.model.state {
             case .idle:
                 Section("Status") {
-                    Text("Tap Run to request an Apple ID credential via AuthenticationServices.")
+                    Text("Use Sign in with Apple to request a credential.")
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                         .accessibilityIdentifier("siwaStatusIdle")
@@ -105,21 +117,24 @@ final class SignInWithAppleDemoModel {
         case failed(String)
     }
 
-    private let demo: any SignInWithAppleDemoing
+    private let demo: (any SignInWithAppleDemoing)?
 
     private(set) var state: State = .idle
     private(set) var isBusy = false
 
-    init(demo: any SignInWithAppleDemoing) {
+    var usesInjectedDemo: Bool { self.demo != nil }
+
+    init(demo: (any SignInWithAppleDemoing)?) {
         self.demo = demo
     }
 
-    func signIn() async {
+    func signInWithInjectedDemo() async {
+        guard let demo else { return }
         self.isBusy = true
         self.state = .loading
         defer { self.isBusy = false }
         do {
-            let credential = try await self.demo.signIn()
+            let credential = try await demo.signIn()
             self.state = .signedIn(credential)
         } catch is CancellationError {
             self.state = .idle
@@ -133,46 +148,54 @@ final class SignInWithAppleDemoModel {
             self.state = .failed(error.localizedDescription)
         }
     }
+
+    func handleAuthorization(_ result: Result<ASAuthorization, Error>) async {
+        self.isBusy = true
+        self.state = .loading
+        defer { self.isBusy = false }
+        switch result {
+        case let .success(authorization):
+            do {
+                let credential = try SignInWithAppleDemoMapping.credential(from: authorization)
+                self.state = .signedIn(credential)
+            } catch let SignInWithAppleDemoFailure.failed(reason) {
+                self.state = .failed(reason)
+            } catch {
+                self.state = .failed(error.localizedDescription)
+            }
+        case let .failure(error):
+            switch SignInWithAppleDemoMapping.failure(from: error) {
+            case .cancelled:
+                self.state = .cancelled
+            case let .unavailable(reason):
+                self.state = .unavailable(reason)
+            case let .failed(reason):
+                self.state = .failed(reason)
+            }
+        }
+    }
 }
 
 #Preview("SIWA — signed in") {
     NavigationStack {
-        SignInWithAppleDemoView(demo: PreviewSignInWithAppleDemo(mode: .success))
+        SignInWithAppleDemoView(
+            demo: InjectedSignInWithAppleDemo(result: .success(
+                SignInWithAppleDemoCredential(
+                    userID: "demo.user.001",
+                    email: "demo@privaterelay.appleid.com",
+                    fullName: "Demo Reviewer"
+                )
+            ))
+        )
     }
 }
 
 #Preview("SIWA — unavailable") {
     NavigationStack {
-        SignInWithAppleDemoView(demo: PreviewSignInWithAppleDemo(mode: .unavailable))
-    }
-}
-
-@MainActor
-private final class PreviewSignInWithAppleDemo: SignInWithAppleDemoing {
-    enum Mode {
-        case success
-        case unavailable
-    }
-
-    private let mode: Mode
-
-    init(mode: Mode) {
-        self.mode = mode
-    }
-
-    func signIn() async throws -> SignInWithAppleDemoCredential {
-        await Task.yield()
-        switch self.mode {
-        case .success:
-            return SignInWithAppleDemoCredential(
-                userID: "demo.user.001",
-                email: "demo@privaterelay.appleid.com",
-                fullName: "Demo Reviewer"
-            )
-        case .unavailable:
-            throw SignInWithAppleDemoFailure.unavailable(
-                reason: "Preview: Simulator-honest unavailable."
-            )
-        }
+        SignInWithAppleDemoView(
+            demo: InjectedSignInWithAppleDemo(result: .failure(
+                .unavailable(reason: "Preview: Simulator-honest unavailable.")
+            ))
+        )
     }
 }

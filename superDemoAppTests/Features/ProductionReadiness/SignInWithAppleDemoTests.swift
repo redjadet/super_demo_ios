@@ -3,6 +3,7 @@
 //  superDemoAppTests
 //
 
+import AuthenticationServices
 import Foundation
 import Testing
 @testable import superDemoApp
@@ -12,11 +13,11 @@ struct SignInWithAppleDemoTests {
     @MainActor
     @Test
     func signedInMapsCredential() async {
-        let spy = SpySignInWithAppleDemo(result: .success(
+        let spy = InjectedSignInWithAppleDemo(result: .success(
             SignInWithAppleDemoCredential(userID: "u1", email: "a@b.c", fullName: "Ada")
         ))
         let model = SignInWithAppleDemoModel(demo: spy)
-        await model.signIn()
+        await model.signInWithInjectedDemo()
         guard case let .signedIn(credential) = model.state else {
             Issue.record("Expected signedIn, got \(model.state)")
             return
@@ -29,11 +30,11 @@ struct SignInWithAppleDemoTests {
     @MainActor
     @Test
     func unavailableMapsHonestState() async {
-        let spy = SpySignInWithAppleDemo(
+        let spy = InjectedSignInWithAppleDemo(
             result: .failure(.unavailable(reason: "Simulator"))
         )
         let model = SignInWithAppleDemoModel(demo: spy)
-        await model.signIn()
+        await model.signInWithInjectedDemo()
         guard case let .unavailable(message) = model.state else {
             Issue.record("Expected unavailable, got \(model.state)")
             return
@@ -44,22 +45,18 @@ struct SignInWithAppleDemoTests {
     @MainActor
     @Test
     func cancelledMapsState() async {
-        let spy = SpySignInWithAppleDemo(result: .failure(.cancelled))
+        let spy = InjectedSignInWithAppleDemo(result: .failure(.cancelled))
         let model = SignInWithAppleDemoModel(demo: spy)
-        await model.signIn()
+        await model.signInWithInjectedDemo()
         #expect(model.state == .cancelled)
     }
-}
 
-@MainActor
-private final class SpySignInWithAppleDemo: SignInWithAppleDemoing {
-    private let result: Result<SignInWithAppleDemoCredential, SignInWithAppleDemoFailure>
-
-    init(result: Result<SignInWithAppleDemoCredential, SignInWithAppleDemoFailure>) {
-        self.result = result
-    }
-
-    func signIn() async throws -> SignInWithAppleDemoCredential {
-        try self.result.get()
+    @Test
+    func mapsCancelError() {
+        let error = NSError(
+            domain: ASAuthorizationError.errorDomain,
+            code: ASAuthorizationError.canceled.rawValue
+        )
+        #expect(SignInWithAppleDemoMapping.failure(from: error) == .cancelled)
     }
 }

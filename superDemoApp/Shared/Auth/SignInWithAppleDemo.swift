@@ -8,13 +8,6 @@
 import AuthenticationServices
 import Foundation
 
-#if canImport(UIKit)
-import UIKit
-#endif
-#if canImport(AppKit)
-import AppKit
-#endif
-
 /// Display DTO — no ASAuthorization types leak into the demo view model.
 struct SignInWithAppleDemoCredential: Equatable, Sendable {
     let userID: String
@@ -33,37 +26,11 @@ protocol SignInWithAppleDemoing: AnyObject {
     func signIn() async throws -> SignInWithAppleDemoCredential
 }
 
-/// System coordinator via `ASAuthorizationController`.
-/// Simulator without Apple ID / capability maps to honest `unavailable`.
-@MainActor
-final class SystemSignInWithAppleDemo: NSObject, SignInWithAppleDemoing {
-    private var continuation: CheckedContinuation<SignInWithAppleDemoCredential, Error>?
-
-    func signIn() async throws -> SignInWithAppleDemoCredential {
-        try await withCheckedThrowingContinuation { continuation in
-            self.continuation = continuation
-            let provider = ASAuthorizationAppleIDProvider()
-            let request = provider.createRequest()
-            request.requestedScopes = [.fullName, .email]
-            let controller = ASAuthorizationController(authorizationRequests: [request])
-            controller.delegate = self
-            controller.presentationContextProvider = self
-            controller.performRequests()
-        }
-    }
-}
-
-extension SystemSignInWithAppleDemo: ASAuthorizationControllerDelegate {
-    func authorizationController(
-        controller _: ASAuthorizationController,
-        didCompleteWithAuthorization authorization: ASAuthorization
-    ) {
+/// Maps `ASAuthorization` / Apple ID errors into demo DTOs (no UIApplication access).
+enum SignInWithAppleDemoMapping {
+    static func credential(from authorization: ASAuthorization) throws -> SignInWithAppleDemoCredential {
         guard let credential = authorization.credential as? ASAuthorizationAppleIDCredential else {
-            self.continuation?.resume(
-                throwing: SignInWithAppleDemoFailure.failed(reason: "Unexpected credential type.")
-            )
-            self.continuation = nil
-            return
+            throw SignInWithAppleDemoFailure.failed(reason: "Unexpected credential type.")
         }
         let fullName: String? = {
             guard let components = credential.fullName else { return nil }
@@ -71,63 +38,45 @@ extension SystemSignInWithAppleDemo: ASAuthorizationControllerDelegate {
             let formatted = formatter.string(from: components)
             return formatted.isEmpty ? nil : formatted
         }()
-        let demo = SignInWithAppleDemoCredential(
+        return SignInWithAppleDemoCredential(
             userID: credential.user,
             email: credential.email,
             fullName: fullName
         )
-        self.continuation?.resume(returning: demo)
-        self.continuation = nil
     }
 
-    func authorizationController(
-        controller _: ASAuthorizationController,
-        didCompleteWithError error: Error
-    ) {
+    static func failure(from error: Error) -> SignInWithAppleDemoFailure {
         let nsError = error as NSError
         if nsError.domain == ASAuthorizationError.errorDomain,
-           nsError.code == ASAuthorizationError.canceled.rawValue
-        {
-            self.continuation?.resume(throwing: SignInWithAppleDemoFailure.cancelled)
-        } else if nsError.domain == ASAuthorizationError.errorDomain,
-                  nsError.code == ASAuthorizationError.unknown.rawValue
-        {
-            self.continuation?.resume(
-                throwing: SignInWithAppleDemoFailure.unavailable(
-                    reason: """
-                    Sign in with Apple unavailable in this environment \
-                    (common on Simulator without an Apple ID / capability). \
-                    Not production auth.
-                    """
-                )
-            )
-        } else {
-            self.continuation?.resume(
-                throwing: SignInWithAppleDemoFailure.failed(reason: error.localizedDescription)
+           nsError.code == ASAuthorizationError.canceled.rawValue {
+            return .cancelled
+        }
+        if nsError.domain == ASAuthorizationError.errorDomain,
+           nsError.code == ASAuthorizationError.unknown.rawValue {
+            return .unavailable(
+                reason: """
+                Sign in with Apple unavailable in this environment \
+                (common on Simulator without an Apple ID / capability). \
+                Not production auth.
+                """
             )
         }
-        self.continuation = nil
+        return .failed(reason: error.localizedDescription)
     }
 }
 
-extension SystemSignInWithAppleDemo: ASAuthorizationControllerPresentationContextProviding {
-    func presentationAnchor(for _: ASAuthorizationController) -> ASPresentationAnchor {
-        #if canImport(UIKit) && !os(watchOS)
-        let scenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
-        if let window = scenes.flatMap(\.windows).first(where: \.isKeyWindow) {
-            return window
-        }
-        if let window = scenes.flatMap(\.windows).first {
-            return window
-        }
-        return ASPresentationAnchor()
-        #elseif canImport(AppKit)
-        if let window = NSApplication.shared.keyWindow {
-            return window
-        }
-        return ASPresentationAnchor()
-        #else
-        return ASPresentationAnchor()
-        #endif
+/// Demo driver that completes via an injected authorization result (tests / previews).
+/// Live SIWA uses `SignInWithAppleButton` in the Engineering demo view — no
+/// `UIApplication.shared` presentation anchor (universal-app lint).
+@MainActor
+final class InjectedSignInWithAppleDemo: SignInWithAppleDemoing {
+    private let result: Result<SignInWithAppleDemoCredential, SignInWithAppleDemoFailure>
+
+    init(result: Result<SignInWithAppleDemoCredential, SignInWithAppleDemoFailure>) {
+        self.result = result
+    }
+
+    func signIn() async throws -> SignInWithAppleDemoCredential {
+        try self.result.get()
     }
 }
