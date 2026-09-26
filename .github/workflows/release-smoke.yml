@@ -9,11 +9,12 @@ concurrency:
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+  SUPER_DEMO_XCODE_MIN_VERSION: "27"
 
 jobs:
   build-ipa:
     name: Build release IPA
-    runs-on: macos-26
+    runs-on: xcode-27
     timeout-minutes: 90
     defaults:
       run:
@@ -22,6 +23,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v5
+
+      - name: Select latest released Xcode
+        env:
+          CI: true
+        run: source ./tool/select_xcode.sh
 
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
@@ -36,7 +42,7 @@ jobs:
             ~/Library/Caches/org.swift.swiftpm
             ~/Library/Developer/Xcode/DerivedData
           key: >-
-            xcode-${{ runner.os }}-${{ runner.arch }}-release-smoke-${{ hashFiles('**/Package.resolved', '**/*.xcodeproj/project.pbxproj') }}
+            xcode27-${{ runner.os }}-${{ runner.arch }}-release-smoke-${{ hashFiles('**/Package.resolved', '**/*.xcodeproj/project.pbxproj') }}
 
       - name: Install lint tools (for build phases)
         run: brew bundle check --file Brewfile || brew bundle --file Brewfile

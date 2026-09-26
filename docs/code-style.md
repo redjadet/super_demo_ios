@@ -21,7 +21,7 @@
 
 | Layer | What runs |
 | --- | --- |
-| **GitHub Actions** | `.github/workflows/ci.yml` - Swift lint, build, test on `macos-26`. `tool/select_xcode.sh` picks the **newest released** Xcode ≥ 26.5 (beta only if no release qualifies). Local picks newest install (seed OK). README documents **Xcode 27 / Swift 6.4**. |
+| **GitHub Actions** | `.github/workflows/ci.yml` - Swift lint, build, test on `xcode-27`. `tool/select_xcode.sh` picks the **newest released** Xcode ≥ 27 (beta only if no release qualifies). Local picks newest install (seed OK). README documents **Xcode 27 / Swift 6.4**. |
 | **Xcode build** | Run Script phase **Lint (SwiftLint & SwiftFormat)** -> `Scripts/xcode-lint.sh` |
 | **Local parity** | `./bin/ci.sh` - Swift + Markdown lint, build, tests (`CI=true`) |
 | **Fast checklist** | `./bin/checklist-fast` - Markdown/Swift lint, common issue checks, project sanity |
