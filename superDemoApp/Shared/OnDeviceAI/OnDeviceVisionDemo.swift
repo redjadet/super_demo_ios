@@ -5,26 +5,21 @@
 //  On-device Vision text recognition demo (JP-P2-C). No Apple Intelligence claim.
 //
 
+import CoreGraphics
+import CoreText
 import Foundation
 import Vision
 
-#if canImport(UIKit)
-import UIKit
-#endif
-#if canImport(AppKit)
-import AppKit
-#endif
-
 /// Display DTO for recognized text lines.
 struct VisionDemoObservation: Equatable, Identifiable, Sendable {
-    let id: UUID
     let text: String
     let confidence: Float
+    let id: UUID
 
-    init(id: UUID = UUID(), text: String, confidence: Float) {
-        self.id = id
+    init(text: String, confidence: Float, id: UUID = UUID()) {
         self.text = text
         self.confidence = confidence
+        self.id = id
     }
 }
 
@@ -39,21 +34,19 @@ protocol OnDeviceVisionDemoing: AnyObject {
     func recognizeText() async throws -> [VisionDemoObservation]
 }
 
-/// Runs `VNRecognizeTextRequest` on a bundled sample CGImage (or synthetic fallback).
+/// Runs `VNRecognizeTextRequest` on a CoreGraphics-rendered sample (no asset catalog).
 @MainActor
 final class SystemOnDeviceVisionDemo: OnDeviceVisionDemoing {
     func recognizeText() async throws -> [VisionDemoObservation] {
         guard let cgImage = Self.sampleCGImage() else {
             throw VisionDemoFailure.unavailable(
                 reason: """
-                No sample image available for Vision. Bundle a demo asset or \
-                run on a target that can render the synthetic sample.
+                Could not render the Vision demo sample bitmap on this target.
                 """
             )
         }
-        return try await Task.detached(priority: .userInitiated) {
-            try Self.recognizeText(in: cgImage)
-        }.value
+        // Demo-sized OCR; keep structured (no Task.detached).
+        return try Self.recognizeText(in: cgImage)
     }
 
     nonisolated private static func recognizeText(in cgImage: CGImage) throws -> [VisionDemoObservation] {
@@ -66,7 +59,7 @@ final class SystemOnDeviceVisionDemo: OnDeviceVisionDemoing {
         } catch {
             throw VisionDemoFailure.failed(reason: error.localizedDescription)
         }
-        let observations = (request.results) ?? []
+        let observations = request.results ?? []
         var lines: [VisionDemoObservation] = []
         for observation in observations {
             guard let top = observation.topCandidates(1).first else { continue }
@@ -80,61 +73,40 @@ final class SystemOnDeviceVisionDemo: OnDeviceVisionDemoing {
         return lines
     }
 
-    /// Prefer asset `VisionDemoSample` if present; else draw a simple text bitmap.
-    private static func sampleCGImage() -> CGImage? {
-        #if canImport(UIKit) && !os(watchOS)
-        if let image = UIImage(named: "VisionDemoSample")?.cgImage {
-            return image
+    /// Synthetic bitmap via CoreGraphics + CoreText (avoids UIColor/NSString lint).
+    nonisolated private static func sampleCGImage() -> CGImage? {
+        let width = 480
+        let height = 160
+        let colorSpace = CGColorSpaceCreateDeviceRGB()
+        guard let context = CGContext(
+            data: nil,
+            width: width,
+            height: height,
+            bitsPerComponent: 8,
+            bytesPerRow: 0,
+            space: colorSpace,
+            bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
+        ) else {
+            return nil
         }
-        return Self.renderSyntheticUIKit()
-        #elseif canImport(AppKit)
-        if let image = NSImage(named: "VisionDemoSample"),
-           let cgImage = image.cgImage(forProposedRect: nil, context: nil, hints: nil)
-        {
-            return cgImage
-        }
-        return Self.renderSyntheticAppKit()
-        #else
-        return nil
-        #endif
+        context.setFillColor(red: 0.95, green: 0.95, blue: 0.95, alpha: 1)
+        context.fill(CGRect(x: 0, y: 0, width: width, height: height))
+        context.setFillColor(red: 0.1, green: 0.1, blue: 0.1, alpha: 1)
+        let text = "superDemo Vision" as CFString
+        let font = CTFontCreateWithName("Helvetica-Bold" as CFString, 36, nil)
+        let attributes: [CFString: Any] = [
+            kCTFontAttributeName: font,
+            kCTForegroundColorAttributeName: context.fillColor as Any,
+        ]
+        let attrString = CFAttributedStringCreate(
+            nil,
+            text,
+            attributes as CFDictionary
+        )
+        guard let attrString else { return nil }
+        let line = CTLineCreateWithAttributedString(attrString)
+        context.textPosition = CGPoint(x: 24, y: 60)
+        CTLineDraw(line, context)
+        return context.makeImage()
     }
-
-    #if canImport(UIKit) && !os(watchOS)
-    private static func renderSyntheticUIKit() -> CGImage? {
-        let size = CGSize(width: 480, height: 160)
-        let renderer = UIGraphicsImageRenderer(size: size)
-        let image = renderer.image { context in
-            UIColor.white.setFill()
-            context.fill(CGRect(origin: .zero, size: size))
-            let text = "superDemo Vision" as NSString
-            let attrs: [NSAttributedString.Key: Any] = [
-                .font: UIFont.boldSystemFont(ofSize: 36),
-                .foregroundColor: UIColor.black,
-            ]
-            text.draw(at: CGPoint(x: 24, y: 56), withAttributes: attrs)
-        }
-        return image.cgImage
-    }
-    #endif
-
-    #if canImport(AppKit)
-    private static func renderSyntheticAppKit() -> CGImage? {
-        let size = NSSize(width: 480, height: 160)
-        let image = NSImage(size: size, flipped: false) { rect in
-            NSColor.white.setFill()
-            rect.fill()
-            let text = "superDemo Vision" as NSString
-            text.draw(
-                at: NSPoint(x: 24, y: 56),
-                withAttributes: [
-                    .font: NSFont.boldSystemFont(ofSize: 36),
-                    .foregroundColor: NSColor.black,
-                ]
-            )
-            return true
-        }
-        var rect = NSRect(origin: .zero, size: size)
-        return image.cgImage(forProposedRect: &rect, context: nil, hints: nil)
-    }
-    #endif
 }

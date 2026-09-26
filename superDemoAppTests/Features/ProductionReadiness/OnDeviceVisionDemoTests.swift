@@ -59,6 +59,7 @@ private final class SpyOnDeviceVisionDemo: OnDeviceVisionDemoing {
     }
 
     func recognizeText() async throws -> [VisionDemoObservation] {
-        try self.result.get()
+        await Task.yield()
+        return try self.result.get()
     }
 }
