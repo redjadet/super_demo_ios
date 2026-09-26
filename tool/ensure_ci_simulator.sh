@@ -153,7 +153,7 @@ provision_ipad_on_runtime() {
 }
 
 try_newest_runtime_destination() {
-  local udid dest runtime_id runtime_version device_type_id created=0
+  local udid dest runtime_id runtime_version device_type_id created=0 created_out
   ensure_ios_runtime_matches_sdk
   device_type_id="$(select_preferred_iphone_device_type_id)" || true
 
@@ -167,10 +167,16 @@ try_newest_runtime_destination() {
     udid="$(find_iphone_udid_on_runtime "$runtime_id" || true)"
     if [[ -z "$udid" && -n "$device_type_id" ]]; then
       echo "==> No standard iPhone on iOS ${runtime_version}; creating preferred (${device_type_id})" >&2
-      udid="$(xcrun simctl create "CI iPhone" "$device_type_id" "$runtime_id" 2>/dev/null || true)"
-      created=1
+      created_out="$(xcrun simctl create "CI iPhone" "$device_type_id" "$runtime_id" 2>&1 || true)"
+      if [[ "$created_out" =~ ^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$ ]]; then
+        udid="$created_out"
+        created=1
+      else
+        echo "warning: could not create ${device_type_id} on ${runtime_version}: ${created_out}" >&2
+        udid=""
+      fi
     fi
-    if [[ -z "$udid" ]]; then
+    if [[ -z "$udid" || ! "$udid" =~ ^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$ ]]; then
       echo "==> No usable iPhone on iOS ${runtime_version}; trying next runtime" >&2
       continue
     fi
@@ -205,9 +211,9 @@ create_newest_runtime_simulator() {
     sdk_version="$(ios_simulator_sdk_version)"
     echo "==> Creating CI iPhone (${device_type_id}) on iOS ${runtime_version} (SDK ${sdk_version:-unknown})"
 
-    udid="$(xcrun simctl create "CI iPhone" "$device_type_id" "$runtime_id" 2>/dev/null || true)"
-    if [[ -z "$udid" ]]; then
-      echo "warning: could not create ${device_type_id} on ${runtime_version}; trying next runtime" >&2
+    udid="$(xcrun simctl create "CI iPhone" "$device_type_id" "$runtime_id" 2>&1 || true)"
+    if [[ ! "$udid" =~ ^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$ ]]; then
+      echo "warning: could not create ${device_type_id} on ${runtime_version}: ${udid}" >&2
       continue
     fi
     echo "==> Created simulator ${udid}"
