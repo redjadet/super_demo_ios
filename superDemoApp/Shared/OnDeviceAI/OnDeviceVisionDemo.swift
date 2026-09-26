@@ -96,12 +96,12 @@ private enum OnDeviceVisionDemoEngine {
         }
         context.setFillColor(red: 0.95, green: 0.95, blue: 0.95, alpha: 1)
         context.fill(CGRect(x: 0, y: 0, width: width, height: height))
-        context.setFillColor(red: 0.1, green: 0.1, blue: 0.1, alpha: 1)
+        let textColor = CGColor(red: 0.1, green: 0.1, blue: 0.1, alpha: 1)
         let text = "superDemo Vision" as CFString
         let font = CTFontCreateWithName("Helvetica-Bold" as CFString, 36, nil)
         let attributes: [CFString: Any] = [
             kCTFontAttributeName: font,
-            kCTForegroundColorAttributeName: context.fillColor as Any,
+            kCTForegroundColorAttributeName: textColor,
         ]
         let attrString = CFAttributedStringCreate(
             nil,

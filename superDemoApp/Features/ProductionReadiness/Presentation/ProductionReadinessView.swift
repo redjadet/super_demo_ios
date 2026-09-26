@@ -175,6 +175,13 @@ private struct ProductionReadinessContent: View {
                 .accessibilityIdentifier("storeKitProductQueryDemoLink")
 
                 NavigationLink {
+                    SignInWithAppleDemoView()
+                } label: {
+                    Label("Sign in with Apple (demo)", systemImage: "apple.logo")
+                }
+                .accessibilityIdentifier("signInWithAppleDemoLink")
+
+                NavigationLink {
                     OnDeviceVisionDemoView()
                 } label: {
                     Label("On-device Vision OCR (demo)", systemImage: "text.viewfinder")
