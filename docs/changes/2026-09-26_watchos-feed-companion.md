@@ -26,7 +26,7 @@ companion remains deferred.
 - Watch Simulator: use **Seed demo snapshot** when the file is absent /
   unavailable.
 - Engineering demos → **watchOS Feed companion (demo)** documents identifiers
-  + limitations on iPhone.
+  and limitations on iPhone.
 - visionOS / tvOS companions still **not in repo**.
 
 ## Proof
