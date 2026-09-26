@@ -8,7 +8,7 @@
 
 import Foundation
 
-enum ShareInboxStore {
+nonisolated enum ShareInboxStore {
     private static let jsonEncoder: JSONEncoder = {
         let encoder = JSONEncoder()
         encoder.dateEncodingStrategy = .iso8601
