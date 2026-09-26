@@ -43,7 +43,7 @@ struct SignInWithAppleDemoView: View {
                     SignInWithAppleButton(.signIn) { request in
                         request.requestedScopes = [.fullName, .email]
                     } onCompletion: { result in
-                        Task { await self.model.handleAuthorization(result) }
+                        self.model.handleAuthorization(result)
                     }
                     .signInWithAppleButtonStyle(.black)
                     .frame(maxWidth: .infinity)
@@ -149,7 +149,7 @@ final class SignInWithAppleDemoModel {
         }
     }
 
-    func handleAuthorization(_ result: Result<ASAuthorization, Error>) async {
+    func handleAuthorization(_ result: Result<ASAuthorization, Error>) {
         self.isBusy = true
         self.state = .loading
         defer { self.isBusy = false }

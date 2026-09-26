@@ -66,8 +66,8 @@ enum SignInWithAppleDemoMapping {
 }
 
 /// Demo driver that completes via an injected authorization result (tests / previews).
-/// Live SIWA uses `SignInWithAppleButton` in the Engineering demo view — no
-/// `UIApplication.shared` presentation anchor (universal-app lint).
+/// Live SIWA uses `SignInWithAppleButton` in the Engineering demo view (no shared
+/// UIApplication presentation anchor — universal-app lint).
 @MainActor
 final class InjectedSignInWithAppleDemo: SignInWithAppleDemoing {
     private let result: Result<SignInWithAppleDemoCredential, SignInWithAppleDemoFailure>
@@ -77,6 +77,8 @@ final class InjectedSignInWithAppleDemo: SignInWithAppleDemoing {
     }
 
     func signIn() async throws -> SignInWithAppleDemoCredential {
-        try self.result.get()
+        // Yield so the protocol stays async for live/injected symmetry.
+        await Task.yield()
+        return try self.result.get()
     }
 }
