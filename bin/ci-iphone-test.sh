@@ -22,6 +22,9 @@ source "$ROOT/tool/xcode_env.sh"
 #   CI_IPHONE_GENERIC_BUILD=1
 CI_IPHONE_GENERIC_BUILD="${CI_IPHONE_GENERIC_BUILD:-0}"
 
+echo "==> Simulator runtime ↔ device-type compat (before xcodebuild)"
+./tool/check_simulator_runtime_compat.sh
+
 if [[ "${CI:-}" == "true" && "${CI_IPHONE_GENERIC_BUILD}" != "1" && -z "${CI_SIMULATOR_DEST:-}" ]]; then
   CI_PREPARE_IPAD="${CI_PREPARE_IPAD:-0}" source "$ROOT/tool/ensure_ci_simulator.sh" || exit $?
 fi

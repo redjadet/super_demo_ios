@@ -15,7 +15,7 @@ Fast local sanity lane:
 - Markdown lint
 - DESIGN.md lint (DesignMD; skips if Node npx missing)
 - SwiftLint + SwiftFormat lint
-- focused common issue checks
+- focused common issue checks (includes simulator runtime ↔ device-type compat)
 - Xcode project/scheme listing
 
 Use ./bin/checklist for full build/test/platform proof (merge gate).

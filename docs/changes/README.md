@@ -4,6 +4,8 @@ Record durable implementation notes after meaningful changes.
 
 ## Entries
 
+- [`2026-09-26_sim-runtime-compat-gate.md`](2026-09-26_sim-runtime-compat-gate.md)
+  — Early lint/checklist gate for simctl runtime ↔ device-type 403 class.
 - [`2026-09-26_ci-sim-runtime-device-compat.md`](2026-09-26_ci-sim-runtime-device-compat.md)
   — Create CI iPhone from runtime `supportedDeviceTypes` (no 403 on 27.1).
 - [`2026-09-26_split-selection-navigation.md`](2026-09-26_split-selection-navigation.md)

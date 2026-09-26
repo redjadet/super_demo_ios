@@ -28,7 +28,7 @@ Full local delivery checklist (merge gate):
   - Markdown lint
   - DESIGN.md DesignMD lint
   - Swift lint + modularity + engineering scorecard (./bin/lint.sh)
-  - Common issue checks
+  - Common issue checks (incl. simulator runtime ↔ device-type compat)
   - Xcode project/scheme listing
   - iPhone unit/UI tests (./bin/ci-iphone-test.sh) — warnings as errors
   - iPad + Mac + watchOS builds (./bin/ci-platform-builds.sh) — unless skipped
