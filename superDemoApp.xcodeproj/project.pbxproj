@@ -102,7 +102,7 @@
 		A1FEED010000000000000003 /* superDemoAppWidget */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				A1FEED010000000000000011 /* Exceptions for "superDemoAppWidget" folder */,
+				A1FEED010000000000000020 /* Exceptions for "superDemoAppWidget" folder */,
 			);
 			path = superDemoAppWidget;
 			sourceTree = "<group>";
@@ -123,7 +123,7 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		A1FEED010000000000000011 /* Exceptions for "superDemoAppWidget" folder */ = {
+		A1FEED010000000000000020 /* Exceptions for "superDemoAppWidget" folder */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
