@@ -38,7 +38,9 @@ private struct FlutterModuleRepresentable: UIViewControllerRepresentable {
         FlutterAddToAppHost.makeViewController()
     }
 
-    func updateUIViewController(_: FlutterViewController, context _: Context) {}
+    func updateUIViewController(_: FlutterViewController, context _: Context) {
+        // No-op: FlutterViewController owns its own refresh cycle.
+    }
 }
 #endif
 

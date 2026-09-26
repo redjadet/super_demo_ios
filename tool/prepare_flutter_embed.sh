@@ -52,7 +52,9 @@ if [[ "$SKIP_BUILD" != "1" ]]; then
   (
     cd "$MODULE_DIR"
     # XCFrameworks for Debug/Profile/Release (iphoneos + iphonesimulator slices).
-    flutter build ios-framework --output="$OUT_DIR" --no-profile
+    # --no-codesign: CI runners have no Apple Development cert; frameworks are
+    # re-signed when the host app links/embeds them.
+    flutter build ios-framework --output="$OUT_DIR" --no-profile --no-codesign
   )
 fi
 
