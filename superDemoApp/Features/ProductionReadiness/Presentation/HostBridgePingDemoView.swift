@@ -15,8 +15,10 @@ struct HostBridgePingDemoView: View {
     @State private var responseText: String = "Tap Ping to call the native facade."
     @State private var isBusy = false
 
-    init(facade: NativePlatformFacade = HostBridgeComposition.makeFacade()) {
-        self.facade = facade
+    /// Resolve `makeFacade()` in the body — default args are nonisolated under
+    /// `SWIFT_DEFAULT_ACTOR_ISOLATION=MainActor`.
+    init(facade: NativePlatformFacade? = nil) {
+        self.facade = facade ?? HostBridgeComposition.makeFacade()
     }
 
     var body: some View {

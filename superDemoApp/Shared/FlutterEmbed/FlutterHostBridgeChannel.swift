@@ -19,11 +19,15 @@ enum FlutterHostBridgeChannel {
 
     #if canImport(Flutter)
     /// Register the host-bridge MethodChannel on a Flutter engine binary messenger.
+    ///
+    /// Resolve `makeFacade()` in the body — default args are nonisolated under
+    /// `SWIFT_DEFAULT_ACTOR_ISOLATION=MainActor`.
     @MainActor
     static func register(
         on messenger: FlutterBinaryMessenger,
-        facade: NativePlatformFacade = HostBridgeComposition.makeFacade()
+        facade: NativePlatformFacade? = nil
     ) -> FlutterMethodChannel {
+        let resolved = facade ?? HostBridgeComposition.makeFacade()
         let channel = FlutterMethodChannel(
             name: Self.channelName,
             binaryMessenger: messenger
@@ -46,7 +50,7 @@ enum FlutterHostBridgeChannel {
                 return
             }
             do {
-                let responseData = try facade.handle(data)
+                let responseData = try resolved.handle(data)
                 let response = String(data: responseData, encoding: .utf8) ?? ""
                 result(response)
             } catch is CancellationError {
