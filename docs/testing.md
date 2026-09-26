@@ -25,7 +25,9 @@ The iPhone test lane (`bin/ci-iphone-test.sh`, GitHub Actions `iphone-test`)
 boots the **newest available iOS Simulator runtime** iPhone (via
 `tool/ensure_ci_simulator.sh` + `tool/ios_simulator_runtime.sh`) and runs
 `xcodebuild test` (unit + UI) with warnings-as-errors. Destination preference:
-iPhone 18 Pro Max → Pro → Plus → base, then generation-ranked fallback.
+iPhone 18 **Pro** → Pro Max → Plus → base (skip Duo/Fold/Air), then
+generation-ranked fallback. UDID hex is normalized uppercase for destination
+matching. Local Mac prefers a booted iPhone 18 Pro when present.
 
 Escape hatch: set `CI_IPHONE_GENERIC_BUILD=1` for the legacy
 `generic/platform=iOS Simulator` **build-only** path (no XCTest). The lane

@@ -56,3 +56,12 @@ Items data are disposable for this portfolio app. See
 Pass `cacheTTL: nil` to keep forever-cache behavior. Schema adds that break
 lightweight migration hit the `AppModelContainer` recreate-then-in-memory
 recovery path (not a silent forever-cache).
+
+### Widget / host-bridge snapshot honesty
+
+After a successful remote refresh, the app publishes an App Group Feed widget
+snapshot (titles capped for UI; `postCount` is the full cache size for
+`feed.cacheStatus`). On **stale fallback**, `writtenAt` stays aligned with
+SwiftData `cachedAt` so widget TTL matches this section. On **OI-03 cache
+miss**, the publisher **clears** the snapshot so Home Screen / host-bridge do
+not keep a prior “ok” after the repository refused cache.
