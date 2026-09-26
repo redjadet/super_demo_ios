@@ -761,6 +761,7 @@
 		};
 		56D79AFD2FB7787400B9E63E /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = A1FLUTTER0100000000000001 /* App.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
@@ -787,6 +788,7 @@
 		};
 		56D79AFE2FB7787400B9E63E /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = A1FLUTTER0100000000000001 /* App.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
