@@ -182,6 +182,13 @@ private struct ProductionReadinessContent: View {
                 .accessibilityIdentifier("signInWithAppleDemoLink")
 
                 NavigationLink {
+                    ShareInboxDemoView()
+                } label: {
+                    Label("Share inbox (App Group, not SwiftData)", systemImage: "square.and.arrow.up")
+                }
+                .accessibilityIdentifier("shareInboxDemoLink")
+
+                NavigationLink {
                     OnDeviceVisionDemoView()
                 } label: {
                     Label("On-device Vision OCR (demo)", systemImage: "text.viewfinder")

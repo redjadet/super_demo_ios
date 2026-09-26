@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		A1FEED01000000000000000C /* superDemoAppWidget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = A1FEED010000000000000001 /* superDemoAppWidget.appex */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		A1SHARE01000000000000000B /* superDemoAppShare.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = A1SHARE010000000000000001 /* superDemoAppShare.appex */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		A1FEED010000000000000010 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1FEED01000000000000000F /* WidgetKit.framework */; };
 		A1FEED010000000000000012 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1FEED010000000000000011 /* WidgetKit.framework */; };
 		A1FEED010000000000000014 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1FEED010000000000000013 /* SwiftUI.framework */; };
@@ -38,6 +39,13 @@
 			remoteGlobalIDString = A1FEED010000000000000004;
 			remoteInfo = superDemoAppWidget;
 		};
+		A1SHARE01000000000000000C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 56D79ACE2FB7787300B9E63E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A1SHARE010000000000000004;
+			remoteInfo = superDemoAppShare;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -48,6 +56,7 @@
 			dstSubfolderSpec = 13;
 			files = (
 				A1FEED01000000000000000C /* superDemoAppWidget.appex in Embed Foundation Extensions */,
+				A1SHARE01000000000000000B /* superDemoAppShare.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -59,6 +68,7 @@
 		56D79AE52FB7787400B9E63E /* superDemoAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = superDemoAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		56D79AEF2FB7787400B9E63E /* superDemoAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = superDemoAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1FEED010000000000000001 /* superDemoAppWidget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = superDemoAppWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		A1SHARE010000000000000001 /* superDemoAppShare.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = superDemoAppShare.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1FEED01000000000000000F /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		A1FEED010000000000000011 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		A1FEED010000000000000013 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
@@ -93,7 +103,30 @@
 			path = superDemoAppWidget;
 			sourceTree = "<group>";
 		};
+		A1SHARE010000000000000002 /* ShareInboxShared */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = ShareInboxShared;
+			sourceTree = "<group>";
+		};
+		A1SHARE010000000000000003 /* superDemoAppShare */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				A1SHARE01000000000000000E /* Exceptions for "superDemoAppShare" folder */,
+			);
+			path = superDemoAppShare;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		A1SHARE01000000000000000E /* Exceptions for "superDemoAppShare" folder */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = A1SHARE010000000000000004 /* superDemoAppShare */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		56D79AD32FB7787300B9E63E /* Frameworks */ = {
@@ -112,6 +145,13 @@
 				A1FEED010000000000000012 /* WidgetKit.framework in Frameworks */,
 				A1FEED010000000000000014 /* SwiftUI.framework in Frameworks */,
 				A1LIVE010000000000000004 /* ActivityKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A1SHARE010000000000000006 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -139,6 +179,8 @@
 				56D79AD82FB7787300B9E63E /* superDemoApp */,
 				A1FEED010000000000000002 /* FeedWidgetShared */,
 				A1FEED010000000000000003 /* superDemoAppWidget */,
+				A1SHARE010000000000000002 /* ShareInboxShared */,
+				A1SHARE010000000000000003 /* superDemoAppShare */,
 				56D79AE82FB7787400B9E63E /* superDemoAppTests */,
 				56D79AF22FB7787400B9E63E /* superDemoAppUITests */,
 				56D79AD72FB7787300B9E63E /* Products */,
@@ -150,6 +192,7 @@
 			children = (
 				56D79AD62FB7787300B9E63E /* superDemoApp.app */,
 				A1FEED010000000000000001 /* superDemoAppWidget.appex */,
+				A1SHARE010000000000000001 /* superDemoAppShare.appex */,
 				56D79AE52FB7787400B9E63E /* superDemoAppTests.xctest */,
 				56D79AEF2FB7787400B9E63E /* superDemoAppUITests.xctest */,
 			);
@@ -181,10 +224,12 @@
 			);
 			dependencies = (
 				A1FEED01000000000000000E /* PBXTargetDependency */,
+				A1SHARE01000000000000000D /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				56D79AD82FB7787300B9E63E /* superDemoApp */,
 				A1FEED010000000000000002 /* FeedWidgetShared */,
+				A1SHARE010000000000000002 /* ShareInboxShared */,
 			);
 			name = superDemoApp;
 			packageProductDependencies = (
@@ -262,6 +307,29 @@
 			productReference = A1FEED010000000000000001 /* superDemoAppWidget.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
+		A1SHARE010000000000000004 /* superDemoAppShare */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A1SHARE010000000000000008 /* Build configuration list for PBXNativeTarget "superDemoAppShare" */;
+			buildPhases = (
+				A1SHARE010000000000000005 /* Sources */,
+				A1SHARE010000000000000006 /* Frameworks */,
+				A1SHARE010000000000000007 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				A1SHARE010000000000000002 /* ShareInboxShared */,
+				A1SHARE010000000000000003 /* superDemoAppShare */,
+			);
+			name = superDemoAppShare;
+			packageProductDependencies = (
+			);
+			productName = superDemoAppShare;
+			productReference = A1SHARE010000000000000001 /* superDemoAppShare.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -286,6 +354,9 @@
 					A1FEED010000000000000004 = {
 						CreatedOnToolsVersion = 26.5;
 					};
+					A1SHARE010000000000000004 = {
+						CreatedOnToolsVersion = 26.5;
+					};
 				};
 			};
 			buildConfigurationList = 56D79AD12FB7787300B9E63E /* Build configuration list for PBXProject "superDemoApp" */;
@@ -305,6 +376,7 @@
 			targets = (
 				56D79AD52FB7787300B9E63E /* superDemoApp */,
 				A1FEED010000000000000004 /* superDemoAppWidget */,
+				A1SHARE010000000000000004 /* superDemoAppShare */,
 				56D79AE42FB7787400B9E63E /* superDemoAppTests */,
 				56D79AEE2FB7787400B9E63E /* superDemoAppUITests */,
 			);
@@ -340,6 +412,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		A1SHARE010000000000000007 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
@@ -359,6 +438,8 @@
 				"${SRCROOT}/superDemoApp",
 				"${SRCROOT}/FeedWidgetShared",
 				"${SRCROOT}/superDemoAppWidget",
+				"${SRCROOT}/ShareInboxShared",
+				"${SRCROOT}/superDemoAppShare",
 				"${SRCROOT}/superDemoAppTests",
 				"${SRCROOT}/superDemoAppUITests",
 			);
@@ -404,6 +485,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		A1SHARE010000000000000005 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -422,6 +510,12 @@
 			platformFilter = ios;
 			target = A1FEED010000000000000004 /* superDemoAppWidget */;
 			targetProxy = A1FEED01000000000000000D /* PBXContainerItemProxy */;
+		};
+		A1SHARE01000000000000000D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			platformFilter = ios;
+			target = A1SHARE010000000000000004 /* superDemoAppShare */;
+			targetProxy = A1SHARE01000000000000000C /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -807,6 +901,75 @@
 			};
 			name = Release;
 		};
+		A1SHARE010000000000000009 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = superDemoAppShare/superDemoAppShare.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = QPG8754DYH;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = superDemoAppShare/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Share to Items";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © superDemoApp";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ilkersevim.superDemoApp.Share;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		A1SHARE01000000000000000A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = superDemoAppShare/superDemoAppShare.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = QPG8754DYH;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = superDemoAppShare/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Share to Items";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © superDemoApp";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ilkersevim.superDemoApp.Share;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -851,6 +1014,15 @@
 			buildConfigurations = (
 				A1FEED010000000000000009 /* Debug */,
 				A1FEED01000000000000000A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A1SHARE010000000000000008 /* Build configuration list for PBXNativeTarget "superDemoAppShare" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A1SHARE010000000000000009 /* Debug */,
+				A1SHARE01000000000000000A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
