@@ -11,7 +11,7 @@ import Foundation
 import Flutter
 #endif
 
-enum FlutterHostBridgeChannel {
+nonisolated enum FlutterHostBridgeChannel {
     /// Must match Dart `kHostBridgeChannel`.
     static let channelName = "com.ilkersevim.superDemoApp/host_bridge"
     /// Must match Dart `kInvokeHostBridge`.

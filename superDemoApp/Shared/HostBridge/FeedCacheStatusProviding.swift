@@ -7,13 +7,13 @@
 
 import Foundation
 
-protocol FeedCacheStatusProviding: Sendable {
+nonisolated protocol FeedCacheStatusProviding: Sendable {
     func cacheStatus(now: Date) -> FeedCacheStatusResult
 }
 
 /// App Group snapshot-backed status (JP-P0-B). Prefer this over inventing a
 /// second repository read path on day-1.
-struct SnapshotFeedCacheStatusProvider: FeedCacheStatusProviding {
+nonisolated struct SnapshotFeedCacheStatusProvider: FeedCacheStatusProviding {
     func cacheStatus(now: Date = Date()) -> FeedCacheStatusResult {
         switch FeedWidgetSnapshotStore.loadState(now: now) {
         case .unavailable, .absent, .corrupt:

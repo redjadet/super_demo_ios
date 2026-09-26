@@ -8,13 +8,13 @@
 import Foundation
 
 /// Wire contract version for host ↔ native messages.
-enum HostBridgeContract {
+nonisolated enum HostBridgeContract {
     static let version = 1
     static let feedCacheStatusMethod = "feed.cacheStatus"
 }
 
 /// Typed error codes returned on the wire (no Presentation types).
-enum HostBridgeErrorCode: String, Codable, Sendable, Equatable, Error {
+nonisolated enum HostBridgeErrorCode: String, Codable, Sendable, Equatable, Error {
     case malformedJSON
     case unsupportedMethod
     case versionMismatch
@@ -22,13 +22,13 @@ enum HostBridgeErrorCode: String, Codable, Sendable, Equatable, Error {
     case unavailable
 }
 
-struct HostBridgeRequest: Equatable, Sendable {
+nonisolated struct HostBridgeRequest: Equatable, Sendable {
     var schemaVersion: Int
     var method: String
     var id: String
 }
 
-struct FeedCacheStatusResult: Codable, Equatable, Sendable {
+nonisolated struct FeedCacheStatusResult: Codable, Equatable, Sendable {
     var postCount: Int
     var isStale: Bool
     var cacheAgeSeconds: Int?
@@ -36,7 +36,7 @@ struct FeedCacheStatusResult: Codable, Equatable, Sendable {
     var source: String
 }
 
-enum HostBridgeResponse: Equatable, Sendable {
+nonisolated enum HostBridgeResponse: Equatable, Sendable {
     case ok(id: String, schemaVersion: Int, result: FeedCacheStatusResult)
     case error(id: String?, schemaVersion: Int, code: HostBridgeErrorCode, message: String)
 }

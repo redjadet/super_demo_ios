@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum HostBridgeCodec {
+nonisolated enum HostBridgeCodec {
     private static let jsonEncoder: JSONEncoder = {
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.sortedKeys]

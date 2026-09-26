@@ -18,7 +18,8 @@ import FlutterPluginRegistrant
 @MainActor
 enum FlutterAddToAppHost {
     /// Whether this binary was linked with Flutter frameworks.
-    static var isEmbedded: Bool {
+    /// Compile-time constant — safe off the main actor for Swift Testing.
+    nonisolated static var isEmbedded: Bool {
         #if canImport(Flutter)
         true
         #else
