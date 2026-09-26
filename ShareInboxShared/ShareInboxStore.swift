@@ -155,6 +155,6 @@ nonisolated enum ShareInboxStore {
     }
 }
 
-enum ShareInboxStoreError: Error, Equatable, Sendable {
+nonisolated enum ShareInboxStoreError: Error, Equatable, Sendable {
     case containerUnavailable
 }
