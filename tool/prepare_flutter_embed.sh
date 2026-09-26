@@ -98,6 +98,8 @@ copy_framework_slice() {
   echo "note: ${base} ← $(basename "$slice") → ${dest_dir}"
 }
 
+# Plugin-free modules often omit FlutterPluginRegistrant.xcframework.
+# Required: Flutter + App. Optional: FlutterPluginRegistrant when present.
 flatten_all_configs() {
   local config_dir name sdk_device sdk_sim
   for config_dir in "$OUT_DIR"/Debug "$OUT_DIR"/Release "$OUT_DIR"/Profile; do
@@ -108,7 +110,7 @@ flatten_all_configs() {
     rm -rf "$sdk_device" "$sdk_sim"
     mkdir -p "$sdk_device" "$sdk_sim"
 
-    for name in Flutter App FlutterPluginRegistrant; do
+    for name in Flutter App; do
       if [[ ! -d "$config_dir/${name}.xcframework" ]]; then
         echo "error: missing $config_dir/${name}.xcframework" >&2
         return 1
@@ -116,6 +118,13 @@ flatten_all_configs() {
       copy_framework_slice "$config_dir/${name}.xcframework" "$sdk_device" iphoneos
       copy_framework_slice "$config_dir/${name}.xcframework" "$sdk_sim" iphonesimulator
     done
+
+    if [[ -d "$config_dir/FlutterPluginRegistrant.xcframework" ]]; then
+      copy_framework_slice "$config_dir/FlutterPluginRegistrant.xcframework" "$sdk_device" iphoneos
+      copy_framework_slice "$config_dir/FlutterPluginRegistrant.xcframework" "$sdk_sim" iphonesimulator
+    else
+      echo "note: no FlutterPluginRegistrant.xcframework in $config_dir (plugin-free module OK)"
+    fi
   done
 }
 
@@ -149,7 +158,6 @@ flatten_all_configs
 for required in \
   "$DEBUG_DIR/iphonesimulator/Flutter.framework" \
   "$DEBUG_DIR/iphonesimulator/App.framework" \
-  "$DEBUG_DIR/iphonesimulator/FlutterPluginRegistrant.framework" \
   "$DEBUG_DIR/iphoneos/Flutter.framework"
 do
   if [[ ! -d "$required" ]]; then
@@ -158,6 +166,12 @@ do
     exit 1
   fi
 done
+
+# Link FlutterPluginRegistrant only when the flatten step produced it.
+PLUGIN_LDFLAGS=""
+if [[ -d "$DEBUG_DIR/iphonesimulator/FlutterPluginRegistrant.framework" ]]; then
+  PLUGIN_LDFLAGS=" -framework FlutterPluginRegistrant"
+fi
 
 # Point -F at flat slice dirs so `ld -framework Flutter` succeeds.
 cat >"$XCCONFIG" <<EOF
@@ -168,8 +182,8 @@ cat >"$XCCONFIG" <<EOF
 FRAMEWORK_SEARCH_PATHS[sdk=iphoneos*] = \$(inherited) \$(SRCROOT)/Flutter/\$(CONFIGURATION)/iphoneos
 FRAMEWORK_SEARCH_PATHS[sdk=iphonesimulator*] = \$(inherited) \$(SRCROOT)/Flutter/\$(CONFIGURATION)/iphonesimulator
 
-OTHER_LDFLAGS[sdk=iphoneos*] = \$(inherited) -framework Flutter -framework App -framework FlutterPluginRegistrant
-OTHER_LDFLAGS[sdk=iphonesimulator*] = \$(inherited) -framework Flutter -framework App -framework FlutterPluginRegistrant
+OTHER_LDFLAGS[sdk=iphoneos*] = \$(inherited) -framework Flutter -framework App${PLUGIN_LDFLAGS}
+OTHER_LDFLAGS[sdk=iphonesimulator*] = \$(inherited) -framework Flutter -framework App${PLUGIN_LDFLAGS}
 
 SWIFT_ACTIVE_COMPILATION_CONDITIONS[sdk=iphoneos*] = \$(inherited) FLUTTER_ADD_TO_APP
 SWIFT_ACTIVE_COMPILATION_CONDITIONS[sdk=iphonesimulator*] = \$(inherited) FLUTTER_ADD_TO_APP

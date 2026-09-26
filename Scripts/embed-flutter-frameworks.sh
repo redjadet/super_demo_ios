@@ -34,7 +34,7 @@ fi
 DEST="${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}"
 mkdir -p "$DEST"
 
-for name in Flutter App FlutterPluginRegistrant; do
+for name in Flutter App; do
   src="${SLICE_DIR}/${name}.framework"
   if [[ ! -d "$src" ]]; then
     echo "error: missing $src" >&2
@@ -44,3 +44,10 @@ for name in Flutter App FlutterPluginRegistrant; do
   cp -R "$src" "$DEST/"
   echo "note: embedded ${name}.framework from ${SLICE_DIR}"
 done
+
+# Plugin-free modules omit FlutterPluginRegistrant — skip when absent.
+if [[ -d "${SLICE_DIR}/FlutterPluginRegistrant.framework" ]]; then
+  rm -rf "${DEST}/FlutterPluginRegistrant.framework"
+  cp -R "${SLICE_DIR}/FlutterPluginRegistrant.framework" "$DEST/"
+  echo "note: embedded FlutterPluginRegistrant.framework from ${SLICE_DIR}"
+fi
