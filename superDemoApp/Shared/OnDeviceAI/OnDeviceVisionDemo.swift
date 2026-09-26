@@ -38,6 +38,7 @@ protocol OnDeviceVisionDemoing: AnyObject {
 @MainActor
 final class SystemOnDeviceVisionDemo: OnDeviceVisionDemoing {
     func recognizeText() async throws -> [VisionDemoObservation] {
+        await Task.yield()
         guard let cgImage = Self.sampleCGImage() else {
             throw VisionDemoFailure.unavailable(
                 reason: """
@@ -45,8 +46,7 @@ final class SystemOnDeviceVisionDemo: OnDeviceVisionDemoing {
                 """
             )
         }
-        // Demo-sized OCR on a structured task (no Task.detached).
-        await Task.yield()
+        // Demo-sized OCR; keep structured concurrency (no detached tasks).
         return try Self.recognizeText(in: cgImage)
     }
 
