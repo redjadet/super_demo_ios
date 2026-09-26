@@ -153,10 +153,18 @@ final class ShareViewController: UIViewController {
                 }
                 if let string = item as? String {
                     continuation.resume(returning: string)
-                } else if let data = item as? Data,
-                          let string = String(data: data, encoding: .utf8)
-                {
-                    continuation.resume(returning: string)
+                } else if let data = item as? Data {
+                    if let string = String(data: data, encoding: .utf8) {
+                        continuation.resume(returning: string)
+                    } else {
+                        continuation.resume(
+                            throwing: NSError(
+                                domain: "ShareInbox",
+                                code: 2,
+                                userInfo: [NSLocalizedDescriptionKey: "Text load failed"]
+                            )
+                        )
+                    }
                 } else {
                     continuation.resume(
                         throwing: NSError(
