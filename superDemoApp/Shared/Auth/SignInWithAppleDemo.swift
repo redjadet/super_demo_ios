@@ -47,14 +47,12 @@ enum SignInWithAppleDemoMapping {
 
     static func failure(from error: Error) -> SignInWithAppleDemoFailure {
         let nsError = error as NSError
-        if nsError.domain == ASAuthorizationError.errorDomain,
-           nsError.code == ASAuthorizationError.canceled.rawValue
-        {
+        // Keep each `if` on one line so SwiftFormat wrapMultilineStatementBraces and
+        // SwiftLint opening_brace stay aligned.
+        if nsError.domain == ASAuthorizationError.errorDomain && nsError.code == ASAuthorizationError.canceled.rawValue {
             return .cancelled
         }
-        if nsError.domain == ASAuthorizationError.errorDomain,
-           nsError.code == ASAuthorizationError.unknown.rawValue
-        {
+        if nsError.domain == ASAuthorizationError.errorDomain && nsError.code == ASAuthorizationError.unknown.rawValue {
             return .unavailable(
                 reason: """
                 Sign in with Apple unavailable in this environment \
