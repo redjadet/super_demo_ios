@@ -180,6 +180,13 @@ private struct ProductionReadinessContent: View {
                     Label("Sign in with Apple (demo)", systemImage: "apple.logo")
                 }
                 .accessibilityIdentifier("signInWithAppleDemoLink")
+
+                NavigationLink {
+                    OnDeviceVisionDemoView()
+                } label: {
+                    Label("On-device Vision OCR (demo)", systemImage: "text.viewfinder")
+                }
+                .accessibilityIdentifier("onDeviceVisionDemoLink")
             }
         }
         .accessibilityIdentifier("productionReadinessDashboard")

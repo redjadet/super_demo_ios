@@ -22,6 +22,7 @@ Timed walk: [`docs/architecture-tour.md`](docs/architecture-tour.md).
 | Local notifications (demo) | `Shared/Notifications/`, Engineering demos → Local stale-Feed reminder (not APNs) |
 | Mock TestFlight / APNs checklist | [`docs/release-checklist.md`](docs/release-checklist.md) Portfolio demo / mock proofs (JP-P2-E) |
 | StoreKit 2 product query (demo) | `Config/Products.storekit`, `Shared/StoreKit/`, Engineering demos → StoreKit 2 product query (no purchase) |
+| On-device Vision OCR (demo) | `Shared/OnDeviceAI/`, Engineering demos → On-device Vision OCR (no Apple Intelligence) |
 | Sign in with Apple (demo) | `Shared/Auth/`, Engineering demos → Sign in with Apple (not production auth) |
 | Native host bridge (no Flutter SDK) | `superDemoApp/Shared/HostBridge/`, [`docs/native-host-boundary.md`](docs/native-host-boundary.md); Engineering demos → Host bridge ping |
 | Networking (retry / 401 / 429 / idempotency) | `superDemoApp/Shared/Networking/`, [`docs/sync-and-networking.md`](docs/sync-and-networking.md) |
