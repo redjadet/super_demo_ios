@@ -62,6 +62,7 @@ struct HostBridgePingDemoView: View {
             }
         }
         .navigationTitle("Host bridge")
+        .accessibilityIdentifier("hostBridgePingDemoScreen")
     }
 
     @MainActor

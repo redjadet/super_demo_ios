@@ -51,10 +51,15 @@ find_iphone_udid_on_runtime() {
   local runtime_id="$1"
   xcrun simctl list devices -j 2>/dev/null \
     | python3 -c "
-import json, sys
+import json, re, sys
 
 runtime_id = sys.argv[1]
-preferred = ('iPhone 18 Pro', 'iPhone 18', 'iPhone 17', 'iPhone 16', 'iPhone 15')
+preferred = (
+    'iPhone 18 Pro Max', 'iPhone 18 Pro', 'iPhone 18 Plus', 'iPhone 18',
+    'iPhone 17 Pro Max', 'iPhone 17 Pro', 'iPhone 17',
+    'iPhone 16 Pro Max', 'iPhone 16 Pro', 'iPhone 16',
+    'iPhone 15 Pro Max', 'iPhone 15 Pro', 'iPhone 15',
+)
 data = json.load(sys.stdin)
 devices = data.get('devices', {}).get(runtime_id, [])
 iphones = [d for d in devices if d.get('isAvailable') and 'iPhone' in d.get('name', '')]
@@ -67,6 +72,21 @@ for name in preferred:
         if d.get('name') == name:
             print(d['udid'])
             sys.exit(0)
+
+def phone_rank(name):
+    m = re.search(r'iPhone (\d+)', name or '')
+    gen = int(m.group(1)) if m else 0
+    if 'Pro Max' in name:
+        tier = 3
+    elif 'Pro' in name:
+        tier = 2
+    elif 'Plus' in name:
+        tier = 1
+    else:
+        tier = 0
+    return (gen, tier)
+
+pool.sort(key=lambda d: phone_rank(d.get('name', '')), reverse=True)
 print(pool[0]['udid'])
 " "$runtime_id" 2>/dev/null || true
 }
@@ -183,18 +203,38 @@ sys.exit(1)
 select_preferred_iphone_device_type_id() {
   xcrun simctl list devicetypes -j 2>/dev/null \
     | python3 -c "
-import json, sys
+import json, re, sys
 data = json.load(sys.stdin)
 types = data.get('devicetypes', [])
 iphones = [t for t in types if t.get('productFamily') == 'iPhone']
-preferred = ('iPhone 18 Pro', 'iPhone 18', 'iPhone 17', 'iPhone 16', 'iPhone 15')
+preferred = (
+    'iPhone 18 Pro Max', 'iPhone 18 Pro', 'iPhone 18 Plus', 'iPhone 18',
+    'iPhone 17 Pro Max', 'iPhone 17 Pro', 'iPhone 17',
+    'iPhone 16 Pro Max', 'iPhone 16 Pro', 'iPhone 16',
+    'iPhone 15 Pro Max', 'iPhone 15 Pro', 'iPhone 15',
+)
 for name in preferred:
     for t in iphones:
         if t.get('name') == name:
             print(t['identifier'])
             sys.exit(0)
+
+def phone_rank(name):
+    m = re.search(r'iPhone (\d+)', name or '')
+    gen = int(m.group(1)) if m else 0
+    if 'Pro Max' in name:
+        tier = 3
+    elif 'Pro' in name:
+        tier = 2
+    elif 'Plus' in name:
+        tier = 1
+    else:
+        tier = 0
+    return (gen, tier)
+
 if iphones:
-    print(iphones[-1]['identifier'])
+    iphones.sort(key=lambda t: phone_rank(t.get('name', '')), reverse=True)
+    print(iphones[0]['identifier'])
 sys.exit(1)
 " 2>/dev/null || true
 }

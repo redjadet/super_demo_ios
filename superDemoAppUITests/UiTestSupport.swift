@@ -48,6 +48,57 @@ enum UiTestSupport {
         )
     }
 
+    /// Opens an Engineering demos `NavigationLink` from the Production Readiness dashboard.
+    @MainActor
+    static func openEngineeringDemo(
+        linkIdentifier: String,
+        screenIdentifier: String,
+        in app: XCUIApplication,
+        timeout: TimeInterval = 20
+    ) {
+        self.openDashboardTab(in: app)
+        _ = self.waitForListOrCollection(identifier: "productionReadinessDashboard", in: app)
+
+        let link = app.descendants(matching: .any).matching(identifier: linkIdentifier).firstMatch
+        self.scrollToElement(link, in: app)
+        XCTAssertTrue(link.waitForExistence(timeout: timeout), "Missing demo link \(linkIdentifier)")
+        link.tap()
+
+        let screen = app.descendants(matching: .any).matching(identifier: screenIdentifier).firstMatch
+        XCTAssertTrue(screen.waitForExistence(timeout: timeout), "Missing demo screen \(screenIdentifier)")
+    }
+
+    /// True when any descendant matches `identifier` within `timeout`.
+    @MainActor
+    static func waitForAnyIdentifier(
+        _ identifiers: [String],
+        in app: XCUIApplication,
+        timeout: TimeInterval = 15
+    ) -> Bool {
+        let deadline = Date().addingTimeInterval(timeout)
+        while Date() < deadline {
+            for identifier in identifiers {
+                if app.descendants(matching: .any).matching(identifier: identifier).firstMatch.exists {
+                    return true
+                }
+            }
+            RunLoop.current.run(until: Date().addingTimeInterval(0.2))
+        }
+        return false
+    }
+
+    /// True when any descendant identifier has the given prefix (e.g. `visionLine_`).
+    @MainActor
+    static func waitForIdentifierPrefix(
+        _ prefix: String,
+        in app: XCUIApplication,
+        timeout: TimeInterval = 15
+    ) -> Bool {
+        let predicate = NSPredicate(format: "identifier BEGINSWITH %@", prefix)
+        let match = app.descendants(matching: .any).matching(predicate).firstMatch
+        return match.waitForExistence(timeout: timeout)
+    }
+
     /// Opens the Feed tab when the root shell uses `TabView`.
     @MainActor
     static func openFeedTab(in app: XCUIApplication) {

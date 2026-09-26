@@ -112,7 +112,9 @@ resolve_iphone_destination() {
     return 1
   fi
 
-  printf 'platform=iOS Simulator,name=iPhone 17\n'
+  # Local fallback when simctl / xcodebuild cannot resolve a concrete UDID.
+  # Prefer the newest marketing name; ensure_ci_simulator / simctl override on CI.
+  printf 'platform=iOS Simulator,name=iPhone 18 Pro\n'
 }
 
 resolve_ipad_destination() {

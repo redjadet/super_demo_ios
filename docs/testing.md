@@ -21,14 +21,17 @@ adding a deterministic test, mock fixture, preview state, or script.
 
 ## UI smoke (CI)
 
-The iPhone test lane (`bin/ci-iphone-test.sh`, GitHub Actions `iphone-test`) runs
-the iPhone app build on GitHub Actions with a generic iOS Simulator destination
-so hosted runners do not need to boot a concrete simulator. If the hosted runner
-image has no iOS Simulator platform installed, the lane exits with an explicit
-warning instead of hanging on platform install. CI does **not** run `xcodebuild
-test` because GitHub Actions repeatedly hangs the XCTest runner before logs are
-available, even for unit-only selection. Run unit/UI smoke locally before risky
-releases.
+The iPhone test lane (`bin/ci-iphone-test.sh`, GitHub Actions `iphone-test`)
+boots the **newest available iOS Simulator runtime** iPhone (via
+`tool/ensure_ci_simulator.sh` + `tool/ios_simulator_runtime.sh`) and runs
+`xcodebuild test` (unit + UI) with warnings-as-errors. Destination preference:
+iPhone 18 Pro Max → Pro → Plus → base, then generation-ranked fallback.
+
+Escape hatch: set `CI_IPHONE_GENERIC_BUILD=1` for the legacy
+`generic/platform=iOS Simulator` **build-only** path (no XCTest). The lane
+retries once after a simulator reboot on Accessibility load timeouts. This
+Linux/cloud agent cannot execute simulators — Mac Codex / GHA `macos-26`
+runners provide proof.
 
 | UI test | What it proves |
 | --- | --- |
@@ -39,6 +42,17 @@ releases.
 | `testFeedAccessibilityChromeRowsAndRetry` | Feed VoiceOver-relevant refresh chrome, row label, and Retry label/tap |
 | `testDeepLinkOpensFeedTab` | `superdemo://feed` selects Feed chrome |
 | `testDeepLinkOpensItemsTab` | `superdemo://items` selects Items chrome |
+| `testStaleFeedFixtureShowsBannerOnFeedTab` | `-StaleFeedDemo` shows stale banner + sample row |
+| `testStaleFeedEngineeringDemoShowsBanner` | Dashboard → Stale Feed demo shows banner |
+| `testShareInboxDemoIsReachable` | Share inbox Engineering demo (absent / seed / unavailable) |
+| `testSignInWithAppleDemoIsReachable` | SIWA Engineering demo chrome (Simulator-honest) |
+| `testOnDeviceVisionDemoRecognizesOrReportsHonestState` | Vision OCR run → lines or honest failure |
+| `testHostBridgePingDemoReturnsResponse` | Host bridge ping returns non-placeholder JSON |
+| `testFeedWidgetSnapshotDemoIsReachable` | Feed widget App Group snapshot demo |
+| `testStoreKitProductQueryDemoIsReachable` | StoreKit 2 product query demo |
+| `testLocalNotificationDemoIsReachable` | Local stale-Feed reminder demo chrome |
+| `testIdempotentPostDemoIsReachable` | Idempotent POST demo outcome |
+| `testDiagnosticsDemoIsReachable` | Diagnostics Engineering demo screen |
 | `testLaunch` | Local/full-lane launch duplicate for Items chrome |
 | `testLaunchPerformance` | Local launch performance under `-UITesting` |
 
@@ -118,4 +132,6 @@ Production Readiness unit coverage:
 `superDemoAppTests/Features/ProductionReadiness` and
 `superDemoAppTests/Shared/Networking`. Feed unit coverage:
 `superDemoAppTests/Features/Feed`. UI smoke covers Items, Dashboard (risks +
-UIKit showcase), Feed, and Feed/Items deep links — see table above.
+UIKit showcase + Engineering demos), Feed, and Feed/Items deep links — see
+table above. Engineering demos live in
+`superDemoAppUITests/EngineeringDemosUITests.swift`.

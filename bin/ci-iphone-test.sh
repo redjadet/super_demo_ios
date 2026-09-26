@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 # iPhone build/test proof lane used by local CI and GitHub Actions.
+# On CI, prefers a concrete newest-runtime iPhone simulator and runs xcodebuild test
+# (set CI_IPHONE_GENERIC_BUILD=1 to keep the legacy build-only generic destination).
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -15,7 +17,12 @@ fi
 # shellcheck source=../tool/xcode_env.sh
 source "$ROOT/tool/xcode_env.sh"
 
-if [[ "${CI:-}" == "true" && -z "${CI_SIMULATOR_DEST:-}" && "${CI_IPHONE_GENERIC_BUILD:-1}" != "1" ]]; then
+# Hosted PR default: run real simulator tests on the newest available iPhone.
+# Escape hatch for runner images without a usable Simulator platform:
+#   CI_IPHONE_GENERIC_BUILD=1
+CI_IPHONE_GENERIC_BUILD="${CI_IPHONE_GENERIC_BUILD:-0}"
+
+if [[ "${CI:-}" == "true" && "${CI_IPHONE_GENERIC_BUILD}" != "1" && -z "${CI_SIMULATOR_DEST:-}" ]]; then
   CI_PREPARE_IPAD="${CI_PREPARE_IPAD:-0}" source "$ROOT/tool/ensure_ci_simulator.sh" || exit $?
 fi
 
@@ -26,7 +33,7 @@ source "$ROOT/tool/xcodebuild_sandbox_flags.sh"
 # shellcheck source=../tool/xcode_warnings_as_errors_flags.sh
 source "$ROOT/tool/xcode_warnings_as_errors_flags.sh"
 
-if [[ "${CI:-}" == "true" && "${CI_IPHONE_GENERIC_BUILD:-1}" == "1" ]]; then
+if [[ "${CI:-}" == "true" && "${CI_IPHONE_GENERIC_BUILD}" == "1" ]]; then
   SIMULATOR_DEST="${CI_IPHONE_BUILD_DEST:-generic/platform=iOS Simulator}"
 else
   SIMULATOR_DEST="$(resolve_iphone_destination)"
@@ -73,13 +80,13 @@ ci_has_ios_simulator_destination() {
     | grep -q 'platform:iOS Simulator'
 }
 
-if [[ "${CI:-}" == "true" ]]; then
-  if [[ "${CI_IPHONE_GENERIC_BUILD:-1}" == "1" ]] && ! ci_has_ios_simulator_destination; then
+if [[ "${CI:-}" == "true" && "${CI_IPHONE_GENERIC_BUILD}" == "1" ]]; then
+  if ! ci_has_ios_simulator_destination; then
     echo "warning: iOS Simulator platform unavailable on this GitHub runner; skipping iPhone build sanity" >&2
     exit 0
   fi
 
-  echo "==> iPhone build sanity ($XCODEBUILD)"
+  echo "==> iPhone build sanity ($XCODEBUILD) [CI_IPHONE_GENERIC_BUILD=1]"
   assert_xcodebuild_matches_developer_dir
   python3 "$ROOT/tool/run_with_timeout.py" \
     --timeout "${CI_IPHONE_XCODEBUILD_TIMEOUT_SECONDS:-900}" \
@@ -98,7 +105,7 @@ run_xcodebuild_with_ci_timeout() {
   assert_xcodebuild_matches_developer_dir || return 1
   if [[ "${CI:-}" == "true" ]]; then
     python3 "$ROOT/tool/run_with_timeout.py" \
-      --timeout "${CI_IPHONE_XCODEBUILD_TIMEOUT_SECONDS:-900}" \
+      --timeout "${CI_IPHONE_XCODEBUILD_TIMEOUT_SECONDS:-1800}" \
       -- "$XCODEBUILD" "$@"
   else
     "$XCODEBUILD" "$@"

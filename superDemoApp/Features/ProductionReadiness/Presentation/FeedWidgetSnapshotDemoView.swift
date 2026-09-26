@@ -50,6 +50,7 @@ struct FeedWidgetSnapshotDemoView: View {
             }
         }
         .navigationTitle("Feed widget snapshot")
+        .accessibilityIdentifier("feedWidgetSnapshotDemoScreen")
         .onAppear { self.reload() }
     }
 
