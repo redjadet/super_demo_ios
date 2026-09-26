@@ -18,6 +18,7 @@ Timed walk: [`docs/architecture-tour.md`](docs/architecture-tour.md).
 | DI composition roots | `superDemoApp/App/*Composition.swift`, [`docs/dependency-injection.md`](docs/dependency-injection.md) |
 | Tabs / deep links / App Intents | `superDemoApp/App/AppRootView.swift`, `AppNavigation.swift`, `App/AppIntents/` (incl. parameterized Refresh Feed) |
 | Feed Home Screen widget | `FeedWidgetShared/`, `superDemoAppWidget/`, App Group snapshot; demo in ProductionReadiness |
+| watchOS Feed companion | `superDemoAppWatch/`, `FeedWidgetShared/` (same snapshot DTO); Engineering demos → watchOS Feed companion; visionOS deferred |
 | Share → Items inbox | `ShareInboxShared/`, `superDemoAppShare/`, App Group `share-inbox.json`; Engineering demos → Share inbox (not SwiftData) |
 | Feed refresh Live Activity | `FeedWidgetShared/FeedRefreshActivityAttributes.swift`, `App/ActivityKitFeedRefreshLiveActivityController.swift`, `superDemoAppWidget/FeedRefreshLiveActivity.swift` |
 | Local notifications (demo) | `Shared/Notifications/`, Engineering demos → Local stale-Feed reminder (not APNs) |
@@ -51,6 +52,9 @@ Timed walk: [`docs/architecture-tour.md`](docs/architecture-tour.md).
 | `superDemoApp/Features/` | Layered product features (Feed, Items, ProductionReadiness) |
 | `superDemoApp/Shared/` | Networking, Diagnostics, Presentation chrome, launch config |
 | `superDemoApp/App/` | Composition roots, tabs, navigation, App Intents |
+| `FeedWidgetShared/`, `superDemoAppWidget/` | Feed App Group snapshot + Home Screen / Live Activity UI |
+| `ShareInboxShared/`, `superDemoAppShare/` | Share → App Group inbox (not SwiftData) |
+| `superDemoAppWatch/` | watchOS Feed snapshot companion (JP-P2-F; visionOS deferred) |
 | `docs/` | Behavior canon and agent routing |
 | `bin/`, `tool/` | Proof / lint / CI wrappers |
 

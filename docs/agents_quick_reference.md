@@ -63,7 +63,7 @@ Launch via `UiTestSupport.launchApplication()` (`-UITesting`, terminate between 
 | iPhone tests lane | `./bin/fastlane-run iphone_test` |
 | iPad + Mac lane | `./bin/fastlane-run platform_builds` |
 | iPhone build/test lane only | `./bin/ci-iphone-test.sh` |
-| iPad + Mac builds only | `./bin/ci-platform-builds.sh` |
+| iPad + Mac + watchOS builds | `./bin/ci-platform-builds.sh` (watch: `./bin/ci-watch-build.sh`; skip watch: `CI_SKIP_WATCH_BUILD=1`) |
 | Install Cursor rules + hooks (after clone) | `./tool/install-cursor-rules.sh` |
 | Install git pre-commit | `./bin/install-git-hooks` |
 | Restore team Apple skills from lockfile | `npx skills experimental_install -y` (from git root) |
@@ -104,13 +104,15 @@ Launch via `UiTestSupport.launchApplication()` (`-UITesting`, terminate between 
 - Use `./bin/checklist` for delivery proof before PR; merge only when GHA
   **checklist** is green — [`engineering/checklist_gate.md`](engineering/checklist_gate.md).
 - Script names vs Flutter: [`tooling_map.md`](tooling_map.md).
-- Use `./bin/ci.sh` before merge/PR (same lint, iPhone test, iPad build, and Mac build proof as CI).
+- Use `./bin/ci.sh` before merge/PR (same lint, iPhone test, iPad/Mac/watchOS
+  build proof as CI).
 - `./bin/checklist` resolves an available iPhone simulator automatically; set `CHECKLIST_IPHONE_DEST` only when a specific destination is required.
 - `./bin/checklist` and `./bin/ci.sh` disable parallel test workers by default;
   set `CHECKLIST_ALLOW_PARALLEL_TESTS=1` or `CI_ALLOW_PARALLEL_TESTS=1` only when
   parallel proof is intentional.
-- `./bin/ci-platform-builds.sh` runs iPad and Mac builds in parallel by default;
-  set `CI_SERIAL_PLATFORM_BUILDS=1` if Xcode is resource constrained.
+- `./bin/ci-platform-builds.sh` runs iPad and Mac builds in parallel by default,
+  then `./bin/ci-watch-build.sh`; set `CI_SERIAL_PLATFORM_BUILDS=1` if Xcode is
+  resource constrained; set `CI_SKIP_WATCH_BUILD=1` to skip watch only.
 - Validate before final report.
 - Report exact proof command.
 - Add durable doc/test/script when the same failure pattern repeats.

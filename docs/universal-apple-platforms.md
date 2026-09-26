@@ -1,8 +1,10 @@
 # Universal Apple Platforms
 
 This app must behave as a universal Apple app across iOS, iPadOS, and macOS.
-Agents must design and verify features against window size, input method, and
-platform conventions, not just one iPhone simulator.
+A thin **watchOS** companion (`superDemoAppWatch`) reuses the Feed App Group
+snapshot DTO; it is not a full parity shell. Agents must design and verify
+features against window size, input method, and platform conventions, not just
+one iPhone simulator.
 
 ## Platform Contract
 
@@ -11,14 +13,20 @@ platform conventions, not just one iPhone simulator.
   multitasking, and resizable windows.
 - macOS: resizable windows, pointer precision, keyboard shortcuts, menu/toolbar
   expectations, titlebar/window behavior, and smaller control hit targets.
+- watchOS: companion Feed snapshot UI only (`superDemoAppWatch`); honest
+  watch-local App Group; not adaptive-shell parity with phone/Mac.
 
 Current project settings already target Apple multi-platform builds:
 
-- `SUPPORTED_PLATFORMS = iphoneos iphonesimulator macosx xros xrsimulator`
-- `TARGETED_DEVICE_FAMILY = 1,2,7`
+- Main app: `SUPPORTED_PLATFORMS = iphoneos iphonesimulator macosx xros xrsimulator`
+- Main app: `TARGETED_DEVICE_FAMILY = 1,2,7`
+- Watch companion: `SUPPORTED_PLATFORMS = watchos watchsimulator`,
+  `TARGETED_DEVICE_FAMILY = 4` (scheme `superDemoAppWatch`)
 
-Required product proof remains iOS, iPadOS, and macOS unless task explicitly
-adds visionOS behavior.
+Required product proof remains iOS, iPadOS, and macOS unless the task adds
+watchOS/visionOS. **watchOS** compile proof is part of
+`./bin/ci-platform-builds.sh` (`./bin/ci-watch-build.sh`). **visionOS** companion
+UI remains deferred.
 
 ## Layout Rules
 
@@ -87,6 +95,7 @@ For meaningful UI changes, run or record the narrowest honest matrix:
 xcodebuild -project superDemoApp.xcodeproj -scheme superDemoApp -destination 'platform=iOS Simulator,name=iPhone 17' build
 xcodebuild -project superDemoApp.xcodeproj -scheme superDemoApp -destination 'platform=iOS Simulator,name=iPad Pro 13-inch (M5)' build
 xcodebuild -project superDemoApp.xcodeproj -scheme superDemoApp -destination 'platform=macOS' build
+./bin/ci-watch-build.sh   # or: xcodebuild … -scheme superDemoAppWatch -destination 'generic/platform=watchOS Simulator' build
 ```
 
 If a destination is unavailable, choose an installed equivalent from:
@@ -98,7 +107,9 @@ xcodebuild -showdestinations -project superDemoApp.xcodeproj -scheme superDemoAp
 
 For docs-only changes, `./bin/lint.sh` plus scheme/platform inspection is enough.
 
-CI and `./bin/ci.sh` run iPad simulator + macOS builds via `./bin/ci-platform-builds.sh`
+CI and `./bin/ci.sh` run iPad simulator + macOS + watchOS builds via
+`./bin/ci-platform-builds.sh` (watch via `./bin/ci-watch-build.sh`).
+
 after the iPhone test lane.
 
 ## Agent Finish Gate

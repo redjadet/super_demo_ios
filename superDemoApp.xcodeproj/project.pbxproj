@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		A1FEED01000000000000000C /* superDemoAppWidget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = A1FEED010000000000000001 /* superDemoAppWidget.appex */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		A1SHARE01000000000000000B /* superDemoAppShare.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = A1SHARE010000000000000001 /* superDemoAppShare.appex */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		A1WATCH01000000000000000C /* superDemoAppWatch.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = A1WATCH010000000000000001 /* superDemoAppWatch.app */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		A1FEED010000000000000010 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1FEED01000000000000000F /* WidgetKit.framework */; };
 		A1FEED010000000000000012 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1FEED010000000000000011 /* WidgetKit.framework */; };
 		A1FEED010000000000000014 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1FEED010000000000000013 /* SwiftUI.framework */; };
@@ -46,6 +47,13 @@
 			remoteGlobalIDString = A1SHARE010000000000000004;
 			remoteInfo = superDemoAppShare;
 		};
+		A1WATCH01000000000000000D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 56D79ACE2FB7787300B9E63E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A1WATCH010000000000000004;
+			remoteInfo = superDemoAppWatch;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -61,6 +69,17 @@
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		A1WATCH01000000000000000B /* Embed Watch Content */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
+			dstSubfolderSpec = 16;
+			files = (
+				A1WATCH01000000000000000C /* superDemoAppWatch.app in Embed Watch Content */,
+			);
+			name = "Embed Watch Content";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
@@ -69,6 +88,7 @@
 		56D79AEF2FB7787400B9E63E /* superDemoAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = superDemoAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1FEED010000000000000001 /* superDemoAppWidget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = superDemoAppWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1SHARE010000000000000001 /* superDemoAppShare.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = superDemoAppShare.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		A1WATCH010000000000000001 /* superDemoAppWatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = superDemoAppWatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1FEED01000000000000000F /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		A1FEED010000000000000011 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		A1FEED010000000000000013 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
@@ -120,6 +140,14 @@
 			path = superDemoAppShare;
 			sourceTree = "<group>";
 		};
+		A1WATCH010000000000000003 /* superDemoAppWatch */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				A1WATCH010000000000000020 /* Exceptions for "superDemoAppWatch" folder */,
+			);
+			path = superDemoAppWatch;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -136,6 +164,13 @@
 				Info.plist,
 			);
 			target = A1SHARE010000000000000004 /* superDemoAppShare */;
+		};
+		A1WATCH010000000000000020 /* Exceptions for "superDemoAppWatch" folder */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = A1WATCH010000000000000004 /* superDemoAppWatch */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
@@ -160,6 +195,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		A1SHARE010000000000000006 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A1WATCH010000000000000006 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -192,6 +234,7 @@
 				A1FEED010000000000000003 /* superDemoAppWidget */,
 				A1SHARE010000000000000002 /* ShareInboxShared */,
 				A1SHARE010000000000000003 /* superDemoAppShare */,
+				A1WATCH010000000000000003 /* superDemoAppWatch */,
 				56D79AE82FB7787400B9E63E /* superDemoAppTests */,
 				56D79AF22FB7787400B9E63E /* superDemoAppUITests */,
 				56D79AD72FB7787300B9E63E /* Products */,
@@ -204,6 +247,7 @@
 				56D79AD62FB7787300B9E63E /* superDemoApp.app */,
 				A1FEED010000000000000001 /* superDemoAppWidget.appex */,
 				A1SHARE010000000000000001 /* superDemoAppShare.appex */,
+				A1WATCH010000000000000001 /* superDemoAppWatch.app */,
 				56D79AE52FB7787400B9E63E /* superDemoAppTests.xctest */,
 				56D79AEF2FB7787400B9E63E /* superDemoAppUITests.xctest */,
 			);
@@ -232,12 +276,14 @@
 				56D79AD42FB7787300B9E63E /* Resources */,
 				A1FLUTTER0100000000000002 /* Embed Flutter Frameworks */,
 				A1FEED01000000000000000B /* Embed Foundation Extensions */,
+				A1WATCH01000000000000000B /* Embed Watch Content */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 				A1FEED01000000000000000E /* PBXTargetDependency */,
 				A1SHARE01000000000000000D /* PBXTargetDependency */,
+				A1WATCH01000000000000000E /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				56D79AD82FB7787300B9E63E /* superDemoApp */,
@@ -343,6 +389,29 @@
 			productReference = A1SHARE010000000000000001 /* superDemoAppShare.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
+		A1WATCH010000000000000004 /* superDemoAppWatch */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A1WATCH010000000000000008 /* Build configuration list for PBXNativeTarget "superDemoAppWatch" */;
+			buildPhases = (
+				A1WATCH010000000000000005 /* Sources */,
+				A1WATCH010000000000000006 /* Frameworks */,
+				A1WATCH010000000000000007 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				A1FEED010000000000000002 /* FeedWidgetShared */,
+				A1WATCH010000000000000003 /* superDemoAppWatch */,
+			);
+			name = superDemoAppWatch;
+			packageProductDependencies = (
+			);
+			productName = superDemoAppWatch;
+			productReference = A1WATCH010000000000000001 /* superDemoAppWatch.app */;
+			productType = "com.apple.product-type.application";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -370,6 +439,9 @@
 					A1SHARE010000000000000004 = {
 						CreatedOnToolsVersion = 26.5;
 					};
+					A1WATCH010000000000000004 = {
+						CreatedOnToolsVersion = 26.5;
+					};
 				};
 			};
 			buildConfigurationList = 56D79AD12FB7787300B9E63E /* Build configuration list for PBXProject "superDemoApp" */;
@@ -390,6 +462,7 @@
 				56D79AD52FB7787300B9E63E /* superDemoApp */,
 				A1FEED010000000000000004 /* superDemoAppWidget */,
 				A1SHARE010000000000000004 /* superDemoAppShare */,
+				A1WATCH010000000000000004 /* superDemoAppWatch */,
 				56D79AE42FB7787400B9E63E /* superDemoAppTests */,
 				56D79AEE2FB7787400B9E63E /* superDemoAppUITests */,
 			);
@@ -432,6 +505,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		A1WATCH010000000000000007 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
@@ -453,6 +533,7 @@
 				"${SRCROOT}/superDemoAppWidget",
 				"${SRCROOT}/ShareInboxShared",
 				"${SRCROOT}/superDemoAppShare",
+				"${SRCROOT}/superDemoAppWatch",
 				"${SRCROOT}/superDemoAppTests",
 				"${SRCROOT}/superDemoAppUITests",
 			);
@@ -527,6 +608,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		A1WATCH010000000000000005 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -551,6 +639,12 @@
 			platformFilter = ios;
 			target = A1SHARE010000000000000004 /* superDemoAppShare */;
 			targetProxy = A1SHARE01000000000000000C /* PBXContainerItemProxy */;
+		};
+		A1WATCH01000000000000000E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			platformFilter = ios;
+			target = A1WATCH010000000000000004 /* superDemoAppWatch */;
+			targetProxy = A1WATCH01000000000000000D /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -1009,6 +1103,79 @@
 			};
 			name = Release;
 		};
+
+		A1WATCH010000000000000009 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = superDemoAppWatch/superDemoAppWatch.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = QPG8754DYH;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = superDemoAppWatch/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = superDemo;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © superDemoApp";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.ilkersevim.superDemoApp;
+				INFOPLIST_KEY_WKRunsIndependentlyOfCompanionApp = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ilkersevim.superDemoApp.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "watchos watchsimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 26.0;
+			};
+			name = Debug;
+		};
+		A1WATCH01000000000000000A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = superDemoAppWatch/superDemoAppWatch.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = QPG8754DYH;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = superDemoAppWatch/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = superDemo;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © superDemoApp";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.ilkersevim.superDemoApp;
+				INFOPLIST_KEY_WKRunsIndependentlyOfCompanionApp = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ilkersevim.superDemoApp.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "watchos watchsimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				VALIDATE_PRODUCT = YES;
+				WATCHOS_DEPLOYMENT_TARGET = 26.0;
+			};
+			name = Release;
+		};
+
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -1066,6 +1233,17 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
+
+		A1WATCH010000000000000008 /* Build configuration list for PBXNativeTarget "superDemoAppWatch" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A1WATCH010000000000000009 /* Debug */,
+				A1WATCH01000000000000000A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+
 /* End XCConfigurationList section */
 	};
 	rootObject = 56D79ACE2FB7787300B9E63E /* Project object */;
