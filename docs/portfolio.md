@@ -51,7 +51,7 @@ Sibling backlog (do not merge scopes): portfolio plan under agent store
 | Sign in with Apple | Demo auth / Keychain ≠ SIWA | **Not in repo** (JP-P2-B) |
 | StoreKit 2 | `Config/Products.storekit`; `Shared/StoreKit/`; Engineering demos → StoreKit 2 product query (demo) | **In repo** (JP-P1-D query-only; no purchase / charge path) |
 | Native↔Flutter host bridge | `Shared/HostBridge/`, [`native-host-boundary.md`](native-host-boundary.md); Engineering demos → Host bridge ping | **In repo** (JP-P0-C contract only; Flutter module not vendored) |
-| Core ML / Vision / Speech / Apple Intelligence | — | **Not in repo** (JP-P2-C; no AI entitlement claims) |
+| Core ML / Vision / Speech / Apple Intelligence | `Shared/OnDeviceAI/`, Engineering demos → On-device Vision OCR | **In repo** (JP-P2-C Vision OCR only; no Speech / Core ML model / Apple Intelligence claim) |
 | watchOS / visionOS / tvOS companion | Project may mention xr; no reviewer demo | **Not in repo** (JP-P2-F) |
 | App Store–shipped product | README honesty | **Not claimed** |
 

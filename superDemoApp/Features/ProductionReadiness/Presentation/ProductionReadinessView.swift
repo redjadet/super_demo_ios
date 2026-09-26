@@ -173,6 +173,13 @@ private struct ProductionReadinessContent: View {
                     Label("StoreKit 2 product query (demo)", systemImage: "bag")
                 }
                 .accessibilityIdentifier("storeKitProductQueryDemoLink")
+
+                NavigationLink {
+                    OnDeviceVisionDemoView()
+                } label: {
+                    Label("On-device Vision OCR (demo)", systemImage: "text.viewfinder")
+                }
+                .accessibilityIdentifier("onDeviceVisionDemoLink")
             }
         }
         .accessibilityIdentifier("productionReadinessDashboard")
