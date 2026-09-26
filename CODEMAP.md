@@ -18,6 +18,7 @@ Timed walk: [`docs/architecture-tour.md`](docs/architecture-tour.md).
 | DI composition roots | `superDemoApp/App/*Composition.swift`, [`docs/dependency-injection.md`](docs/dependency-injection.md) |
 | Tabs / deep links / App Intents | `superDemoApp/App/AppRootView.swift`, `AppNavigation.swift`, `App/AppIntents/` (incl. parameterized Refresh Feed) |
 | Feed Home Screen widget | `FeedWidgetShared/`, `superDemoAppWidget/`, App Group snapshot; demo in ProductionReadiness |
+| Share → Items inbox | `ShareInboxShared/`, `superDemoAppShare/`, App Group `share-inbox.json`; Engineering demos → Share inbox (not SwiftData) |
 | Feed refresh Live Activity | `FeedWidgetShared/FeedRefreshActivityAttributes.swift`, `App/ActivityKitFeedRefreshLiveActivityController.swift`, `superDemoAppWidget/FeedRefreshLiveActivity.swift` |
 | Local notifications (demo) | `Shared/Notifications/`, Engineering demos → Local stale-Feed reminder (not APNs) |
 | Mock TestFlight / APNs checklist | [`docs/release-checklist.md`](docs/release-checklist.md) Portfolio demo / mock proofs (JP-P2-E) |

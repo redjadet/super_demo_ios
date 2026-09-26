@@ -12,6 +12,8 @@ included:
   - superDemoApp
   - FeedWidgetShared
   - superDemoAppWidget
+  - ShareInboxShared
+  - superDemoAppShare
   - superDemoAppTests
   - superDemoAppUITests
 

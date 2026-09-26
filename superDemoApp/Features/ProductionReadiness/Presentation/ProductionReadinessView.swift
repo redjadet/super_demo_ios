@@ -180,6 +180,13 @@ private struct ProductionReadinessContent: View {
                     Label("Sign in with Apple (demo)", systemImage: "apple.logo")
                 }
                 .accessibilityIdentifier("signInWithAppleDemoLink")
+
+                NavigationLink {
+                    ShareInboxDemoView()
+                } label: {
+                    Label("Share inbox (App Group, not SwiftData)", systemImage: "square.and.arrow.up")
+                }
+                .accessibilityIdentifier("shareInboxDemoLink")
             }
         }
         .accessibilityIdentifier("productionReadinessDashboard")

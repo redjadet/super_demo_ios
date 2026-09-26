@@ -23,7 +23,9 @@ while IFS= read -r -d '' file; do
     failed=1
   fi
 done < <(
-  find "$ROOT/superDemoApp" "$ROOT/superDemoAppTests" "$ROOT/superDemoAppUITests" \
+  find "$ROOT/superDemoApp" "$ROOT/FeedWidgetShared" "$ROOT/superDemoAppWidget" \
+    "$ROOT/ShareInboxShared" "$ROOT/superDemoAppShare" \
+    "$ROOT/superDemoAppTests" "$ROOT/superDemoAppUITests" \
     -name '*.swift' -print0
 )
 
