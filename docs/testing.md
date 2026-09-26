@@ -42,6 +42,8 @@ agent cannot execute simulators — GHA `xcode-27` (or Mac) provides proof.
 | `testDashboardShowsProductionRisks` | Local Dashboard → Production Risks list |
 | `testUIKitShowcaseCollectionIsReachable` | Local Dashboard → UIKit showcase collection + detail |
 | `testFeedTabIsReachable` | Local Feed tab chrome (toolbar, list, empty, or error) |
+| `testFeedPostRowOpensDetail` | Feed list selection opens `feedPostDetail-1` |
+| `testItemRowOpensDetail` | Items list selection opens `itemDetail` (`-ReviewerDemoMode`) |
 | `testFeedAccessibilityChromeRowsAndRetry` | Feed VoiceOver-relevant refresh chrome, row label, and Retry label/tap |
 | `testDeepLinkOpensFeedTab` | `superdemo://feed` selects Feed chrome |
 | `testDeepLinkOpensItemsTab` | `superdemo://items` selects Items chrome |

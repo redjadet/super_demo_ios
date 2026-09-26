@@ -17,6 +17,8 @@ updated the detail column. Stale Feed demo had the same nested-stack problem.
 - Items: clear selection when the selected row is deleted.
 - Stale Feed demo: `FeedView(embedsOwnNavigation: false)` on Production Readiness's
   stack (no nested split/stack) so rows push detail and a11y id stays findable.
+- UI: `testFeedPostRowOpensDetail` / `testItemRowOpensDetail` prove selection opens
+  detail.
 - Catalog: String Catalog comment refresh in `Localizable.xcstrings`.
 
 ## Proof
