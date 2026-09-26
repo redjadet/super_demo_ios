@@ -91,7 +91,7 @@ final class CachingFeedRepository: FeedRepository {
         let descriptor = FetchDescriptor<CachedFeedPost>()
         let existing = try self.context.fetch(descriptor)
         // uniquingKeysWith: corrupt duplicate postIDs must not trap the process.
-        let rowsByID = Dictionary(existing.map { ($0.postID, $0) }, uniquingKeysWith: { first, _ in first })
+        let rowsByID = Dictionary(existing.map { ($0.postID, $0) }) { first, _ in first }
         let incomingIDs = Set(posts.map(\.id))
 
         for post in posts {

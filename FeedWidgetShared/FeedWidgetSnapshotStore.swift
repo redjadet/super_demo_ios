@@ -156,5 +156,7 @@ nonisolated struct NoOpFeedWidgetSnapshotPublisher: FeedWidgetSnapshotPublishing
         _ = snapshot
     }
 
-    func clearPublishedSnapshot() {}
+    func clearPublishedSnapshot() {
+        // No-op — in-memory demos never write an App Group snapshot.
+    }
 }

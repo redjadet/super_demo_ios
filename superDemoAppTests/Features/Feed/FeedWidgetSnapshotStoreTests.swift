@@ -96,11 +96,10 @@ struct FeedWidgetSnapshotStoreTests {
             FeedWidgetSnapshotStore.snapshotFileURL(containerURLOverride: root)
         )
         // Pre-postCount wire shape (v=1, titles only).
-        let legacy = Data(
-            #"""
-            {"v":1,"writtenAt":"2023-11-14T22:13:20Z","cacheTTLSeconds":900,"isStale":false,"titles":[{"id":1,"title":"A"},{"id":2,"title":"B"}]}
-            """#.utf8
-        )
+        let legacyJSON =
+            #"{"v":1,"writtenAt":"2023-11-14T22:13:20Z","cacheTTLSeconds":900,"#
+                + #""isStale":false,"titles":[{"id":1,"title":"A"},{"id":2,"title":"B"}]}"#
+        let legacy = Data(legacyJSON.utf8)
         try legacy.write(to: fileURL, options: .atomic)
         let state = FeedWidgetSnapshotStore.loadState(
             now: Date(timeIntervalSince1970: 1_700_000_100),
