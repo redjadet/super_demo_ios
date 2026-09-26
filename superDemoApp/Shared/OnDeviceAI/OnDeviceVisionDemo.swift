@@ -39,7 +39,7 @@ protocol OnDeviceVisionDemoing: AnyObject {
 final class SystemOnDeviceVisionDemo: OnDeviceVisionDemoing {
     func recognizeText() async throws -> [VisionDemoObservation] {
         await Task.yield()
-        guard let cgImage = Self.sampleCGImage() else {
+        guard let cgImage = OnDeviceVisionDemoEngine.sampleCGImage() else {
             throw VisionDemoFailure.unavailable(
                 reason: """
                 Could not render the Vision demo sample bitmap on this target.
@@ -47,10 +47,14 @@ final class SystemOnDeviceVisionDemo: OnDeviceVisionDemoing {
             )
         }
         // Demo-sized OCR; keep structured concurrency (no detached tasks).
-        return try Self.recognizeText(in: cgImage)
+        return try OnDeviceVisionDemoEngine.recognizeText(in: cgImage)
     }
+}
 
-    nonisolated private static func recognizeText(in cgImage: CGImage) throws -> [VisionDemoObservation] {
+/// Sync Vision/CoreGraphics helpers live outside `@MainActor` so we avoid
+/// `nonisolated` + ACL ordering fights between SwiftLint and SwiftFormat.
+private enum OnDeviceVisionDemoEngine {
+    static func recognizeText(in cgImage: CGImage) throws -> [VisionDemoObservation] {
         let request = VNRecognizeTextRequest()
         request.recognitionLevel = .accurate
         request.usesLanguageCorrection = true
@@ -75,7 +79,7 @@ final class SystemOnDeviceVisionDemo: OnDeviceVisionDemoing {
     }
 
     /// Synthetic bitmap via CoreGraphics + CoreText (avoids UIColor/NSString lint).
-    private nonisolated static func sampleCGImage() -> CGImage? {
+    static func sampleCGImage() -> CGImage? {
         let width = 480
         let height = 160
         let colorSpace = CGColorSpaceCreateDeviceRGB()
