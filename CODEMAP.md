@@ -25,7 +25,7 @@ Timed walk: [`docs/architecture-tour.md`](docs/architecture-tour.md).
 | StoreKit 2 product query (demo) | `Config/Products.storekit`, `Shared/StoreKit/`, Engineering demos → StoreKit 2 product query (no purchase) |
 | On-device Vision OCR (demo) | `Shared/OnDeviceAI/`, Engineering demos → On-device Vision OCR (no Apple Intelligence) |
 | Sign in with Apple (demo) | `Shared/Auth/`, Engineering demos → Sign in with Apple (not production auth) |
-| Native host bridge (no Flutter SDK) | `superDemoApp/Shared/HostBridge/`, [`docs/native-host-boundary.md`](docs/native-host-boundary.md); Engineering demos → Host bridge ping |
+| Native host bridge (Flutter MethodChannel) | `superDemoApp/Shared/HostBridge/`, `Shared/FlutterEmbed/`, [`native-host-boundary.md`](docs/native-host-boundary.md), [`flutter-add-to-app.md`](docs/flutter-add-to-app.md); Engineering demos → Host bridge ping / Flutter add-to-app |
 | Networking (retry / 401 / 429 / idempotency) | `superDemoApp/Shared/Networking/`, [`docs/sync-and-networking.md`](docs/sync-and-networking.md) |
 | Diagnostics / crash swap point | `superDemoApp/Shared/Diagnostics/`, [`docs/incident-playbook.md`](docs/incident-playbook.md) |
 | Launch / demo flags | `superDemoApp/Shared/AppLaunchConfiguration.swift` |

@@ -161,6 +161,13 @@ private struct ProductionReadinessContent: View {
                 .accessibilityIdentifier("hostBridgePingDemoLink")
 
                 NavigationLink {
+                    FlutterModuleDemoView()
+                } label: {
+                    Label("Flutter add-to-app module", systemImage: "cube.transparent")
+                }
+                .accessibilityIdentifier("flutterAddToAppDemoLink")
+
+                NavigationLink {
                     LocalNotificationDemoView()
                 } label: {
                     Label("Local stale-Feed reminder (not APNs)", systemImage: "bell.badge")

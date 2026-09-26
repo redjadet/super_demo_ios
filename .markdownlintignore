@@ -1,3 +1,9 @@
 # Auto-generated; regenerated on every fastlane run (see fastlane/README.md).
 # bin/lint-markdown.sh excludes this path; keep IDE/cli2 aligned.
 fastlane/**
+
+# Flutter module ephemeral / generated host trees (also gitignored).
+flutter_module/.ios/**
+flutter_module/.android/**
+flutter_module/.dart_tool/**
+flutter_module/build/**

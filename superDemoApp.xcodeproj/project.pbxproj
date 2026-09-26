@@ -75,6 +75,7 @@
 		A1LIVE010000000000000001 /* ActivityKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ActivityKit.framework; path = System/Library/Frameworks/ActivityKit.framework; sourceTree = SDKROOT; };
 		A1LIVE010000000000000003 /* ActivityKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ActivityKit.framework; path = System/Library/Frameworks/ActivityKit.framework; sourceTree = SDKROOT; };
 		A1STOREKIT010000000000001 /* Products.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = Products.storekit; sourceTree = "<group>"; };
+		A1FLUTTER0100000000000001 /* App.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = App.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -202,6 +203,7 @@
 		A1STOREKIT010000000000002 /* Config */ = {
 			isa = PBXGroup;
 			children = (
+				A1FLUTTER0100000000000001 /* App.xcconfig */,
 				A1STOREKIT010000000000001 /* Products.storekit */,
 			);
 			path = Config;
@@ -218,6 +220,7 @@
 				56D79AD22FB7787300B9E63E /* Sources */,
 				56D79AD32FB7787300B9E63E /* Frameworks */,
 				56D79AD42FB7787300B9E63E /* Resources */,
+				A1FLUTTER0100000000000002 /* Embed Flutter Frameworks */,
 				A1FEED01000000000000000B /* Embed Foundation Extensions */,
 			);
 			buildRules = (
@@ -454,6 +457,28 @@
 			shellScript = "\"${SRCROOT}/Scripts/xcode-lint.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
+		A1FLUTTER0100000000000002 /* Embed Flutter Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${SRCROOT}/Scripts/embed-flutter-frameworks.sh",
+				"${SRCROOT}/Flutter",
+			);
+			name = "Embed Flutter Frameworks";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Scripts/embed-flutter-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -640,6 +665,7 @@
 		};
 		56D79AFA2FB7787400B9E63E /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = A1FLUTTER0100000000000001 /* App.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -687,6 +713,7 @@
 		};
 		56D79AFB2FB7787400B9E63E /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = A1FLUTTER0100000000000001 /* App.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;

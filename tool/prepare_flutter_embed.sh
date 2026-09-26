@@ -1,0 +1,193 @@
+#!/usr/bin/env bash
+# Prepare Flutter add-to-app iOS frameworks + optional Xcode xcconfig.
+#
+# 1) flutter build ios-framework → Flutter/{Debug,Release}/*.xcframework
+# 2) Flatten each XCFramework slice into:
+#      Flutter/<Config>/iphoneos/*.framework
+#      Flutter/<Config>/iphonesimulator/*.framework
+#    so `-framework Flutter` + FRAMEWORK_SEARCH_PATHS resolve at link time
+#    (ld does not look inside .xcframework for -framework flags).
+# 3) Write Config/FlutterEmbed.local.xcconfig (gitignored).
+#
+# Mac destinations never link Flutter (sdk-filtered flags).
+# Hosted CI: default --no-codesign (no Apple Development certs).
+#
+# Usage: ./tool/prepare_flutter_embed.sh [--skip-build] [--codesign]
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+cd "$ROOT"
+
+SKIP_BUILD=0
+CODESIGN_ARGS=(--no-codesign)
+for arg in "$@"; do
+  case "$arg" in
+    --skip-build) SKIP_BUILD=1 ;;
+    --codesign) CODESIGN_ARGS=() ;;
+    -h|--help)
+      sed -n '2,18p' "$0"
+      exit 0
+      ;;
+    *)
+      echo "error: unknown option: $arg" >&2
+      exit 2
+      ;;
+  esac
+done
+
+if [[ "$(uname -s)" != "Darwin" ]]; then
+  echo "error: prepare_flutter_embed.sh requires macOS + Xcode (flutter build ios-framework)." >&2
+  exit 1
+fi
+
+if ! command -v flutter >/dev/null 2>&1; then
+  echo "error: flutter not on PATH. Install Flutter stable and retry." >&2
+  exit 1
+fi
+
+MODULE_DIR="$ROOT/flutter_module"
+OUT_DIR="$ROOT/Flutter"
+XCCONFIG="$ROOT/Config/FlutterEmbed.local.xcconfig"
+
+# Copy the .framework from an XCFramework platform slice into dest_dir.
+# platform: iphoneos | iphonesimulator
+copy_framework_slice() {
+  local xcframework="$1"
+  local dest_dir="$2"
+  local platform="$3"
+  local slice=""
+
+  case "$platform" in
+    iphoneos)
+      slice="$(
+        find "$xcframework" -maxdepth 1 -type d \( -name 'ios-arm64' -o -name 'ios-arm64_*' \) \
+          ! -name '*-simulator' 2>/dev/null | head -1 || true
+      )"
+      ;;
+    iphonesimulator)
+      # Prefer fat slice (arm64+x86_64) when present — GHA generic sim builds both.
+      slice="$(find "$xcframework" -maxdepth 1 -type d -name 'ios-arm64_x86_64-simulator' 2>/dev/null | head -1 || true)"
+      if [[ -z "$slice" ]]; then
+        slice="$(find "$xcframework" -maxdepth 1 -type d -name 'ios-*-simulator' 2>/dev/null | head -1 || true)"
+      fi
+      ;;
+    *)
+      echo "error: unknown platform $platform" >&2
+      return 1
+      ;;
+  esac
+
+  if [[ -z "$slice" || ! -d "$slice" ]]; then
+    echo "error: no $platform slice in $xcframework" >&2
+    ls -la "$xcframework" >&2 || true
+    return 1
+  fi
+
+  local framework
+  framework="$(find "$slice" -maxdepth 1 -type d -name '*.framework' | head -1)"
+  if [[ -z "$framework" ]]; then
+    echo "error: no .framework inside $slice" >&2
+    return 1
+  fi
+
+  mkdir -p "$dest_dir"
+  local base
+  base="$(basename "$framework")"
+  rm -rf "${dest_dir}/${base}"
+  cp -R "$framework" "${dest_dir}/"
+  echo "note: ${base} ← $(basename "$slice") → ${dest_dir}"
+}
+
+# Plugin-free modules often omit FlutterPluginRegistrant.xcframework.
+# Required: Flutter + App. Optional: FlutterPluginRegistrant when present.
+flatten_all_configs() {
+  local config_dir name sdk_device sdk_sim
+  for config_dir in "$OUT_DIR"/Debug "$OUT_DIR"/Release "$OUT_DIR"/Profile; do
+    [[ -d "$config_dir/Flutter.xcframework" ]] || continue
+
+    sdk_device="${config_dir}/iphoneos"
+    sdk_sim="${config_dir}/iphonesimulator"
+    rm -rf "$sdk_device" "$sdk_sim"
+    mkdir -p "$sdk_device" "$sdk_sim"
+
+    for name in Flutter App; do
+      if [[ ! -d "$config_dir/${name}.xcframework" ]]; then
+        echo "error: missing $config_dir/${name}.xcframework" >&2
+        return 1
+      fi
+      copy_framework_slice "$config_dir/${name}.xcframework" "$sdk_device" iphoneos
+      copy_framework_slice "$config_dir/${name}.xcframework" "$sdk_sim" iphonesimulator
+    done
+
+    if [[ -d "$config_dir/FlutterPluginRegistrant.xcframework" ]]; then
+      copy_framework_slice "$config_dir/FlutterPluginRegistrant.xcframework" "$sdk_device" iphoneos
+      copy_framework_slice "$config_dir/FlutterPluginRegistrant.xcframework" "$sdk_sim" iphonesimulator
+    else
+      echo "note: no FlutterPluginRegistrant.xcframework in $config_dir (plugin-free module OK)"
+    fi
+  done
+}
+
+echo "==> flutter pub get (module)"
+(
+  cd "$MODULE_DIR"
+  flutter pub get
+)
+
+if [[ "$SKIP_BUILD" != "1" ]]; then
+  echo "==> flutter build ios-framework → $OUT_DIR ${CODESIGN_ARGS[*]:-(codesign)}"
+  rm -rf "$OUT_DIR"
+  (
+    cd "$MODULE_DIR"
+    flutter build ios-framework \
+      --output="$OUT_DIR" \
+      --no-profile \
+      ${CODESIGN_ARGS[@]+"${CODESIGN_ARGS[@]}"}
+  )
+fi
+
+DEBUG_DIR="$OUT_DIR/Debug"
+if [[ ! -d "$DEBUG_DIR/Flutter.xcframework" ]]; then
+  echo "error: missing $DEBUG_DIR/Flutter.xcframework — build failed?" >&2
+  exit 1
+fi
+
+echo "==> flatten XCFramework slices → Flutter/<Config>/{iphoneos,iphonesimulator}"
+flatten_all_configs
+
+for required in \
+  "$DEBUG_DIR/iphonesimulator/Flutter.framework" \
+  "$DEBUG_DIR/iphonesimulator/App.framework" \
+  "$DEBUG_DIR/iphoneos/Flutter.framework"
+do
+  if [[ ! -d "$required" ]]; then
+    echo "error: missing $required after flatten" >&2
+    find "$DEBUG_DIR" -maxdepth 3 \( -type d -o -type f \) 2>/dev/null | head -60 >&2 || true
+    exit 1
+  fi
+done
+
+# Link FlutterPluginRegistrant only when the flatten step produced it.
+PLUGIN_LDFLAGS=""
+if [[ -d "$DEBUG_DIR/iphonesimulator/FlutterPluginRegistrant.framework" ]]; then
+  PLUGIN_LDFLAGS=" -framework FlutterPluginRegistrant"
+fi
+
+# Point -F at flat slice dirs so `ld -framework Flutter` succeeds.
+cat >"$XCCONFIG" <<EOF
+// Generated by tool/prepare_flutter_embed.sh — do not commit.
+// Links Flutter only for iOS device/simulator SDKs (not macosx).
+// Paths are flattened .framework dirs (ld cannot use .xcframework roots with -framework).
+
+FRAMEWORK_SEARCH_PATHS[sdk=iphoneos*] = \$(inherited) \$(SRCROOT)/Flutter/\$(CONFIGURATION)/iphoneos
+FRAMEWORK_SEARCH_PATHS[sdk=iphonesimulator*] = \$(inherited) \$(SRCROOT)/Flutter/\$(CONFIGURATION)/iphonesimulator
+
+OTHER_LDFLAGS[sdk=iphoneos*] = \$(inherited) -framework Flutter -framework App${PLUGIN_LDFLAGS}
+OTHER_LDFLAGS[sdk=iphonesimulator*] = \$(inherited) -framework Flutter -framework App${PLUGIN_LDFLAGS}
+
+SWIFT_ACTIVE_COMPILATION_CONDITIONS[sdk=iphoneos*] = \$(inherited) FLUTTER_ADD_TO_APP
+SWIFT_ACTIVE_COMPILATION_CONDITIONS[sdk=iphonesimulator*] = \$(inherited) FLUTTER_ADD_TO_APP
+EOF
+
+echo "==> wrote $XCCONFIG"
+echo "==> Flutter embed ready for iOS builds (Mac destination remains unlinked)."

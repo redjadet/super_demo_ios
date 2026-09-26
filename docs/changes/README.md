@@ -4,6 +4,10 @@ Record durable implementation notes after meaningful changes.
 
 ## Entries
 
+- [`2026-09-26_flutter-add-to-app.md`](2026-09-26_flutter-add-to-app.md)
+  — JP-P2-D Flutter module embed + MethodChannel `feed.cacheStatus`.
+- [`2026-09-26_share-extension-inbox.md`](2026-09-26_share-extension-inbox.md)
+  — JP-P2-A Share extension App Group inbox + Engineering demo.
 - [`2026-09-26_readme-lean-badges.md`](2026-09-26_readme-lean-badges.md)
   — Lean README badge rows + docs links (no license/coverage theater).
 - [`2026-09-25_storekit-product-query-demo.md`](2026-09-25_storekit-product-query-demo.md)

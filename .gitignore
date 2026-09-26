@@ -72,3 +72,12 @@ TestResults/
 # Project skills (restored from skills-lock.json via npx skills experimental_install)
 .agents/
 .context/
+
+# Flutter add-to-app (JP-P2-D) — generated frameworks + local xcconfig
+Flutter/
+Config/FlutterEmbed.local.xcconfig
+flutter_module/.dart_tool/
+flutter_module/.packages
+flutter_module/.flutter-plugins
+flutter_module/.flutter-plugins-dependencies
+flutter_module/build/
