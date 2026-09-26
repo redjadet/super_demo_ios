@@ -153,25 +153,37 @@ provision_ipad_on_runtime() {
 }
 
 try_newest_runtime_destination() {
-  local udid dest runtime_id runtime_version
+  local udid dest runtime_id runtime_version device_type_id created=0
   ensure_ios_runtime_matches_sdk
+  device_type_id="$(select_preferred_iphone_device_type_id)" || true
 
-  # Prefer a standard iPhone on the newest runtime xcodebuild can actually see.
+  # Walk newest → older. Prefer creating a standard iPhone on the newest
+  # (SDK-matched) runtime before falling back — pairing SDK 27.1 with an
+  # older 27.0 device breaks widget appex install (extensionDictionary).
   while IFS= read -r runtime_id; do
     [[ -n "$runtime_id" ]] || continue
     runtime_version="$(ios_runtime_version "$runtime_id")"
+    created=0
     udid="$(find_iphone_udid_on_runtime "$runtime_id" || true)"
+    if [[ -z "$udid" && -n "$device_type_id" ]]; then
+      echo "==> No standard iPhone on iOS ${runtime_version}; creating preferred (${device_type_id})" >&2
+      udid="$(xcrun simctl create "CI iPhone" "$device_type_id" "$runtime_id" 2>/dev/null || true)"
+      created=1
+    fi
     if [[ -z "$udid" ]]; then
-      echo "==> No standard iPhone on iOS ${runtime_version}; trying older runtime or create" >&2
+      echo "==> No usable iPhone on iOS ${runtime_version}; trying next runtime" >&2
       continue
     fi
     echo "==> Trying iOS Simulator runtime ${runtime_version} (${runtime_id}) udid=${udid}"
-    boot_simulator_with_timeout "$udid" 120 || true
-    if dest="$(wait_for_scheme_destination "$udid")"; then
-      export_ci_simulator_dest "$dest" || continue
+    boot_simulator_with_timeout "$udid" 180 || true
+    if dest="$(wait_for_scheme_destination "$udid")" \
+      && export_ci_simulator_dest "$dest"; then
       return 0
     fi
     echo "warning: runtime ${runtime_version} device not visible to xcodebuild; trying next" >&2
+    if ((created == 1)); then
+      xcrun simctl delete "$udid" 2>/dev/null || true
+    fi
   done < <(select_ios_runtime_ids_newest_first)
 
   return 1
