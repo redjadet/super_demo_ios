@@ -24,6 +24,44 @@ Use before TestFlight or App Store submission.
 - Memory pressure: image-heavy collection views and large lists.
 - iOS versions: oldest supported OS and current release candidate when available.
 
+## Portfolio demo / mock proofs (JP-P2-E)
+
+**Audience:** portfolio reviewers — not production release. Prefer real local /
+Simulator proofs when the host can show them. When ASC credentials, push
+certificates, or a physical device are unavailable, **labeled mock** proofs are
+acceptable under the 2026-09-26 portfolio waiver.
+
+### Honesty labels (required)
+
+| Claim | Allowed for portfolio? | Label |
+| --- | --- | --- |
+| Real TestFlight build uploaded via `fastlane ios beta` | Yes when credentials exist | Use real build number + ASC link |
+| Mock TestFlight build id / “would upload” archive-only | Yes | Prefix notes with `DEMO/MOCK TestFlight` |
+| Real device APNs receipt | Yes when device + sandbox cert | Record token prefix + environment |
+| Mock APNs token + permission/UI path | Yes | Prefix with `DEMO/MOCK APNs`; point at JP-P1-C local notification for runnable UI |
+| Production App Store / live users | **No** | Never |
+
+### Mock TestFlight checklist
+
+- [ ] Ran `TESTFLIGHT_SKIP_UPLOAD=1 TESTFLIGHT_BUILD_NUMBER=<n> ./bin/fastlane-run ios beta` **or** documented blocker (no signing on agent host)
+- [ ] Recorded mock build id, e.g. `DEMO/MOCK TestFlight build 9001` (not an ASC URL unless real)
+- [ ] Release notes still sourced from [`docs/release-notes/testflight.md`](release-notes/testflight.md)
+- [ ] Stated clearly: archive/upload not claimed as production beta unless credentials were used
+
+### Mock APNs checklist
+
+- [ ] Permission prompt path: Engineering demos → **Local stale-Feed reminder** (JP-P1-C) — runnable without APNs
+- [ ] Document mock device token: `DEMO/MOCK APNs token deadbeef…` (never a real secret)
+- [ ] Document expected environments: `sandbox` vs `production` — portfolio uses **sandbox/mock only**
+- [ ] NSE / production push entitlement: still **not** claimed unless a separate slice ships them
+- [ ] Foreground/background receipt: real device note **or** `DEMO/MOCK` receipt log line in change note
+
+### What this does *not* prove
+
+- App Store Connect live TestFlight groups
+- Production APNs certificate / key rotation
+- Notification Service Extension content mutation at scale
+
 ## TestFlight
 
 - Release notes source: [`docs/release-notes/testflight.md`](release-notes/testflight.md).
