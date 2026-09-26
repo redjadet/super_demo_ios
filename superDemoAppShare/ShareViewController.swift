@@ -120,7 +120,8 @@ final class ShareViewController: UIViewController {
                 if let url = item as? URL {
                     continuation.resume(returning: url)
                 } else if let data = item as? Data,
-                          let url = URL(dataRepresentation: data, relativeTo: nil) {
+                          let url = URL(dataRepresentation: data, relativeTo: nil)
+                {
                     continuation.resume(returning: url)
                 } else {
                     continuation.resume(
@@ -145,7 +146,8 @@ final class ShareViewController: UIViewController {
                 if let string = item as? String {
                     continuation.resume(returning: string)
                 } else if let data = item as? Data,
-                          let string = String(data: data, encoding: .utf8) {
+                          let string = String(data: data, encoding: .utf8)
+                {
                     continuation.resume(returning: string)
                 } else {
                     continuation.resume(

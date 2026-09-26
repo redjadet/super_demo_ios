@@ -35,13 +35,13 @@ struct ShareInboxEntry: Codable, Equatable, Identifiable, Sendable {
 
     /// Display line for Engineering demo / reviewer talk track.
     var displaySummary: String {
-        if let urlString, !urlString.isEmpty {
-            if let text, !text.isEmpty {
+        if let urlString = self.urlString, !urlString.isEmpty {
+            if let text = self.text, !text.isEmpty {
                 return "\(text) — \(urlString)"
             }
             return urlString
         }
-        return text ?? "(empty)"
+        return self.text ?? "(empty)"
     }
 }
 
