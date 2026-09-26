@@ -119,10 +119,18 @@ final class ShareViewController: UIViewController {
                 }
                 if let url = item as? URL {
                     continuation.resume(returning: url)
-                } else if let data = item as? Data,
-                          let url = URL(dataRepresentation: data, relativeTo: nil)
-                {
-                    continuation.resume(returning: url)
+                } else if let data = item as? Data {
+                    if let url = URL(dataRepresentation: data, relativeTo: nil) {
+                        continuation.resume(returning: url)
+                    } else {
+                        continuation.resume(
+                            throwing: NSError(
+                                domain: "ShareInbox",
+                                code: 1,
+                                userInfo: [NSLocalizedDescriptionKey: "URL load failed"]
+                            )
+                        )
+                    }
                 } else {
                     continuation.resume(
                         throwing: NSError(
