@@ -50,7 +50,7 @@ Sibling backlog (do not merge scopes): portfolio plan under agent store
 | Share extension | `ShareInboxShared/`, `superDemoAppShare/`, App Group inbox; Engineering demos → Share inbox | **In repo** (JP-P2-A; iOS embed; does **not** open SwiftData; Mac lane skips extension) |
 | Sign in with Apple | `Shared/Auth/`, Engineering demos → Sign in with Apple (demo) | **In repo** (JP-P2-B; Simulator-honest unavailable; not production auth) |
 | StoreKit 2 | `Config/Products.storekit`; `Shared/StoreKit/`; Engineering demos → StoreKit 2 product query (demo) | **In repo** (JP-P1-D query-only; no purchase / charge path) |
-| Native↔Flutter host bridge | `Shared/HostBridge/`, `Shared/FlutterEmbed/`, `flutter_module/`, [`native-host-boundary.md`](native-host-boundary.md), [`flutter-add-to-app.md`](flutter-add-to-app.md); Engineering demos → Host bridge ping / Flutter add-to-app | **In repo** (JP-P0-C contract + JP-P2-D module embed; Mac unlinked; frameworks via prepare script) |
+| Native↔Flutter host bridge | `Shared/HostBridge/`, `Shared/FlutterEmbed/`, `flutter_module/`, [`native-host-boundary.md`](native-host-boundary.md), [`flutter-add-to-app.md`](flutter-add-to-app.md); Engineering demos → Host bridge ping / Flutter add-to-app | **In repo** (JP-P0-C contract + JP-P2-D module embed; `postCount` = full cache size; Mac unlinked; frameworks via prepare script) |
 | Core ML / Vision / Speech / Apple Intelligence | `Shared/OnDeviceAI/`, Engineering demos → On-device Vision OCR | **In repo** (JP-P2-C Vision OCR only; no Speech / Core ML model / Apple Intelligence claim) |
 | watchOS / visionOS / tvOS companion | Project may mention xr; no reviewer demo | **Not in repo** (JP-P2-F) |
 | App Store–shipped product | README honesty | **Not claimed** |

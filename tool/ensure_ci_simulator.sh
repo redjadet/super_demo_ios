@@ -169,14 +169,17 @@ try_newest_runtime_destination() {
       echo "==> No standard iPhone on iOS ${runtime_version}; creating preferred (${device_type_id})" >&2
       created_out="$(xcrun simctl create "CI iPhone" "$device_type_id" "$runtime_id" 2>&1 || true)"
       if [[ "$created_out" =~ ^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$ ]]; then
-        udid="$created_out"
+        udid="$(tr '[:lower:]' '[:upper:]' <<<"$created_out")"
         created=1
       else
         echo "warning: could not create ${device_type_id} on ${runtime_version}: ${created_out}" >&2
         udid=""
       fi
     fi
-    if [[ -z "$udid" || ! "$udid" =~ ^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$ ]]; then
+    if [[ -n "$udid" ]]; then
+      udid="$(tr '[:lower:]' '[:upper:]' <<<"$udid")"
+    fi
+    if [[ -z "$udid" || ! "$udid" =~ ^[0-9A-F-]{36}$ ]]; then
       echo "==> No usable iPhone on iOS ${runtime_version}; trying next runtime" >&2
       continue
     fi
@@ -212,7 +215,9 @@ create_newest_runtime_simulator() {
     echo "==> Creating CI iPhone (${device_type_id}) on iOS ${runtime_version} (SDK ${sdk_version:-unknown})"
 
     udid="$(xcrun simctl create "CI iPhone" "$device_type_id" "$runtime_id" 2>&1 || true)"
-    if [[ ! "$udid" =~ ^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$ ]]; then
+    if [[ "$udid" =~ ^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$ ]]; then
+      udid="$(tr '[:lower:]' '[:upper:]' <<<"$udid")"
+    else
       echo "warning: could not create ${device_type_id} on ${runtime_version}: ${udid}" >&2
       continue
     fi
@@ -259,16 +264,17 @@ if [[ "$CI_PREPARE_IPHONE" == "1" ]]; then
   runtime_id=""
   if [[ -n "${CI_SIMULATOR_DEST:-}" ]]; then
     _iphone_udid="$(destination_udid "${CI_SIMULATOR_DEST}")"
-    if [[ "${_iphone_udid}" =~ ^[0-9A-F-]{36}$ ]]; then
+    if [[ "${_iphone_udid}" =~ ^[0-9A-Fa-f-]{36}$ ]]; then
+      _iphone_udid="$(tr '[:lower:]' '[:upper:]' <<<"${_iphone_udid}")"
       runtime_id="$(
         xcrun simctl list devices -j 2>/dev/null \
           | python3 -c "
 import json, sys
-udid = sys.argv[1]
+udid = sys.argv[1].upper()
 data = json.load(sys.stdin)
 for rid, devices in data.get('devices', {}).items():
     for d in devices:
-        if d.get('udid') == udid:
+        if (d.get('udid') or '').upper() == udid:
             print(rid)
             sys.exit(0)
 sys.exit(1)

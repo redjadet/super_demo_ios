@@ -49,30 +49,39 @@ final class CachingFeedRepository: FeedRepository {
         do {
             let result = try await self.remote.fetchPosts()
             try self.replaceCache(with: result.posts)
-            self.publishSnapshot(posts: result.posts, isStale: false)
+            self.publishSnapshot(
+                posts: result.posts,
+                isStale: false,
+                writtenAt: self.now()
+            )
             self.signposter.emitEvent("remoteSuccess", id: signpostID)
             return FeedLoadResult(posts: result.posts, isStale: false)
         } catch {
             let cached = try self.loadValidCachedPosts()
             if cached.isEmpty {
+                // Drop prior App Group snapshot so widget / host-bridge match OI cache miss.
+                self.snapshotPublisher.clearPublishedSnapshot()
                 self.signposter.emitEvent("cacheMiss", id: signpostID)
                 throw error
             }
-            self.publishSnapshot(posts: cached, isStale: true)
+            // Keep snapshot TTL aligned with SwiftData `cachedAt`, not wall-clock now.
+            let writtenAt = try self.newestCachedAt() ?? self.now()
+            self.publishSnapshot(posts: cached, isStale: true, writtenAt: writtenAt)
             self.signposter.emitEvent("cacheFallback", id: signpostID)
             return FeedLoadResult(posts: cached, isStale: true)
         }
     }
 
-    private func publishSnapshot(posts: [FeedPost], isStale: Bool) {
+    private func publishSnapshot(posts: [FeedPost], isStale: Bool, writtenAt: Date) {
         let titles = posts.prefix(5).map { post in
             FeedWidgetSnapshot.FeedWidgetSnapshotTitle(id: post.id, title: post.title)
         }
         let snapshot = FeedWidgetSnapshot(
-            writtenAt: self.now(),
+            writtenAt: writtenAt,
             cacheTTLSeconds: self.cacheTTL,
             isStale: isStale,
-            titles: Array(titles)
+            titles: Array(titles),
+            postCount: posts.count
         )
         self.snapshotPublisher.publish(snapshot)
     }
@@ -81,7 +90,8 @@ final class CachingFeedRepository: FeedRepository {
         let timestamp = self.now()
         let descriptor = FetchDescriptor<CachedFeedPost>()
         let existing = try self.context.fetch(descriptor)
-        let rowsByID = Dictionary(uniqueKeysWithValues: existing.map { ($0.postID, $0) })
+        // uniquingKeysWith: corrupt duplicate postIDs must not trap the process.
+        let rowsByID = Dictionary(existing.map { ($0.postID, $0) }) { first, _ in first }
         let incomingIDs = Set(posts.map(\.id))
 
         for post in posts {
@@ -113,5 +123,11 @@ final class CachingFeedRepository: FeedRepository {
         }
 
         return rows.map(\.toDomain)
+    }
+
+    private func newestCachedAt() throws -> Date? {
+        let descriptor = FetchDescriptor<CachedFeedPost>()
+        let rows = try self.context.fetch(descriptor)
+        return rows.map(\.effectiveCachedAt).max()
     }
 }

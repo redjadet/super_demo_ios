@@ -62,10 +62,10 @@ import json, re, sys
 
 runtime_id = sys.argv[1]
 preferred = (
-    'iPhone 18 Pro Max', 'iPhone 18 Pro', 'iPhone 18 Plus', 'iPhone 18',
-    'iPhone 17 Pro Max', 'iPhone 17 Pro', 'iPhone 17 Plus', 'iPhone 17',
-    'iPhone 16 Pro Max', 'iPhone 16 Pro', 'iPhone 16 Plus', 'iPhone 16',
-    'iPhone 15 Pro Max', 'iPhone 15 Pro', 'iPhone 15 Plus', 'iPhone 15',
+    'iPhone 18 Pro', 'iPhone 18 Pro Max', 'iPhone 18 Plus', 'iPhone 18',
+    'iPhone 17 Pro', 'iPhone 17 Pro Max', 'iPhone 17 Plus', 'iPhone 17',
+    'iPhone 16 Pro', 'iPhone 16 Pro Max', 'iPhone 16 Plus', 'iPhone 16',
+    'iPhone 15 Pro', 'iPhone 15 Pro Max', 'iPhone 15 Plus', 'iPhone 15',
 )
 exotic_markers = ('Duo', 'Fold', 'Air')
 
@@ -85,9 +85,9 @@ def is_standard_iphone(name):
 def phone_rank(name):
     m = re.search(r'iPhone (\d+)', name or '')
     gen = int(m.group(1)) if m else 0
-    if 'Pro Max' in name:
+    if 'Pro' in name and 'Pro Max' not in name:
         tier = 3
-    elif 'Pro' in name:
+    elif 'Pro Max' in name:
         tier = 2
     elif 'Plus' in name:
         tier = 1
@@ -110,11 +110,11 @@ pool = booted or iphones
 for name in preferred:
     for d in pool:
         if d.get('name') == name:
-            print(d['udid'])
+            print(d['udid'].upper())
             sys.exit(0)
 
 pool.sort(key=lambda d: phone_rank(d.get('name', '')), reverse=True)
-print(pool[0]['udid'])
+print(pool[0]['udid'].upper())
 " "$runtime_id" 2>/dev/null || true
 }
 
@@ -170,6 +170,7 @@ find_ipad_udid_on_newest_runtime() {
 # Prints xcodebuild destination for a booted simulator UDID (id=, then name+OS).
 scheme_destination_for_udid() {
   local udid="$1"
+  udid="$(tr '[:lower:]' '[:upper:]' <<<"$udid")"
   [[ "$udid" =~ ^[0-9A-F-]{36}$ ]] || return 1
   local by_name
   by_name="$(
@@ -177,13 +178,13 @@ scheme_destination_for_udid() {
       | python3 -c "
 import json, sys
 
-udid = sys.argv[1]
+udid = sys.argv[1].upper()
 data = json.load(sys.stdin)
 name = ''
 runtime_id = ''
 for rid, devices in data.get('devices', {}).items():
     for d in devices:
-        if d.get('udid') == udid:
+        if (d.get('udid') or '').upper() == udid:
             name = d.get('name', '')
             runtime_id = rid
             break
@@ -242,10 +243,10 @@ data = json.load(sys.stdin)
 types = data.get('devicetypes', [])
 iphones = [t for t in types if t.get('productFamily') == 'iPhone']
 preferred = (
-    'iPhone 18 Pro Max', 'iPhone 18 Pro', 'iPhone 18 Plus', 'iPhone 18',
-    'iPhone 17 Pro Max', 'iPhone 17 Pro', 'iPhone 17 Plus', 'iPhone 17',
-    'iPhone 16 Pro Max', 'iPhone 16 Pro', 'iPhone 16 Plus', 'iPhone 16',
-    'iPhone 15 Pro Max', 'iPhone 15 Pro', 'iPhone 15 Plus', 'iPhone 15',
+    'iPhone 18 Pro', 'iPhone 18 Pro Max', 'iPhone 18 Plus', 'iPhone 18',
+    'iPhone 17 Pro', 'iPhone 17 Pro Max', 'iPhone 17 Plus', 'iPhone 17',
+    'iPhone 16 Pro', 'iPhone 16 Pro Max', 'iPhone 16 Plus', 'iPhone 16',
+    'iPhone 15 Pro', 'iPhone 15 Pro Max', 'iPhone 15 Plus', 'iPhone 15',
 )
 exotic_markers = ('Duo', 'Fold', 'Air')
 
@@ -269,9 +270,9 @@ for name in preferred:
 def phone_rank(name):
     m = re.search(r'iPhone (\d+)', name or '')
     gen = int(m.group(1)) if m else 0
-    if 'Pro Max' in name:
+    if 'Pro' in name and 'Pro Max' not in name:
         tier = 3
-    elif 'Pro' in name:
+    elif 'Pro Max' in name:
         tier = 2
     elif 'Plus' in name:
         tier = 1

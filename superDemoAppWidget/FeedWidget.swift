@@ -50,9 +50,23 @@ struct FeedWidgetTimelineProvider: TimelineProvider {
 
     func getTimeline(in _: Context, completion: (Timeline<FeedWidgetEntry>) -> Void) {
         let entry = self.makeEntry()
-        // Refresh periodically so expired state can appear without app open.
-        let next = entry.date.addingTimeInterval(15 * 60)
+        let next = Self.nextReloadDate(for: entry)
         completion(Timeline(entries: [entry], policy: .after(next)))
+    }
+
+    /// Prefer snapshot TTL expiry over a blind 15m tick so `.expired` appears on time.
+    private static func nextReloadDate(for entry: FeedWidgetEntry) -> Date {
+        let fallback = entry.date.addingTimeInterval(15 * 60)
+        switch entry.state {
+        case let .ok(snapshot), let .expired(snapshot):
+            guard let ttl = snapshot.cacheTTLSeconds else { return fallback }
+            let expiry = snapshot.writtenAt.addingTimeInterval(ttl)
+            // At least 60s out so WidgetKit does not spam; never later than fallback.
+            let earliest = entry.date.addingTimeInterval(60)
+            return min(fallback, max(earliest, expiry))
+        case .unavailable, .absent, .corrupt:
+            return fallback
+        }
     }
 
     private func makeEntry() -> FeedWidgetEntry {

@@ -29,7 +29,10 @@ iphone_udid_from_simctl() {
 
 destination_udid() {
   local dest="$1"
-  sed -n 's/.*id=\([0-9A-F-]\{36\}\).*/\1/p' <<<"$dest"
+  local udid
+  # Accept mixed-case UUID hex from simctl / env; normalize to uppercase.
+  udid="$(sed -n 's/.*id=\([0-9A-Fa-f-]\{36\}\).*/\1/p' <<<"$dest" | tr '[:lower:]' '[:upper:]')"
+  printf '%s\n' "$udid"
 }
 
 xcodebuild_show_destinations() {
@@ -45,7 +48,8 @@ destination_valid_for_scheme() {
   local udid
   udid="$(destination_udid "$dest")"
   [[ "$udid" =~ ^[0-9A-F-]{36}$ ]] || return 1
-  xcodebuild_show_destinations | grep -q "id:${udid}"
+  # Match id case-insensitively — xcodebuild may echo either case.
+  xcodebuild_show_destinations | grep -qi "id:${udid}"
 }
 
 prefer_arm64_simulator_destination() {
@@ -67,24 +71,24 @@ resolve_iphone_destination_from_xcodebuild() {
       | python3 -c "
 import re, sys
 preferred = (
-    'iPhone 18 Pro Max', 'iPhone 18 Pro', 'iPhone 18 Plus', 'iPhone 18',
-    'iPhone 17 Pro Max', 'iPhone 17 Pro', 'iPhone 17 Plus', 'iPhone 17',
-    'iPhone 16 Pro Max', 'iPhone 16 Pro', 'iPhone 16 Plus', 'iPhone 16',
-    'iPhone 15 Pro Max', 'iPhone 15 Pro', 'iPhone 15 Plus', 'iPhone 15',
+    'iPhone 18 Pro', 'iPhone 18 Pro Max', 'iPhone 18 Plus', 'iPhone 18',
+    'iPhone 17 Pro', 'iPhone 17 Pro Max', 'iPhone 17 Plus', 'iPhone 17',
+    'iPhone 16 Pro', 'iPhone 16 Pro Max', 'iPhone 16 Plus', 'iPhone 16',
+    'iPhone 15 Pro', 'iPhone 15 Pro Max', 'iPhone 15 Plus', 'iPhone 15',
 )
 exotic = ('Duo', 'Fold', 'Air')
 rows = []
 for line in sys.stdin:
     if 'platform:iOS Simulator' not in line or 'placeholder' in line:
         continue
-    m = re.search(r'id:([0-9A-F-]{36})', line)
+    m = re.search(r'id:([0-9A-Fa-f-]{36})', line, re.I)
     if not m:
         continue
     name_m = re.search(r'name:([^,}]+)', line)
     name = (name_m.group(1).strip() if name_m else '')
     if any(x in name for x in exotic):
         continue
-    rows.append((name, m.group(1), line.strip()))
+    rows.append((name, m.group(1).upper(), line.strip()))
 if not rows:
     sys.exit(1)
 for pref in preferred:
@@ -96,9 +100,9 @@ for pref in preferred:
 def rank(name):
     m = re.search(r'iPhone (\d+)', name or '')
     gen = int(m.group(1)) if m else -1
-    if 'Pro Max' in name:
+    if 'Pro' in name and 'Pro Max' not in name:
         tier = 3
-    elif 'Pro' in name:
+    elif 'Pro Max' in name:
         tier = 2
     elif 'Plus' in name:
         tier = 1
@@ -109,6 +113,7 @@ rows.sort(key=lambda r: rank(r[0]), reverse=True)
 print(rows[0][1])
 " 2>/dev/null || true
   )"
+  dest_line="$(tr '[:lower:]' '[:upper:]' <<<"$dest_line")"
   [[ "$dest_line" =~ ^[0-9A-F-]{36}$ ]] || return 1
   udid="$dest_line"
   dest="platform=iOS Simulator,id=${udid}"

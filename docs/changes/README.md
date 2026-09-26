@@ -4,6 +4,9 @@ Record durable implementation notes after meaningful changes.
 
 ## Entries
 
+- [`2026-09-26_p2-harden-edge-cases.md`](2026-09-26_p2-harden-edge-cases.md)
+  — Feed snapshot `postCount` / cache-miss clear / Share empty honesty / CI Pro
+  sim preference.
 - [`2026-09-26_ci-xcode-27.md`](2026-09-26_ci-xcode-27.md)
   — GHA Delivery + release-smoke pin to `xcode-27` / newest released Xcode 27.
 - [`2026-09-26_flutter-add-to-app.md`](2026-09-26_flutter-add-to-app.md)

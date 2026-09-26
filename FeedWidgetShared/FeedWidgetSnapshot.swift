@@ -24,6 +24,8 @@ nonisolated struct FeedWidgetSnapshot: Codable, Equatable, Sendable {
     var writtenAt: Date
     var cacheTTLSeconds: TimeInterval?
     var isStale: Bool
+    /// Full Feed cache size for host-bridge `postCount` (titles stay capped for UI).
+    var postCount: Int
     var titles: [FeedWidgetSnapshotTitle]
 
     enum CodingKeys: String, CodingKey {
@@ -31,6 +33,7 @@ nonisolated struct FeedWidgetSnapshot: Codable, Equatable, Sendable {
         case writtenAt
         case cacheTTLSeconds
         case isStale
+        case postCount
         case titles
     }
 
@@ -44,6 +47,7 @@ nonisolated struct FeedWidgetSnapshot: Codable, Equatable, Sendable {
         cacheTTLSeconds: TimeInterval?,
         isStale: Bool,
         titles: [FeedWidgetSnapshotTitle],
+        postCount: Int? = nil,
         schemaVersion: Int = Self.currentVersion
     ) {
         self.schemaVersion = schemaVersion
@@ -51,6 +55,18 @@ nonisolated struct FeedWidgetSnapshot: Codable, Equatable, Sendable {
         self.cacheTTLSeconds = cacheTTLSeconds
         self.isStale = isStale
         self.titles = titles
+        self.postCount = postCount ?? titles.count
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.schemaVersion = try container.decode(Int.self, forKey: .schemaVersion)
+        self.writtenAt = try container.decode(Date.self, forKey: .writtenAt)
+        self.cacheTTLSeconds = try container.decodeIfPresent(TimeInterval.self, forKey: .cacheTTLSeconds)
+        self.isStale = try container.decode(Bool.self, forKey: .isStale)
+        self.titles = try container.decode([FeedWidgetSnapshotTitle].self, forKey: .titles)
+        // Pre-postCount snapshots: fall back to titles.count (widget-capped).
+        self.postCount = try container.decodeIfPresent(Int.self, forKey: .postCount) ?? self.titles.count
     }
 }
 

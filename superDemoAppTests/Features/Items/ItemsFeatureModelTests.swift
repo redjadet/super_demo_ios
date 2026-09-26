@@ -86,7 +86,7 @@ struct ItemsFeatureModelTests {
 
     @Test
     @MainActor
-    func cancelRefreshRestoresPriorLoadingState() async {
+    func cancelRefreshRestoresPriorLoadingState() {
         let repository = ItemsFeatureModelRepositorySpy()
         let model = ItemsFeatureModel(
             loadItems: LoadItemsUseCase(repository: repository),
@@ -97,8 +97,9 @@ struct ItemsFeatureModelTests {
 
         #expect(model.state == .loading)
 
+        // Cancel on the same MainActor turn before `performRefresh`'s yield — a
+        // lone `Task.yield()` races with the sync empty-load completing to `.empty`.
         model.refresh()
-        await Task.yield()
         model.cancelRefresh()
 
         #expect(model.state == .loading)

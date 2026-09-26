@@ -142,7 +142,8 @@ struct HostBridgeCodecTests {
             writtenAt: writtenAt,
             cacheTTLSeconds: 60,
             isStale: false,
-            titles: [.init(id: 1, title: "A"), .init(id: 2, title: "B")]
+            titles: [.init(id: 1, title: "A"), .init(id: 2, title: "B")],
+            postCount: 100
         )
         try FeedWidgetSnapshotStore.write(snapshot, containerURLOverride: root)
 
@@ -156,6 +157,12 @@ struct HostBridgeCodecTests {
         let okNow = Date(timeIntervalSince1970: 1_700_000_030)
         let okState = FeedWidgetSnapshotStore.loadState(now: okNow, containerURLOverride: root)
         #expect(okState == .ok(snapshot))
+
+        let provider = SnapshotFeedCacheStatusProvider(containerURLOverride: root)
+        let status = provider.cacheStatus(now: okNow)
+        #expect(status.postCount == 100)
+        #expect(status.source == "snapshot")
+        #expect(status.isStale == false)
     }
 
     private static func makeTempDirectory() throws -> URL {
