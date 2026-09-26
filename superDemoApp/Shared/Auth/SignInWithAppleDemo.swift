@@ -47,19 +47,21 @@ enum SignInWithAppleDemoMapping {
 
     static func failure(from error: Error) -> SignInWithAppleDemoFailure {
         let nsError = error as NSError
-        // Keep each `if` on one line so SwiftFormat wrapMultilineStatementBraces and
-        // SwiftLint opening_brace stay aligned.
-        if nsError.domain == ASAuthorizationError.errorDomain && nsError.code == ASAuthorizationError.canceled.rawValue {
-            return .cancelled
-        }
-        if nsError.domain == ASAuthorizationError.errorDomain && nsError.code == ASAuthorizationError.unknown.rawValue {
-            return .unavailable(
-                reason: """
-                Sign in with Apple unavailable in this environment \
-                (common on Simulator without an Apple ID / capability). \
-                Not production auth.
-                """
-            )
+        // Nested single-line `if`s keep SwiftFormat + SwiftLint opening_brace happy
+        // without multiline statement braces or >120 char lines.
+        if nsError.domain == ASAuthorizationError.errorDomain {
+            if nsError.code == ASAuthorizationError.canceled.rawValue {
+                return .cancelled
+            }
+            if nsError.code == ASAuthorizationError.unknown.rawValue {
+                return .unavailable(
+                    reason: """
+                    Sign in with Apple unavailable in this environment \
+                    (common on Simulator without an Apple ID / capability). \
+                    Not production auth.
+                    """
+                )
+            }
         }
         return .failed(reason: error.localizedDescription)
     }
