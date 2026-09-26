@@ -50,7 +50,7 @@ final class SystemOnDeviceVisionDemo: OnDeviceVisionDemoing {
         return try Self.recognizeText(in: cgImage)
     }
 
-    private nonisolated static func recognizeText(in cgImage: CGImage) throws -> [VisionDemoObservation] {
+    nonisolated private static func recognizeText(in cgImage: CGImage) throws -> [VisionDemoObservation] {
         let request = VNRecognizeTextRequest()
         request.recognitionLevel = .accurate
         request.usesLanguageCorrection = true
