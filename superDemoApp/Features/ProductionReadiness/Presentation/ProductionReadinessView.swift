@@ -187,6 +187,13 @@ private struct ProductionReadinessContent: View {
                     Label("Share inbox (App Group, not SwiftData)", systemImage: "square.and.arrow.up")
                 }
                 .accessibilityIdentifier("shareInboxDemoLink")
+
+                NavigationLink {
+                    OnDeviceVisionDemoView()
+                } label: {
+                    Label("On-device Vision OCR (demo)", systemImage: "text.viewfinder")
+                }
+                .accessibilityIdentifier("onDeviceVisionDemoLink")
             }
         }
         .accessibilityIdentifier("productionReadinessDashboard")
