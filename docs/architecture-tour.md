@@ -23,6 +23,7 @@ full demo script. Companion to [`portfolio.md`](portfolio.md) (theme table) and
 | “Full reviewer talk tracks?” | [`portfolio.md`](portfolio.md) |
 | “Items as SwiftData reference?” | `superDemoApp/Features/Items/` |
 | “UIKit interop?” | `superDemoApp/Features/ProductionReadiness/UIKitShowcase/` |
+| “Widget / Share / watch?” | `FeedWidgetShared/`, `superDemoAppWidget/`, `superDemoAppShare/`, `superDemoAppWatch/`; [`portfolio.md`](portfolio.md) Platform surfaces |
 | “Diagnostics / crash later?” | `superDemoApp/Shared/Diagnostics/`, [`incident-playbook.md`](incident-playbook.md), [`adr/0003-crash-vendor-deferred.md`](adr/0003-crash-vendor-deferred.md) |
 | “Validation chooser?” | [`agents_quick_reference.md`](agents_quick_reference.md), [`engineering/validation_routing_fast_vs_full.md`](engineering/validation_routing_fast_vs_full.md) |
 | “Engineering X/10?” | [`engineering/engineering-quality-scorecard.md`](engineering/engineering-quality-scorecard.md) |

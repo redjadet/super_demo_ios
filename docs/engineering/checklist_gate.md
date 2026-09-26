@@ -13,7 +13,7 @@ merge — not a second parallel theater.
 | Swift lint + modularity + scorecard | `./bin/lint.sh` | job `lint` |
 | Common issues | `./tool/check_common_issues.sh` | job `lint` |
 | iPhone build/test | `./bin/ci-iphone-test.sh` | job `iphone-test` |
-| iPad + Mac builds | `./bin/ci-platform-builds.sh` | job `platform-builds` |
+| iPad + Mac + watchOS builds | `./bin/ci-platform-builds.sh` (watch: `./bin/ci-watch-build.sh`) | job `platform-builds` |
 | Aggregate gate | `./bin/checklist` (single command) | job **`checklist`** (needs the three macos jobs) |
 
 **Xcode warnings are errors** on checklist / CI xcodebuild lanes

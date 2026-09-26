@@ -201,6 +201,13 @@ private struct ProductionReadinessContent: View {
                     Label("On-device Vision OCR (demo)", systemImage: "text.viewfinder")
                 }
                 .accessibilityIdentifier("onDeviceVisionDemoLink")
+
+                NavigationLink {
+                    WatchCompanionDemoView()
+                } label: {
+                    Label("watchOS Feed companion (demo)", systemImage: "applewatch")
+                }
+                .accessibilityIdentifier("watchCompanionDemoLink")
             }
         }
         .accessibilityIdentifier("productionReadinessDashboard")

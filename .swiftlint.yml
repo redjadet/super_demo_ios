@@ -14,6 +14,7 @@ included:
   - superDemoAppWidget
   - ShareInboxShared
   - superDemoAppShare
+  - superDemoAppWatch
   - superDemoAppTests
   - superDemoAppUITests
 

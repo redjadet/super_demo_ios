@@ -31,7 +31,7 @@ Full local delivery checklist (merge gate):
   - Common issue checks
   - Xcode project/scheme listing
   - iPhone unit/UI tests (./bin/ci-iphone-test.sh) — warnings as errors
-  - iPad + Mac builds (./bin/ci-platform-builds.sh) — unless skipped
+  - iPad + Mac + watchOS builds (./bin/ci-platform-builds.sh) — unless skipped
 
 Env:
   CHECKLIST_SKIP_PLATFORM_BUILDS=1  Skip iPad/Mac builds
@@ -76,7 +76,7 @@ echo "==> iPhone tests (./bin/ci-iphone-test.sh; warnings as errors)"
 ./bin/ci-iphone-test.sh
 
 if [[ "${CHECKLIST_SKIP_PLATFORM_BUILDS:-0}" != "1" ]]; then
-  echo "==> iPad + Mac builds (./bin/ci-platform-builds.sh; warnings as errors)"
+  echo "==> iPad + Mac + watchOS builds (./bin/ci-platform-builds.sh; warnings as errors)"
   ./bin/ci-platform-builds.sh
 else
   echo "info: skipping iPad/Mac builds because CHECKLIST_SKIP_PLATFORM_BUILDS=1"

@@ -34,6 +34,7 @@ fi
 MAC_DEST="$(resolve_mac_destination)"
 echo "==> iPad destination: $IPAD_DEST"
 echo "==> Mac destination: $MAC_DEST"
+echo "==> watchOS: ./bin/ci-watch-build.sh (after iPad/Mac)"
 
 run_platform_xcodebuild() {
   assert_xcodebuild_matches_developer_dir || return 1
@@ -142,6 +143,16 @@ else
     echo "error: platform builds failed (iPad=$ipad_status, Mac=$mac_status)" >&2
     exit 1
   fi
+fi
+
+if [[ "${CI_SKIP_WATCH_BUILD:-0}" != "1" ]]; then
+  echo "==> watchOS build (./bin/ci-watch-build.sh; warnings as errors)"
+  if [[ -n "${WATCH_DERIVED_DATA_PATH:-}" ]]; then
+    :
+  elif [[ -n "${log_dir:-}" ]]; then
+    export WATCH_DERIVED_DATA_PATH="$log_dir/DerivedData-Watch"
+  fi
+  ./bin/ci-watch-build.sh
 fi
 
 echo "Platform builds passed."
