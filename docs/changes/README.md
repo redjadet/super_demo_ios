@@ -4,6 +4,8 @@ Record durable implementation notes after meaningful changes.
 
 ## Entries
 
+- [`2026-09-26_ci-xcode-27.md`](2026-09-26_ci-xcode-27.md)
+  — GHA Delivery + release-smoke pin to `xcode-27` / newest released Xcode 27.
 - [`2026-09-26_flutter-add-to-app.md`](2026-09-26_flutter-add-to-app.md)
   — JP-P2-D Flutter module embed + MethodChannel `feed.cacheStatus`.
 - [`2026-09-26_share-extension-inbox.md`](2026-09-26_share-extension-inbox.md)
