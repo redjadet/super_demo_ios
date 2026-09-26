@@ -62,11 +62,17 @@ final class ShareViewController: UIViewController {
         do {
             try ShareInboxStore.append(entry)
             self.statusLabel.text = String(
-                localized: "Saved to Share inbox (App Group). Open the app → Engineering demos → Share inbox to review. SwiftData Items store is not written from the extension."
+                localized: """
+                Saved to Share inbox (App Group). Open Engineering demos → Share inbox. \
+                SwiftData Items store is not written from the extension.
+                """
             )
         } catch ShareInboxStoreError.containerUnavailable {
             self.statusLabel.text = String(
-                localized: "App Group unavailable (unsigned Simulator / missing entitlement). Share was not persisted — honesty path, not a silent success."
+                localized: """
+                App Group unavailable (unsigned Simulator / missing entitlement). \
+                Share was not persisted — honesty path, not a silent success.
+                """
             )
         } catch {
             self.statusLabel.text =
