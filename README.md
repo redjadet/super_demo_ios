@@ -1,13 +1,17 @@
 # superDemoApp
 
-![CI](https://github.com/redjadet/super_demo_ios/actions/workflows/ci.yml/badge.svg?branch=main)
+[![CI](https://github.com/redjadet/super_demo_ios/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/redjadet/super_demo_ios/actions/workflows/ci.yml)
 ![Engineering](https://img.shields.io/badge/Engineering-10%2F10-0A7A3E)
+
 ![Xcode](https://img.shields.io/badge/Xcode-27.0-147EFB?logo=xcode&logoColor=white)
 ![Swift](https://img.shields.io/badge/Swift-6.4-F05138?logo=swift&logoColor=white)
 ![SwiftUI](https://img.shields.io/badge/SwiftUI-SDK%2027-0D96F6?logo=swift&logoColor=white)
+![SwiftData](https://img.shields.io/badge/SwiftData-persistence-F05138?logo=swift&logoColor=white)
 ![Flutter](https://img.shields.io/badge/Flutter-add--to--app-02569B?logo=flutter&logoColor=white)
+
 ![Platforms](https://img.shields.io/badge/Platforms-iOS%20%7C%20iPadOS%20%7C%20macOS-000000?logo=apple&logoColor=white)
 ![Minimum OS](https://img.shields.io/badge/Minimum%20OS-26.0-6E6E73?logo=apple&logoColor=white)
+![Architecture](https://img.shields.io/badge/Architecture-Clean%20layers-0A7A3E)
 
 Universal SwiftUI + SwiftData demo (iPhone / iPad / Mac). Portfolio sample for
 architecture, offline Feed, networking, UIKit interop, optional Flutter
@@ -15,28 +19,26 @@ add-to-app, and local CI proof — not a shipped App Store product.
 
 ## What this proves
 
-1. Clean feature layers (`Presentation` → `Domain` ← `Data`) with lint enforcement
-2. Offline Feed with cancel-safe refresh and a deterministic **stale-cache** path
-3. Production-minded URLSession client (retry, 401 refresh, 429, Idempotency-Key)
-4. UIKit collection showcase hosted from SwiftUI
-5. Optional Flutter module ↔ native host bridge (MethodChannel)
-6. Merge proof via `./bin/ci.sh` / GitHub Actions (see CI map)
+1. Feature layers with lint enforcement — [`docs/layers.md`](docs/layers.md)
+2. Offline Feed + stale-cache path — [`docs/offline-first.md`](docs/offline-first.md)
+3. Production-minded URLSession client — [`docs/sync-and-networking.md`](docs/sync-and-networking.md)
+4. UIKit ↔ SwiftUI showcase — [`docs/portfolio.md`](docs/portfolio.md)
+5. Optional Flutter host bridge — [`docs/flutter-add-to-app.md`](docs/flutter-add-to-app.md)
+6. Merge proof (`./bin/ci.sh` / GHA) — [`docs/ci-cd-map.md`](docs/ci-cd-map.md)
 
-Task → path: [`CODEMAP.md`](CODEMAP.md). Timed walk:
-[`docs/architecture-tour.md`](docs/architecture-tour.md). Engineering score
-(min of areas; not agent harness):
-[`docs/engineering/engineering-quality-scorecard.md`](docs/engineering/engineering-quality-scorecard.md).
-Talk tracks: [`docs/portfolio.md`](docs/portfolio.md).
+[`CODEMAP.md`](CODEMAP.md) ·
+[`docs/architecture-tour.md`](docs/architecture-tour.md) ·
+[`docs/engineering/engineering-quality-scorecard.md`](docs/engineering/engineering-quality-scorecard.md) ·
+[`docs/portfolio.md`](docs/portfolio.md)
 
 ## 3-minute path
 
 1. **Dashboard** — release health
-2. **Feed** — list / Retry; stale banner via `-StaleFeedDemo` or Engineering demos →
-   **Stale Feed cache fallback**
+2. **Feed** — list / Retry; stale banner (`-StaleFeedDemo` or Engineering demos)
 3. **UIKit Showcase** — from Dashboard
 4. **Engineering demos** — Risks / Diagnostics / Idempotent POST / Flutter add-to-app
 
-Deep links: `superdemo://dashboard/risks`, `superdemo://feed`, `superdemo://items`.
+Deep links and launch flags: [`docs/portfolio.md`](docs/portfolio.md).
 
 ## Run and proof
 
@@ -48,13 +50,6 @@ Open `superDemoApp.xcodeproj`. From repo root:
 ./bin/ci.sh             # merge gate
 ```
 
-Flutter embed (macOS, iOS Simulator): `./tool/prepare_flutter_embed.sh` — details in
-[`docs/flutter-add-to-app.md`](docs/flutter-add-to-app.md).
-
-Launch flags (ReviewerDemo, StaleFeed, UITesting, Keychain demo, compile-time
-`REVIEWER_DEMO`): [`docs/portfolio.md`](docs/portfolio.md) ·
-`Shared/AppLaunchConfiguration.swift`.
-
 ## Docs
 
 | Topic | Doc |
@@ -62,8 +57,10 @@ Launch flags (ReviewerDemo, StaleFeed, UITesting, Keychain demo, compile-time
 | Task → path router | [`CODEMAP.md`](CODEMAP.md) |
 | ≤15 min architecture tour | [`docs/architecture-tour.md`](docs/architecture-tour.md) |
 | Reviewer map / talk tracks | [`docs/portfolio.md`](docs/portfolio.md) |
-| Platform surfaces inventory | [`docs/portfolio.md`](docs/portfolio.md#platform-surfaces) |
+| Design system | [`DESIGN.md`](DESIGN.md) |
+| Layers / modularity | [`docs/layers.md`](docs/layers.md) |
+| Offline / networking | [`docs/offline-first.md`](docs/offline-first.md) |
 | Flutter add-to-app | [`docs/flutter-add-to-app.md`](docs/flutter-add-to-app.md) |
-| Native host bridge | [`docs/native-host-boundary.md`](docs/native-host-boundary.md) |
-| Code quality / coverage honesty | [`docs/code-quality.md`](docs/code-quality.md) |
+| CI / CD map | [`docs/ci-cd-map.md`](docs/ci-cd-map.md) |
+| Code quality honesty | [`docs/code-quality.md`](docs/code-quality.md) |
 | Full index | [`docs/README.md`](docs/README.md) |
