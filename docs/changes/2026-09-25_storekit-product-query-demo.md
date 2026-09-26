@@ -10,7 +10,7 @@ an honest empty / unavailable state. **No purchase / charge path.**
 
 - `Config/Products.storekit` — local StoreKit Configuration (demo tip product)
 - Scheme `superDemoApp`: StoreKit Configuration on Run + Test →
-  `../../../Config/Products.storekit`
+  `../../Config/Products.storekit` (relative to `xcshareddata/`)
 - `superDemoApp/Shared/StoreKit/StoreKitProductQuerying.swift`
 - `superDemoApp/Features/ProductionReadiness/Presentation/StoreKitProductQueryDemoView.swift`
 - Dashboard → Engineering demos → **StoreKit 2 product query (demo)**
