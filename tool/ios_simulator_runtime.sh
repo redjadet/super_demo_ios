@@ -8,6 +8,11 @@ ios_simulator_sdk_version() {
 
 # Prints newest available iOS simulator runtime identifier (highest version).
 select_newest_ios_runtime_id() {
+  select_ios_runtime_ids_newest_first | head -n1
+}
+
+# Prints available iOS runtime identifiers, newest version first.
+select_ios_runtime_ids_newest_first() {
   xcrun simctl list runtimes -j 2>/dev/null \
     | python3 -c "
 import json, sys
@@ -26,7 +31,8 @@ ios = [
 if not ios:
     sys.exit(1)
 ios.sort(key=lambda r: version_tuple(r.get('version', '0')), reverse=True)
-print(ios[0]['identifier'])
+for r in ios:
+    print(r['identifier'])
 " 2>/dev/null || true
 }
 
@@ -47,6 +53,7 @@ sys.exit(1)
 }
 
 # Prints UDID of preferred iPhone on runtime_id, or empty.
+# Skips exotic form factors (Duo/Fold/…) — they are not reliable xcodebuild destinations.
 find_iphone_udid_on_runtime() {
   local runtime_id="$1"
   xcrun simctl list devices -j 2>/dev/null \
@@ -56,22 +63,24 @@ import json, re, sys
 runtime_id = sys.argv[1]
 preferred = (
     'iPhone 18 Pro Max', 'iPhone 18 Pro', 'iPhone 18 Plus', 'iPhone 18',
-    'iPhone 17 Pro Max', 'iPhone 17 Pro', 'iPhone 17',
-    'iPhone 16 Pro Max', 'iPhone 16 Pro', 'iPhone 16',
-    'iPhone 15 Pro Max', 'iPhone 15 Pro', 'iPhone 15',
+    'iPhone 17 Pro Max', 'iPhone 17 Pro', 'iPhone 17 Plus', 'iPhone 17',
+    'iPhone 16 Pro Max', 'iPhone 16 Pro', 'iPhone 16 Plus', 'iPhone 16',
+    'iPhone 15 Pro Max', 'iPhone 15 Pro', 'iPhone 15 Plus', 'iPhone 15',
 )
-data = json.load(sys.stdin)
-devices = data.get('devices', {}).get(runtime_id, [])
-iphones = [d for d in devices if d.get('isAvailable') and 'iPhone' in d.get('name', '')]
-if not iphones:
-    sys.exit(1)
-booted = [d for d in iphones if d.get('state') == 'Booted']
-pool = booted or iphones
-for name in preferred:
-    for d in pool:
-        if d.get('name') == name:
-            print(d['udid'])
-            sys.exit(0)
+exotic_markers = ('Duo', 'Fold', 'Air')
+
+def is_standard_iphone(name):
+    if not name or 'iPhone' not in name:
+        return False
+    if any(m in name for m in exotic_markers):
+        return False
+    if name in preferred:
+        return True
+    if re.match(r'^iPhone \d+( Pro Max| Pro| Plus)?$', name):
+        return True
+    if re.match(r'^iPhone SE( \(\d(st|nd|rd|th) generation\))?$', name):
+        return True
+    return False
 
 def phone_rank(name):
     m = re.search(r'iPhone (\d+)', name or '')
@@ -82,9 +91,27 @@ def phone_rank(name):
         tier = 2
     elif 'Plus' in name:
         tier = 1
+    elif name.startswith('iPhone SE'):
+        tier = -1
     else:
         tier = 0
     return (gen, tier)
+
+data = json.load(sys.stdin)
+devices = data.get('devices', {}).get(runtime_id, [])
+iphones = [
+    d for d in devices
+    if d.get('isAvailable') and is_standard_iphone(d.get('name', ''))
+]
+if not iphones:
+    sys.exit(1)
+booted = [d for d in iphones if d.get('state') == 'Booted']
+pool = booted or iphones
+for name in preferred:
+    for d in pool:
+        if d.get('name') == name:
+            print(d['udid'])
+            sys.exit(0)
 
 pool.sort(key=lambda d: phone_rank(d.get('name', '')), reverse=True)
 print(pool[0]['udid'])
@@ -92,9 +119,16 @@ print(pool[0]['udid'])
 }
 
 find_iphone_udid_on_newest_runtime() {
-  local runtime_id
-  runtime_id="$(select_newest_ios_runtime_id)" || return 1
-  find_iphone_udid_on_runtime "$runtime_id"
+  local runtime_id udid
+  while IFS= read -r runtime_id; do
+    [[ -n "$runtime_id" ]] || continue
+    udid="$(find_iphone_udid_on_runtime "$runtime_id" || true)"
+    if [[ -n "$udid" ]]; then
+      printf '%s\n' "$udid"
+      return 0
+    fi
+  done < <(select_ios_runtime_ids_newest_first)
+  return 1
 }
 
 # Prints UDID of preferred iPad on runtime_id, or empty.
@@ -209,10 +243,23 @@ types = data.get('devicetypes', [])
 iphones = [t for t in types if t.get('productFamily') == 'iPhone']
 preferred = (
     'iPhone 18 Pro Max', 'iPhone 18 Pro', 'iPhone 18 Plus', 'iPhone 18',
-    'iPhone 17 Pro Max', 'iPhone 17 Pro', 'iPhone 17',
-    'iPhone 16 Pro Max', 'iPhone 16 Pro', 'iPhone 16',
-    'iPhone 15 Pro Max', 'iPhone 15 Pro', 'iPhone 15',
+    'iPhone 17 Pro Max', 'iPhone 17 Pro', 'iPhone 17 Plus', 'iPhone 17',
+    'iPhone 16 Pro Max', 'iPhone 16 Pro', 'iPhone 16 Plus', 'iPhone 16',
+    'iPhone 15 Pro Max', 'iPhone 15 Pro', 'iPhone 15 Plus', 'iPhone 15',
 )
+exotic_markers = ('Duo', 'Fold', 'Air')
+
+def is_standard_iphone(name):
+    if not name or 'iPhone' not in name:
+        return False
+    if any(m in name for m in exotic_markers):
+        return False
+    if name in preferred:
+        return True
+    if re.match(r'^iPhone \d+( Pro Max| Pro| Plus)?$', name):
+        return True
+    return False
+
 for name in preferred:
     for t in iphones:
         if t.get('name') == name:
@@ -232,9 +279,11 @@ def phone_rank(name):
         tier = 0
     return (gen, tier)
 
-if iphones:
-    iphones.sort(key=lambda t: phone_rank(t.get('name', '')), reverse=True)
-    print(iphones[0]['identifier'])
+standard = [t for t in iphones if is_standard_iphone(t.get('name', ''))]
+if standard:
+    standard.sort(key=lambda t: phone_rank(t.get('name', '')), reverse=True)
+    print(standard[0]['identifier'])
+    sys.exit(0)
 sys.exit(1)
 " 2>/dev/null || true
 }

@@ -100,20 +100,25 @@ wait_for_scheme_destination() {
     echo "==> Waiting for xcodebuild destination (attempt ${attempt}/24)..." >&2
     sleep 5
   done
-  alt_dest="$(scheme_destination_for_udid "$udid")"
-  if destination_valid_for_scheme "$alt_dest"; then
+  # name=OS= form sometimes appears before id= is recognized.
+  alt_dest="$(scheme_destination_for_udid "$udid" || true)"
+  if [[ -n "$alt_dest" ]] && destination_valid_for_scheme "$alt_dest"; then
     printf '%s\n' "$alt_dest"
     return 0
   fi
-  echo "warning: xcodebuild -showdestinations did not list simulator ${udid}; using ${alt_dest}" >&2
-  xcodebuild_show_destinations 2>&1 | head -20 >&2 || true
-  printf '%s\n' "$alt_dest"
-  return 0
+  echo "error: xcodebuild -showdestinations never listed simulator ${udid}" >&2
+  xcodebuild_show_destinations 2>&1 | head -40 >&2 || true
+  xcrun simctl list devices available 2>&1 | head -40 >&2 || true
+  return 1
 }
 
 export_ci_simulator_dest() {
   local dest="$1"
   dest="$(finalize_ci_simulator_dest "$dest")"
+  if ! destination_valid_for_scheme "$dest"; then
+    echo "error: refusing to export CI_SIMULATOR_DEST that xcodebuild cannot see: ${dest}" >&2
+    return 1
+  fi
   export CI_SIMULATOR_DEST="$dest"
   if [[ -n "${GITHUB_ENV:-}" ]]; then
     echo "CI_SIMULATOR_DEST=${dest}" >>"${GITHUB_ENV}"
@@ -148,73 +153,114 @@ provision_ipad_on_runtime() {
 }
 
 try_newest_runtime_destination() {
-  local udid dest runtime_version
+  local udid dest runtime_id runtime_version
   ensure_ios_runtime_matches_sdk
-  runtime_id="$(select_newest_ios_runtime_id)" || return 1
-  runtime_version="$(ios_runtime_version "$runtime_id")"
-  echo "==> Using newest iOS Simulator runtime ${runtime_version} (${runtime_id})"
 
-  udid="$(find_iphone_udid_on_runtime "$runtime_id" || true)"
-  if [[ -z "$udid" ]]; then
-    return 1
-  fi
+  # Prefer a standard iPhone on the newest runtime xcodebuild can actually see.
+  while IFS= read -r runtime_id; do
+    [[ -n "$runtime_id" ]] || continue
+    runtime_version="$(ios_runtime_version "$runtime_id")"
+    udid="$(find_iphone_udid_on_runtime "$runtime_id" || true)"
+    if [[ -z "$udid" ]]; then
+      echo "==> No standard iPhone on iOS ${runtime_version}; trying older runtime or create" >&2
+      continue
+    fi
+    echo "==> Trying iOS Simulator runtime ${runtime_version} (${runtime_id}) udid=${udid}"
+    boot_simulator_with_timeout "$udid" 120 || true
+    if dest="$(wait_for_scheme_destination "$udid")"; then
+      export_ci_simulator_dest "$dest" || continue
+      return 0
+    fi
+    echo "warning: runtime ${runtime_version} device not visible to xcodebuild; trying next" >&2
+  done < <(select_ios_runtime_ids_newest_first)
 
-  boot_simulator_with_timeout "$udid" 120 || true
-
-  dest="$(wait_for_scheme_destination "$udid")" || return 1
-  export_ci_simulator_dest "$dest"
-  return 0
+  return 1
 }
 
 create_newest_runtime_simulator() {
   local runtime_id runtime_version device_type_id udid dest
 
   ensure_ios_runtime_matches_sdk
-  runtime_id="$(select_newest_ios_runtime_id)" || true
-  if [[ -z "$runtime_id" ]]; then
-    echo "==> No iOS simulator runtime; downloading iOS platform"
-    refresh_xcodebuild_from_developer_dir
-    "$XCODEBUILD" -downloadPlatform iOS
-    runtime_id="$(select_newest_ios_runtime_id)" || true
+  device_type_id="$(select_preferred_iphone_device_type_id)" || true
+  if [[ -z "$device_type_id" ]]; then
+    echo "error: no standard iPhone device type found" >&2
+    _ensure_fatal 1
   fi
 
+  while IFS= read -r runtime_id; do
+    [[ -n "$runtime_id" ]] || continue
+    runtime_version="$(ios_runtime_version "$runtime_id")"
+    sdk_version="$(ios_simulator_sdk_version)"
+    echo "==> Creating CI iPhone (${device_type_id}) on iOS ${runtime_version} (SDK ${sdk_version:-unknown})"
+
+    udid="$(xcrun simctl create "CI iPhone" "$device_type_id" "$runtime_id" 2>/dev/null || true)"
+    if [[ -z "$udid" ]]; then
+      echo "warning: could not create ${device_type_id} on ${runtime_version}; trying next runtime" >&2
+      continue
+    fi
+    echo "==> Created simulator ${udid}"
+
+    boot_simulator_with_timeout "$udid" 180 || true
+
+    if dest="$(wait_for_scheme_destination "$udid")" \
+      && export_ci_simulator_dest "$dest"; then
+      return 0
+    fi
+    echo "warning: created simulator on ${runtime_version} not visible to xcodebuild; trying next" >&2
+    xcrun simctl delete "$udid" 2>/dev/null || true
+  done < <(select_ios_runtime_ids_newest_first)
+
+  # Last resort: download platform if we still have no usable runtime pairing.
+  echo "==> No usable iPhone destination; downloading iOS platform and retrying once"
+  refresh_xcodebuild_from_developer_dir
+  "$XCODEBUILD" -downloadPlatform iOS || true
+  runtime_id="$(select_newest_ios_runtime_id)" || true
   if [[ -z "$runtime_id" ]]; then
     echo "error: no iOS simulator runtime available" >&2
     xcrun simctl list runtimes >&2 || true
     _ensure_fatal 1
   fi
-
   runtime_version="$(ios_runtime_version "$runtime_id")"
-  sdk_version="$(ios_simulator_sdk_version)"
-  echo "==> Creating CI iPhone on iOS ${runtime_version} (SDK ${sdk_version:-unknown})"
-
-  device_type_id="$(select_preferred_iphone_device_type_id)" || true
-  if [[ -z "$device_type_id" ]]; then
-    echo "error: no iPhone device type found" >&2
-    _ensure_fatal 1
-  fi
-
   udid="$(xcrun simctl create "CI iPhone" "$device_type_id" "$runtime_id")"
-  echo "==> Created simulator ${udid}"
-
+  echo "==> Created simulator ${udid} on iOS ${runtime_version}"
   boot_simulator_with_timeout "$udid" 180
-
   dest="$(wait_for_scheme_destination "$udid")" || {
     echo "error: xcodebuild does not accept destination after boot for ${udid}" >&2
     xcodebuild_show_destinations 2>&1 | head -30 >&2 || true
     xcrun simctl list devices available >&2 || true
     _ensure_fatal 1
   }
-
-  export_ci_simulator_dest "$dest"
+  export_ci_simulator_dest "$dest" || _ensure_fatal 1
 }
 
 if [[ "$CI_PREPARE_IPHONE" == "1" ]]; then
-  if try_newest_runtime_destination; then
-    runtime_id="$(select_newest_ios_runtime_id)"
-  else
+  if ! try_newest_runtime_destination; then
     create_newest_runtime_simulator
-    runtime_id="$(select_newest_ios_runtime_id)"
+  fi
+  # Prefer the runtime of the exported iPhone destination for iPad pairing.
+  runtime_id=""
+  if [[ -n "${CI_SIMULATOR_DEST:-}" ]]; then
+    _iphone_udid="$(destination_udid "${CI_SIMULATOR_DEST}")"
+    if [[ "${_iphone_udid}" =~ ^[0-9A-F-]{36}$ ]]; then
+      runtime_id="$(
+        xcrun simctl list devices -j 2>/dev/null \
+          | python3 -c "
+import json, sys
+udid = sys.argv[1]
+data = json.load(sys.stdin)
+for rid, devices in data.get('devices', {}).items():
+    for d in devices:
+        if d.get('udid') == udid:
+            print(rid)
+            sys.exit(0)
+sys.exit(1)
+" "${_iphone_udid}" 2>/dev/null || true
+      )"
+    fi
+    unset _iphone_udid
+  fi
+  if [[ -z "$runtime_id" ]]; then
+    runtime_id="$(select_newest_ios_runtime_id)" || true
   fi
 else
   ensure_ios_runtime_matches_sdk
