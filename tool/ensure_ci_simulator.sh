@@ -155,26 +155,26 @@ provision_ipad_on_runtime() {
 try_newest_runtime_destination() {
   local udid dest runtime_id runtime_version device_type_id created=0 created_out
   ensure_ios_runtime_matches_sdk
-  device_type_id="$(select_preferred_iphone_device_type_id)" || true
 
-  # Walk newest → older. Prefer creating a standard iPhone on the newest
-  # (SDK-matched) runtime before falling back — pairing SDK 27.1 with an
-  # older 27.0 device breaks widget appex install (extensionDictionary).
+  # Walk newest → older. Create only device types the runtime lists as supported
+  # (global "preferred" iPhone 18 Pro can 403 Incompatible on some 27.1 images).
   while IFS= read -r runtime_id; do
     [[ -n "$runtime_id" ]] || continue
     runtime_version="$(ios_runtime_version "$runtime_id")"
     created=0
     udid="$(find_iphone_udid_on_runtime "$runtime_id" || true)"
-    if [[ -z "$udid" && -n "$device_type_id" ]]; then
-      echo "==> No standard iPhone on iOS ${runtime_version}; creating preferred (${device_type_id})" >&2
-      created_out="$(xcrun simctl create "CI iPhone" "$device_type_id" "$runtime_id" 2>&1 || true)"
-      if [[ "$created_out" =~ ^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$ ]]; then
-        udid="$(tr '[:lower:]' '[:upper:]' <<<"$created_out")"
-        created=1
-      else
+    if [[ -z "$udid" ]]; then
+      while IFS= read -r device_type_id; do
+        [[ -n "$device_type_id" ]] || continue
+        echo "==> No standard iPhone on iOS ${runtime_version}; creating preferred (${device_type_id})" >&2
+        created_out="$(xcrun simctl create "CI iPhone" "$device_type_id" "$runtime_id" 2>&1 || true)"
+        if [[ "$created_out" =~ ^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$ ]]; then
+          udid="$(tr '[:lower:]' '[:upper:]' <<<"$created_out")"
+          created=1
+          break
+        fi
         echo "warning: could not create ${device_type_id} on ${runtime_version}: ${created_out}" >&2
-        udid=""
-      fi
+      done < <(list_preferred_iphone_device_type_ids_for_runtime "$runtime_id")
     fi
     if [[ -n "$udid" ]]; then
       udid="$(tr '[:lower:]' '[:upper:]' <<<"$udid")"
@@ -199,38 +199,37 @@ try_newest_runtime_destination() {
 }
 
 create_newest_runtime_simulator() {
-  local runtime_id runtime_version device_type_id udid dest
+  local runtime_id runtime_version device_type_id udid dest created_out
 
   ensure_ios_runtime_matches_sdk
-  device_type_id="$(select_preferred_iphone_device_type_id)" || true
-  if [[ -z "$device_type_id" ]]; then
-    echo "error: no standard iPhone device type found" >&2
-    _ensure_fatal 1
-  fi
 
   while IFS= read -r runtime_id; do
     [[ -n "$runtime_id" ]] || continue
     runtime_version="$(ios_runtime_version "$runtime_id")"
     sdk_version="$(ios_simulator_sdk_version)"
-    echo "==> Creating CI iPhone (${device_type_id}) on iOS ${runtime_version} (SDK ${sdk_version:-unknown})"
 
-    udid="$(xcrun simctl create "CI iPhone" "$device_type_id" "$runtime_id" 2>&1 || true)"
-    if [[ "$udid" =~ ^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$ ]]; then
-      udid="$(tr '[:lower:]' '[:upper:]' <<<"$udid")"
-    else
-      echo "warning: could not create ${device_type_id} on ${runtime_version}: ${udid}" >&2
-      continue
-    fi
-    echo "==> Created simulator ${udid}"
+    while IFS= read -r device_type_id; do
+      [[ -n "$device_type_id" ]] || continue
+      echo "==> Creating CI iPhone (${device_type_id}) on iOS ${runtime_version} (SDK ${sdk_version:-unknown})"
 
-    boot_simulator_with_timeout "$udid" 180 || true
+      created_out="$(xcrun simctl create "CI iPhone" "$device_type_id" "$runtime_id" 2>&1 || true)"
+      if [[ "$created_out" =~ ^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$ ]]; then
+        udid="$(tr '[:lower:]' '[:upper:]' <<<"$created_out")"
+      else
+        echo "warning: could not create ${device_type_id} on ${runtime_version}: ${created_out}" >&2
+        continue
+      fi
+      echo "==> Created simulator ${udid}"
 
-    if dest="$(wait_for_scheme_destination "$udid")" \
-      && export_ci_simulator_dest "$dest"; then
-      return 0
-    fi
-    echo "warning: created simulator on ${runtime_version} not visible to xcodebuild; trying next" >&2
-    xcrun simctl delete "$udid" 2>/dev/null || true
+      boot_simulator_with_timeout "$udid" 180 || true
+
+      if dest="$(wait_for_scheme_destination "$udid")" \
+        && export_ci_simulator_dest "$dest"; then
+        return 0
+      fi
+      echo "warning: created simulator on ${runtime_version} not visible to xcodebuild; trying next type/runtime" >&2
+      xcrun simctl delete "$udid" 2>/dev/null || true
+    done < <(list_preferred_iphone_device_type_ids_for_runtime "$runtime_id")
   done < <(select_ios_runtime_ids_newest_first)
 
   # Last resort: download platform if we still have no usable runtime pairing.
@@ -244,6 +243,14 @@ create_newest_runtime_simulator() {
     _ensure_fatal 1
   fi
   runtime_version="$(ios_runtime_version "$runtime_id")"
+  device_type_id="$(select_preferred_iphone_device_type_id_for_runtime "$runtime_id")"
+  if [[ -z "$device_type_id" ]]; then
+    device_type_id="$(select_preferred_iphone_device_type_id)" || true
+  fi
+  if [[ -z "$device_type_id" ]]; then
+    echo "error: no standard iPhone device type found" >&2
+    _ensure_fatal 1
+  fi
   udid="$(xcrun simctl create "CI iPhone" "$device_type_id" "$runtime_id")"
   echo "==> Created simulator ${udid} on iOS ${runtime_version}"
   boot_simulator_with_timeout "$udid" 180

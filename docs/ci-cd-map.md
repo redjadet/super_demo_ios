@@ -31,7 +31,7 @@ separately from hosted CI when they diverge. See
 | Piece | Where |
 | --- | --- |
 | Workflow | `.github/workflows/ci.yml` — jobs `lint`, `iphone-test`, `platform-builds`, **`checklist`** |
-| Runner / Xcode | Hosted jobs: `runs-on: xcode-27`. Workflow sets `SUPER_DEMO_XCODE_MIN_VERSION=27`; each macos job runs `source ./tool/select_xcode.sh` (newest **released** Xcode; today **27.1** / GM build). iPhone destination: newest iOS Simulator runtime that ships with that Xcode (`tool/ensure_ci_simulator.sh` / `tool/ios_simulator_runtime.sh`); prefer iPhone **Pro** → Pro Max → Plus → base, skip Duo/Fold/Air; UDID case normalized. Escape: `runs-on: macos-26` + `SUPER_DEMO_XCODE_MIN_VERSION=26.5` |
+| Runner / Xcode | Hosted jobs: `runs-on: xcode-27`. Workflow sets `SUPER_DEMO_XCODE_MIN_VERSION=27`; each macos job runs `source ./tool/select_xcode.sh` (newest **released** Xcode; today **27.1** / GM build). iPhone destination: newest iOS Simulator runtime that ships with that Xcode (`tool/ensure_ci_simulator.sh` / `tool/ios_simulator_runtime.sh`); create only types in that runtime’s `supportedDeviceTypes` (avoids simctl 403 when e.g. iPhone 18 Pro is unsupported on some 27.1 images); prefer Pro → Pro Max → Plus → base, skip Duo/Fold/Air; UDID case normalized. Escape: `runs-on: macos-26` + `SUPER_DEMO_XCODE_MIN_VERSION=26.5` |
 | Release smoke | `.github/workflows/release-smoke.yml` — job `build-ipa` (same `xcode-27` + select step) |
 | Scripts | `./bin/checklist`, `./bin/checklist-fast`, `./bin/lint.sh`, `./bin/ci-iphone-test.sh`, `./bin/ci-platform-builds.sh`, `./bin/ci.sh`, `./bin/fastlane-run` |
 | Warnings as errors | `tool/xcode_warnings_as_errors_flags.sh` (used by iPhone + platform scripts) |

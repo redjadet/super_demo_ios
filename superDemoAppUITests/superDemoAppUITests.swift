@@ -88,6 +88,41 @@ final class superDemoAppUITests: XCTestCase {
     }
 
     @MainActor
+    func testFeedPostRowOpensDetail() {
+        let app = UiTestSupport.launchApplication()
+
+        UiTestSupport.openFeedTab(in: app)
+        XCTAssertTrue(UiTestSupport.waitForFeedChrome(in: app))
+
+        let postRow = app.descendants(matching: .any).matching(identifier: "feedPostRow-1").firstMatch
+        XCTAssertTrue(postRow.waitForExistence(timeout: 10))
+        postRow.tap()
+
+        let detail = app.descendants(matching: .any).matching(identifier: "feedPostDetail-1").firstMatch
+        XCTAssertTrue(detail.waitForExistence(timeout: 10), "Feed post detail did not open from list selection")
+    }
+
+    @MainActor
+    func testItemRowOpensDetail() {
+        let app = UiTestSupport.launchApplication(extraArguments: ["-ReviewerDemoMode"])
+
+        UiTestSupport.openItemsTab(in: app)
+        XCTAssertTrue(UiTestSupport.waitForItemsChrome(in: app))
+
+        let list = app.descendants(matching: .any).matching(identifier: "itemsList").firstMatch
+        XCTAssertTrue(list.waitForExistence(timeout: 15), "Items list missing after reviewer seed")
+
+        let row = app.descendants(matching: .any)
+            .matching(NSPredicate(format: "identifier BEGINSWITH %@", "itemRow-"))
+            .firstMatch
+        XCTAssertTrue(row.waitForExistence(timeout: 10), "Seeded item row missing")
+        row.tap()
+
+        let detail = app.descendants(matching: .any).matching(identifier: "itemDetail").firstMatch
+        XCTAssertTrue(detail.waitForExistence(timeout: 10), "Item detail did not open from list selection")
+    }
+
+    @MainActor
     func testFeedAccessibilityChromeRowsAndRetry() {
         let app = UiTestSupport.launchApplication()
 

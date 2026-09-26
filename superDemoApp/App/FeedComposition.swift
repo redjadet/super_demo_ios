@@ -115,8 +115,11 @@ struct StaleFeedDemoView: View {
     }
 
     var body: some View {
-        FeedView(model: self.session.model)
+        // Push onto Production Readiness's stack. Own `NavigationSplitView` /
+        // nested `NavigationStack` here made list taps and a11y ids no-op.
+        FeedView(model: self.session.model, embedsOwnNavigation: false)
             .navigationTitle("Stale Feed")
+            .iosInlineNavigationBarTitle()
             .accessibilityIdentifier("staleFeedDemoScreen")
     }
 }

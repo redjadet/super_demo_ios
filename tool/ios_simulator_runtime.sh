@@ -235,13 +235,9 @@ sys.exit(1)
 " 2>/dev/null || true
 }
 
-select_preferred_iphone_device_type_id() {
-  xcrun simctl list devicetypes -j 2>/dev/null \
-    | python3 -c "
-import json, re, sys
-data = json.load(sys.stdin)
-types = data.get('devicetypes', [])
-iphones = [t for t in types if t.get('productFamily') == 'iPhone']
+# Preferred marketing names — Pro before Pro Max (xcodebuild + UITest stability).
+_iphone_preferred_names_python() {
+  cat <<'PY'
 preferred = (
     'iPhone 18 Pro', 'iPhone 18 Pro Max', 'iPhone 18 Plus', 'iPhone 18',
     'iPhone 17 Pro', 'iPhone 17 Pro Max', 'iPhone 17 Plus', 'iPhone 17',
@@ -261,12 +257,6 @@ def is_standard_iphone(name):
         return True
     return False
 
-for name in preferred:
-    for t in iphones:
-        if t.get('name') == name:
-            print(t['identifier'])
-            sys.exit(0)
-
 def phone_rank(name):
     m = re.search(r'iPhone (\d+)', name or '')
     gen = int(m.group(1)) if m else 0
@@ -279,6 +269,23 @@ def phone_rank(name):
     else:
         tier = 0
     return (gen, tier)
+PY
+}
+
+select_preferred_iphone_device_type_id() {
+  xcrun simctl list devicetypes -j 2>/dev/null \
+    | python3 -c "
+import json, re, sys
+$(_iphone_preferred_names_python)
+data = json.load(sys.stdin)
+types = data.get('devicetypes', [])
+iphones = [t for t in types if t.get('productFamily') == 'iPhone']
+
+for name in preferred:
+    for t in iphones:
+        if t.get('name') == name:
+            print(t['identifier'])
+            sys.exit(0)
 
 standard = [t for t in iphones if is_standard_iphone(t.get('name', ''))]
 if standard:
@@ -287,6 +294,81 @@ if standard:
     sys.exit(0)
 sys.exit(1)
 " 2>/dev/null || true
+}
+
+# Prefer a standard iPhone type that this runtime actually supports
+# (avoids simctl 403 Incompatible device — e.g. iPhone 18 Pro on some 27.1 images).
+select_preferred_iphone_device_type_id_for_runtime() {
+  local runtime_id="$1"
+  [[ -n "$runtime_id" ]] || return 1
+  xcrun simctl list runtimes -j 2>/dev/null \
+    | python3 -c "
+import json, re, sys
+$(_iphone_preferred_names_python)
+runtime_id = sys.argv[1]
+data = json.load(sys.stdin)
+runtime = next((r for r in data.get('runtimes', []) if r.get('identifier') == runtime_id), None)
+if not runtime:
+    sys.exit(1)
+supported = runtime.get('supportedDeviceTypes') or []
+by_name = {}
+for entry in supported:
+    if not isinstance(entry, dict):
+        continue
+    name = entry.get('name') or ''
+    ident = entry.get('identifier') or ''
+    if name and ident:
+        by_name[name] = ident
+
+for name in preferred:
+    if name in by_name:
+        print(by_name[name])
+        sys.exit(0)
+
+standard = [(n, i) for n, i in by_name.items() if is_standard_iphone(n)]
+if standard:
+    standard.sort(key=lambda pair: phone_rank(pair[0]), reverse=True)
+    print(standard[0][1])
+    sys.exit(0)
+sys.exit(1)
+" "$runtime_id" 2>/dev/null || true
+}
+
+# Prints preferred → fallback device type identifiers compatible with runtime_id.
+list_preferred_iphone_device_type_ids_for_runtime() {
+  local runtime_id="$1"
+  [[ -n "$runtime_id" ]] || return 1
+  xcrun simctl list runtimes -j 2>/dev/null \
+    | python3 -c "
+import json, re, sys
+$(_iphone_preferred_names_python)
+runtime_id = sys.argv[1]
+data = json.load(sys.stdin)
+runtime = next((r for r in data.get('runtimes', []) if r.get('identifier') == runtime_id), None)
+if not runtime:
+    sys.exit(1)
+supported = runtime.get('supportedDeviceTypes') or []
+by_name = {}
+for entry in supported:
+    if not isinstance(entry, dict):
+        continue
+    name = entry.get('name') or ''
+    ident = entry.get('identifier') or ''
+    if name and ident:
+        by_name[name] = ident
+
+seen = set()
+for name in preferred:
+    ident = by_name.get(name)
+    if ident and ident not in seen:
+        print(ident)
+        seen.add(ident)
+
+standard = [(n, i) for n, i in by_name.items() if is_standard_iphone(n) and i not in seen]
+standard.sort(key=lambda pair: phone_rank(pair[0]), reverse=True)
+for _, ident in standard:
+    print(ident)
+" "$runtime_id" 2>/dev/null || true
 }
 
 # Ensures an iOS simulator runtime exists. On CI, uses the newest installed runtime only

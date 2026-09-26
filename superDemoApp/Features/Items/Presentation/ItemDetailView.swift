@@ -35,6 +35,7 @@ struct ItemDetailView: View {
         }
         .navigationTitle("Item")
         .iosInlineNavigationBarTitle()
+        .accessibilityIdentifier("itemDetail")
         .toolbar {
             ToolbarItem(placement: .confirmationAction) {
                 Button("Save") {

@@ -7,12 +7,27 @@ import SwiftUI
 
 /// Sidebar/detail navigation that adapts across iPhone, iPad, and Mac.
 /// Uses `NavigationSplitView` so compact widths collapse to a single column automatically.
+///
+/// Prefer `List(selection:)` + `NavigationLink(value:)` in the sidebar and drive the
+/// detail from that selection. Destination-only `NavigationLink { View }` links inside
+/// a split (especially nested under another stack) often appear to do nothing.
 struct AdaptiveNavigationShell<Sidebar: View, Detail: View>: View {
-    @ViewBuilder var sidebar: () -> Sidebar
-    @ViewBuilder var detail: () -> Detail
+    @Binding private var preferredCompactColumn: NavigationSplitViewColumn
+    @ViewBuilder private var sidebar: () -> Sidebar
+    @ViewBuilder private var detail: () -> Detail
+
+    init(
+        preferredCompactColumn: Binding<NavigationSplitViewColumn> = .constant(.sidebar),
+        @ViewBuilder sidebar: @escaping () -> Sidebar,
+        @ViewBuilder detail: @escaping () -> Detail
+    ) {
+        self._preferredCompactColumn = preferredCompactColumn
+        self.sidebar = sidebar
+        self.detail = detail
+    }
 
     var body: some View {
-        NavigationSplitView {
+        NavigationSplitView(preferredCompactColumn: self.$preferredCompactColumn) {
             self.sidebar()
         } detail: {
             self.detail()
