@@ -72,11 +72,34 @@ nonisolated enum FeedWidgetSnapshotStore {
             ".\(FeedWidgetAppGroup.fileName).tmp-\(UUID().uuidString)",
             isDirectory: false
         )
+        defer {
+            if fileManager.fileExists(atPath: temporary.path) {
+                try? fileManager.removeItem(at: temporary)
+            }
+        }
         try data.write(to: temporary, options: .atomic)
         if fileManager.fileExists(atPath: destination.path) {
             _ = try fileManager.replaceItemAt(destination, withItemAt: temporary)
         } else {
             try fileManager.moveItem(at: temporary, to: destination)
+        }
+    }
+
+    /// Remove snapshot file so loaders report `.absent` (cache miss / wipe).
+    static func remove(
+        fileManager: FileManager = .default,
+        suiteName: String = FeedWidgetAppGroup.identifier,
+        containerURLOverride: URL? = nil
+    ) throws {
+        guard let fileURL = snapshotFileURL(
+            fileManager: fileManager,
+            suiteName: suiteName,
+            containerURLOverride: containerURLOverride
+        ) else {
+            throw FeedWidgetSnapshotStoreError.containerUnavailable
+        }
+        if fileManager.fileExists(atPath: fileURL.path) {
+            try fileManager.removeItem(at: fileURL)
         }
     }
 
@@ -123,6 +146,8 @@ nonisolated enum FeedWidgetSnapshotStoreError: Error, Equatable, Sendable {
 /// App-owned publish hook. Default is no-op so unit tests stay App Group–free.
 protocol FeedWidgetSnapshotPublishing: Sendable {
     func publish(_ snapshot: FeedWidgetSnapshot)
+    /// Drop the App Group snapshot after an honest cache miss / wipe.
+    func clearPublishedSnapshot()
 }
 
 nonisolated struct NoOpFeedWidgetSnapshotPublisher: FeedWidgetSnapshotPublishing {
@@ -130,4 +155,6 @@ nonisolated struct NoOpFeedWidgetSnapshotPublisher: FeedWidgetSnapshotPublishing
         // Intentionally empty — tests and in-memory demos must not touch App Group.
         _ = snapshot
     }
+
+    func clearPublishedSnapshot() {}
 }

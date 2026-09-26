@@ -73,6 +73,48 @@ struct FeedWidgetSnapshotStoreTests {
     }
 
     @Test
+    func removeLeavesAbsentState() throws {
+        let root = try Self.makeTempDirectory()
+        defer { try? FileManager.default.removeItem(at: root) }
+        let snapshot = FeedWidgetSnapshot(
+            writtenAt: Date(timeIntervalSince1970: 1_700_000_000),
+            cacheTTLSeconds: 60,
+            isStale: false,
+            titles: [.init(id: 1, title: "X")],
+            postCount: 9
+        )
+        try FeedWidgetSnapshotStore.write(snapshot, containerURLOverride: root)
+        try FeedWidgetSnapshotStore.remove(containerURLOverride: root)
+        #expect(FeedWidgetSnapshotStore.loadState(containerURLOverride: root) == .absent)
+    }
+
+    @Test
+    func decodeLegacySnapshotWithoutPostCountUsesTitlesCount() throws {
+        let root = try Self.makeTempDirectory()
+        defer { try? FileManager.default.removeItem(at: root) }
+        let fileURL = try #require(
+            FeedWidgetSnapshotStore.snapshotFileURL(containerURLOverride: root)
+        )
+        // Pre-postCount wire shape (v=1, titles only).
+        let legacy = Data(
+            #"""
+            {"v":1,"writtenAt":"2023-11-14T22:13:20Z","cacheTTLSeconds":900,"isStale":false,"titles":[{"id":1,"title":"A"},{"id":2,"title":"B"}]}
+            """#.utf8
+        )
+        try legacy.write(to: fileURL, options: .atomic)
+        let state = FeedWidgetSnapshotStore.loadState(
+            now: Date(timeIntervalSince1970: 1_700_000_100),
+            containerURLOverride: root
+        )
+        guard case let .ok(snapshot) = state else {
+            Issue.record("expected ok legacy snapshot")
+            return
+        }
+        #expect(snapshot.postCount == 2)
+        #expect(snapshot.titles.count == 2)
+    }
+
+    @Test
     func publisherNoOpDoesNotThrow() {
         let publisher = NoOpFeedWidgetSnapshotPublisher()
         publisher.publish(
@@ -83,6 +125,7 @@ struct FeedWidgetSnapshotStoreTests {
                 titles: []
             )
         )
+        publisher.clearPublishedSnapshot()
     }
 
     private static func makeTempDirectory() throws -> URL {

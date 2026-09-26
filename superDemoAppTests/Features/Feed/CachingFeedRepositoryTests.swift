@@ -29,6 +29,20 @@ private final class RemoteFeedRepositorySpy: FeedRepository {
     }
 }
 
+@MainActor
+private final class RecordingFeedWidgetSnapshotPublisher: FeedWidgetSnapshotPublishing {
+    private(set) var published: [FeedWidgetSnapshot] = []
+    private(set) var clearCount = 0
+
+    func publish(_ snapshot: FeedWidgetSnapshot) {
+        self.published.append(snapshot)
+    }
+
+    func clearPublishedSnapshot() {
+        self.clearCount += 1
+    }
+}
+
 @Suite("Caching feed repository")
 struct CachingFeedRepositoryTests {
     @Test
@@ -52,24 +66,58 @@ struct CachingFeedRepositoryTests {
 
     @Test
     @MainActor
-    func fetchPostsReturnsCachedPostsWhenRemoteFails() async throws {
+    func fetchPostsPublishesFullPostCountAndCappedTitles() async throws {
         let context = try Self.makeContext()
-        let cachedPosts = [
-            FeedPost(id: 1, userID: 10, title: "Cached", body: "Offline"),
-        ]
-        try Self.seed(cachedPosts, in: context, cachedAt: .now)
-        let remote = RemoteFeedRepositorySpy(error: .invalidResponse)
+        let posts = (1 ... 7).map { id in
+            FeedPost(id: id, userID: 1, title: "T\(id)", body: "B\(id)")
+        }
+        let remote = RemoteFeedRepositorySpy(posts: posts)
+        let publisher = RecordingFeedWidgetSnapshotPublisher()
+        let now = Date(timeIntervalSince1970: 1_700_000_000)
         let repository = CachingFeedRepository(
             remote: remote,
             context: context,
-            cacheTTL: 60 * 15
-        )
+            snapshotPublisher: publisher
+        ) { now }
+
+        _ = try await repository.fetchPosts()
+
+        #expect(publisher.published.count == 1)
+        let snapshot = try #require(publisher.published.first)
+        #expect(snapshot.postCount == 7)
+        #expect(snapshot.titles.count == 5)
+        #expect(snapshot.writtenAt == now)
+        #expect(snapshot.isStale == false)
+    }
+
+    @Test
+    @MainActor
+    func fetchPostsReturnsCachedPostsWhenRemoteFails() async throws {
+        let context = try Self.makeContext()
+        let cachedAt = Date(timeIntervalSince1970: 1_700_000_000)
+        let now = Date(timeIntervalSince1970: 1_700_000_100)
+        let cachedPosts = [
+            FeedPost(id: 1, userID: 10, title: "Cached", body: "Offline"),
+        ]
+        try Self.seed(cachedPosts, in: context, cachedAt: cachedAt)
+        let remote = RemoteFeedRepositorySpy(error: .invalidResponse)
+        let publisher = RecordingFeedWidgetSnapshotPublisher()
+        let repository = CachingFeedRepository(
+            remote: remote,
+            context: context,
+            cacheTTL: 60 * 15,
+            snapshotPublisher: publisher
+        ) { now }
 
         let fetched = try await repository.fetchPosts()
 
         #expect(fetched.posts == cachedPosts)
         #expect(fetched.isStale)
         #expect(remote.fetchCount == 1)
+        let snapshot = try #require(publisher.published.first)
+        #expect(snapshot.isStale)
+        #expect(snapshot.writtenAt == cachedAt)
+        #expect(snapshot.postCount == 1)
     }
 
     @Test
@@ -83,16 +131,20 @@ struct CachingFeedRepositoryTests {
             cachedAt: now.addingTimeInterval(-3600)
         )
         let remote = RemoteFeedRepositorySpy(error: .invalidResponse)
+        let publisher = RecordingFeedWidgetSnapshotPublisher()
         let repository = CachingFeedRepository(
             remote: remote,
             context: context,
-            cacheTTL: 60 * 15
+            cacheTTL: 60 * 15,
+            snapshotPublisher: publisher
         ) { now }
 
         await #expect(throws: FeedError.invalidResponse) {
             _ = try await repository.fetchPosts()
         }
         #expect(remote.fetchCount == 1)
+        #expect(publisher.clearCount == 1)
+        #expect(publisher.published.isEmpty)
     }
 
     @Test

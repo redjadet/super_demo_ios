@@ -14,8 +14,18 @@ nonisolated protocol FeedCacheStatusProviding: Sendable {
 /// App Group snapshot-backed status (JP-P0-B). Prefer this over inventing a
 /// second repository read path on day-1.
 nonisolated struct SnapshotFeedCacheStatusProvider: FeedCacheStatusProviding {
+    /// Unit-test override; production leaves this `nil` (live App Group).
+    var containerURLOverride: URL?
+
+    init(containerURLOverride: URL? = nil) {
+        self.containerURLOverride = containerURLOverride
+    }
+
     func cacheStatus(now: Date = Date()) -> FeedCacheStatusResult {
-        switch FeedWidgetSnapshotStore.loadState(now: now) {
+        switch FeedWidgetSnapshotStore.loadState(
+            now: now,
+            containerURLOverride: self.containerURLOverride
+        ) {
         case .unavailable, .absent, .corrupt:
             return FeedCacheStatusResult(
                 postCount: 0,
@@ -37,7 +47,7 @@ nonisolated struct SnapshotFeedCacheStatusProvider: FeedCacheStatusProviding {
     ) -> FeedCacheStatusResult {
         let age = Int(now.timeIntervalSince(snapshot.writtenAt).rounded(.down))
         return FeedCacheStatusResult(
-            postCount: snapshot.titles.count,
+            postCount: snapshot.postCount,
             isStale: forceStale,
             cacheAgeSeconds: max(0, age),
             source: "snapshot"

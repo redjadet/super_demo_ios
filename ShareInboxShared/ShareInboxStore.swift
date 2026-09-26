@@ -101,6 +101,11 @@ nonisolated enum ShareInboxStore {
             ".\(ShareInboxAppGroup.fileName).tmp-\(UUID().uuidString)",
             isDirectory: false
         )
+        defer {
+            if fileManager.fileExists(atPath: temporary.path) {
+                try? fileManager.removeItem(at: temporary)
+            }
+        }
         try data.write(to: temporary, options: .atomic)
         if fileManager.fileExists(atPath: destination.path) {
             _ = try fileManager.replaceItemAt(destination, withItemAt: temporary)

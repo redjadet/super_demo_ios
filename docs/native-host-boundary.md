@@ -47,10 +47,13 @@ expired). `source: "unavailable"` when absent / corrupt / App Group missing.
 `repository` is reserved for a later provider; day-1 does not invent a second
 cache path.
 
+`postCount` is the **full** Feed cache size from the snapshot (not the
+widget title list, which stays capped for Home Screen UI).
+
 ## Proof
 
 - Unit: `HostBridgeCodecTests` (encode/decode, unsupported method, malformed,
-  cancellation)
+  cancellation, snapshot `postCount` map)
 - Flutter: `flutter_module/test/host_bridge_channel_test.dart`
 - Lint / Swift verify via pre-commit
 - Demo: Production Readiness → Host bridge ping / Flutter add-to-app module
