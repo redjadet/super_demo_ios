@@ -4,6 +4,8 @@ Record durable implementation notes after meaningful changes.
 
 ## Entries
 
+- [`2026-09-26_flutter-add-to-app.md`](2026-09-26_flutter-add-to-app.md)
+  — JP-P2-D Flutter module embed + MethodChannel `feed.cacheStatus`.
 - [`2026-09-25_storekit-product-query-demo.md`](2026-09-25_storekit-product-query-demo.md)
   — JP-P1-D StoreKit 2 product query Engineering demo (config file; no purchase).
 - [`2026-09-25_performance-lab-widget-concurrency.md`](2026-09-25_performance-lab-widget-concurrency.md)

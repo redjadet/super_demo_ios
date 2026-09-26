@@ -46,7 +46,7 @@ jobs:
   iphone-test:
     name: Checklist · iPhone test
     runs-on: macos-26
-    timeout-minutes: 60
+    timeout-minutes: 90
     defaults:
       run:
         working-directory: .
@@ -61,30 +61,47 @@ jobs:
           ruby-version: "3.3"
           bundler-cache: true
 
-      - name: Cache Xcode + SwiftPM
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Cache Xcode + SwiftPM + Flutter frameworks
         uses: actions/cache@v4
         with:
           path: |
             ~/Library/Caches/org.swift.swiftpm
             ~/Library/Developer/Xcode/DerivedData
             ${{ runner.temp }}/DerivedData-iPhone
+            Flutter
           key: >-
-            xcode-${{ runner.os }}-${{ runner.arch }}-iphone-${{ hashFiles('**/Package.resolved', '**/*.xcodeproj/project.pbxproj') }}
+            xcode-${{ runner.os }}-${{ runner.arch }}-iphone-flutter-${{ hashFiles('**/Package.resolved', '**/*.xcodeproj/project.pbxproj', 'flutter_module/pubspec.lock', 'flutter_module/lib/**') }}
 
       - name: Install lint tools (for build phases)
         run: brew bundle check --file Brewfile || brew bundle --file Brewfile
+
+      - name: Prepare Flutter add-to-app frameworks
+        run: |
+          if [[ -d Flutter/Debug/Flutter.xcframework ]]; then
+            ./tool/prepare_flutter_embed.sh --skip-build
+          else
+            ./tool/prepare_flutter_embed.sh
+          fi
+          (cd flutter_module && flutter test)
 
       - name: iPhone tests (warnings as errors)
         env:
           CI: true
           CI_PREPARE_IPAD: "0"
           IPHONE_DERIVED_DATA_PATH: ${{ runner.temp }}/DerivedData-iPhone
+          SUPERDEMO_REQUIRE_FLUTTER_EMBED: "1"
         run: ./bin/ci-iphone-test.sh
 
   platform-builds:
     name: Checklist · platform builds
     runs-on: macos-26
-    timeout-minutes: 45
+    timeout-minutes: 75
     defaults:
       run:
         working-directory: .
@@ -99,7 +116,13 @@ jobs:
           ruby-version: "3.3"
           bundler-cache: true
 
-      - name: Cache Xcode + SwiftPM
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Cache Xcode + SwiftPM + Flutter frameworks
         uses: actions/cache@v4
         with:
           path: |
@@ -107,11 +130,20 @@ jobs:
             ~/Library/Developer/Xcode/DerivedData
             ${{ runner.temp }}/DerivedData-iPad
             ${{ runner.temp }}/DerivedData-Mac
+            Flutter
           key: >-
-            xcode-${{ runner.os }}-${{ runner.arch }}-platform-${{ hashFiles('**/Package.resolved', '**/*.xcodeproj/project.pbxproj') }}
+            xcode-${{ runner.os }}-${{ runner.arch }}-platform-flutter-${{ hashFiles('**/Package.resolved', '**/*.xcodeproj/project.pbxproj', 'flutter_module/pubspec.lock', 'flutter_module/lib/**') }}
 
       - name: Install lint tools (for build phases)
         run: brew bundle check --file Brewfile || brew bundle --file Brewfile
+
+      - name: Prepare Flutter add-to-app frameworks (iPad; Mac skips link)
+        run: |
+          if [[ -d Flutter/Debug/Flutter.xcframework ]]; then
+            ./tool/prepare_flutter_embed.sh --skip-build
+          else
+            ./tool/prepare_flutter_embed.sh
+          fi
 
       - name: iPad and Mac builds (warnings as errors)
         env:
@@ -120,6 +152,7 @@ jobs:
           CI_SERIAL_PLATFORM_BUILDS: "0"
           IPAD_DERIVED_DATA_PATH: ${{ runner.temp }}/DerivedData-iPad
           MAC_DERIVED_DATA_PATH: ${{ runner.temp }}/DerivedData-Mac
+          SUPERDEMO_REQUIRE_FLUTTER_EMBED: "1"
         run: ./bin/ci-platform-builds.sh
 
   checklist:

@@ -2,7 +2,7 @@
 //  HostBridgePingDemoView.swift
 //  superDemoApp
 //
-//  Engineering demo: ping native host-bridge facade (no Flutter SDK).
+//  Engineering demo: ping native host-bridge facade (JP-P0-C).
 //
 
 import SwiftUI
@@ -23,8 +23,9 @@ struct HostBridgePingDemoView: View {
         Form {
             Section {
                 Text(
-                    "Flutter module / add-to-app is not vendored. This demo exercises the "
-                        + "native contract only (codec + feed.cacheStatus)."
+                    "Native contract demo (codec + feed.cacheStatus). For the embedded "
+                        + "Flutter UI that calls the same facade, open "
+                        + "**Flutter add-to-app module**."
                 )
                 .font(.footnote)
                 .foregroundStyle(.secondary)
