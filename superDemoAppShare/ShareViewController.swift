@@ -55,9 +55,20 @@ final class ShareViewController: UIViewController {
     @MainActor
     private func persistSharedContent() async {
         let extracted = await Self.extractSharePayload(from: self.extensionContext)
+        let hasText = !(extracted.text?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ?? true)
+        let hasURL = !(extracted.urlString?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ?? true)
+        guard hasText || hasURL else {
+            self.statusLabel.text = String(
+                localized: """
+                Nothing shareable found (need URL or plain text). \
+                Image-only shares are not written to the App Group inbox.
+                """
+            )
+            return
+        }
         let entry = ShareInboxEntry(
-            text: extracted.text,
-            urlString: extracted.urlString
+            text: hasText ? extracted.text : nil,
+            urlString: hasURL ? extracted.urlString : nil
         )
         do {
             try ShareInboxStore.append(entry)
@@ -96,11 +107,13 @@ final class ShareViewController: UIViewController {
         for item in items {
             guard let attachments = item.attachments else { continue }
             for provider in attachments {
+                // Prefer both URL and text when an attachment exposes both (not else-if).
                 if provider.hasItemConformingToTypeIdentifier(UTType.url.identifier) {
                     if let url = try? await loadURL(from: provider) {
                         urlString = url.absoluteString
                     }
-                } else if provider.hasItemConformingToTypeIdentifier(UTType.plainText.identifier) {
+                }
+                if provider.hasItemConformingToTypeIdentifier(UTType.plainText.identifier) {
                     if let string = try? await loadString(from: provider) {
                         text = string
                     }
