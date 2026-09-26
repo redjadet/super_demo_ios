@@ -148,7 +148,7 @@ fi
 if [[ "${CI:-}" == "true" ]] && grep -q "Timed out while loading Accessibility" "$test_log"; then
   echo "warning: UI test runner Accessibility timeout; retrying once after simulator reboot" >&2
 
-  udid="$(sed -n 's/.*id=\([0-9A-F-]\{36\}\).*/\1/p' <<<"$SIMULATOR_DEST")"
+  udid="$(sed -n 's/.*id=\([0-9A-Fa-f-]\{36\}\).*/\1/p' <<<"$SIMULATOR_DEST" | tr '[:lower:]' '[:upper:]')"
   if [[ "$udid" =~ ^[0-9A-F-]{36}$ ]]; then
     xcrun simctl shutdown "$udid" 2>/dev/null || true
     xcrun simctl boot "$udid" 2>/dev/null || true
