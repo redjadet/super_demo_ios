@@ -180,6 +180,13 @@ private struct ProductionReadinessContent: View {
                     Label("StoreKit 2 product query (demo)", systemImage: "bag")
                 }
                 .accessibilityIdentifier("storeKitProductQueryDemoLink")
+
+                NavigationLink {
+                    SignInWithAppleDemoView()
+                } label: {
+                    Label("Sign in with Apple (demo)", systemImage: "apple.logo")
+                }
+                .accessibilityIdentifier("signInWithAppleDemoLink")
             }
         }
         .accessibilityIdentifier("productionReadinessDashboard")

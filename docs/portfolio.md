@@ -46,9 +46,9 @@ Sibling backlog (do not merge scopes): portfolio plan under agent store
 | Universal shell (iPhone / iPad / Mac) | Adaptive navigation; CI platform builds | **In repo** |
 | WidgetKit / Home Screen widget | `FeedWidgetShared/`, `superDemoAppWidget/`, App Group `group.com.ilkersevim.superDemoApp`; Engineering demos → Feed widget snapshot | **In repo** (JP-P0-B; iOS embed; Mac lane skips extension) |
 | Live Activities / Dynamic Island | `FeedRefreshActivityAttributes`, `ActivityKitFeedRefreshLiveActivityController`, `FeedRefreshLiveActivity` in widget bundle; Feed refresh gate A | **In repo** (JP-P1-A; compile on GHA; device Island not claimed on hosted CI) |
-| Push / notification service extension | Engineering demos → Local stale-Feed reminder (local only) | **In repo** (JP-P1-C local; NSE / APNs still **not** in repo — JP-P2-E) |
+| Push / notification service extension | Engineering demos → Local stale-Feed reminder (local only); [`release-checklist.md`](release-checklist.md) mock TestFlight/APNs | **In repo** (JP-P1-C local + JP-P2-E labeled mock/demo checklist; no production APNs claim) |
 | Share extension | — | **Not in repo** (JP-P2-A) |
-| Sign in with Apple | Demo auth / Keychain ≠ SIWA | **Not in repo** (JP-P2-B) |
+| Sign in with Apple | `Shared/Auth/`, Engineering demos → Sign in with Apple (demo) | **In repo** (JP-P2-B; Simulator-honest unavailable; not production auth) |
 | StoreKit 2 | `Config/Products.storekit`; `Shared/StoreKit/`; Engineering demos → StoreKit 2 product query (demo) | **In repo** (JP-P1-D query-only; no purchase / charge path) |
 | Native↔Flutter host bridge | `Shared/HostBridge/`, `Shared/FlutterEmbed/`, `flutter_module/`, [`native-host-boundary.md`](native-host-boundary.md), [`flutter-add-to-app.md`](flutter-add-to-app.md); Engineering demos → Host bridge ping / Flutter add-to-app | **In repo** (JP-P0-C contract + JP-P2-D module embed; Mac unlinked; frameworks via prepare script) |
 | Core ML / Vision / Speech / Apple Intelligence | — | **Not in repo** (JP-P2-C; no AI entitlement claims) |
