@@ -39,7 +39,7 @@ private struct FlutterModuleRepresentable: UIViewControllerRepresentable {
     }
 
     func updateUIViewController(_: FlutterViewController, context _: Context) {
-        // No-op: FlutterViewController owns its own refresh cycle.
+        // No-op: engine + MethodChannel are owned by FlutterAddToAppHost.
     }
 }
 #endif
@@ -77,8 +77,8 @@ private struct FlutterModuleUnavailableView: View {
 
             Section("Honesty") {
                 Text(
-                    "Portfolio demo only. Hosted CI prepares Flutter frameworks on the "
-                        + "iPhone lane; Mac platform builds intentionally skip Flutter."
+                    "Portfolio demo only. Hosted CI prepares unsigned Flutter frameworks "
+                        + "(`--no-codesign`) on the iPhone lane; Mac platform builds skip Flutter."
                 )
                 .font(.footnote)
                 .foregroundStyle(.secondary)

@@ -5,18 +5,23 @@
 # Config/FlutterEmbed.local.xcconfig (gitignored). Mac destinations never link
 # Flutter (sdk-filtered flags). Requires macOS + Flutter SDK + Xcode.
 #
-# Usage: ./tool/prepare_flutter_embed.sh [--skip-build]
+# Hosted CI has no Apple Development certs — default is --no-codesign.
+#
+# Usage: ./tool/prepare_flutter_embed.sh [--skip-build] [--codesign]
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 
 SKIP_BUILD=0
+# Default: unsigned frameworks (CI + most local Simulator work).
+CODESIGN_ARGS=(--no-codesign)
 for arg in "$@"; do
   case "$arg" in
     --skip-build) SKIP_BUILD=1 ;;
+    --codesign) CODESIGN_ARGS=() ;;
     -h|--help)
-      sed -n '2,12p' "$0"
+      sed -n '2,14p' "$0"
       exit 0
       ;;
     *)
@@ -47,14 +52,16 @@ echo "==> flutter pub get (module)"
 )
 
 if [[ "$SKIP_BUILD" != "1" ]]; then
-  echo "==> flutter build ios-framework → $OUT_DIR"
+  echo "==> flutter build ios-framework → $OUT_DIR ${CODESIGN_ARGS[*]:-(codesign)}"
   rm -rf "$OUT_DIR"
   (
     cd "$MODULE_DIR"
-    # XCFrameworks for Debug/Profile/Release (iphoneos + iphonesimulator slices).
-    # --no-codesign: CI runners have no Apple Development cert; frameworks are
-    # re-signed when the host app links/embeds them.
-    flutter build ios-framework --output="$OUT_DIR" --no-profile --no-codesign
+    # Debug + Release XCFrameworks (iphoneos + iphonesimulator). Skip Profile for CI time.
+    # --no-codesign: required on hosted GHA (no Apple Development certs).
+    flutter build ios-framework \
+      --output="$OUT_DIR" \
+      --no-profile \
+      ${CODESIGN_ARGS[@]+"${CODESIGN_ARGS[@]}"}
   )
 fi
 

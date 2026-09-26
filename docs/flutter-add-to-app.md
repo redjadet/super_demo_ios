@@ -49,14 +49,15 @@ Without step 2, the iOS app still builds; the demo shows an honest
 
 ## CI
 
-- **iphone-test** / **platform-builds (iPad):** install Flutter → prepare embed →
-  `SUPERDEMO_REQUIRE_FLUTTER_EMBED=1` so missing frameworks fail loudly.
-- Prepare uses `flutter build ios-framework --no-codesign` (hosted runners have no
-  Apple Development cert; the host app re-signs on embed/link).
+- **iphone-test** / **platform-builds (iPad):** install Flutter →
+  `./tool/prepare_flutter_embed.sh` (default **`--no-codesign`** — hosted runners
+  have no Apple Development certs) → `SUPERDEMO_REQUIRE_FLUTTER_EMBED=1`.
 - **Mac lane:** same prepare is fine; embed script and sdk-filtered linker flags
   skip Flutter on `macosx`.
 - **lint:** no Flutter frameworks required.
 - Module unit tests: `cd flutter_module && flutter test` (also run on iPhone CI).
+- Local device codesign: `./tool/prepare_flutter_embed.sh --codesign` when you
+  have a Development Team.
 
 ## Proof
 

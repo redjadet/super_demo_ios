@@ -14,6 +14,15 @@ fi
 
 echo "==> markdownlint"
 # Vendored skills under .agents/ are not project docs; lint repo docs only.
-npx --yes markdownlint-cli2 "**/*.md" "#.agents/**" "#fastlane/**" "#vendor/**"
+# Flutter module ephemeral trees (.ios/.android) are gitignored but may exist locally.
+npx --yes markdownlint-cli2 \
+  "**/*.md" \
+  "#.agents/**" \
+  "#fastlane/**" \
+  "#vendor/**" \
+  "#flutter_module/.ios/**" \
+  "#flutter_module/.android/**" \
+  "#flutter_module/.dart_tool/**" \
+  "#flutter_module/build/**"
 
 echo "Markdown lint passed."

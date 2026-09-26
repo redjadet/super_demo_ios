@@ -64,5 +64,6 @@ Launch flags (ReviewerDemo, StaleFeed, UITesting, Keychain demo, compile-time
 | Reviewer map / talk tracks | [`docs/portfolio.md`](docs/portfolio.md) |
 | Platform surfaces inventory | [`docs/portfolio.md`](docs/portfolio.md#platform-surfaces) |
 | Flutter add-to-app | [`docs/flutter-add-to-app.md`](docs/flutter-add-to-app.md) |
+| Native host bridge | [`docs/native-host-boundary.md`](docs/native-host-boundary.md) |
 | Code quality / coverage honesty | [`docs/code-quality.md`](docs/code-quality.md) |
 | Full index | [`docs/README.md`](docs/README.md) |
