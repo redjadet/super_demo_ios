@@ -42,11 +42,12 @@ checklist gate.
 
 ## Honesty (PR vs local)
 
-Hosted `iphone-test` may be build + limited UI smoke on some runners; local
-`./bin/checklist` runs the full iPhone test path via `./bin/ci-iphone-test.sh`.
-See [`../adr/0005-ci-pr-vs-local-honesty.md`](../adr/0005-ci-pr-vs-local-honesty.md)
+Hosted `iphone-test` defaults to concrete newest-runtime iPhone + `xcodebuild
+test` (`CI_IPHONE_GENERIC_BUILD=0`). The generic build-only path is an escape
+hatch only. Local `./bin/checklist` uses the same script. See
+[`../adr/0005-ci-pr-vs-local-honesty.md`](../adr/0005-ci-pr-vs-local-honesty.md)
 and [`../ci-cd-map.md`](../ci-cd-map.md). Name the exact proof command in finish
-reports — do not claim “CI = all local tests”.
+reports.
 
 ## Related
 

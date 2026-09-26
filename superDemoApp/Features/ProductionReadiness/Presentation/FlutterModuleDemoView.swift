@@ -21,6 +21,7 @@ struct FlutterModuleDemoView: View {
             #if canImport(Flutter) && os(iOS)
             FlutterModuleRepresentable()
                 .ignoresSafeArea(edges: .bottom)
+                .accessibilityIdentifier("flutterAddToAppEmbedded")
             #else
             FlutterModuleUnavailableView()
             #endif
@@ -29,6 +30,7 @@ struct FlutterModuleDemoView: View {
         #if os(iOS)
         .navigationBarTitleDisplayMode(.inline)
         #endif
+        .accessibilityIdentifier("flutterAddToAppDemoScreen")
     }
 }
 
@@ -55,6 +57,7 @@ private struct FlutterModuleUnavailableView: View {
                 )
                 .font(.footnote)
                 .foregroundStyle(.secondary)
+                .accessibilityIdentifier("flutterAddToAppUnavailable")
             }
 
             Section("How to run the real embed") {
@@ -73,6 +76,7 @@ private struct FlutterModuleUnavailableView: View {
                 } label: {
                     Label("Native host bridge ping", systemImage: "cable.connector")
                 }
+                .accessibilityIdentifier("flutterAddToAppHostBridgeLink")
             }
 
             Section("Honesty") {
@@ -84,6 +88,7 @@ private struct FlutterModuleUnavailableView: View {
                 .foregroundStyle(.secondary)
             }
         }
+        .accessibilityIdentifier("flutterAddToAppUnavailableScreen")
     }
 }
 

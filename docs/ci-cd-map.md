@@ -11,7 +11,7 @@ Canon: [`engineering/checklist_gate.md`](engineering/checklist_gate.md).
 | Stage | Hosted GitHub Actions | Local `./bin/checklist` / `./bin/ci.sh` | Manual Release Smoke | Credentialed beta lane |
 | --- | --- | --- | --- | --- |
 | Lint (+ DesignMD) | Yes — job `lint` → `bundle exec fastlane ci_lint` | Yes (checklist lint slice / Fastlane `ci`) | Optional | — |
-| Unit / UI smoke | Job `iphone-test` → `./bin/ci-iphone-test.sh` (often **build + limited UI**; see [`testing.md`](testing.md) — do not assume full suite parity with every local run) | Yes — same script; warnings as errors | Optional targeted `xcodebuild test` | — |
+| Unit / UI smoke | Job `iphone-test` → `./bin/ci-iphone-test.sh` on newest iPhone Simulator (`CI_IPHONE_GENERIC_BUILD=0`); escape hatch `=1` for generic build-only — see [`testing.md`](testing.md) | Yes — same script; warnings as errors | Optional targeted `xcodebuild test` | — |
 | Platform builds | Job `platform-builds` → `./bin/ci-platform-builds.sh` (iPad + Mac) | Yes (unless `CHECKLIST_SKIP_PLATFORM_BUILDS=1` / `CI_SKIP_PLATFORM_BUILDS=1`) | — | — |
 | Widget extension | Built/embedded with iPhone/iPad app targets (`superDemoAppWidget`, App Group snapshot + Feed refresh Live Activity UI); **not** embedded on Mac (`platformFilter = ios`) | Same as app lanes | — | Device App Group / Live Activity Island may need device; GHA compiles only |
 | Flutter add-to-app | iPhone + iPad lanes: `subosito/flutter-action` → `./tool/prepare_flutter_embed.sh` (**`--no-codesign`**) → `SUPERDEMO_REQUIRE_FLUTTER_EMBED=1`; Mac lane skips Flutter link (sdk-filtered) | Same prepare on macOS before iOS Simulator run | — | Frameworks not committed; see [`flutter-add-to-app.md`](flutter-add-to-app.md) |

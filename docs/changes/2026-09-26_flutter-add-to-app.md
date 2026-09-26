@@ -20,6 +20,9 @@ MethodChannel → `NativePlatformFacade`.
 - Portfolio demo; Mac destination does not link Flutter
 - Frameworks generated on macOS (local or GHA); not committed
 - Without prepare script, iOS build still succeeds with unavailable UI
+- Unit test target (`superDemoAppTests`) also includes `App.xcconfig` so
+  `xcodebuild test` can resolve the Flutter module dependency when embed is
+  prepared (search paths / flags are SDK-filtered; Mac stays unlinked)
 
 ## Proof
 

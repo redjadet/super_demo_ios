@@ -107,6 +107,10 @@ jobs:
         env:
           CI: true
           CI_PREPARE_IPAD: "0"
+          # Concrete newest-runtime iPhone simulator + xcodebuild test (not generic build-only).
+          CI_IPHONE_GENERIC_BUILD: "0"
+          # Single attempt (no hard-timeout full-suite retry). Leave headroom under job 90m.
+          CI_IPHONE_XCODEBUILD_TIMEOUT_SECONDS: "3600"
           IPHONE_DERIVED_DATA_PATH: ${{ runner.temp }}/DerivedData-iPhone
           SUPERDEMO_REQUIRE_FLUTTER_EMBED: "1"
         run: ./bin/ci-iphone-test.sh

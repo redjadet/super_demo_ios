@@ -9,13 +9,13 @@
 import Foundation
 
 /// Reuses the same App Group as the Feed widget (single group ID).
-enum ShareInboxAppGroup {
+nonisolated enum ShareInboxAppGroup {
     static let identifier = "group.com.ilkersevim.superDemoApp"
     static let fileName = "share-inbox.json"
 }
 
 /// One share handoff (URL and/or plain text).
-struct ShareInboxEntry: Codable, Equatable, Identifiable, Sendable {
+nonisolated struct ShareInboxEntry: Codable, Equatable, Identifiable, Sendable {
     var id: UUID
     var text: String?
     var urlString: String?
@@ -46,7 +46,7 @@ struct ShareInboxEntry: Codable, Equatable, Identifiable, Sendable {
 }
 
 /// Versioned inbox written atomically into the App Group container.
-struct ShareInboxPayload: Codable, Equatable, Sendable {
+nonisolated struct ShareInboxPayload: Codable, Equatable, Sendable {
     static let currentVersion = 1
 
     /// Wire format key remains `"v"` (same honesty pattern as Feed widget snapshot).
@@ -65,7 +65,7 @@ struct ShareInboxPayload: Codable, Equatable, Sendable {
 }
 
 /// Honest load states for the main-app Engineering demo.
-enum ShareInboxLoadState: Equatable, Sendable {
+nonisolated enum ShareInboxLoadState: Equatable, Sendable {
     case unavailable
     case absent
     case corrupt

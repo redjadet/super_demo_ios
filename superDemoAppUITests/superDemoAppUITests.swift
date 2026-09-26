@@ -130,11 +130,11 @@ final class superDemoAppUITests: XCTestCase {
     @MainActor
     func testStaleFeedEngineeringDemoShowsBanner() {
         let app = UiTestSupport.launchApplication()
-        UiTestSupport.openDashboardTab(in: app)
-
-        let staleLink = app.descendants(matching: .any).matching(identifier: "staleFeedDemoLink").firstMatch
-        XCTAssertTrue(staleLink.waitForExistence(timeout: 15))
-        staleLink.tap()
+        UiTestSupport.openEngineeringDemo(
+            linkIdentifier: "staleFeedDemoLink",
+            screenIdentifier: "staleFeedDemoScreen",
+            in: app
+        )
 
         let banner = app.descendants(matching: .any).matching(identifier: "feedStaleBanner").firstMatch
         XCTAssertTrue(banner.waitForExistence(timeout: 15))

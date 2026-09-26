@@ -100,7 +100,7 @@ struct AppIntentNavigationTests {
         defer { AppNavigationStore.testingOverride = nil }
 
         store.state.selection = .items
-        var intent = RefreshFeedIntent()
+        let intent = RefreshFeedIntent()
         intent.openFeedTab = true
         _ = try await intent.perform()
 
@@ -116,7 +116,7 @@ struct AppIntentNavigationTests {
         defer { AppNavigationStore.testingOverride = nil }
 
         store.state.selection = .dashboard
-        var intent = RefreshFeedIntent()
+        let intent = RefreshFeedIntent()
         intent.openFeedTab = false
         _ = try await intent.perform()
 

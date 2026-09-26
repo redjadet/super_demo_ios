@@ -8,7 +8,7 @@
 
 import Foundation
 
-enum FeedWidgetSnapshotStore {
+nonisolated enum FeedWidgetSnapshotStore {
     private static let jsonEncoder: JSONEncoder = {
         let encoder = JSONEncoder()
         encoder.dateEncodingStrategy = .iso8601
@@ -116,7 +116,7 @@ enum FeedWidgetSnapshotStore {
     }
 }
 
-enum FeedWidgetSnapshotStoreError: Error, Equatable, Sendable {
+nonisolated enum FeedWidgetSnapshotStoreError: Error, Equatable, Sendable {
     case containerUnavailable
 }
 
@@ -125,7 +125,7 @@ protocol FeedWidgetSnapshotPublishing: Sendable {
     func publish(_ snapshot: FeedWidgetSnapshot)
 }
 
-struct NoOpFeedWidgetSnapshotPublisher: FeedWidgetSnapshotPublishing {
+nonisolated struct NoOpFeedWidgetSnapshotPublisher: FeedWidgetSnapshotPublishing {
     func publish(_ snapshot: FeedWidgetSnapshot) {
         // Intentionally empty — tests and in-memory demos must not touch App Group.
         _ = snapshot

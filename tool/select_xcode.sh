@@ -79,7 +79,7 @@ resolve_app() {
   fi
 }
 
-# Ranked rows: channel(0=released,1=beta) \t version \t realpath
+# Ranked rows: channel(0=released,1=beta) \t version \t path_penalty(0=clean,1=_beta/_preview label) \t realpath
 rank_file="$(mktemp)"
 trap 'rm -f "$rank_file"' EXIT
 
@@ -107,7 +107,14 @@ for app in "${apps[@]}"; do
   if is_beta_xcode "$real"; then
     channel=1
   fi
-  printf '%s\t%s\t%s\n' "$channel" "$ver" "$real" >>"$rank_file"
+  # When ProductBuildVersion says GM but the app path still contains `_beta`
+  # (common on GHA images), prefer a sibling without that label if versions tie.
+  path_penalty=0
+  base="$(basename "$real")"
+  if [[ "$base" == *[Bb]eta* || "$base" == *[Pp]review* ]]; then
+    path_penalty=1
+  fi
+  printf '%s\t%s\t%s\t%s\n' "$channel" "$ver" "$path_penalty" "$real" >>"$rank_file"
 done
 
 if [[ ! -s "$rank_file" ]]; then
@@ -118,11 +125,11 @@ if [[ ! -s "$rank_file" ]]; then
 fi
 
 if [[ "${CI:-}" == "true" ]]; then
-  # CI: released first, then highest version.
-  xcode_app="$(sort -t $'\t' -k1,1n -k2,2Vr "$rank_file" | head -n1 | cut -f3)"
+  # CI: released first, then highest version, then clean (non-_beta) path label.
+  xcode_app="$(sort -t $'\t' -k1,1n -k2,2Vr -k3,3n "$rank_file" | head -n1 | cut -f4)"
 else
   # Local: newest version (seed OK) so README Xcode 27 hosts keep working.
-  xcode_app="$(sort -t $'\t' -k2,2Vr "$rank_file" | head -n1 | cut -f3)"
+  xcode_app="$(sort -t $'\t' -k2,2Vr -k3,3n "$rank_file" | head -n1 | cut -f4)"
 fi
 
 developer_dir="${xcode_app}/Contents/Developer"

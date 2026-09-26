@@ -9,14 +9,14 @@
 import Foundation
 
 /// App Group ID shared by the main app and Feed widget extension.
-enum FeedWidgetAppGroup {
+nonisolated enum FeedWidgetAppGroup {
     static let identifier = "group.com.ilkersevim.superDemoApp"
     static let widgetKind = "com.ilkersevim.superDemoApp.FeedWidget"
     static let fileName = "feed-widget-snapshot.json"
 }
 
 /// Versioned snapshot written atomically into the App Group container.
-struct FeedWidgetSnapshot: Codable, Equatable, Sendable {
+nonisolated struct FeedWidgetSnapshot: Codable, Equatable, Sendable {
     static let currentVersion = 1
 
     /// Wire format key remains `"v"` for the platform-channel-shaped contract.
@@ -34,7 +34,7 @@ struct FeedWidgetSnapshot: Codable, Equatable, Sendable {
         case titles
     }
 
-    struct FeedWidgetSnapshotTitle: Codable, Equatable, Sendable {
+    nonisolated struct FeedWidgetSnapshotTitle: Codable, Equatable, Sendable {
         var id: Int
         var title: String
     }
@@ -55,7 +55,7 @@ struct FeedWidgetSnapshot: Codable, Equatable, Sendable {
 }
 
 /// Honest widget render states (no invented “empty product” theater).
-enum FeedWidgetSnapshotState: Equatable, Sendable {
+nonisolated enum FeedWidgetSnapshotState: Equatable, Sendable {
     case unavailable
     case absent
     case corrupt

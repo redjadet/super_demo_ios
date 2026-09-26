@@ -61,19 +61,57 @@ prefer_arm64_simulator_destination() {
 
 resolve_iphone_destination_from_xcodebuild() {
   [[ -f superDemoApp.xcodeproj/project.pbxproj ]] || return 1
-  local dest_line
+  local dest_line udid dest
   dest_line="$(
     xcodebuild_show_destinations \
-      | grep -E 'platform:iOS Simulator, id:[0-9A-F-]{36}' \
-      | grep -v placeholder \
-      | head -1 \
-      || true
+      | python3 -c "
+import re, sys
+preferred = (
+    'iPhone 18 Pro Max', 'iPhone 18 Pro', 'iPhone 18 Plus', 'iPhone 18',
+    'iPhone 17 Pro Max', 'iPhone 17 Pro', 'iPhone 17 Plus', 'iPhone 17',
+    'iPhone 16 Pro Max', 'iPhone 16 Pro', 'iPhone 16 Plus', 'iPhone 16',
+    'iPhone 15 Pro Max', 'iPhone 15 Pro', 'iPhone 15 Plus', 'iPhone 15',
+)
+exotic = ('Duo', 'Fold', 'Air')
+rows = []
+for line in sys.stdin:
+    if 'platform:iOS Simulator' not in line or 'placeholder' in line:
+        continue
+    m = re.search(r'id:([0-9A-F-]{36})', line)
+    if not m:
+        continue
+    name_m = re.search(r'name:([^,}]+)', line)
+    name = (name_m.group(1).strip() if name_m else '')
+    if any(x in name for x in exotic):
+        continue
+    rows.append((name, m.group(1), line.strip()))
+if not rows:
+    sys.exit(1)
+for pref in preferred:
+    for name, udid, _ in rows:
+        if name == pref:
+            print(udid)
+            sys.exit(0)
+# Prefer classic numbered iPhones over anything else listed.
+def rank(name):
+    m = re.search(r'iPhone (\d+)', name or '')
+    gen = int(m.group(1)) if m else -1
+    if 'Pro Max' in name:
+        tier = 3
+    elif 'Pro' in name:
+        tier = 2
+    elif 'Plus' in name:
+        tier = 1
+    else:
+        tier = 0
+    return (gen, tier)
+rows.sort(key=lambda r: rank(r[0]), reverse=True)
+print(rows[0][1])
+" 2>/dev/null || true
   )"
-  [[ -n "$dest_line" ]] || return 1
-  local udid
-  udid="$(printf '%s\n' "$dest_line" | sed -n 's/.*id:\([0-9A-F-]\{36\}\).*/\1/p')"
-  [[ "$udid" =~ ^[0-9A-F-]{36}$ ]] || return 1
-  local dest="platform=iOS Simulator,id=${udid}"
+  [[ "$dest_line" =~ ^[0-9A-F-]{36}$ ]] || return 1
+  udid="$dest_line"
+  dest="platform=iOS Simulator,id=${udid}"
   destination_valid_for_scheme "$dest" || return 1
   prefer_arm64_simulator_destination "$dest"
 }
@@ -82,13 +120,20 @@ resolve_iphone_destination() {
   local dest
   if [[ -n "${CI_SIMULATOR_DEST:-}" ]]; then
     dest="${CI_SIMULATOR_DEST}"
-    prefer_arm64_simulator_destination "$dest"
-    return 0
+    if destination_valid_for_scheme "$dest"; then
+      prefer_arm64_simulator_destination "$dest"
+      return 0
+    fi
+    echo "warning: CI_SIMULATOR_DEST not visible to xcodebuild (${dest}); re-resolving" >&2
+    unset CI_SIMULATOR_DEST
   fi
   if [[ -n "${CHECKLIST_IPHONE_DEST:-}" ]]; then
     dest="${CHECKLIST_IPHONE_DEST}"
-    prefer_arm64_simulator_destination "$dest"
-    return 0
+    if destination_valid_for_scheme "$dest" || [[ "${CI:-}" != "true" ]]; then
+      prefer_arm64_simulator_destination "$dest"
+      return 0
+    fi
+    echo "warning: CHECKLIST_IPHONE_DEST not visible to xcodebuild (${dest}); re-resolving" >&2
   fi
 
   local udid dest
@@ -112,7 +157,9 @@ resolve_iphone_destination() {
     return 1
   fi
 
-  printf 'platform=iOS Simulator,name=iPhone 17\n'
+  # Local fallback when simctl / xcodebuild cannot resolve a concrete UDID.
+  # Prefer the newest marketing name; ensure_ci_simulator / simctl override on CI.
+  printf 'platform=iOS Simulator,name=iPhone 18 Pro\n'
 }
 
 resolve_ipad_destination() {

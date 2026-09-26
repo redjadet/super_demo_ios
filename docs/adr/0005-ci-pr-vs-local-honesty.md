@@ -20,14 +20,14 @@ Treat **PR / GHA lanes and local merge proof as related but not identical**:
 
 | Lane | Role |
 | --- | --- |
-| GHA `lint` / `iphone-test` / `platform-builds` → aggregate **`checklist`** | Hosted PR / merge gate (Flutter checklist role) |
-| Local `./bin/checklist` | Authoritative **single-command delivery** gate (same scripts; full iPhone tests locally) |
+| GHA `lint` / `iphone-test` / `platform-builds` → aggregate **`checklist`** | Hosted PR / merge gate (Flutter checklist role). `iphone-test` defaults to newest iPhone Simulator + `xcodebuild test`; `CI_IPHONE_GENERIC_BUILD=1` is build-only escape hatch |
+| Local `./bin/checklist` | Authoritative **single-command delivery** gate (same scripts) |
 | Local `./bin/ci.sh` | Fastlane-orchestrated equivalent of the three lanes |
 | Docs / tooling-only | `./bin/checklist-fast` (validation routing) |
 
-Record local test results separately from hosted CI build results when they
-diverge. Do not assume every local `xcodebuild test` path ran on every PR job —
-see [`../ci-cd-map.md`](../ci-cd-map.md) and [`../testing.md`](../testing.md).
+Record local test results separately from hosted CI when they diverge (for
+example after using the generic build escape hatch). See
+[`../ci-cd-map.md`](../ci-cd-map.md) and [`../testing.md`](../testing.md).
 
 Xcode warnings are treated as errors on checklist / CI build scripts
 (`tool/xcode_warnings_as_errors_flags.sh`).

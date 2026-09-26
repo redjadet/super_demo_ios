@@ -8,7 +8,7 @@
 
 import Foundation
 
-enum ShareInboxStore {
+nonisolated enum ShareInboxStore {
     private static let jsonEncoder: JSONEncoder = {
         let encoder = JSONEncoder()
         encoder.dateEncodingStrategy = .iso8601
@@ -155,6 +155,6 @@ enum ShareInboxStore {
     }
 }
 
-enum ShareInboxStoreError: Error, Equatable, Sendable {
+nonisolated enum ShareInboxStoreError: Error, Equatable, Sendable {
     case containerUnavailable
 }

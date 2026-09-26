@@ -101,6 +101,9 @@
 		};
 		A1FEED010000000000000003 /* superDemoAppWidget */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				A1FEED010000000000000020 /* Exceptions for "superDemoAppWidget" folder */,
+			);
 			path = superDemoAppWidget;
 			sourceTree = "<group>";
 		};
@@ -120,6 +123,13 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		A1FEED010000000000000020 /* Exceptions for "superDemoAppWidget" folder */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = A1FEED010000000000000004 /* superDemoAppWidget */;
+		};
 		A1SHARE01000000000000000E /* Exceptions for "superDemoAppShare" folder */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -761,6 +771,7 @@
 		};
 		56D79AFD2FB7787400B9E63E /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = A1FLUTTER0100000000000001 /* App.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
@@ -787,6 +798,7 @@
 		};
 		56D79AFE2FB7787400B9E63E /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = A1FLUTTER0100000000000001 /* App.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
@@ -870,8 +882,8 @@
 				DEVELOPMENT_TEAM = QPG8754DYH;
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = superDemoAppWidget/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Feed;
-				INFOPLIST_KEY_NSExtension_NSExtensionPointIdentifier = com.apple.widgetkit-extension;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © superDemoApp";
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -903,8 +915,8 @@
 				DEVELOPMENT_TEAM = QPG8754DYH;
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = superDemoAppWidget/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Feed;
-				INFOPLIST_KEY_NSExtension_NSExtensionPointIdentifier = com.apple.widgetkit-extension;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © superDemoApp";
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
