@@ -24,8 +24,6 @@ Use before TestFlight or App Store submission.
 - Memory pressure: image-heavy collection views and large lists.
 - iOS versions: oldest supported OS and current release candidate when available.
 
-
-
 ## Portfolio demo / mock proofs (JP-P2-E)
 
 **Audience:** portfolio reviewers — not production release. Prefer real local /
