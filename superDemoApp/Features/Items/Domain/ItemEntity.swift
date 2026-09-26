@@ -5,7 +5,7 @@
 
 import Foundation
 
-struct ItemEntity: Equatable, Identifiable {
+struct ItemEntity: Equatable, Hashable, Identifiable {
     let id: UUID
     var title: String
     var note: String

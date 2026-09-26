@@ -8,13 +8,22 @@ import SwiftUI
 struct ItemsView: View {
     @Bindable private var model: ItemsFeatureModel
 
+    @State private var selectedItem: ItemEntity?
+    @State private var preferredCompactColumn = NavigationSplitViewColumn.sidebar
+
     init(model: ItemsFeatureModel) {
         self.model = model
     }
 
     var body: some View {
-        ItemsNavigationShell {
+        ItemsNavigationShell(
+            selectedItem: self.$selectedItem,
+            preferredCompactColumn: self.$preferredCompactColumn,
+            model: self.model
+        ) {
             self.content
+                .navigationTitle("Items")
+                .iosInlineNavigationBarTitle()
         }
         .toolbar {
             self.itemsToolbar
@@ -81,11 +90,9 @@ struct ItemsView: View {
     }
 
     private func itemsList(_ items: [ItemEntity]) -> some View {
-        List {
+        List(selection: self.$selectedItem) {
             ForEach(items) { item in
-                NavigationLink {
-                    ItemDetailView(item: item, model: self.model)
-                } label: {
+                NavigationLink(value: item) {
                     VStack(alignment: .leading, spacing: 4) {
                         Text(item.title)
                             .font(.headline)
@@ -94,12 +101,27 @@ struct ItemsView: View {
                             .foregroundStyle(.secondary)
                     }
                 }
+                .accessibilityIdentifier("itemRow-\(item.id.uuidString)")
+                .tag(item)
             }
             .onDelete { offsets in
-                Task { await self.model.deleteItems(at: offsets, in: items) }
+                Task {
+                    await self.model.deleteItems(at: offsets, in: items)
+                    self.clearSelectionIfDeleted(from: items, at: offsets)
+                }
             }
         }
         .featureSidebarColumnWidth()
+        .accessibilityIdentifier("itemsList")
+    }
+
+    private func clearSelectionIfDeleted(from items: [ItemEntity], at offsets: IndexSet) {
+        guard let selectedItem else { return }
+        let deletedIDs = Set(offsets.compactMap { items.indices.contains($0) ? items[$0].id : nil })
+        if deletedIDs.contains(selectedItem.id) {
+            self.selectedItem = nil
+            self.preferredCompactColumn = .sidebar
+        }
     }
 }
 

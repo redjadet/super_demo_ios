@@ -4,6 +4,8 @@ Record durable implementation notes after meaningful changes.
 
 ## Entries
 
+- [`2026-09-26_split-selection-navigation.md`](2026-09-26_split-selection-navigation.md)
+  — Feed/Items selection-driven split + Stale Feed nested stack fix.
 - [`2026-09-26_watchos-feed-companion.md`](2026-09-26_watchos-feed-companion.md)
   — JP-P2-F watchOS Feed App Group snapshot companion; visionOS deferred.
 - [`2026-09-26_p2-harden-edge-cases.md`](2026-09-26_p2-harden-edge-cases.md)

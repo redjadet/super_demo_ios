@@ -7,19 +7,38 @@ import SwiftUI
 
 struct FeedView: View {
     @Bindable private var model: FeedFeatureModel
+    /// When `false`, list rows push onto an enclosing `NavigationStack`
+    /// (e.g. Engineering "Stale Feed" demo). When `true`, owns a split view.
+    private let embedsOwnNavigation: Bool
 
-    init(model: FeedFeatureModel) {
+    @State private var selectedPost: FeedPost?
+    @State private var preferredCompactColumn = NavigationSplitViewColumn.sidebar
+
+    init(model: FeedFeatureModel, embedsOwnNavigation: Bool = true) {
         self.model = model
+        self.embedsOwnNavigation = embedsOwnNavigation
     }
 
     var body: some View {
-        FeedNavigationShell {
-            self.content
-                .navigationTitle("Feed")
-                .iosInlineNavigationBarTitle()
-                .toolbar {
-                    self.feedToolbar
+        Group {
+            if self.embedsOwnNavigation {
+                FeedNavigationShell(
+                    selectedPost: self.$selectedPost,
+                    preferredCompactColumn: self.$preferredCompactColumn
+                ) {
+                    self.content
+                        .navigationTitle("Feed")
+                        .iosInlineNavigationBarTitle()
+                        .toolbar {
+                            self.feedToolbar
+                        }
                 }
+            } else {
+                self.content
+                    .toolbar {
+                        self.feedToolbar
+                    }
+            }
         }
         .task {
             FeedRefreshCoordinator.register(self.model)
@@ -77,41 +96,73 @@ struct FeedView: View {
         }
     }
 
+    @ViewBuilder
     private func postsList(_ posts: [FeedPost], isStale: Bool) -> some View {
-        List {
-            if isStale {
-                Section {
-                    Label("Showing offline cache. Pull to refresh when back online.", systemImage: "wifi.slash")
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
-                        .accessibilityIdentifier("feedStaleBanner")
-                }
+        // Split-owned Feed uses `List(selection:)` so taps update the detail column.
+        // When pushed onto an outer `NavigationStack` (Stale Feed demo), a selection
+        // binding swallows value links — use a plain `List` + `navigationDestination`.
+        if self.embedsOwnNavigation {
+            List(selection: self.$selectedPost) {
+                self.postsListContent(posts, isStale: isStale)
             }
+            .refreshable {
+                await self.model.refreshAndWait()
+            }
+            .featureSidebarColumnWidth()
+            .accessibilityIdentifier("feedList")
+        } else {
+            List {
+                self.postsListContent(posts, isStale: isStale)
+            }
+            .refreshable {
+                await self.model.refreshAndWait()
+            }
+            .accessibilityIdentifier("feedList")
+        }
+    }
 
-            ForEach(posts) { post in
-                NavigationLink {
-                    FeedPostDetailView(post: post)
-                } label: {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(post.title)
-                            .font(.headline)
-                            .lineLimit(2)
-                        Text(post.body)
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                            .lineLimit(2)
-                    }
-                    .accessibilityElement(children: .combine)
-                    .accessibilityLabel("\(post.title). \(post.body)")
-                }
-                .accessibilityIdentifier("feedPostRow-\(post.id)")
+    @ViewBuilder
+    private func postsListContent(_ posts: [FeedPost], isStale: Bool) -> some View {
+        if isStale {
+            Section {
+                Label("Showing offline cache. Pull to refresh when back online.", systemImage: "wifi.slash")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                    .accessibilityIdentifier("feedStaleBanner")
             }
         }
-        .refreshable {
-            await self.model.refreshAndWait()
+
+        ForEach(posts) { post in
+            Group {
+                if self.embedsOwnNavigation {
+                    NavigationLink(value: post) {
+                        self.postRowLabel(post)
+                    }
+                } else {
+                    NavigationLink {
+                        FeedPostDetailView(post: post)
+                    } label: {
+                        self.postRowLabel(post)
+                    }
+                }
+            }
+            .accessibilityIdentifier("feedPostRow-\(post.id)")
+            .tag(post)
         }
-        .featureSidebarColumnWidth()
-        .accessibilityIdentifier("feedList")
+    }
+
+    private func postRowLabel(_ post: FeedPost) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(post.title)
+                .font(.headline)
+                .lineLimit(2)
+            Text(post.body)
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+                .lineLimit(2)
+        }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(post.title). \(post.body)")
     }
 }
 

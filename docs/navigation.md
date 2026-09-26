@@ -43,6 +43,13 @@ Use declarative SwiftUI navigation that adapts across iOS, iPadOS, and macOS.
   rejected.
 - Feature stacks: Items and Feed use `ItemsNavigationShell` / `FeedNavigationShell`
   → `AdaptiveNavigationShell` for master/detail inside a tab.
+- **Selection-driven detail:** sidebar uses `List(selection:)` + `NavigationLink(value:)`
+  with `Hashable` row models; shells bind selection and flip
+  `preferredCompactColumn` to `.detail` on pick (compact iPhone). Destination-only
+  `NavigationLink { View }` inside a nested split often no-ops.
+- **Nested Feed (Stale Feed demo):** `FeedView(embedsOwnNavigation: false)` pushed
+  onto Production Readiness's `NavigationStack` so post rows push detail without a
+  nested split/stack fighting the dashboard.
 - Shared: `Shared/Presentation/AdaptiveNavigationShell.swift`
 - New features: reuse `AdaptiveNavigationShell`; add a thin feature shell only for a custom
   detail placeholder. See [`design_system.md`](design_system.md#ui-consistency-contract-all-features).
