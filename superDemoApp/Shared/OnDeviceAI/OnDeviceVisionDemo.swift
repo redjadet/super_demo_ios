@@ -50,7 +50,7 @@ final class SystemOnDeviceVisionDemo: OnDeviceVisionDemoing {
         return try Self.recognizeText(in: cgImage)
     }
 
-    nonisolated private static func recognizeText(in cgImage: CGImage) throws -> [VisionDemoObservation] {
+    private nonisolated static func recognizeText(in cgImage: CGImage) throws -> [VisionDemoObservation] {
         let request = VNRecognizeTextRequest()
         request.recognitionLevel = .accurate
         request.usesLanguageCorrection = true
@@ -75,7 +75,7 @@ final class SystemOnDeviceVisionDemo: OnDeviceVisionDemoing {
     }
 
     /// Synthetic bitmap via CoreGraphics + CoreText (avoids UIColor/NSString lint).
-    nonisolated private static func sampleCGImage() -> CGImage? {
+    private nonisolated static func sampleCGImage() -> CGImage? {
         let width = 480
         let height = 160
         let colorSpace = CGColorSpaceCreateDeviceRGB()
