@@ -77,9 +77,10 @@ enum UiTestSupport {
     ) -> Bool {
         let deadline = Date().addingTimeInterval(timeout)
         while Date() < deadline {
-            for identifier in identifiers
-                where app.descendants(matching: .any).matching(identifier: identifier).firstMatch.exists
-            {
+            let found = identifiers.contains { identifier in
+                app.descendants(matching: .any).matching(identifier: identifier).firstMatch.exists
+            }
+            if found {
                 return true
             }
             RunLoop.current.run(until: Date().addingTimeInterval(0.2))
