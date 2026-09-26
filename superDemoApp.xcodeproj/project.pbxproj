@@ -101,6 +101,9 @@
 		};
 		A1FEED010000000000000003 /* superDemoAppWidget */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				A1FEED01000000000000000E /* Exceptions for "superDemoAppWidget" folder */,
+			);
 			path = superDemoAppWidget;
 			sourceTree = "<group>";
 		};
@@ -120,6 +123,13 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		A1FEED01000000000000000E /* Exceptions for "superDemoAppWidget" folder */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = A1FEED010000000000000004 /* superDemoAppWidget */;
+		};
 		A1SHARE01000000000000000E /* Exceptions for "superDemoAppShare" folder */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
