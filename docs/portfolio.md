@@ -26,9 +26,10 @@ read-through cache.
 ## Platform surfaces
 
 Apple-platform / hybrid-native skill map for reviewers (inventory after
-`origin/main` @ `f773416`, 2026-09-27 — **post P2 A–F**: WidgetKit, Live
+`origin/main` @ `f7a2a5e`, 2026-09-27 — **post P2 A–F + #36**: WidgetKit, Live
 Activity, Share, SIWA, StoreKit query, Vision OCR, Flutter embed, watchOS
-companion; visionOS still deferred). Honest “not in repo” beats a broken link.
+companion, Open Feed Post intent / `superdemo://feed/<id>`; visionOS still
+deferred). Honest “not in repo” beats a broken link.
 Sibling backlog (do not merge scopes): portfolio plan under agent store
 `job-4472017039-portfolio-plan.md`; Flutter quality-system maturity is separate
 (`flutter-parity-quality-plan.md`).
@@ -76,9 +77,10 @@ Sibling backlog (do not merge scopes): portfolio plan under agent store
    see [`changes/2026-05-18_production_readiness_dashboard.md`](changes/2026-05-18_production_readiness_dashboard.md).
 7. **`App/`** — `AppRootView` tabs; composition roots wire DI and feature models.
 8. **`Shared/Presentation/AdaptiveNavigationShell.swift`** — shared chrome.
-9. Deep links: open `superdemo://dashboard/risks`, `superdemo://feed`, or
-   `superdemo://items` (or matching `https://superdemo.app/…` paths) to review
-   typed routing in `App/AppNavigation.swift`.
+9. Deep links: open `superdemo://dashboard/risks`, `superdemo://feed`,
+   `superdemo://feed/1`, or `superdemo://items` (or matching
+   `https://superdemo.app/…` paths, including `/feed/<id>` via AASA `/feed/*`)
+   to review typed routing in `App/AppNavigation.swift`.
 
 ## Launch and build flags
 
@@ -138,7 +140,7 @@ Both seed a fresh SwiftData cache and fail remote through existing
   `isStale` (banner); expired cache rethrows. Signposts mark Feed fetch.
 - **Navigation:** Typed `AppTab` / `AppRoute`; custom-scheme + HTTPS universal
   link parsing plus App Intents (Open Feed / Items / Production Risks /
-  Refresh Feed) without raw string navigation in views.
+  Refresh Feed / Open Feed Post) without raw string navigation in views.
 
 ## Reviewer checklist
 
@@ -147,7 +149,8 @@ Both seed a fresh SwiftData cache and fail remote through existing
 - [x] `./bin/ci.sh` passes on merge (lint + iPhone tests + iPad/Mac builds)
 - [x] Previews cover light/dark for `FeedView` (`#Preview` + `UniversalPreviewLayouts`)
 - [x] VoiceOver-relevant Feed chrome / rows / Retry proof (`testFeedAccessibilityChromeRowsAndRetry`)
-- [x] Deep links for Feed / Items (`testDeepLinkOpensFeedTab` / `testDeepLinkOpensItemsTab`)
+- [x] Deep links for Feed / Items / Feed post (`testDeepLinkOpensFeedTab` /
+  `testDeepLinkOpensItemsTab` / `testDeepLinkOpensFeedPostDetail`)
 
 ## Edge cases (summary)
 

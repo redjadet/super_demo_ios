@@ -32,6 +32,7 @@ Use declarative SwiftUI navigation that adapts across iOS, iPadOS, and macOS.
   | `superdemo://dashboard` / `https://superdemo.app/dashboard` | Dashboard tab, cleared path |
   | `superdemo://dashboard/risks` / `https://superdemo.app/dashboard/risks` | Dashboard → Production Risks |
   | `superdemo://feed` / `https://superdemo.app/feed` | Feed tab |
+  | `superdemo://feed/<id>` / `https://superdemo.app/feed/<id>` | Feed tab + select post when loaded (unknown id = tab only) |
   | `superdemo://items` / `https://superdemo.app/items` | Items tab |
   | unsupported `superdemo` / associated-host HTTPS path | Dashboard + user-facing alert |
 

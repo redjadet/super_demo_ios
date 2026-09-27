@@ -13,11 +13,13 @@ Use before TestFlight or App Store submission.
 
 - Push notifications: APNs token, permission prompt, foreground/background receipt.
 - Deep links: custom scheme fixtures cover `superdemo://dashboard`,
-  `superdemo://dashboard/risks`, `superdemo://feed`, and `superdemo://items`
-  (typed in `App/AppNavigation.swift`). Verify cold start, warm start, and
-  missing-route alert on device. Universal links: entitlement
-  `applinks:superdemo.app` + sample AASA in `Config/associated-domains/`;
+  `superdemo://dashboard/risks`, `superdemo://feed`, `superdemo://feed/<id>`,
+  and `superdemo://items` (typed in `App/AppNavigation.swift`). Verify cold
+  start, warm start, and missing-route alert on device. Universal links:
+  entitlement `applinks:superdemo.app` + sample AASA in
+  `Config/associated-domains/` (includes `/feed/*` for post entity URLs);
   host AASA on the live domain before relying on Safari → app handoff.
+  Local parity gate: `./tool/check_aasa_deep_links.sh`.
 - Keychain: first install, reinstall, locked device, biometric changes.
 - Permissions: denied, limited, revoked, and Settings return paths.
 - Slow networks: timeout, retry, cancellation, 429, and offline messaging.

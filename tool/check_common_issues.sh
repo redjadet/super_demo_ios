@@ -313,6 +313,11 @@ else
   fail "tool/check_simulator_runtime_compat.sh must be executable"
 fi
 
+section "AASA ↔ AppDeepLink path parity"
+require_file tool/check_aasa_deep_links.sh
+[[ -x tool/check_aasa_deep_links.sh ]] || fail "tool/check_aasa_deep_links.sh must be executable"
+./tool/check_aasa_deep_links.sh || fail "AASA deep-link path check failed"
+
 if ((failures > 0)); then
   echo
   echo "Common issue checks failed: $failures"
