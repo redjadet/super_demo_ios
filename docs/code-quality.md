@@ -12,18 +12,25 @@ Measured Engineering claim: [`engineering/engineering-quality-scorecard.md`](eng
 | --- | --- |
 | Measured line/branch `%` on `main` | **Documented unavailable** |
 | README / shields.io coverage `%` badge | **Forbidden** until a real artifact exists |
-| Hosted PR “tests green ⇒ coverage known” | **False** — see CI honesty below |
+| Hosted PR “tests green ⇒ coverage known” | **False** — tests green ≠ coverage measured |
 
-**Why unavailable:** GitHub Actions `iphone-test` runs a **build-heavy** lane via
-`./bin/ci-iphone-test.sh` and does **not** run `xcodebuild test` (hang risk on
-hosted runners — [`testing.md`](testing.md)). There is no checked-in coverage
-rollup, no Codecov/Coveralls upload, and no local script that publishes a
-filtered `%` for badges.
+**Why unavailable:** Hosted GitHub Actions `iphone-test` **does** run
+`xcodebuild test` (unit + UI) on a concrete newest-runtime iPhone Simulator
+(`CI_IPHONE_GENERIC_BUILD=0` — see [`testing.md`](testing.md),
+[`ci-cd-map.md`](ci-cd-map.md), ADR 0005). That lane does **not** pass
+`-enableCodeCoverage YES`, upload Codecov/Coveralls, or publish a filtered `%`
+artifact. Escape hatch `CI_IPHONE_GENERIC_BUILD=1` is build-only and is **not**
+the PR default.
+
+**Optional local / nightly measurement:** `./bin/coverage-iphone.sh` runs
+`xcodebuild test -enableCodeCoverage YES` and prints the `.xcresult` path for
+inspection. It is **not** a PR gate and must not invent a README badge until a
+named summary artifact exists and a change note allows it.
 
 **When a badge is allowed:** only after a named, reproducible measurement
-(e.g. local/CI `xcodebuild test -enableCodeCoverage YES` + published summary
-artifact) and an explicit change note. Until then, say “coverage undocumented”
-— never invent a `%`.
+(e.g. that script or a nightly job + published summary artifact) and an
+explicit change note. Until then, say “coverage undocumented” — never invent a
+`%`.
 
 Scorecard gate already forbids fake coverage badges on README
 (`./tool/check_engineering_quality_scorecard.sh`).

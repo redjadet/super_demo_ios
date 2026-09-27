@@ -11,7 +11,13 @@ import Testing
 struct AppIntentNavigationTests {
     @Test
     func customSchemeURLsRoundTripThroughDeepLinkParser() {
-        let links: [AppDeepLink] = [.dashboard, .productionRisks, .items, .feed]
+        let links: [AppDeepLink] = [
+            .dashboard,
+            .productionRisks,
+            .items,
+            .feed,
+            .feedPost(id: 1),
+        ]
 
         for link in links {
             #expect(AppDeepLink(url: link.customSchemeURL) == link)
@@ -122,6 +128,34 @@ struct AppIntentNavigationTests {
 
         #expect(store.state.selection == .dashboard)
         #expect(store.state.feedRefreshRequestID == 1)
+    }
+
+    @Test
+    @MainActor
+    func openFeedPostIntentQueuesPostIDAndOpensFeed() async throws {
+        let store = AppNavigationStore()
+        AppNavigationStore.testingOverride = store
+        defer { AppNavigationStore.testingOverride = nil }
+
+        store.state.selection = .items
+        let intent = OpenFeedPostIntent()
+        intent.postID = 1
+        _ = try await intent.perform()
+
+        #expect(store.state.selection == .feed)
+        #expect(store.state.feedOpenPostID == 1)
+        #expect(store.state.feedOpenPostRequestID == 1)
+    }
+
+    @Test
+    func requestOpenFeedPostSetsPendingID() {
+        var state = AppNavigationState(selection: .dashboard)
+
+        state.requestOpenFeedPost(id: 42)
+
+        #expect(state.selection == .feed)
+        #expect(state.feedOpenPostID == 42)
+        #expect(state.feedOpenPostRequestID == 1)
     }
 
     @Test

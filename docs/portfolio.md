@@ -26,7 +26,9 @@ read-through cache.
 ## Platform surfaces
 
 Apple-platform / hybrid-native skill map for reviewers (inventory after
-`origin/main` @ `6abb79a`, 2026-09-25). Honest “not in repo” beats a broken link.
+`origin/main` @ `f773416`, 2026-09-27 — **post P2 A–F**: WidgetKit, Live
+Activity, Share, SIWA, StoreKit query, Vision OCR, Flutter embed, watchOS
+companion; visionOS still deferred). Honest “not in repo” beats a broken link.
 Sibling backlog (do not merge scopes): portfolio plan under agent store
 `job-4472017039-portfolio-plan.md`; Flutter quality-system maturity is separate
 (`flutter-parity-quality-plan.md`).
@@ -38,7 +40,7 @@ Sibling backlog (do not merge scopes): portfolio plan under agent store
 | Swift Concurrency | `async`/`await` networking; actor token refreshers; `AsyncLoadController` | **In repo** |
 | Offline / networking | `CachingFeedRepository`, [`offline-first.md`](offline-first.md), [`offline-invariants.md`](offline-invariants.md), [`sync-and-networking.md`](sync-and-networking.md) | **In repo** |
 | App Intents (open-tab) | `superDemoApp/App/AppIntents/` + Shortcuts; tests | **In repo** |
-| Parameterized Feed/Items intents | `RefreshFeedIntent` (`openFeedTab`) → `FeedRefreshCoordinator` + `feedRefreshRequestID`; tests | **In repo** (JP-P1-B) |
+| Parameterized Feed/Items intents | `RefreshFeedIntent` (`openFeedTab`); `OpenFeedPostIntent` (`postID`) → `feedOpenPostID` + `superdemo://feed/<id>`; tests | **In repo** (JP-P1-B + thin entity open) |
 | ObjC legacy interop | `superDemoApp/Shared/LegacyObjC/` + bridging header | **In repo** (thin) |
 | Observability / crash swap | `superDemoApp/Shared/Diagnostics/`, [`incident-playbook.md`](incident-playbook.md) | **In repo** |
 | Performance (Feed + UIKit) | `AppPerformanceSignposts`, [`performance-lab.md`](performance-lab.md) | **In repo** |

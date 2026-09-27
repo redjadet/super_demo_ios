@@ -76,6 +76,25 @@ asks WidgetKit to reload; the **widget extension** reads that snapshot in
 **Do not** claim widget FPS or “production WidgetKit at scale” from CI. Hosted
 GHA compiles the extension; it does not Profile it.
 
+### Widget appex install / DerivedData playbook
+
+When the Home Screen widget shows a **stale snapshot** or never updates after a
+local rebuild:
+
+1. Quit Simulator (or delete the app from the Home Screen).
+2. Clean DerivedData for this project:
+   `./bin/clean-build-caches` (or Xcode → Product → Clean Build Folder).
+3. Rebuild/run the **app** scheme so `superDemoAppWidget` is re-embedded
+   (`platformFilter = ios` — Mac lane skips the appex).
+4. Remove the old widget from the Home Screen, then add **Feed** widget again
+   from the widget gallery (forces a fresh TimelineProvider attach).
+5. Open Feed → pull to refresh (or Engineering demos → Feed widget snapshot) so
+   the App Group file is rewritten; confirm widget state
+   (`ok` / `absent` / `unavailable` / …).
+
+Unsigned Simulator may report App Group `unavailable` — that is an honest
+outcome, not a broken appex. See also [`ci-cd-map.md`](ci-cd-map.md) widget row.
+
 ## Live Activity / Dynamic Island
 
 Feed refresh Live Activity (JP-P1-A, **gate A**): spans refresh + ~2.5s

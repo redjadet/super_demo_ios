@@ -22,6 +22,7 @@ struct FlutterModuleDemoView: View {
             FlutterModuleRepresentable()
                 .ignoresSafeArea(edges: .bottom)
                 .accessibilityIdentifier("flutterAddToAppEmbedded")
+                .accessibilityLabel("Embedded Flutter add-to-app module")
             #else
             FlutterModuleUnavailableView()
             #endif
@@ -31,6 +32,7 @@ struct FlutterModuleDemoView: View {
         .navigationBarTitleDisplayMode(.inline)
         #endif
         .accessibilityIdentifier("flutterAddToAppDemoScreen")
+        .accessibilityLabel("Flutter add-to-app Engineering demo")
     }
 }
 
@@ -58,6 +60,7 @@ private struct FlutterModuleUnavailableView: View {
                 .font(.footnote)
                 .foregroundStyle(.secondary)
                 .accessibilityIdentifier("flutterAddToAppUnavailable")
+                .accessibilityLabel("Flutter frameworks are not linked in this binary")
             }
 
             Section("How to run the real embed") {
@@ -77,6 +80,7 @@ private struct FlutterModuleUnavailableView: View {
                     Label("Native host bridge ping", systemImage: "cable.connector")
                 }
                 .accessibilityIdentifier("flutterAddToAppHostBridgeLink")
+                .accessibilityLabel("Open native host bridge ping demo")
             }
 
             Section("Honesty") {
@@ -89,6 +93,7 @@ private struct FlutterModuleUnavailableView: View {
             }
         }
         .accessibilityIdentifier("flutterAddToAppUnavailableScreen")
+        .accessibilityLabel("Flutter add-to-app unavailable")
     }
 }
 

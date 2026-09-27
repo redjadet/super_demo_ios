@@ -64,15 +64,17 @@ Use declarative SwiftUI navigation that adapts across iOS, iPadOS, and macOS.
 | Feed tab | `testFeedTabIsReachable` |
 | Deep link → Feed | `testDeepLinkOpensFeedTab` |
 | Deep link → Items | `testDeepLinkOpensItemsTab` |
+| Deep link → Feed post | `testDeepLinkOpensFeedPostDetail` (`superdemo://feed/1`) |
 
 Deep-link parsing and cold/warm navigation-state behavior:
 `superDemoAppTests/Shared/AppNavigationTests.swift`.
 
 - App Intents: `OpenFeedIntent`, `OpenItemsIntent`, `OpenProductionRisksIntent`,
-  and parameterized `RefreshFeedIntent` (`openFeedTab`) via
-  `AppIntentNavigationRouter` → `FeedRefreshCoordinator` +
-  `AppNavigationStore.requestFeedRefresh(openFeedTab:)`. Coordinator refreshes a
-  registered `FeedFeatureModel` when present; cold start relies on Feed `.task`
-  after the tab opens. Phrases in `SuperDemoAppShortcuts`.
+  parameterized `RefreshFeedIntent` (`openFeedTab`), and thin entity
+  `OpenFeedPostIntent` (`postID`) via `AppIntentNavigationRouter` →
+  `FeedRefreshCoordinator` / `requestOpenFeedPost` + `feedOpenPostID`.
+  Coordinator refreshes a registered `FeedFeatureModel` when present; cold start
+  relies on Feed `.task` after the tab opens. Post open selects a matching row
+  when content loads (unknown id = tab only). Phrases in `SuperDemoAppShortcuts`.
 
 Details: [`testing.md`](testing.md#ui-smoke-ci).

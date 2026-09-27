@@ -110,10 +110,14 @@ enum UiTestSupport {
         )
     }
 
-    /// Waits for Feed chrome (toolbar, states, or list). `isSelected` on tab buttons is unreliable on CI.
+    /// Waits for Feed chrome (toolbar, states, list, or post detail).
+    /// Compact `NavigationSplitView` may show only the detail column after
+    /// `superdemo://feed/<id>` selection — treat `feedPostDetail-*` as Feed UI.
+    /// `isSelected` on tab buttons is unreliable on CI.
     @MainActor
     static func waitForFeedChrome(in app: XCUIApplication, timeout: TimeInterval = 30) -> Bool {
         let deadline = Date().addingTimeInterval(timeout)
+        let detailPredicate = NSPredicate(format: "identifier BEGINSWITH %@", "feedPostDetail-")
         while Date() < deadline {
             let refresh = app.buttons["refreshFeed"]
             let refreshToolbar = app.toolbars.buttons["refreshFeed"]
@@ -125,6 +129,7 @@ enum UiTestSupport {
             let feedEmpty = app.staticTexts["No Posts"]
             let feedList = app.descendants(matching: .any).matching(identifier: "feedList").firstMatch
             let firstPostCell = app.cells.firstMatch
+            let feedPostDetail = app.descendants(matching: .any).matching(detailPredicate).firstMatch
 
             let hasFeedUI =
                 refresh.exists
@@ -137,6 +142,7 @@ enum UiTestSupport {
                     || feedEmpty.exists
                     || feedList.exists
                     || firstPostCell.exists
+                    || feedPostDetail.exists
             if hasFeedUI {
                 return true
             }

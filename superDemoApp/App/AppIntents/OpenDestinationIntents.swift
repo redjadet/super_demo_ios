@@ -64,6 +64,26 @@ struct RefreshFeedIntent: AppIntent {
     }
 }
 
+/// Thin entity-style intent: open Feed and select a post by id when loaded.
+/// Missing / unknown ids are a no-op after the tab opens (honest demo).
+struct OpenFeedPostIntent: AppIntent {
+    static var title: LocalizedStringResource = "Open Feed Post"
+    static var description = IntentDescription(
+        "Opens the Feed tab and selects a post by numeric id when present."
+    )
+    static var openAppWhenRun = true
+
+    @Parameter(title: "Post ID", default: 1)
+    var postID: Int
+
+    @MainActor
+    func perform() async throws -> some IntentResult {
+        await Task.yield()
+        AppIntentNavigationRouter.requestOpenFeedPost(id: self.postID)
+        return .result()
+    }
+}
+
 struct SuperDemoAppShortcuts: AppShortcutsProvider {
     static var shortcutTileColor: ShortcutTileColor = .blue
 
@@ -103,6 +123,15 @@ struct SuperDemoAppShortcuts: AppShortcutsProvider {
             ],
             shortTitle: "Refresh Feed",
             systemImageName: "arrow.clockwise"
+        )
+        AppShortcut(
+            intent: OpenFeedPostIntent(),
+            phrases: [
+                "Open Feed post in \(.applicationName)",
+                "Show Feed post in \(.applicationName)",
+            ],
+            shortTitle: "Open Feed Post",
+            systemImageName: "doc.text"
         )
     }
 }

@@ -89,6 +89,7 @@ final class EngineeringDemosUITests: XCTestCase {
 
         let run = app.buttons["visionRecognizeRun"]
         XCTAssertTrue(run.waitForExistence(timeout: 10))
+        XCTAssertEqual(run.label, "Recognize text in sample image")
         run.tap()
 
         let finished =
@@ -246,6 +247,44 @@ final class EngineeringDemosUITests: XCTestCase {
                 timeout: 20
             )
         )
+
+        let screen = app.descendants(matching: .any)
+            .matching(identifier: "flutterAddToAppDemoScreen")
+            .firstMatch
+        if screen.waitForExistence(timeout: 5) {
+            let label = screen.label
+            XCTAssertTrue(
+                label.contains("Flutter") || label.isEmpty,
+                "Flutter demo screen should keep a VoiceOver-relevant label when exposed"
+            )
+        }
+    }
+
+    @MainActor
+    func testWatchCompanionDemoIsReachable() {
+        let app = UiTestSupport.launchApplication()
+        UiTestSupport.openEngineeringDemo(
+            linkIdentifier: "watchCompanionDemoLink",
+            screenIdentifier: "watchCompanionDemoScreen",
+            in: app
+        )
+
+        XCTAssertTrue(
+            UiTestSupport.waitForAnyIdentifier(
+                [
+                    "watchCompanionDemoTitle",
+                    "watchCompanionDemoSummary",
+                    "watchCompanionDemoHonesty",
+                ],
+                in: app
+            )
+        )
+
+        let title = app.descendants(matching: .any)
+            .matching(identifier: "watchCompanionDemoTitle")
+            .firstMatch
+        XCTAssertTrue(title.waitForExistence(timeout: 5))
+        XCTAssertFalse(title.label.isEmpty, "Watch companion title should expose an accessibility label")
     }
 
     @MainActor

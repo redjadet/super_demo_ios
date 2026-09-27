@@ -36,6 +36,7 @@ struct OnDeviceVisionDemoView: View {
                 }
                 .disabled(self.model.isBusy)
                 .accessibilityIdentifier("visionRecognizeRun")
+                .accessibilityLabel("Recognize text in sample image")
             }
 
             switch self.model.state {
@@ -96,6 +97,7 @@ struct OnDeviceVisionDemoView: View {
         .navigationTitle("On-device Vision")
         .iosLargeNavigationBarTitle()
         .accessibilityIdentifier("onDeviceVisionDemoScreen")
+        .accessibilityLabel("On-device Vision Engineering demo")
     }
 }
 

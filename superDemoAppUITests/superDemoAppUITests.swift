@@ -58,6 +58,25 @@ final class superDemoAppUITests: XCTestCase {
     }
 
     @MainActor
+    func testDeepLinkOpensFeedPostDetail() {
+        let app = UiTestSupport.launchApplication()
+
+        UiTestSupport.openDeepLink("superdemo://feed/1", in: app)
+
+        // Compact split may prefer the detail column after pending post selection,
+        // so sidebar-only chrome checks can miss — wait for detail (or Feed chrome
+        // that includes feedPostDetail-*).
+        let detail = app.descendants(matching: .any).matching(identifier: "feedPostDetail-1").firstMatch
+        let opened =
+            detail.waitForExistence(timeout: 30)
+                || (
+                    UiTestSupport.waitForFeedChrome(in: app, timeout: 10)
+                        && detail.waitForExistence(timeout: 15)
+                )
+        XCTAssertTrue(opened, "Feed post detail did not open from superdemo://feed/1")
+    }
+
+    @MainActor
     func testUIKitShowcaseCollectionIsReachable() {
         let app = UiTestSupport.launchApplication()
 
@@ -102,6 +121,8 @@ final class superDemoAppUITests: XCTestCase {
         XCTAssertTrue(detail.waitForExistence(timeout: 10), "Feed post detail did not open from list selection")
     }
 
+    /// Selection-driven Feed/Items smoke on the hosted iPhone destination.
+    /// Hosted iPad/Mac lanes are **build-only** — see `docs/testing.md` (adaptive shell note).
     @MainActor
     func testItemRowOpensDetail() {
         let app = UiTestSupport.launchApplication(extraArguments: ["-ReviewerDemoMode"])
