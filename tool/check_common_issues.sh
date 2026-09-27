@@ -318,6 +318,11 @@ require_file tool/check_aasa_deep_links.sh
 [[ -x tool/check_aasa_deep_links.sh ]] || fail "tool/check_aasa_deep_links.sh must be executable"
 ./tool/check_aasa_deep_links.sh || fail "AASA deep-link path check failed"
 
+section "Markdown relative link existence"
+require_file tool/check_markdown_relative_links.sh
+[[ -x tool/check_markdown_relative_links.sh ]] || fail "tool/check_markdown_relative_links.sh must be executable"
+./tool/check_markdown_relative_links.sh || fail "Markdown relative link check failed"
+
 if ((failures > 0)); then
   echo
   echo "Common issue checks failed: $failures"

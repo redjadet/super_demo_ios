@@ -10,9 +10,11 @@
 
 ## Agent impact
 
-- After editing [`DESIGN.md`](../DESIGN.md): run `./bin/checklist-fast` or `./bin/checklist`
+- After editing [`DESIGN.md`](../../DESIGN.md): run `./bin/checklist-fast` or `./bin/checklist`
   (not only `./bin/lint-markdown.sh`).
-- Merge/PR gate remains `./bin/ci.sh` (no DesignMD step there yet).
+- At landing, merge/PR gate was `./bin/ci.sh` without DesignMD; DesignMD later
+  joined Fastlane `ci` / GHA `ci_lint` — see
+  [`../engineering/checklist_gate.md`](../engineering/checklist_gate.md).
 
 ## Proof
 

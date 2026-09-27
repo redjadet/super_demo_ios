@@ -4,6 +4,9 @@ Record durable implementation notes after meaningful changes.
 
 ## Entries
 
+- [`2026-09-27_docs-link-honesty.md`](2026-09-27_docs-link-honesty.md)
+  — Fix broken DESIGN/change-note hrefs; Markdown relative-link gate; tip
+  `1a269e2`.
 - [`2026-09-27_ul-host-tip-honesty.md`](2026-09-27_ul-host-tip-honesty.md)
   — Apex Associated Domains host↔entitlement parity + portfolio tip `296211b`.
 - [`2026-09-27_aasa-feed-post-honesty.md`](2026-09-27_aasa-feed-post-honesty.md)

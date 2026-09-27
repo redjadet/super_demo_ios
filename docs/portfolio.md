@@ -26,7 +26,7 @@ read-through cache.
 ## Platform surfaces
 
 Apple-platform / hybrid-native skill map for reviewers (inventory after
-`origin/main` @ `296211b`, 2026-09-27 — **post P2 A–F + #36/#37**: WidgetKit, Live
+`origin/main` @ `1a269e2`, 2026-09-27 — **post P2 A–F + #36/#37/#38**: WidgetKit, Live
 Activity, Share, SIWA, StoreKit query, Vision OCR, Flutter embed, watchOS
 companion, Open Feed Post intent / AASA `/feed/*` + apex Associated Domains;
 visionOS still deferred). Honest “not in repo” beats a broken link.
