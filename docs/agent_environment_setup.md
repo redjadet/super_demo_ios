@@ -134,8 +134,9 @@ newest-runtime iPhone** simulator (`CI_IPHONE_GENERIC_BUILD=0`). Set
 Concrete simulator boot/download waits use the repo timeout helper on macOS
 runners where GNU `timeout` is unavailable. UI tests use `-UITesting` and
 terminate the app between cases — see [`testing.md`](testing.md#ui-smoke-ci).
-This Linux cloud agent cannot boot simulators; Mac Codex / GHA `macos-26` is
-required for XCTest proof.
+This Linux cloud agent cannot boot simulators; a Mac host or GHA `xcode-27`
+(Delivery `iphone-test`) is required for XCTest proof. Escape image:
+`macos-26` + `SUPER_DEMO_XCODE_MIN_VERSION=26.5` — see [`ci-cd-map.md`](ci-cd-map.md).
 
 ## Cursor (first-time)
 

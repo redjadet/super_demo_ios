@@ -40,7 +40,7 @@ struct AppNavigationTests {
     @Test
     func httpsUniversalLinksParseMatchingPaths() throws {
         let risks = try #require(URL(string: "https://superdemo.app/dashboard/risks"))
-        let feed = try #require(URL(string: "https://www.superdemo.app/feed"))
+        let feed = try #require(URL(string: "https://superdemo.app/feed"))
         let items = try #require(URL(string: "https://superdemo.app/items"))
         let dashboard = try #require(URL(string: "https://superdemo.app/dashboard"))
 
@@ -48,6 +48,15 @@ struct AppNavigationTests {
         #expect(AppDeepLink(url: feed) == .feed)
         #expect(AppDeepLink(url: items) == .items)
         #expect(AppDeepLink(url: dashboard) == .dashboard)
+    }
+
+    @Test
+    func httpsWwwHostIsRejectedWithoutEntitlement() throws {
+        // Entitlement is apex-only (`applinks:superdemo.app`). Do not parse www
+        // as a universal link until entitlement + AASA cover it.
+        let url = try #require(URL(string: "https://www.superdemo.app/feed"))
+
+        #expect(AppDeepLink(url: url) == nil)
     }
 
     @Test

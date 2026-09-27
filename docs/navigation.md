@@ -24,8 +24,9 @@ Use declarative SwiftUI navigation that adapts across iOS, iPadOS, and macOS.
 - Root shell: `AppRootView` (`TabView`) — Dashboard, Items, Feed tabs with
   `accessibilityIdentifier` on each tab (`dashboardTab`, `itemsTab`, `feedTab`).
 - Typed deep links — custom scheme `superdemo` (`Config/AppInfo.plist`) and
-  HTTPS universal links for `superdemo.app` (Associated Domains entitlement +
-  sample AASA under `Config/associated-domains/`):
+  HTTPS universal links for apex `superdemo.app` only (Associated Domains
+  entitlement + sample AASA under `Config/associated-domains/`; `www` rejected
+  until entitlement + AASA cover it):
 
   | URL | Result |
   | --- | --- |
