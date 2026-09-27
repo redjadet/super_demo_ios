@@ -4,6 +4,9 @@ Record durable implementation notes after meaningful changes.
 
 ## Entries
 
+- [`2026-09-27_codemap-link-gate-harden.md`](2026-09-27_codemap-link-gate-harden.md)
+  — CODEMAP root-resolvable paths; Markdown link-gate `--self-test`; tooling_map
+  row; tip `d21d81a`.
 - [`2026-09-27_docs-link-honesty.md`](2026-09-27_docs-link-honesty.md)
   — Fix broken DESIGN/change-note hrefs; Markdown relative-link gate; tip
   `1a269e2`.

@@ -57,11 +57,23 @@ enum UiTestSupport {
         timeout: TimeInterval = 20
     ) {
         self.openDashboardTab(in: app)
-        _ = self.waitForListOrCollection(identifier: "productionReadinessDashboard", in: app)
+        let dashboard = self.waitForListOrCollection(
+            identifier: "productionReadinessDashboard",
+            in: app
+        )
 
         let link = app.descendants(matching: .any).matching(identifier: linkIdentifier).firstMatch
-        self.scrollToElement(link, in: app)
-        XCTAssertTrue(link.waitForExistence(timeout: timeout), "Missing demo link \(linkIdentifier)")
+        // Scroll the dashboard List/collection — `app.swipeUp()` often misses it on CI,
+        // so mid/lower Engineering demos (Feed widget, …) never enter the a11y tree.
+        self.scrollToElement(link, in: app, within: dashboard, maxSwipes: 28)
+        XCTAssertTrue(
+            link.waitForExistence(timeout: timeout),
+            "Missing demo link \(linkIdentifier)"
+        )
+        if !link.isHittable {
+            self.scrollToElement(link, in: app, within: dashboard, maxSwipes: 8)
+        }
+        XCTAssertTrue(link.isHittable, "Demo link \(linkIdentifier) exists but is not hittable")
         link.tap()
 
         let screen = app.descendants(matching: .any).matching(identifier: screenIdentifier).firstMatch
@@ -264,16 +276,26 @@ enum UiTestSupport {
     static func scrollToElement(
         _ element: XCUIElement,
         in app: XCUIApplication,
-        timeout: TimeInterval = 20,
-        maxSwipes: Int = 12
+        within scrollContainer: XCUIElement? = nil,
+        timeout: TimeInterval = 25,
+        maxSwipes: Int = 20
     ) {
         let deadline = Date().addingTimeInterval(timeout)
         var remainingSwipes = maxSwipes
+        let scroller: XCUIElement
+        if let scrollContainer, scrollContainer.exists {
+            scroller = scrollContainer
+        } else {
+            scroller = app
+        }
 
-        while Date() < deadline, !element.exists, remainingSwipes > 0 {
-            app.swipeUp()
+        while Date() < deadline, remainingSwipes > 0 {
+            if element.exists, element.isHittable {
+                return
+            }
+            scroller.swipeUp()
             remainingSwipes -= 1
-            RunLoop.current.run(until: Date().addingTimeInterval(0.2))
+            RunLoop.current.run(until: Date().addingTimeInterval(0.15))
         }
     }
 }
