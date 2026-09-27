@@ -24,10 +24,12 @@ nonisolated enum AppDeepLink: Equatable {
     /// Opens Feed and selects a post by JSONPlaceholder-style id when present.
     case feedPost(id: Int)
 
-    /// Hosts allowed for HTTPS universal links (Associated Domains).
+    /// Hosts allowed for HTTPS universal links.
+    /// Must match `applinks:` entries in `superDemoApp.entitlements` (apex only —
+    /// no `www` unless entitlement + live AASA cover it). Gate:
+    /// `./tool/check_aasa_deep_links.sh`.
     static let associatedHosts: Set<String> = [
         "superdemo.app",
-        "www.superdemo.app",
     ]
 
     init?(url: URL) {

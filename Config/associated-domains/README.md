@@ -1,7 +1,10 @@
 # Associated Domains (universal links)
 
 App entitlement: `applinks:superdemo.app` (+ `?mode=developer` for local
-developer-signed proof without a live AASA CDN).
+developer-signed proof without a live AASA CDN). Apex only — do **not** add
+`www.superdemo.app` to `AppDeepLink.associatedHosts` unless entitlement and a
+live www AASA ship together. Gate:
+`./tool/check_aasa_deep_links.sh` (paths + host↔entitlement parity).
 
 ## Hosting
 

@@ -4,6 +4,8 @@ Record durable implementation notes after meaningful changes.
 
 ## Entries
 
+- [`2026-09-27_ul-host-tip-honesty.md`](2026-09-27_ul-host-tip-honesty.md)
+  — Apex Associated Domains host↔entitlement parity + portfolio tip `296211b`.
 - [`2026-09-27_aasa-feed-post-honesty.md`](2026-09-27_aasa-feed-post-honesty.md)
   — AASA `/feed/*` + release-note capabilities/shortcuts honesty; AASA path gate.
 - [`2026-09-27_next-improvements-e2e.md`](2026-09-27_next-improvements-e2e.md)

@@ -26,10 +26,10 @@ read-through cache.
 ## Platform surfaces
 
 Apple-platform / hybrid-native skill map for reviewers (inventory after
-`origin/main` @ `f7a2a5e`, 2026-09-27 — **post P2 A–F + #36**: WidgetKit, Live
+`origin/main` @ `296211b`, 2026-09-27 — **post P2 A–F + #36/#37**: WidgetKit, Live
 Activity, Share, SIWA, StoreKit query, Vision OCR, Flutter embed, watchOS
-companion, Open Feed Post intent / `superdemo://feed/<id>`; visionOS still
-deferred). Honest “not in repo” beats a broken link.
+companion, Open Feed Post intent / AASA `/feed/*` + apex Associated Domains;
+visionOS still deferred). Honest “not in repo” beats a broken link.
 Sibling backlog (do not merge scopes): portfolio plan under agent store
 `job-4472017039-portfolio-plan.md`; Flutter quality-system maturity is separate
 (`flutter-parity-quality-plan.md`).
