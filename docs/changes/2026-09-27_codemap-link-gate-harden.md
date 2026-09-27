@@ -21,6 +21,9 @@ link-check regression surface:
   wired from `check_common_issues.sh`.
 - `docs/tooling_map.md` row for the Markdown relative-link gate.
 - Portfolio inventory pin → `d21d81a` (post #36–#39).
+- UITest: `openEngineeringDemo` / `scrollToElement` swipe the dashboard
+  List/collection (not bare `app.swipeUp`) and keep scrolling until hittable —
+  fixes CI flake on `testFeedWidgetSnapshotDemoIsReachable`.
 
 ## Deferred (unchanged)
 
