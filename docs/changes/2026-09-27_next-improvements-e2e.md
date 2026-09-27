@@ -23,6 +23,13 @@ deferred platforms.
 - **Coverage path:** `./bin/coverage-iphone.sh` (local/nightly; no badge).
 - **Widget playbook:** DerivedData / re-add widget steps in `performance-lab.md`.
 
+## Follow-up (CI)
+
+`testDeepLinkOpensFeedPostDetail` failed on hosted iPhone: after
+`superdemo://feed/1`, compact `NavigationSplitView` shows the detail column so
+sidebar-only `waitForFeedChrome` timed out. Fix: treat `feedPostDetail-*` as
+Feed chrome; assert detail first.
+
 ## Proof
 
 - `./bin/verify-swift.sh` / `./bin/checklist-fast` locally when available

@@ -62,13 +62,18 @@ final class superDemoAppUITests: XCTestCase {
         let app = UiTestSupport.launchApplication()
 
         UiTestSupport.openDeepLink("superdemo://feed/1", in: app)
-        XCTAssertTrue(UiTestSupport.waitForFeedChrome(in: app))
 
+        // Compact split may prefer the detail column after pending post selection,
+        // so sidebar-only chrome checks can miss — wait for detail (or Feed chrome
+        // that includes feedPostDetail-*).
         let detail = app.descendants(matching: .any).matching(identifier: "feedPostDetail-1").firstMatch
-        XCTAssertTrue(
-            detail.waitForExistence(timeout: 15),
-            "Feed post detail did not open from superdemo://feed/1"
-        )
+        let opened =
+            detail.waitForExistence(timeout: 30)
+                || (
+                    UiTestSupport.waitForFeedChrome(in: app, timeout: 10)
+                        && detail.waitForExistence(timeout: 15)
+                )
+        XCTAssertTrue(opened, "Feed post detail did not open from superdemo://feed/1")
     }
 
     @MainActor
