@@ -17,6 +17,7 @@ Timed walk: [`docs/architecture-tour.md`](docs/architecture-tour.md).
 | Production readiness / UIKit | `superDemoApp/Features/ProductionReadiness/`, `…/UIKitShowcase/` |
 | DI composition roots | `superDemoApp/App/*Composition.swift`, [`docs/dependency-injection.md`](docs/dependency-injection.md) |
 | Tabs / deep links / App Intents | `superDemoApp/App/AppRootView.swift`, `AppNavigation.swift`, `App/AppIntents/` (Refresh Feed + Open Feed Post) |
+| Universal links / sample AASA | `Config/associated-domains/`; gate `./tool/check_aasa_deep_links.sh` (`/feed/*` for post entity) |
 | Feed Home Screen widget | `FeedWidgetShared/`, `superDemoAppWidget/`, App Group snapshot; demo in ProductionReadiness |
 | watchOS Feed companion | `superDemoAppWatch/`, `FeedWidgetShared/` (same snapshot DTO); Engineering demos → watchOS Feed companion; visionOS deferred |
 | Share → Items inbox | `ShareInboxShared/`, `superDemoAppShare/`, App Group `share-inbox.json`; Engineering demos → Share inbox (not SwiftData) |

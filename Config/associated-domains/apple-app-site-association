@@ -9,6 +9,7 @@
           { "/": "/dashboard" },
           { "/": "/dashboard/risks" },
           { "/": "/feed" },
+          { "/": "/feed/*", "comment": "Feed post entity — matches AppDeepLink.feedPost" },
           { "/": "/items" }
         ]
       }

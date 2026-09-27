@@ -21,6 +21,8 @@ Replace the team ID prefix in `appIDs` if the signing team changes.
 | `https://superdemo.app/dashboard` | Dashboard |
 | `https://superdemo.app/dashboard/risks` | Production Risks |
 | `https://superdemo.app/feed` | Feed |
+| `https://superdemo.app/feed/<id>` | Feed + select post when loaded (`/feed/*` in AASA) |
 | `https://superdemo.app/items` | Items |
 
 Custom scheme `superdemo://…` remains supported for UI tests and reviewers.
+Gate: `./tool/check_aasa_deep_links.sh` (also via `./tool/check_common_issues.sh`).
