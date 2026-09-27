@@ -234,4 +234,4 @@ Keep in working memory when generating or refactoring SwiftUI:
   [`docs/design_system.md`](docs/design_system.md#ui-consistency-contract-all-features).
 - **Accessible:** labels on icon-only controls; Dynamic Type; light + dark previews;
   Reduce Motion aware motion.
-- **Layers:** UI only under `Features/<Name>/Presentation/`; see [`docs/layers.md`](layers.md).
+- **Layers:** UI only under `Features/<Name>/Presentation/`; see [`docs/layers.md`](docs/layers.md).

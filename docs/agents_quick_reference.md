@@ -33,7 +33,8 @@ demos (incl. watch companion) — see [`testing.md`](testing.md#ui-smoke-ci).
 Launch via `UiTestSupport.launchApplication()` (`-UITesting`, terminate between tests).
 Optional coverage (not a PR gate): `./bin/coverage-iphone.sh`.
 AASA ↔ deep-link path parity: `./tool/check_aasa_deep_links.sh` (also via
-`./tool/check_common_issues.sh` / checklist-fast).
+`./tool/check_common_issues.sh` / checklist-fast). Markdown relative-link
+existence: `./tool/check_markdown_relative_links.sh` (same common-issues lane).
 
 | Situation | Command |
 | --- | --- |
