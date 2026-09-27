@@ -66,8 +66,12 @@ agent cannot execute simulators — GHA `xcode-27` (or Mac) provides proof.
 | `testLocalNotificationDemoIsReachable` | Local stale-Feed reminder demo chrome |
 | `testIdempotentPostDemoIsReachable` | Idempotent POST demo outcome |
 | `testDiagnosticsDemoIsReachable` | Diagnostics Engineering demo screen |
+| `testWatchCompanionDemoIsReachable` | watchOS companion Engineering demo chrome + a11y labels |
+| `testDeepLinkOpensFeedPostDetail` | `superdemo://feed/1` opens `feedPostDetail-1` |
 | `testLaunch` | Local/full-lane launch duplicate for Items chrome |
 | `testLaunchPerformance` | Local launch performance under `-UITesting` |
+| Live Activity Engineering demo UI | **N/A** — no Engineering-demo link; Island / lock-screen UI needs device; GHA compiles ActivityKit + unit spy only (see [`performance-lab.md`](performance-lab.md)) |
+| iPad split / Mac window selection UI | **Best-effort / not on hosted UI lane** — GHA `platform-builds` is **build-only**; selection smoke (`testFeedPostRowOpensDetail`, `testItemRowOpensDetail`, `testDeepLinkOpensFeedPostDetail`) runs on the **iPhone** destination (compact `AdaptiveNavigationShell`). For regular-width iPad/Mac split sanity, run the same UITests locally on those destinations when a Mac is available. |
 
 Helpers live in `superDemoAppUITests/UiTestSupport.swift`:
 
@@ -148,3 +152,17 @@ Production Readiness unit coverage:
 UIKit showcase + Engineering demos), Feed, and Feed/Items deep links — see
 table above. Engineering demos live in
 `superDemoAppUITests/EngineeringDemosUITests.swift`.
+
+## Optional code coverage (local / nightly)
+
+Hosted `iphone-test` does **not** enable code coverage. For a local or nightly
+measurement (not a PR badge):
+
+```bash
+./bin/coverage-iphone.sh
+```
+
+That script runs `xcodebuild test -enableCodeCoverage YES` on the same iPhone
+destination resolution as `ci-iphone-test` and prints the `.xcresult` path.
+Inspect with Xcode Organizer or `xcrun xccov`. Do **not** invent a `%` for
+README — see [`code-quality.md`](code-quality.md).

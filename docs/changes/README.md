@@ -4,6 +4,9 @@ Record durable implementation notes after meaningful changes.
 
 ## Entries
 
+- [`2026-09-27_next-improvements-e2e.md`](2026-09-27_next-improvements-e2e.md)
+  — Docs CI honesty, watch UI smoke, Open Feed Post intent, coverage script,
+  widget DerivedData playbook.
 - [`2026-09-26_sim-runtime-compat-gate.md`](2026-09-26_sim-runtime-compat-gate.md)
   — Early lint/checklist gate for simctl runtime ↔ device-type 403 class.
 - [`2026-09-26_ci-sim-runtime-device-compat.md`](2026-09-26_ci-sim-runtime-device-compat.md)

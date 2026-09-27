@@ -13,6 +13,7 @@ struct FeedView: View {
 
     @State private var selectedPost: FeedPost?
     @State private var preferredCompactColumn = NavigationSplitViewColumn.sidebar
+    @State private var navigation = AppNavigationStore.shared
 
     init(model: FeedFeatureModel, embedsOwnNavigation: Bool = true) {
         self.model = model
@@ -20,6 +21,8 @@ struct FeedView: View {
     }
 
     var body: some View {
+        @Bindable var navigation = self.navigation
+
         Group {
             if self.embedsOwnNavigation {
                 FeedNavigationShell(
@@ -43,11 +46,31 @@ struct FeedView: View {
         .task {
             FeedRefreshCoordinator.register(self.model)
             await self.model.refreshAndWait()
+            self.applyPendingFeedPostOpenIfPossible()
+        }
+        .onChange(of: navigation.state.feedOpenPostRequestID) { _, _ in
+            self.applyPendingFeedPostOpenIfPossible()
+        }
+        .onChange(of: self.model.state) { _, _ in
+            self.applyPendingFeedPostOpenIfPossible()
         }
         .onDisappear {
             FeedRefreshCoordinator.unregister(self.model)
             self.model.cancelRefresh()
         }
+    }
+
+    /// Selects a pending post queued by App Intent / `superdemo://feed/<id>`.
+    private func applyPendingFeedPostOpenIfPossible() {
+        guard self.embedsOwnNavigation,
+              let pendingID = AppNavigationStore.current.state.feedOpenPostID,
+              case let .content(posts, _) = self.model.state,
+              let post = posts.first(where: { $0.id == pendingID })
+        else {
+            return
+        }
+        self.selectedPost = post
+        AppNavigationStore.current.clearPendingFeedPostOpen()
     }
 
     @ToolbarContentBuilder private var feedToolbar: some ToolbarContent {

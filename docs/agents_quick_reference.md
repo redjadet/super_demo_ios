@@ -28,9 +28,10 @@ Detailed routing: [`engineering/validation_routing_fast_vs_full.md`](engineering
 
 `CI_SKIP_PLATFORM_BUILDS=1` skips iPad/Mac in `./bin/ci.sh` only when intentionally narrow.
 UI smoke (CI `iphone-test` / `bin/ci-iphone-test.sh`): Items launch, Dashboard →
-Production Risks, UIKit showcase, Feed tab, Feed/Items deep links — see
-[`testing.md`](testing.md#ui-smoke-ci).
+Production Risks, UIKit showcase, Feed tab, Feed/Items deep links, Engineering
+demos (incl. watch companion) — see [`testing.md`](testing.md#ui-smoke-ci).
 Launch via `UiTestSupport.launchApplication()` (`-UITesting`, terminate between tests).
+Optional coverage (not a PR gate): `./bin/coverage-iphone.sh`.
 
 | Situation | Command |
 | --- | --- |

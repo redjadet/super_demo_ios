@@ -110,6 +110,34 @@ struct AppNavigationTests {
         #expect(state.selection == .feed)
         #expect(state.dashboardPath.isEmpty)
         #expect(state.invalidDeepLinkMessage == nil)
+        #expect(state.feedOpenPostID == nil)
+    }
+
+    @Test
+    func feedPostDeepLinkQueuesPendingPostID() throws {
+        let url = try #require(URL(string: "superdemo://feed/1"))
+        var state = AppNavigationState(selection: .items)
+
+        state.handle(url: url)
+
+        #expect(state.selection == .feed)
+        #expect(state.feedOpenPostID == 1)
+        #expect(state.feedOpenPostRequestID == 1)
+        #expect(state.invalidDeepLinkMessage == nil)
+    }
+
+    @Test
+    func feedPostDeepLinkRejectsNonPositiveID() throws {
+        let url = try #require(URL(string: "superdemo://feed/0"))
+
+        #expect(AppDeepLink(url: url) == nil)
+    }
+
+    @Test
+    func httpsFeedPostUniversalLinkParses() throws {
+        let url = try #require(URL(string: "https://superdemo.app/feed/7"))
+
+        #expect(AppDeepLink(url: url) == .feedPost(id: 7))
     }
 
     @Test

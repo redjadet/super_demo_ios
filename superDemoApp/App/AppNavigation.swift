@@ -21,6 +21,8 @@ nonisolated enum AppDeepLink: Equatable {
     case productionRisks
     case items
     case feed
+    /// Opens Feed and selects a post by JSONPlaceholder-style id when present.
+    case feedPost(id: Int)
 
     /// Hosts allowed for HTTPS universal links (Associated Domains).
     static let associatedHosts: Set<String> = [
@@ -83,6 +85,9 @@ nonisolated enum AppDeepLink: Equatable {
             return .items
         case ["feed"]:
             return .feed
+        case let parts where parts.count == 2 && parts[0] == "feed":
+            guard let id = Int(parts[1]), id > 0 else { return nil }
+            return .feedPost(id: id)
         default:
             return nil
         }
@@ -99,6 +104,8 @@ nonisolated enum AppDeepLink: Equatable {
             Self.itemsURL
         case .feed:
             Self.feedURL
+        case let .feedPost(id):
+            Self.customURL(host: "feed", path: "/\(id)")
         }
     }
 
@@ -126,8 +133,13 @@ nonisolated struct AppNavigationState {
     var dashboardPath: [AppRoute] = []
     var invalidDeepLinkMessage: String?
     /// Bumped by App Intents / typed callers to request a Feed refresh.
-    /// `FeedView` observes this; deep links do not touch it.
+    /// Deep links do not touch it; `FeedRefreshCoordinator` refreshes a live model.
     var feedRefreshRequestID: UInt = 0
+    /// Pending Feed post id from App Intent / deep link (`superdemo://feed/<id>`).
+    /// `FeedView` selects the matching row when content is loaded, then clears.
+    var feedOpenPostID: Int?
+    /// Bumped whenever `feedOpenPostID` is set so remounts re-apply selection.
+    var feedOpenPostRequestID: UInt = 0
 
     mutating func handle(url: URL) {
         guard let deepLink = AppDeepLink(url: url) else {
@@ -148,15 +160,21 @@ nonisolated struct AppNavigationState {
         case .dashboard:
             self.selection = .dashboard
             self.dashboardPath = []
+            self.feedOpenPostID = nil
         case .productionRisks:
             self.selection = .dashboard
             self.dashboardPath = [.productionRisks]
+            self.feedOpenPostID = nil
         case .items:
             self.selection = .items
             self.dashboardPath = []
+            self.feedOpenPostID = nil
         case .feed:
             self.selection = .feed
             self.dashboardPath = []
+            self.feedOpenPostID = nil
+        case let .feedPost(id):
+            self.requestOpenFeedPost(id: id)
         }
     }
 
@@ -168,6 +186,19 @@ nonisolated struct AppNavigationState {
             self.dashboardPath = []
         }
         self.feedRefreshRequestID &+= 1
+    }
+
+    /// Opens Feed and queues selection of a post by id (honest demo; missing id = no-op).
+    mutating func requestOpenFeedPost(id: Int) {
+        self.invalidDeepLinkMessage = nil
+        self.selection = .feed
+        self.dashboardPath = []
+        self.feedOpenPostID = id
+        self.feedOpenPostRequestID &+= 1
+    }
+
+    mutating func clearPendingFeedPostOpen() {
+        self.feedOpenPostID = nil
     }
 }
 
@@ -193,6 +224,14 @@ final class AppNavigationStore {
 
     func requestFeedRefresh(openFeedTab: Bool = true) {
         self.state.requestFeedRefresh(openFeedTab: openFeedTab)
+    }
+
+    func requestOpenFeedPost(id: Int) {
+        self.state.requestOpenFeedPost(id: id)
+    }
+
+    func clearPendingFeedPostOpen() {
+        self.state.clearPendingFeedPostOpen()
     }
 
     func resetForTesting() {

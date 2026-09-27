@@ -25,6 +25,7 @@ Canon gates: [`engineering/checklist_gate.md`](engineering/checklist_gate.md),
 | — | `./bin/lint-markdown` | markdownlint-cli2 |
 | — | `./bin/verify` / `verify-swift` | Format + lint for agents |
 | `integration_*` | `./bin/ci-iphone-test.sh` | UI smoke / tests — not Flutter Driver |
+| — | `./bin/coverage-iphone.sh` | Optional local/nightly `-enableCodeCoverage` (not a PR gate / no badge) |
 | `router_feature_validate` | **N/A** | GoRouter-only |
 | `upgrade_validate_all` | **N/A day-one** | No Melos; use Xcode/SPM manually |
 

@@ -35,4 +35,19 @@ enum AppIntentNavigationRouter {
             }
         }
     }
+
+    /// Opens Feed and queues post selection by id (entity-style App Intent demo).
+    nonisolated static func requestOpenFeedPost(id: Int) {
+        if Thread.isMainThread {
+            MainActor.assumeIsolated {
+                AppNavigationStore.current.requestOpenFeedPost(id: id)
+            }
+        } else {
+            DispatchQueue.main.sync {
+                MainActor.assumeIsolated {
+                    AppNavigationStore.current.requestOpenFeedPost(id: id)
+                }
+            }
+        }
+    }
 }

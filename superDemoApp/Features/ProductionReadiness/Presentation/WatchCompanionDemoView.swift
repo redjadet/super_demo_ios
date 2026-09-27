@@ -14,12 +14,17 @@ struct WatchCompanionDemoView: View {
                 Text("watchOS Feed snapshot companion")
                     .font(.headline)
                     .accessibilityIdentifier("watchCompanionDemoTitle")
+                    .accessibilityLabel("watchOS Feed snapshot companion")
                 Text(
                     "The Watch app reads the same Feed widget App Group snapshot "
                         + "DTO (`feed-widget-snapshot.json`) and honest states "
                         + "(unavailable / absent / corrupt / expired / ok)."
                 )
                 .foregroundStyle(.secondary)
+                .accessibilityIdentifier("watchCompanionDemoSummary")
+                .accessibilityLabel(
+                    "Watch companion reads the Feed widget App Group snapshot with honest states."
+                )
             } header: {
                 Text("Surface")
             }
@@ -51,6 +56,10 @@ struct WatchCompanionDemoView: View {
                         + "On Watch Simulator, use Seed demo snapshot when absent."
                 )
                 .font(.callout)
+                .accessibilityIdentifier("watchCompanionDemoHonesty")
+                .accessibilityLabel(
+                    "Watch App Group is local only. No phone to watch sync is claimed."
+                )
             } header: {
                 Text("Honesty")
             } footer: {
@@ -59,6 +68,7 @@ struct WatchCompanionDemoView: View {
         }
         .navigationTitle("Watch companion")
         .accessibilityIdentifier("watchCompanionDemoScreen")
+        .accessibilityLabel("Watch companion Engineering demo")
     }
 }
 
