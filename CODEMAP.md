@@ -16,18 +16,18 @@ Timed walk: [`docs/architecture-tour.md`](docs/architecture-tour.md).
 | Items (SwiftData reference) | `superDemoApp/Features/Items/` |
 | Production readiness / UIKit | `superDemoApp/Features/ProductionReadiness/`, `…/UIKitShowcase/` |
 | DI composition roots | `superDemoApp/App/*Composition.swift`, [`docs/dependency-injection.md`](docs/dependency-injection.md) |
-| Tabs / deep links / App Intents | `superDemoApp/App/AppRootView.swift`, `AppNavigation.swift`, `App/AppIntents/` (Refresh Feed + Open Feed Post) |
+| Tabs / deep links / App Intents | `superDemoApp/App/AppRootView.swift`, `superDemoApp/App/AppNavigation.swift`, `superDemoApp/App/AppIntents/` (Refresh Feed + Open Feed Post) |
 | Universal links / sample AASA | `Config/associated-domains/`; gate `./tool/check_aasa_deep_links.sh` (`/feed/*` for post entity) |
 | Feed Home Screen widget | `FeedWidgetShared/`, `superDemoAppWidget/`, App Group snapshot; demo in ProductionReadiness |
 | watchOS Feed companion | `superDemoAppWatch/`, `FeedWidgetShared/` (same snapshot DTO); Engineering demos → watchOS Feed companion; visionOS deferred |
-| Share → Items inbox | `ShareInboxShared/`, `superDemoAppShare/`, App Group `share-inbox.json`; Engineering demos → Share inbox (not SwiftData) |
-| Feed refresh Live Activity | `FeedWidgetShared/FeedRefreshActivityAttributes.swift`, `App/ActivityKitFeedRefreshLiveActivityController.swift`, `superDemoAppWidget/FeedRefreshLiveActivity.swift` |
-| Local notifications (demo) | `Shared/Notifications/`, Engineering demos → Local stale-Feed reminder (not APNs) |
+| Share → Items inbox | `ShareInboxShared/`, `superDemoAppShare/`, App Group file name `share-inbox.json` (runtime; not a repo path); Engineering demos → Share inbox (not SwiftData) |
+| Feed refresh Live Activity | `FeedWidgetShared/FeedRefreshActivityAttributes.swift`, `superDemoApp/App/ActivityKitFeedRefreshLiveActivityController.swift`, `superDemoAppWidget/FeedRefreshLiveActivity.swift` |
+| Local notifications (demo) | `superDemoApp/Shared/Notifications/`, Engineering demos → Local stale-Feed reminder (not APNs) |
 | Mock TestFlight / APNs checklist | [`docs/release-checklist.md`](docs/release-checklist.md) Portfolio demo / mock proofs (JP-P2-E) |
-| StoreKit 2 product query (demo) | `Config/Products.storekit`, `Shared/StoreKit/`, Engineering demos → StoreKit 2 product query (no purchase) |
-| On-device Vision OCR (demo) | `Shared/OnDeviceAI/`, Engineering demos → On-device Vision OCR (no Apple Intelligence) |
-| Sign in with Apple (demo) | `Shared/Auth/`, Engineering demos → Sign in with Apple (not production auth) |
-| Native host bridge (Flutter MethodChannel) | `superDemoApp/Shared/HostBridge/`, `Shared/FlutterEmbed/`, [`native-host-boundary.md`](docs/native-host-boundary.md), [`flutter-add-to-app.md`](docs/flutter-add-to-app.md); Engineering demos → Host bridge ping / Flutter add-to-app |
+| StoreKit 2 product query (demo) | `Config/Products.storekit`, `superDemoApp/Shared/StoreKit/`, Engineering demos → StoreKit 2 product query (no purchase) |
+| On-device Vision OCR (demo) | `superDemoApp/Shared/OnDeviceAI/`, Engineering demos → On-device Vision OCR (no Apple Intelligence) |
+| Sign in with Apple (demo) | `superDemoApp/Shared/Auth/`, Engineering demos → Sign in with Apple (not production auth) |
+| Native host bridge (Flutter MethodChannel) | `superDemoApp/Shared/HostBridge/`, `superDemoApp/Shared/FlutterEmbed/`, [`native-host-boundary.md`](docs/native-host-boundary.md), [`flutter-add-to-app.md`](docs/flutter-add-to-app.md); Engineering demos → Host bridge ping / Flutter add-to-app |
 | Networking (retry / 401 / 429 / idempotency) | `superDemoApp/Shared/Networking/`, [`docs/sync-and-networking.md`](docs/sync-and-networking.md) |
 | Diagnostics / crash swap point | `superDemoApp/Shared/Diagnostics/`, [`docs/incident-playbook.md`](docs/incident-playbook.md) |
 | Launch / demo flags | `superDemoApp/Shared/AppLaunchConfiguration.swift` |

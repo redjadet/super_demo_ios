@@ -321,6 +321,8 @@ require_file tool/check_aasa_deep_links.sh
 section "Markdown relative link existence"
 require_file tool/check_markdown_relative_links.sh
 [[ -x tool/check_markdown_relative_links.sh ]] || fail "tool/check_markdown_relative_links.sh must be executable"
+./tool/check_markdown_relative_links.sh --self-test \
+  || fail "Markdown relative link self-test failed"
 ./tool/check_markdown_relative_links.sh || fail "Markdown relative link check failed"
 
 if ((failures > 0)); then
