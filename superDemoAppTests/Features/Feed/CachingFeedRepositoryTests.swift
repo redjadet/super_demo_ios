@@ -122,7 +122,7 @@ struct CachingFeedRepositoryTests {
 
     @Test
     @MainActor
-    func fetchPostsIgnoresExpiredCacheWhenRemoteFails() async throws {
+    func fetchPostsIgnoresExpiredCacheWhenRemoteFails() throws {
         let context = try Self.makeContext()
         let now = Date(timeIntervalSince1970: 1_700_000_000)
         try Self.seed(
