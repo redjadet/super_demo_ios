@@ -26,11 +26,12 @@ read-through cache.
 ## Platform surfaces
 
 Apple-platform / hybrid-native skill map for reviewers (inventory after
-`origin/main` @ `6c5d4be`, 2026-09-28 — **post P2 A–F + #36–#40**: WidgetKit, Live
+`origin/main` @ `9aa3e05`, 2026-09-28 — **post P2 A–F + #36–#43**: WidgetKit, Live
 Activity, Share, SIWA, StoreKit query, Vision OCR, Flutter embed, watchOS
 companion, Open Feed Post intent / AASA `/feed/*` + apex Associated Domains +
-Markdown relative-link gate + CODEMAP/router path honesty; visionOS still
-deferred). Honest “not in repo” beats a broken link.
+Markdown relative-link gate + CODEMAP/router path honesty + Engineering-demo
+UITest scroll restore (#43); visionOS still deferred). Honest “not in repo”
+beats a broken link.
 Sibling backlog (do not merge scopes): portfolio plan under agent store
 `job-4472017039-portfolio-plan.md`; Flutter quality-system maturity is separate
 (`flutter-parity-quality-plan.md`).
@@ -79,9 +80,12 @@ Sibling backlog (do not merge scopes): portfolio plan under agent store
 7. **`superDemoApp/App/`** — `AppRootView` tabs; composition roots wire DI and feature models.
 8. **`superDemoApp/Shared/Presentation/AdaptiveNavigationShell.swift`** — shared chrome.
 9. Deep links: open `superdemo://dashboard/risks`, `superdemo://feed`,
-   `superdemo://feed/1`, or `superdemo://items` (or matching
-   `https://superdemo.app/…` paths, including `/feed/<id>` via AASA `/feed/*`)
-   to review typed routing in `superDemoApp/App/AppNavigation.swift`.
+   `superdemo://feed/1`, or `superdemo://items` to review typed routing in
+   `superDemoApp/App/AppNavigation.swift`. Matching `https://superdemo.app/…`
+   paths (including `/feed/<id>` via sample AASA `/feed/*`) **parse** the same
+   routes in-app, but public DNS for `superdemo.app`
+   **does not currently resolve** — Safari → app handoff is **not** claimed;
+   prefer the custom scheme for cold-path demos.
 
 ## Launch and build flags
 

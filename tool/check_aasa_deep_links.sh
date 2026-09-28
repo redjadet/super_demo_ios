@@ -1,13 +1,17 @@
 #!/usr/bin/env bash
-# Ensure sample AASA path components stay aligned with AppDeepLink routes, and
-# that AppDeepLink.associatedHosts matches applinks: entitlements (no www
-# handoff claim without entitlement + live AASA).
+# Ensure sample AASA path components stay aligned with AppDeepLink routes,
+# AppDeepLink.associatedHosts matches applinks: entitlements (no www handoff
+# claim without entitlement + live AASA), and live-host DNS honesty docs stay
+# truthful when public DNS for entitlement hosts does not resolve.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 AASA="$ROOT/Config/associated-domains/apple-app-site-association"
 ENTITLEMENTS="$ROOT/superDemoApp/superDemoApp.entitlements"
 NAVIGATION="$ROOT/superDemoApp/App/AppNavigation.swift"
+PORTFOLIO="$ROOT/docs/portfolio.md"
+ASSOC_README="$ROOT/Config/associated-domains/README.md"
+NAV_DOC="$ROOT/docs/navigation.md"
 
 if [[ ! -f "$AASA" ]]; then
   echo "error: missing $AASA" >&2
@@ -39,16 +43,20 @@ REQUIRED_PATHS=(
   "/items"
 )
 
-python3 - "$AASA" "$ENTITLEMENTS" "$NAVIGATION" "${REQUIRED_PATHS[@]}" <<'PY'
+python3 - "$AASA" "$ENTITLEMENTS" "$NAVIGATION" "$PORTFOLIO" "$ASSOC_README" "$NAV_DOC" "${REQUIRED_PATHS[@]}" <<'PY'
 import json
 import re
+import socket
 import sys
 import xml.etree.ElementTree as ET
 
 aasa_path = sys.argv[1]
 entitlements_path = sys.argv[2]
 navigation_path = sys.argv[3]
-required = sys.argv[4:]
+portfolio_path = sys.argv[4]
+assoc_readme_path = sys.argv[5]
+nav_doc_path = sys.argv[6]
+required = sys.argv[7:]
 
 with open(aasa_path, encoding="utf-8") as handle:
     data = json.load(handle)
@@ -157,4 +165,62 @@ print(
     "Associated Domains host parity OK:",
     ", ".join(sorted(entitlement_hosts)),
 )
+
+# --- Live-host DNS honesty (sample AASA ≠ Safari handoff) ---
+
+def host_resolves(host: str) -> bool:
+    try:
+        socket.getaddrinfo(host, 443)
+        return True
+    except OSError:
+        return False
+
+
+unresolved = sorted(host for host in entitlement_hosts if not host_resolves(host))
+resolved = sorted(host for host in entitlement_hosts if host not in set(unresolved))
+
+if resolved:
+    print("Live Associated Domains DNS resolved:", ", ".join(resolved))
+if unresolved:
+    print(
+        "Live Associated Domains DNS NOT resolved (sample AASA only — "
+        "Safari → app handoff not claimed):",
+        ", ".join(unresolved),
+    )
+    # Stable honesty marker reviewers + CI can grep; must appear in cold-path docs.
+    # Normalize whitespace so Markdown wrapping cannot dodge the check.
+    marker = "does not currently resolve"
+    honesty_files = {
+        "docs/portfolio.md": portfolio_path,
+        "Config/associated-domains/README.md": assoc_readme_path,
+        "docs/navigation.md": nav_doc_path,
+    }
+    missing_markers: list[str] = []
+    for label, path in honesty_files.items():
+        try:
+            text = open(path, encoding="utf-8").read()
+        except OSError as exc:
+            raise SystemExit(f"error: cannot read {label}: {exc}") from exc
+        collapsed = re.sub(r"\s+", " ", text)
+        if marker not in collapsed:
+            missing_markers.append(label)
+    if missing_markers:
+        print(
+            "error: entitlement host DNS unresolved, but honesty marker "
+            f"'{marker}' missing from: " + ", ".join(missing_markers),
+            file=sys.stderr,
+        )
+        print(
+            "  Document that public DNS for the Associated Domains host "
+            "does not currently resolve; prefer superdemo:// for reviewer "
+            "cold-path until DNS + hosted AASA exist.",
+            file=sys.stderr,
+        )
+        raise SystemExit(1)
+    print(
+        "Live-host honesty docs OK (marker present while DNS unresolved):",
+        ", ".join(honesty_files),
+    )
+else:
+    print("Live Associated Domains DNS OK for all entitlement hosts")
 PY

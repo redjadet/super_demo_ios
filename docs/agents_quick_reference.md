@@ -32,9 +32,10 @@ Production Risks, UIKit showcase, Feed tab, Feed/Items deep links, Engineering
 demos (incl. watch companion) — see [`testing.md`](testing.md#ui-smoke-ci).
 Launch via `UiTestSupport.launchApplication()` (`-UITesting`, terminate between tests).
 Optional coverage (not a PR gate): `./bin/coverage-iphone.sh`.
-AASA ↔ deep-link path parity: `./tool/check_aasa_deep_links.sh` (also via
-`./tool/check_common_issues.sh` / checklist-fast). Markdown relative-link
-existence: `./tool/check_markdown_relative_links.sh` (same common-issues lane).
+AASA ↔ deep-link path parity + live-host DNS honesty:
+`./tool/check_aasa_deep_links.sh` (also via `./tool/check_common_issues.sh` /
+checklist-fast). Markdown relative-link existence:
+`./tool/check_markdown_relative_links.sh` (same common-issues lane).
 Router doc path honesty (CODEMAP / portfolio / architecture-tour):
 `./tool/check_router_doc_paths.sh` (same lane).
 
