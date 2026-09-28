@@ -71,5 +71,45 @@ struct AsyncLoadControllerTests {
         try? await Task.sleep(nanoseconds: 600_000_000)
         #expect(!firstCompleted)
         #expect(secondCompleted)
+        #expect(!controller.isRunning)
+    }
+
+    @Test
+    func runClearsIsRunningAfterCompletion() async {
+        let controller = AsyncLoadController()
+        controller.run {
+            await Task.yield()
+        }
+
+        for _ in 0 ..< 50 where controller.isRunning {
+            try? await Task.sleep(nanoseconds: 10_000_000)
+        }
+        #expect(!controller.isRunning)
+    }
+
+    @Test
+    func runAndWaitPropagatesCallerCancellation() async {
+        let controller = AsyncLoadController()
+        var completed = false
+
+        let outer = Task {
+            await controller.runAndWait {
+                do {
+                    try await Task.sleep(nanoseconds: 2_000_000_000)
+                    completed = true
+                } catch {
+                    return
+                }
+            }
+        }
+
+        await Task.yield()
+        #expect(controller.isRunning)
+        outer.cancel()
+        _ = await outer.result
+
+        try? await Task.sleep(nanoseconds: 50_000_000)
+        #expect(!completed)
+        #expect(!controller.isRunning)
     }
 }

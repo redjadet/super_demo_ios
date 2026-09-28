@@ -202,6 +202,19 @@ nonisolated struct AppNavigationState {
     mutating func clearPendingFeedPostOpen() {
         self.feedOpenPostID = nil
     }
+
+    /// Clears a pending post open after a definitive load when the id is missing
+    /// (loaded content without a match, empty feed, or failed load).
+    mutating func clearUnresolvedFeedPostOpen(matchingPosts: [FeedPost]?) {
+        guard let pendingID = self.feedOpenPostID else { return }
+        if let matchingPosts {
+            if matchingPosts.contains(where: { $0.id == pendingID }) == false {
+                self.clearPendingFeedPostOpen()
+            }
+            return
+        }
+        self.clearPendingFeedPostOpen()
+    }
 }
 
 @MainActor
@@ -234,6 +247,10 @@ final class AppNavigationStore {
 
     func clearPendingFeedPostOpen() {
         self.state.clearPendingFeedPostOpen()
+    }
+
+    func clearUnresolvedFeedPostOpen(matchingPosts: [FeedPost]?) {
+        self.state.clearUnresolvedFeedPostOpen(matchingPosts: matchingPosts)
     }
 
     func resetForTesting() {

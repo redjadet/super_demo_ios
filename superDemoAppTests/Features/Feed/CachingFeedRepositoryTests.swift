@@ -11,10 +11,10 @@ import Testing
 @MainActor
 private final class RemoteFeedRepositorySpy: FeedRepository {
     var posts: [FeedPost]
-    var error: FeedError?
+    var error: Error?
     private(set) var fetchCount = 0
 
-    init(posts: [FeedPost] = [], error: FeedError? = nil) {
+    init(posts: [FeedPost] = [], error: Error? = nil) {
         self.posts = posts
         self.error = error
     }
@@ -189,6 +189,66 @@ struct CachingFeedRepositoryTests {
         #expect(fetched.posts == remotePosts)
         #expect(fetched.isStale == false)
         #expect(try Self.cachedPosts(in: context) == remotePosts)
+    }
+
+    @Test
+    @MainActor
+    func fetchPostsRethrowsCancellationWithoutCacheFallback() async throws {
+        let context = try Self.makeContext()
+        let cachedAt = Date(timeIntervalSince1970: 1_700_000_000)
+        let now = Date(timeIntervalSince1970: 1_700_000_100)
+        try Self.seed(
+            [FeedPost(id: 1, userID: 10, title: "Cached", body: "Offline")],
+            in: context,
+            cachedAt: cachedAt
+        )
+        let remote = RemoteFeedRepositorySpy(error: CancellationError())
+        let publisher = RecordingFeedWidgetSnapshotPublisher()
+        let repository = CachingFeedRepository(
+            remote: remote,
+            context: context,
+            cacheTTL: 60 * 15,
+            snapshotPublisher: publisher
+        ) { now }
+
+        await #expect(throws: CancellationError.self) {
+            _ = try await repository.fetchPosts()
+        }
+        #expect(publisher.published.isEmpty)
+        #expect(publisher.clearCount == 0)
+    }
+
+    @Test
+    @MainActor
+    func fetchPostsFiltersMixedAgeAndMigratedCacheRows() async throws {
+        let context = try Self.makeContext()
+        let now = Date(timeIntervalSince1970: 1_700_000_000)
+        let fresh = FeedPost(id: 1, userID: 1, title: "Fresh", body: "Keep")
+        let expired = FeedPost(id: 2, userID: 1, title: "Expired", body: "Drop")
+        let migrated = FeedPost(id: 3, userID: 1, title: "Migrated", body: "Drop")
+        context.insert(CachedFeedPost(post: fresh, cachedAt: now.addingTimeInterval(-60)))
+        context.insert(CachedFeedPost(post: expired, cachedAt: now.addingTimeInterval(-3600)))
+        let migratedRow = CachedFeedPost(post: migrated, cachedAt: now)
+        migratedRow.cachedAt = nil // migrated / missing timestamp → distantPast
+        context.insert(migratedRow)
+        try context.save()
+
+        let remote = RemoteFeedRepositorySpy(error: FeedError.invalidResponse)
+        let publisher = RecordingFeedWidgetSnapshotPublisher()
+        let repository = CachingFeedRepository(
+            remote: remote,
+            context: context,
+            cacheTTL: 60 * 15,
+            snapshotPublisher: publisher
+        ) { now }
+
+        let fetched = try await repository.fetchPosts()
+
+        #expect(fetched.posts == [fresh])
+        #expect(fetched.isStale)
+        let snapshot = try #require(publisher.published.first)
+        #expect(snapshot.postCount == 1)
+        #expect(snapshot.writtenAt == now.addingTimeInterval(-60))
     }
 
     @MainActor

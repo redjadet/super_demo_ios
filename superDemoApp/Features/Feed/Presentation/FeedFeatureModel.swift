@@ -62,7 +62,13 @@ final class FeedFeatureModel {
 
     private func beginRefresh() -> Int {
         self.refreshGeneration += 1
-        self.stateBeforeRefresh = self.state
+        // Preserve last stable state across overlapping retries so cancel does
+        // not restore `.loading` after failed → retry × N.
+        if case .loading = self.state {
+            // Keep existing `stateBeforeRefresh`.
+        } else {
+            self.stateBeforeRefresh = self.state
+        }
         self.showLoadingStateIfNeeded()
         self.liveActivity.refreshDidStart()
         return self.refreshGeneration

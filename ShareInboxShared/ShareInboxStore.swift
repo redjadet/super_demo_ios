@@ -22,6 +22,9 @@ nonisolated enum ShareInboxStore {
         return decoder
     }()
 
+    /// Quarantine sibling written when inbox JSON is unreadable / unsupported.
+    nonisolated static let quarantineFileName = "\(ShareInboxAppGroup.fileName).corrupt"
+
     static func containerURL(
         fileManager: FileManager = .default,
         suiteName: String = ShareInboxAppGroup.identifier,
@@ -46,7 +49,22 @@ nonisolated enum ShareInboxStore {
             .appendingPathComponent(ShareInboxAppGroup.fileName, isDirectory: false)
     }
 
-    /// Append one entry (load → append → atomic write). Caps at 20 newest.
+    static func quarantineFileURL(
+        fileManager: FileManager = .default,
+        suiteName: String = ShareInboxAppGroup.identifier,
+        containerURLOverride: URL? = nil
+    ) -> URL? {
+        self.containerURL(
+            fileManager: fileManager,
+            suiteName: suiteName,
+            containerURLOverride: containerURLOverride
+        )?
+            .appendingPathComponent(self.quarantineFileName, isDirectory: false)
+    }
+
+    /// Append one entry (coordinated load → append → atomic write). Caps at 20 newest.
+    /// Corrupt / unsupported payloads are quarantined; append starts a fresh inbox
+    /// without silently destroying the unreadable bytes.
     static func append(
         _ entry: ShareInboxEntry,
         fileManager: FileManager = .default,
@@ -54,35 +72,176 @@ nonisolated enum ShareInboxStore {
         containerURLOverride: URL? = nil,
         maxEntries: Int = 20
     ) throws {
-        var payload: ShareInboxPayload
-        switch self.loadState(
+        try self.coordinate(
             fileManager: fileManager,
             suiteName: suiteName,
             containerURLOverride: containerURLOverride
         ) {
-        case let .ok(existing):
-            payload = existing
-        case .absent, .unavailable, .corrupt:
-            payload = ShareInboxPayload(entries: [])
+            var payload: ShareInboxPayload
+            switch self.loadStateUnlocked(
+                fileManager: fileManager,
+                suiteName: suiteName,
+                containerURLOverride: containerURLOverride
+            ) {
+            case let .ok(existing):
+                payload = existing
+            case .absent, .unavailable:
+                payload = ShareInboxPayload(entries: [])
+            case .corrupt:
+                try self.quarantineCorruptInbox(
+                    fileManager: fileManager,
+                    suiteName: suiteName,
+                    containerURLOverride: containerURLOverride
+                )
+                payload = ShareInboxPayload(entries: [])
+            }
+            payload.entries.insert(entry, at: 0)
+            if payload.entries.count > maxEntries {
+                payload.entries = Array(payload.entries.prefix(maxEntries))
+            }
+            try self.writeUnlocked(
+                payload,
+                fileManager: fileManager,
+                suiteName: suiteName,
+                containerURLOverride: containerURLOverride
+            )
         }
-        payload.entries.insert(entry, at: 0)
-        if payload.entries.count > maxEntries {
-            payload.entries = Array(payload.entries.prefix(maxEntries))
-        }
-        try self.write(
-            payload,
-            fileManager: fileManager,
-            suiteName: suiteName,
-            containerURLOverride: containerURLOverride
-        )
     }
 
-    /// Atomically write full payload (temp file + replace).
+    /// Atomically write full payload (temp file + replace), under file coordination.
     static func write(
         _ payload: ShareInboxPayload,
         fileManager: FileManager = .default,
         suiteName: String = ShareInboxAppGroup.identifier,
         containerURLOverride: URL? = nil
+    ) throws {
+        try self.coordinate(
+            fileManager: fileManager,
+            suiteName: suiteName,
+            containerURLOverride: containerURLOverride
+        ) {
+            try self.writeUnlocked(
+                payload,
+                fileManager: fileManager,
+                suiteName: suiteName,
+                containerURLOverride: containerURLOverride
+            )
+        }
+    }
+
+    static func loadState(
+        fileManager: FileManager = .default,
+        suiteName: String = ShareInboxAppGroup.identifier,
+        containerURLOverride: URL? = nil
+    ) -> ShareInboxLoadState {
+        var result: ShareInboxLoadState = .unavailable
+        do {
+            try self.coordinate(
+                fileManager: fileManager,
+                suiteName: suiteName,
+                containerURLOverride: containerURLOverride
+            ) {
+                result = self.loadStateUnlocked(
+                    fileManager: fileManager,
+                    suiteName: suiteName,
+                    containerURLOverride: containerURLOverride
+                )
+            }
+        } catch {
+            return .unavailable
+        }
+        return result
+    }
+
+    /// Clear inbox after reviewer “import” or demo reset (coordinated vs append).
+    static func clear(
+        fileManager: FileManager = .default,
+        suiteName: String = ShareInboxAppGroup.identifier,
+        containerURLOverride: URL? = nil
+    ) throws {
+        try self.coordinate(
+            fileManager: fileManager,
+            suiteName: suiteName,
+            containerURLOverride: containerURLOverride
+        ) {
+            guard let fileURL = inboxFileURL(
+                fileManager: fileManager,
+                suiteName: suiteName,
+                containerURLOverride: containerURLOverride
+            ) else {
+                throw ShareInboxStoreError.containerUnavailable
+            }
+            if fileManager.fileExists(atPath: fileURL.path) {
+                try fileManager.removeItem(at: fileURL)
+            }
+        }
+    }
+
+    // MARK: - Coordination
+
+    private static func coordinate(
+        fileManager: FileManager,
+        suiteName: String,
+        containerURLOverride: URL?,
+        body: () throws -> Void
+    ) throws {
+        guard let fileURL = inboxFileURL(
+            fileManager: fileManager,
+            suiteName: suiteName,
+            containerURLOverride: containerURLOverride
+        ) else {
+            throw ShareInboxStoreError.containerUnavailable
+        }
+        var coordinationError: NSError?
+        var bodyError: Error?
+        let coordinator = NSFileCoordinator(filePresenter: nil)
+        coordinator.coordinate(writingItemAt: fileURL, options: [], error: &coordinationError) { _ in
+            do {
+                try body()
+            } catch {
+                bodyError = error
+            }
+        }
+        if let coordinationError {
+            throw coordinationError
+        }
+        if let bodyError {
+            throw bodyError
+        }
+    }
+
+    private static func loadStateUnlocked(
+        fileManager: FileManager,
+        suiteName: String,
+        containerURLOverride: URL?
+    ) -> ShareInboxLoadState {
+        guard let fileURL = inboxFileURL(
+            fileManager: fileManager,
+            suiteName: suiteName,
+            containerURLOverride: containerURLOverride
+        ) else {
+            return .unavailable
+        }
+        guard fileManager.fileExists(atPath: fileURL.path) else {
+            return .absent
+        }
+        do {
+            let data = try Data(contentsOf: fileURL)
+            let payload = try jsonDecoder.decode(ShareInboxPayload.self, from: data)
+            guard payload.schemaVersion == ShareInboxPayload.currentVersion else {
+                return .corrupt
+            }
+            return .ok(payload)
+        } catch {
+            return .corrupt
+        }
+    }
+
+    private static func writeUnlocked(
+        _ payload: ShareInboxPayload,
+        fileManager: FileManager,
+        suiteName: String,
+        containerURLOverride: URL?
     ) throws {
         guard let directory = containerURL(
             fileManager: fileManager,
@@ -114,49 +273,30 @@ nonisolated enum ShareInboxStore {
         }
     }
 
-    static func loadState(
-        fileManager: FileManager = .default,
-        suiteName: String = ShareInboxAppGroup.identifier,
-        containerURLOverride: URL? = nil
-    ) -> ShareInboxLoadState {
-        guard let fileURL = inboxFileURL(
-            fileManager: fileManager,
-            suiteName: suiteName,
-            containerURLOverride: containerURLOverride
-        ) else {
-            return .unavailable
-        }
-        guard fileManager.fileExists(atPath: fileURL.path) else {
-            return .absent
-        }
-        do {
-            let data = try Data(contentsOf: fileURL)
-            let payload = try jsonDecoder.decode(ShareInboxPayload.self, from: data)
-            guard payload.schemaVersion == ShareInboxPayload.currentVersion else {
-                return .corrupt
-            }
-            return .ok(payload)
-        } catch {
-            return .corrupt
-        }
-    }
-
-    /// Clear inbox after reviewer “import” or demo reset.
-    static func clear(
-        fileManager: FileManager = .default,
-        suiteName: String = ShareInboxAppGroup.identifier,
-        containerURLOverride: URL? = nil
+    /// Moves unreadable inbox bytes aside so append can start fresh without wiping evidence.
+    private static func quarantineCorruptInbox(
+        fileManager: FileManager,
+        suiteName: String,
+        containerURLOverride: URL?
     ) throws {
-        guard let fileURL = inboxFileURL(
+        guard let source = inboxFileURL(
             fileManager: fileManager,
             suiteName: suiteName,
             containerURLOverride: containerURLOverride
-        ) else {
+        ),
+            let destination = quarantineFileURL(
+                fileManager: fileManager,
+                suiteName: suiteName,
+                containerURLOverride: containerURLOverride
+            )
+        else {
             throw ShareInboxStoreError.containerUnavailable
         }
-        if fileManager.fileExists(atPath: fileURL.path) {
-            try fileManager.removeItem(at: fileURL)
+        guard fileManager.fileExists(atPath: source.path) else { return }
+        if fileManager.fileExists(atPath: destination.path) {
+            try fileManager.removeItem(at: destination)
         }
+        try fileManager.moveItem(at: source, to: destination)
     }
 }
 

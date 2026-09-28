@@ -35,10 +35,23 @@ protocol OnDeviceVisionDemoing: AnyObject {
 }
 
 /// Runs `VNRecognizeTextRequest` on a CoreGraphics-rendered sample (no asset catalog).
+/// Sync Vision/OCR work hops to `OnDeviceVisionOCRExecutor` so Recognize does not hitch UI.
 @MainActor
 final class SystemOnDeviceVisionDemo: OnDeviceVisionDemoing {
+    private let executor = OnDeviceVisionOCRExecutor()
+
     func recognizeText() async throws -> [VisionDemoObservation] {
         await Task.yield()
+        try Task.checkCancellation()
+        return try await self.executor.recognizeSampleText()
+    }
+}
+
+/// Background executor for sync Vision/CoreGraphics work (structured actor hop;
+/// not an unstructured detached task).
+private actor OnDeviceVisionOCRExecutor {
+    func recognizeSampleText() throws -> [VisionDemoObservation] {
+        try Task.checkCancellation()
         guard let cgImage = OnDeviceVisionDemoEngine.sampleCGImage() else {
             throw VisionDemoFailure.unavailable(
                 reason: """
@@ -46,7 +59,7 @@ final class SystemOnDeviceVisionDemo: OnDeviceVisionDemoing {
                 """
             )
         }
-        // Demo-sized OCR; keep structured concurrency (no detached tasks).
+        try Task.checkCancellation()
         return try OnDeviceVisionDemoEngine.recognizeText(in: cgImage)
     }
 }
@@ -80,8 +93,8 @@ private enum OnDeviceVisionDemoEngine {
 
     /// Synthetic bitmap via CoreGraphics + CoreText (avoids UIColor/NSString lint).
     static func sampleCGImage() -> CGImage? {
-        let width = 480
         let height = 160
+        let width = 480
         let colorSpace = CGColorSpaceCreateDeviceRGB()
         guard let context = CGContext(
             data: nil,

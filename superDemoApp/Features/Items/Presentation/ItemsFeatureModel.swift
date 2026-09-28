@@ -25,6 +25,9 @@ final class ItemsFeatureModel {
     private(set) var state: ItemsState = .loading
     private let loadController = AsyncLoadController()
     private var stateBeforeRefresh: ItemsState?
+    /// Bumps on each refresh so a superseded in-flight task cannot restore
+    /// UI belonging to a newer operation (failed → retry × N → cancel).
+    private var refreshGeneration = 0
 
     init(
         loadItems: LoadItemsUseCase,
@@ -41,20 +44,18 @@ final class ItemsFeatureModel {
     }
 
     func refresh() {
-        self.stateBeforeRefresh = self.state
-        self.showLoadingStateIfNeeded()
+        let generation = self.beginRefresh()
         self.loadController.run { [weak self] in
             guard let self else { return }
-            await self.performRefresh()
+            await self.performRefresh(generation: generation)
         }
     }
 
     func refreshAndWait() async {
-        self.stateBeforeRefresh = self.state
-        self.showLoadingStateIfNeeded()
+        let generation = self.beginRefresh()
         await self.loadController.runAndWait { [weak self] in
             guard let self else { return }
-            await self.performRefresh()
+            await self.performRefresh(generation: generation)
         }
     }
 
@@ -73,13 +74,18 @@ final class ItemsFeatureModel {
         }
     }
 
-    func updateItemNow(_ item: ItemEntity) async {
+    /// Persists the item and refreshes. Returns `false` on persistence failure
+    /// so the detail editor can keep dirty state.
+    @discardableResult
+    func updateItemNow(_ item: ItemEntity) async -> Bool {
         do {
             try self.updateItem(item)
             await self.refreshAndWait()
+            return true
         } catch {
             self.recordFailure(name: "items-update", error: error)
             self.state = .failed(DisplayError(error))
+            return false
         }
     }
 
@@ -96,10 +102,24 @@ final class ItemsFeatureModel {
         }
     }
 
-    private func performRefresh() async {
+    private func beginRefresh() -> Int {
+        self.refreshGeneration += 1
+        // Preserve last stable state across overlapping retries so cancel does
+        // not restore `.loading` after failed → retry × N.
+        if case .loading = self.state {
+            // Keep existing `stateBeforeRefresh`.
+        } else {
+            self.stateBeforeRefresh = self.state
+        }
+        self.showLoadingStateIfNeeded()
+        return self.refreshGeneration
+    }
+
+    private func performRefresh(generation: Int) async {
         await Task.yield()
         do {
             let items = try self.loadItems()
+            guard generation == self.refreshGeneration else { return }
             guard !Task.isCancelled else {
                 self.restorePriorStateAfterCancelledRefresh()
                 return
@@ -107,8 +127,10 @@ final class ItemsFeatureModel {
             self.state = items.isEmpty ? .empty : .content(items)
             self.stateBeforeRefresh = nil
         } catch is CancellationError {
+            guard generation == self.refreshGeneration else { return }
             self.restorePriorStateAfterCancelledRefresh()
         } catch {
+            guard generation == self.refreshGeneration else { return }
             guard !Task.isCancelled else {
                 self.restorePriorStateAfterCancelledRefresh()
                 return

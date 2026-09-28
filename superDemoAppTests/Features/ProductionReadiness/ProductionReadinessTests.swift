@@ -125,6 +125,33 @@ struct ProductionReadinessTests {
 
     @Test
     @MainActor
+    func overlappingRetriesPreserveFailedStateOnCancel() async {
+        let repository = ReadinessModelRepositorySpy()
+        repository.shouldThrow = true
+        let model = ProductionReadinessFeatureModel(
+            loadSnapshot: LoadProductionReadinessSnapshotUseCase(repository: repository),
+            scoreSnapshot: ScoreProductionReadinessUseCase()
+        )
+        await model.refreshAndWait()
+        guard case .failed = model.state else {
+            Issue.record("Expected failed before overlapping retries")
+            return
+        }
+
+        repository.delayNanoseconds = 500_000_000
+        model.refresh()
+        model.refresh()
+        try? await Task.sleep(nanoseconds: 30_000_000)
+        model.cancelRefresh()
+
+        if case .failed = model.state {
+            return
+        }
+        Issue.record("Expected failed after failed→retry×2→cancel, got \(model.state)")
+    }
+
+    @Test
+    @MainActor
     func refreshKeepsExistingContentVisible() async {
         let repository = ReadinessModelRepositorySpy()
         let model = ProductionReadinessFeatureModel(
