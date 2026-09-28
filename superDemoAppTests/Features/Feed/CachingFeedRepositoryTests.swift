@@ -100,7 +100,7 @@ struct CachingFeedRepositoryTests {
             FeedPost(id: 1, userID: 10, title: "Cached", body: "Offline"),
         ]
         try Self.seed(cachedPosts, in: context, cachedAt: cachedAt)
-        let remote = RemoteFeedRepositorySpy(error: .invalidResponse)
+        let remote = RemoteFeedRepositorySpy(error: FeedError.invalidResponse)
         let publisher = RecordingFeedWidgetSnapshotPublisher()
         let repository = CachingFeedRepository(
             remote: remote,
@@ -130,7 +130,7 @@ struct CachingFeedRepositoryTests {
             in: context,
             cachedAt: now.addingTimeInterval(-3600)
         )
-        let remote = RemoteFeedRepositorySpy(error: .invalidResponse)
+        let remote = RemoteFeedRepositorySpy(error: FeedError.invalidResponse)
         let publisher = RecordingFeedWidgetSnapshotPublisher()
         let repository = CachingFeedRepository(
             remote: remote,
@@ -139,8 +139,8 @@ struct CachingFeedRepositoryTests {
             snapshotPublisher: publisher
         ) { now }
 
-        await #expect(throws: FeedError.invalidResponse) {
-            _ = try await repository.fetchPosts()
+        #expect(throws: FeedError.invalidResponse) {
+            try await repository.fetchPosts()
         }
         #expect(remote.fetchCount == 1)
         #expect(publisher.clearCount == 1)
@@ -156,7 +156,7 @@ struct CachingFeedRepositoryTests {
             FeedPost(id: 1, userID: 10, title: "Old", body: "Still usable"),
         ]
         try Self.seed(cachedPosts, in: context, cachedAt: now.addingTimeInterval(-86400))
-        let remote = RemoteFeedRepositorySpy(error: .decodingFailed)
+        let remote = RemoteFeedRepositorySpy(error: FeedError.decodingFailed)
         let repository = CachingFeedRepository(
             remote: remote,
             context: context,
