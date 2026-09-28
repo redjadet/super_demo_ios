@@ -63,15 +63,21 @@ enum UiTestSupport {
         )
 
         let link = app.descendants(matching: .any).matching(identifier: linkIdentifier).firstMatch
-        // Scroll the dashboard List/collection — `app.swipeUp()` often misses it on CI,
-        // so mid/lower Engineering demos (Feed widget, …) never enter the a11y tree.
-        self.scrollToElement(link, in: app, within: dashboard, maxSwipes: 28)
+        // Scroll the dashboard List/collection — plain `swipeUp` is flaky on CI Xcode 27
+        // (mid/lower demos: Feed widget … watch companion never enter the a11y tree).
+        self.scrollToElement(
+            link,
+            in: app,
+            within: dashboard,
+            timeout: max(timeout, 40),
+            maxSwipes: 40
+        )
         XCTAssertTrue(
             link.waitForExistence(timeout: timeout),
             "Missing demo link \(linkIdentifier)"
         )
         if !link.isHittable {
-            self.scrollToElement(link, in: app, within: dashboard, maxSwipes: 8)
+            self.scrollToElement(link, in: app, within: dashboard, maxSwipes: 12)
         }
         XCTAssertTrue(link.isHittable, "Demo link \(linkIdentifier) exists but is not hittable")
         link.tap()
@@ -290,12 +296,36 @@ enum UiTestSupport {
         }
 
         while Date() < deadline, remainingSwipes > 0 {
-            if element.exists, element.isHittable {
-                return
+            // Existence is enough to stop searching; callers handle hittability.
+            if element.exists {
+                if element.isHittable {
+                    return
+                }
+                // Visible but not hittable — nudge once more then let caller decide.
+                if remainingSwipes <= 2 {
+                    return
+                }
             }
-            scroller.swipeUp()
+
+            // Prefer a long drag on the list/collection; `swipeUp` alone often
+            // no-ops on SwiftUI List under Xcode 27 / iOS 27 CI sims.
+            self.dragScrollUp(on: scroller)
+            if remainingSwipes % 3 == 0 {
+                app.swipeUp()
+            }
             remainingSwipes -= 1
-            RunLoop.current.run(until: Date().addingTimeInterval(0.15))
+            RunLoop.current.run(until: Date().addingTimeInterval(0.2))
         }
+    }
+
+    /// Slow vertical drag — more reliable than `swipeUp` for long Engineering demos lists.
+    @MainActor
+    private static func dragScrollUp(on scroller: XCUIElement) {
+        guard scroller.exists else {
+            return
+        }
+        let start = scroller.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.82))
+        let end = scroller.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.22))
+        start.press(forDuration: 0.05, thenDragTo: end)
     }
 }
