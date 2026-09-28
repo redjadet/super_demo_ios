@@ -53,9 +53,12 @@ Items data are disposable for this portfolio app. See
 
 `CachedFeedPost.cachedAt` records the last successful remote write.
 `CachingFeedRepository` defaults to a **15-minute** TTL for offline fallback.
-Pass `cacheTTL: nil` to keep forever-cache behavior. Schema adds that break
-lightweight migration hit the `AppModelContainer` recreate-then-in-memory
-recovery path (not a silent forever-cache).
+On remote failure, fallback **filters rows** by `effectiveCachedAt` (mixed-age
+caches keep only fresh rows; migrated `nil` timestamps count as expired). When
+no fresh rows remain, the fetch is a cache miss. Pass `cacheTTL: nil` to keep
+forever-cache behavior. Schema adds that break lightweight migration hit the
+`AppModelContainer` recreate-then-in-memory recovery path (not a silent
+forever-cache).
 
 ### Widget / host-bridge snapshot honesty
 

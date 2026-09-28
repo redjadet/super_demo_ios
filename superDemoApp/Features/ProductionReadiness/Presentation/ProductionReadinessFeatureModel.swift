@@ -21,6 +21,9 @@ final class ProductionReadinessFeatureModel {
     private(set) var state: ProductionReadinessState = .loading
     private let loadController = AsyncLoadController()
     private var stateBeforeRefresh: ProductionReadinessState?
+    /// Bumps on each refresh so superseded work cannot restore the wrong UI
+    /// (failed → retry × N → cancel must keep `.failed`, not stuck `.loading`).
+    private var refreshGeneration = 0
 
     var isInitialLoading: Bool {
         if case .loading = self.state {
@@ -38,20 +41,18 @@ final class ProductionReadinessFeatureModel {
     }
 
     func refresh() {
-        self.stateBeforeRefresh = self.state
-        self.showLoadingStateIfNeeded()
+        let generation = self.beginRefresh()
         self.loadController.run { [weak self] in
             guard let self else { return }
-            await self.performRefresh()
+            await self.performRefresh(generation: generation)
         }
     }
 
     func refreshAndWait() async {
-        self.stateBeforeRefresh = self.state
-        self.showLoadingStateIfNeeded()
+        let generation = self.beginRefresh()
         await self.loadController.runAndWait { [weak self] in
             guard let self else { return }
-            await self.performRefresh()
+            await self.performRefresh(generation: generation)
         }
     }
 
@@ -60,10 +61,22 @@ final class ProductionReadinessFeatureModel {
         self.restorePriorStateAfterCancelledRefresh()
     }
 
-    private func performRefresh() async {
+    private func beginRefresh() -> Int {
+        self.refreshGeneration += 1
+        if case .loading = self.state {
+            // Keep last stable `stateBeforeRefresh` across overlapping retries.
+        } else {
+            self.stateBeforeRefresh = self.state
+        }
+        self.showLoadingStateIfNeeded()
+        return self.refreshGeneration
+    }
+
+    private func performRefresh(generation: Int) async {
         await Task.yield()
         do {
             let snapshot = try await self.loadSnapshot()
+            guard generation == self.refreshGeneration else { return }
             guard !Task.isCancelled else {
                 self.restorePriorStateAfterCancelledRefresh()
                 return
@@ -71,8 +84,10 @@ final class ProductionReadinessFeatureModel {
             self.state = .content(snapshot, score: self.scoreSnapshot(snapshot: snapshot))
             self.stateBeforeRefresh = nil
         } catch is CancellationError {
+            guard generation == self.refreshGeneration else { return }
             self.restorePriorStateAfterCancelledRefresh()
         } catch {
+            guard generation == self.refreshGeneration else { return }
             guard !Task.isCancelled else {
                 self.restorePriorStateAfterCancelledRefresh()
                 return

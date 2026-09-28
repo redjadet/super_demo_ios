@@ -39,4 +39,33 @@ struct RetryPolicyTests {
         #expect(policy.delayNanoseconds(attempt: 1, retryAfter: "2") == 2_000_000_000)
         #expect(policy.delayNanoseconds(attempt: 2, retryAfter: nil) == 200)
     }
+
+    @Test
+    func retryAfterRejectsNonFiniteAndOversizedValues() {
+        let policy = RetryPolicy(
+            baseDelayNanoseconds: 100,
+            maxDelayNanoseconds: 500
+        ) { _ in 0 }
+
+        // Non-finite values must fall back to exponential backoff (no UInt64 trap).
+        #expect(policy.delayNanoseconds(attempt: 1, retryAfter: "inf") == 100)
+        #expect(policy.delayNanoseconds(attempt: 1, retryAfter: "-inf") == 100)
+        #expect(policy.delayNanoseconds(attempt: 1, retryAfter: "nan") == 100)
+
+        // Finite but huge values clamp safely (no UInt64 overflow trap).
+        #expect(policy.delayNanoseconds(attempt: 1, retryAfter: "1e300") == 500)
+        #expect(policy.delayNanoseconds(attempt: 1, retryAfter: "999999") == 500)
+    }
+
+    @Test
+    func exponentialBackoffSaturatesWithoutOverflow() {
+        let policy = RetryPolicy(
+            baseDelayNanoseconds: UInt64.max / 2,
+            maxDelayNanoseconds: 1000
+        ) { _ in 0 }
+
+        // Large attempt multipliers must not trap; result stays within maxDelay.
+        #expect(policy.delayNanoseconds(attempt: 63, retryAfter: nil) == 1000)
+        #expect(policy.delayNanoseconds(attempt: 100, retryAfter: nil) == 1000)
+    }
 }

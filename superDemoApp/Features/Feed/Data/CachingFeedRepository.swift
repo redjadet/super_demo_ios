@@ -48,6 +48,8 @@ final class CachingFeedRepository: FeedRepository {
 
         do {
             let result = try await self.remote.fetchPosts()
+            // Cancel / supersede after remote returns must not commit cache or widget.
+            try Task.checkCancellation()
             try self.replaceCache(with: result.posts)
             self.publishSnapshot(
                 posts: result.posts,
@@ -56,7 +58,17 @@ final class CachingFeedRepository: FeedRepository {
             )
             self.signposter.emitEvent("remoteSuccess", id: signpostID)
             return FeedLoadResult(posts: result.posts, isStale: false)
+        } catch is CancellationError {
+            self.signposter.emitEvent("cancelled", id: signpostID)
+            throw CancellationError()
+        } catch let urlError as URLError where urlError.code == .cancelled {
+            self.signposter.emitEvent("cancelled", id: signpostID)
+            throw CancellationError()
         } catch {
+            if Task.isCancelled {
+                self.signposter.emitEvent("cancelled", id: signpostID)
+                throw CancellationError()
+            }
             let cached = try self.loadValidCachedPosts()
             if cached.isEmpty {
                 // Drop prior App Group snapshot so widget / host-bridge match OI cache miss.
@@ -65,10 +77,14 @@ final class CachingFeedRepository: FeedRepository {
                 throw error
             }
             // Keep snapshot TTL aligned with SwiftData `cachedAt`, not wall-clock now.
-            let writtenAt = try self.newestCachedAt() ?? self.now()
-            self.publishSnapshot(posts: cached, isStale: true, writtenAt: writtenAt)
+            let writtenAt = cached.map(\.cachedAt).max() ?? self.now()
+            self.publishSnapshot(
+                posts: cached.map(\.post),
+                isStale: true,
+                writtenAt: writtenAt
+            )
             self.signposter.emitEvent("cacheFallback", id: signpostID)
-            return FeedLoadResult(posts: cached, isStale: true)
+            return FeedLoadResult(posts: cached.map(\.post), isStale: true)
         }
     }
 
@@ -109,25 +125,23 @@ final class CachingFeedRepository: FeedRepository {
         }
     }
 
-    private func loadValidCachedPosts() throws -> [FeedPost] {
+    /// Valid rows for offline fallback. Mixed-age caches filter per-row by TTL;
+    /// migrated / missing `cachedAt` (`distantPast`) are treated as expired.
+    private func loadValidCachedPosts() throws -> [(post: FeedPost, cachedAt: Date)] {
         var descriptor = FetchDescriptor<CachedFeedPost>()
         descriptor.sortBy = [SortDescriptor(\.postID)]
         let rows = try self.context.fetch(descriptor)
         guard rows.isEmpty == false else { return [] }
 
-        if let cacheTTL {
-            let cutoff = self.now().addingTimeInterval(-cacheTTL)
-            guard let newest = rows.map(\.effectiveCachedAt).max(), newest >= cutoff else {
-                return []
-            }
+        let mapped = rows.map { row in
+            (post: row.toDomain, cachedAt: row.effectiveCachedAt)
         }
 
-        return rows.map(\.toDomain)
-    }
+        guard let cacheTTL else {
+            return mapped
+        }
 
-    private func newestCachedAt() throws -> Date? {
-        let descriptor = FetchDescriptor<CachedFeedPost>()
-        let rows = try self.context.fetch(descriptor)
-        return rows.map(\.effectiveCachedAt).max()
+        let cutoff = self.now().addingTimeInterval(-cacheTTL)
+        return mapped.filter { $0.cachedAt >= cutoff }
     }
 }

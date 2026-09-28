@@ -11,6 +11,7 @@ import Testing
 private final class ItemsFeatureModelRepositorySpy: ItemRepository {
     var storedItems: [ItemEntity] = []
     var fetchError: Error?
+    var updateError: Error?
 
     func fetchItems() throws -> [ItemEntity] {
         if let fetchError {
@@ -26,6 +27,9 @@ private final class ItemsFeatureModelRepositorySpy: ItemRepository {
     }
 
     func updateItem(_ item: ItemEntity) throws {
+        if let updateError {
+            throw updateError
+        }
         guard let index = self.storedItems.firstIndex(where: { $0.id == item.id }) else {
             return
         }
@@ -146,14 +150,74 @@ struct ItemsFeatureModelTests {
         var updated = repository.storedItems[0]
         updated.title = "Ship checklist"
         updated.note = "Verify deep links"
-        await model.updateItemNow(updated)
+        let succeeded = await model.updateItemNow(updated)
 
+        #expect(succeeded)
         if case let .content(items) = model.state {
             #expect(items.first?.title == "Ship checklist")
             #expect(items.first?.note == "Verify deep links")
         } else {
             Issue.record("Expected content state after update")
         }
+    }
+
+    @Test
+    @MainActor
+    func updateItemNowReturnsFalseOnPersistenceFailure() async {
+        let repository = ItemsFeatureModelRepositorySpy()
+        let itemID = UUID()
+        repository.storedItems = [
+            ItemEntity(id: itemID, title: "Note", note: "Draft", timestamp: Date()),
+        ]
+        repository.updateError = NSError(domain: "test", code: 42)
+        let model = ItemsFeatureModel(
+            loadItems: LoadItemsUseCase(repository: repository),
+            addItem: AddItemUseCase(repository: repository),
+            updateItem: UpdateItemUseCase(repository: repository),
+            deleteItems: DeleteItemsUseCase(repository: repository)
+        )
+
+        await model.refreshAndWait()
+
+        var updated = repository.storedItems[0]
+        updated.title = "Should not stick in dirty-cleared UI"
+        let succeeded = await model.updateItemNow(updated)
+
+        #expect(!succeeded)
+        if case .failed = model.state {
+            #expect(repository.storedItems[0].title == "Note")
+        } else {
+            Issue.record("Expected failed state after update error")
+        }
+    }
+
+    @Test
+    @MainActor
+    func overlappingRetriesPreserveFailedStateOnCancel() async {
+        let repository = ItemsFeatureModelRepositorySpy()
+        repository.fetchError = NSError(domain: "test", code: 1)
+        let model = ItemsFeatureModel(
+            loadItems: LoadItemsUseCase(repository: repository),
+            addItem: AddItemUseCase(repository: repository),
+            updateItem: UpdateItemUseCase(repository: repository),
+            deleteItems: DeleteItemsUseCase(repository: repository)
+        )
+        await model.refreshAndWait()
+        guard case .failed = model.state else {
+            Issue.record("Expected failed before retries")
+            return
+        }
+
+        // Two overlapping retries must keep last stable (.failed), not overwrite
+        // stateBeforeRefresh with .loading.
+        model.refresh()
+        model.refresh()
+        model.cancelRefresh()
+
+        if case .failed = model.state {
+            return
+        }
+        Issue.record("Expected failed after overlapping retry cancel, got \(model.state)")
     }
 
     @Test

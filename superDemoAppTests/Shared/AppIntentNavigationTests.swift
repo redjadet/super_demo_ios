@@ -161,6 +161,13 @@ struct AppIntentNavigationTests {
     @Test
     @MainActor
     func feedRefreshCoordinatorRefreshesRegisteredModel() async {
+        FeedRefreshCoordinator.resetForTesting()
+        defer { FeedRefreshCoordinator.resetForTesting() }
+
+        let store = AppNavigationStore()
+        AppNavigationStore.testingOverride = store
+        defer { AppNavigationStore.testingOverride = nil }
+
         let repository = CoordinatorFeedRepositorySpy()
         repository.posts = [FeedPost(id: 1, userID: 1, title: "A", body: "B")]
         let model = FeedFeatureModel(
@@ -175,12 +182,71 @@ struct AppIntentNavigationTests {
             await Task.yield()
         }
 
+        #expect(store.state.selection != .feed || store.state.feedRefreshRequestID >= 1)
         #expect(repository.fetchCount >= 1)
         guard case let .content(posts, _) = model.state else {
             Issue.record("Expected content after coordinator refresh, got \(model.state)")
             return
         }
         #expect(posts.count == 1)
+    }
+
+    @Test
+    @MainActor
+    func feedRefreshCoordinatorConsumesPendingWhenModelRemounts() async {
+        FeedRefreshCoordinator.resetForTesting()
+        defer { FeedRefreshCoordinator.resetForTesting() }
+
+        let store = AppNavigationStore()
+        AppNavigationStore.testingOverride = store
+        defer { AppNavigationStore.testingOverride = nil }
+
+        // Unmounted Feed: request with openFeedTab=false must queue, not drop.
+        FeedRefreshCoordinator.requestRefresh(openFeedTab: false)
+        #expect(store.state.selection != .feed)
+        #expect(store.state.feedRefreshRequestID == 1)
+
+        let repository = CoordinatorFeedRepositorySpy()
+        repository.posts = [FeedPost(id: 7, userID: 1, title: "Queued", body: "B")]
+        let model = FeedFeatureModel(
+            refreshFeed: RefreshFeedUseCase(repository: repository)
+        )
+        FeedRefreshCoordinator.register(model)
+        defer { FeedRefreshCoordinator.unregister(model) }
+
+        for _ in 0 ..< 100 where repository.fetchCount == 0 {
+            await Task.yield()
+        }
+        #expect(repository.fetchCount >= 1)
+    }
+
+    @Test
+    func clearPendingFeedPostOpenClearsID() {
+        var state = AppNavigationState()
+        state.requestOpenFeedPost(id: 99)
+        state.clearPendingFeedPostOpen()
+        #expect(state.feedOpenPostID == nil)
+    }
+
+    @Test
+    func clearUnresolvedFeedPostOpenDropsMissingIDAfterDefinitiveLoad() {
+        var state = AppNavigationState()
+        state.requestOpenFeedPost(id: 42)
+
+        state.clearUnresolvedFeedPostOpenIfMissing(
+            from: [FeedPost(id: 1, userID: 1, title: "A", body: "B")]
+        )
+        #expect(state.feedOpenPostID == nil)
+
+        state.requestOpenFeedPost(id: 1)
+        state.clearUnresolvedFeedPostOpenIfMissing(
+            from: [FeedPost(id: 1, userID: 1, title: "A", body: "B")]
+        )
+        #expect(state.feedOpenPostID == 1)
+
+        state.requestOpenFeedPost(id: 7)
+        state.clearUnresolvedFeedPostOpenOnDefinitiveMiss()
+        #expect(state.feedOpenPostID == nil)
     }
 }
 

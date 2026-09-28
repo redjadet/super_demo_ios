@@ -14,12 +14,14 @@ import UniformTypeIdentifiers
 final class ShareViewController: UIViewController {
     private let statusLabel = UILabel()
     private let saveButton = UIButton(type: .system)
+    /// In-flight App Group save — Done must await this so completion cannot race write.
+    private var saveTask: Task<Void, Never>?
 
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = .systemBackground
         self.configureChrome()
-        Task { @MainActor in
+        self.saveTask = Task { @MainActor in
             await self.persistSharedContent()
         }
     }
@@ -49,7 +51,14 @@ final class ShareViewController: UIViewController {
 
     @objc
     private func finish() {
-        self.extensionContext?.completeRequest(returningItems: [], completionHandler: nil)
+        // Do not complete the extension request until the save task finishes
+        // (success, honesty failure, or empty payload). Prevents lost writes.
+        Task { @MainActor in
+            if let saveTask = self.saveTask {
+                await saveTask.value
+            }
+            self.extensionContext?.completeRequest(returningItems: [], completionHandler: nil)
+        }
     }
 
     @MainActor

@@ -51,8 +51,12 @@ struct FeedView: View {
         .onChange(of: navigation.state.feedOpenPostRequestID) { _, _ in
             self.applyPendingFeedPostOpenIfPossible()
         }
-        .onChange(of: self.model.state) { _, _ in
+        .onChange(of: navigation.state.feedRefreshRequestID) { _, _ in
+            FeedRefreshCoordinator.consumePendingRefreshIfNeeded(using: self.model)
+        }
+        .onChange(of: self.model.state) { _, newState in
             self.applyPendingFeedPostOpenIfPossible()
+            self.clearUnresolvedFeedPostOpenIfNeeded(for: newState)
         }
         .onDisappear {
             FeedRefreshCoordinator.unregister(self.model)
@@ -71,6 +75,20 @@ struct FeedView: View {
         }
         self.selectedPost = post
         AppNavigationStore.current.clearPendingFeedPostOpen()
+    }
+
+    /// Drops a pending open once load is definitive and the id is missing
+    /// (content without match, empty, or failed) so navigation cannot stall.
+    private func clearUnresolvedFeedPostOpenIfNeeded(for state: FeedState) {
+        guard self.embedsOwnNavigation else { return }
+        switch state {
+        case let .content(posts, _):
+            AppNavigationStore.current.clearUnresolvedFeedPostOpenIfMissing(from: posts)
+        case .empty, .failed:
+            AppNavigationStore.current.clearUnresolvedFeedPostOpenOnDefinitiveMiss()
+        case .loading:
+            break
+        }
     }
 
     @ToolbarContentBuilder private var feedToolbar: some ToolbarContent {

@@ -13,9 +13,14 @@ enum ItemRepositoryError: Error {
 @MainActor
 final class SwiftDataItemRepository: ItemRepository {
     private let context: ModelContext
+    private let saveContext: @MainActor (ModelContext) throws -> Void
 
-    init(context: ModelContext) {
+    init(
+        context: ModelContext,
+        saveContext: @escaping @MainActor (ModelContext) throws -> Void = { try $0.save() }
+    ) {
         self.context = context
+        self.saveContext = saveContext
     }
 
     func fetchItems() throws -> [ItemEntity] {
@@ -26,8 +31,13 @@ final class SwiftDataItemRepository: ItemRepository {
     func addItem(timestamp: Date) throws -> ItemEntity {
         let record = Item(timestamp: timestamp)
         self.context.insert(record)
-        try self.context.save()
-        return record.toEntity()
+        do {
+            try self.saveContext(self.context)
+            return record.toEntity()
+        } catch {
+            self.context.rollback()
+            throw error
+        }
     }
 
     func updateItem(_ item: ItemEntity) throws {
@@ -36,9 +46,20 @@ final class SwiftDataItemRepository: ItemRepository {
         guard let record = try self.context.fetch(descriptor).first else {
             throw ItemRepositoryError.itemNotFound(item.id)
         }
+        let previousTitle = record.title
+        let previousNote = record.note
         record.title = item.title
         record.note = item.note
-        try self.context.save()
+        do {
+            try self.saveContext(self.context)
+        } catch {
+            // Roll back in-memory mutations so a failed save cannot leave
+            // pending dirty values that later succeed without the caller knowing.
+            record.title = previousTitle
+            record.note = previousNote
+            self.context.rollback()
+            throw error
+        }
     }
 
     func deleteItems(ids: [UUID]) throws {
@@ -48,6 +69,11 @@ final class SwiftDataItemRepository: ItemRepository {
         for record in records {
             self.context.delete(record)
         }
-        try self.context.save()
+        do {
+            try self.saveContext(self.context)
+        } catch {
+            self.context.rollback()
+            throw error
+        }
     }
 }

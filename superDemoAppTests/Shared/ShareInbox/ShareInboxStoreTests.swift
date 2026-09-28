@@ -94,4 +94,32 @@ struct ShareInboxStoreTests {
         #expect(payload.entries.count == 20)
         #expect(payload.entries[0].text == "n24")
     }
+
+    @Test
+    func appendOnCorruptQuarantinesBytesInsteadOfWipingQuietly() throws {
+        let directory = FileManager.default.temporaryDirectory
+            .appendingPathComponent("share-inbox-quarantine-\(UUID().uuidString)", isDirectory: true)
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: directory) }
+
+        let fileURL = directory.appendingPathComponent(ShareInboxAppGroup.fileName)
+        let corrupt = Data("not-json-keep-me".utf8)
+        try corrupt.write(to: fileURL)
+
+        try ShareInboxStore.append(
+            ShareInboxEntry(text: "recovered"),
+            containerURLOverride: directory
+        )
+
+        let quarantineURL = directory.appendingPathComponent(ShareInboxStore.quarantineFileName)
+        #expect(FileManager.default.fileExists(atPath: quarantineURL.path))
+        #expect(try Data(contentsOf: quarantineURL) == corrupt)
+
+        guard case let .ok(payload) = ShareInboxStore.loadState(containerURLOverride: directory) else {
+            Issue.record("Expected fresh ok inbox after quarantine")
+            return
+        }
+        #expect(payload.entries.count == 1)
+        #expect(payload.entries[0].text == "recovered")
+    }
 }

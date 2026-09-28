@@ -11,14 +11,28 @@ final class AsyncLoadController {
 
     func run(_ body: @escaping @MainActor () async -> Void) {
         self.task?.cancel()
-        self.task = Task { await body() }
+        let operation = Task { @MainActor in
+            await body()
+        }
+        self.task = operation
+        Task { @MainActor [weak self] in
+            await operation.value
+            guard let self, self.task == operation else { return }
+            self.task = nil
+        }
     }
 
     func runAndWait(_ body: @escaping @MainActor () async -> Void) async {
         self.task?.cancel()
-        let operation = Task { await body() }
+        let operation = Task { @MainActor in
+            await body()
+        }
         self.task = operation
-        await operation.value
+        await withTaskCancellationHandler {
+            await operation.value
+        } onCancel: {
+            operation.cancel()
+        }
         if self.task == operation {
             self.task = nil
         }

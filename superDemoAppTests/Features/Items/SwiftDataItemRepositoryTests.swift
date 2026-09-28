@@ -47,4 +47,39 @@ struct SwiftDataItemRepositoryTests {
         #expect(loaded.first?.title == "Ship checklist")
         #expect(loaded.first?.note == "Verify deep links")
     }
+
+    @Test
+    @MainActor
+    func failedUpdateDoesNotLeavePendingMutations() throws {
+        let schema = Schema([Item.self])
+        let configuration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
+        let container = try ModelContainer(for: schema, configurations: [configuration])
+        let context = ModelContext(container)
+        enum SaveFailure: Error { case boom }
+        let repository = SwiftDataItemRepository(context: context) { _ in
+            throw SaveFailure.boom
+        }
+
+        // Seed via a real save first.
+        let seed = SwiftDataItemRepository(context: context)
+        var item = try seed.addItem(timestamp: Date())
+        item.title = "Original"
+        item.note = "Keep me"
+        try seed.updateItem(item)
+
+        var dirty = item
+        dirty.title = "Should roll back"
+        dirty.note = "Pending mutation"
+        do {
+            try repository.updateItem(dirty)
+            Issue.record("Expected update to throw")
+        } catch {
+            // expected
+        }
+
+        let loaded = try seed.fetchItems()
+        #expect(loaded.first?.title == "Original")
+        #expect(loaded.first?.note == "Keep me")
+        #expect(context.hasChanges == false)
+    }
 }
