@@ -233,19 +233,19 @@ struct AppIntentNavigationTests {
         var state = AppNavigationState()
         state.requestOpenFeedPost(id: 42)
 
-        state.clearUnresolvedFeedPostOpen(
-            matchingPosts: [FeedPost(id: 1, userID: 1, title: "A", body: "B")]
+        state.clearUnresolvedFeedPostOpenIfMissing(
+            from: [FeedPost(id: 1, userID: 1, title: "A", body: "B")]
         )
         #expect(state.feedOpenPostID == nil)
 
         state.requestOpenFeedPost(id: 1)
-        state.clearUnresolvedFeedPostOpen(
-            matchingPosts: [FeedPost(id: 1, userID: 1, title: "A", body: "B")]
+        state.clearUnresolvedFeedPostOpenIfMissing(
+            from: [FeedPost(id: 1, userID: 1, title: "A", body: "B")]
         )
         #expect(state.feedOpenPostID == 1)
 
         state.requestOpenFeedPost(id: 7)
-        state.clearUnresolvedFeedPostOpen(matchingPosts: nil)
+        state.clearUnresolvedFeedPostOpenOnDefinitiveMiss()
         #expect(state.feedOpenPostID == nil)
     }
 }

@@ -72,5 +72,7 @@ private final class FailingUpdateRepositorySpy: ItemRepository {
         throw NSError(domain: "test", code: 1)
     }
 
-    func deleteItems(ids _: [UUID]) throws {}
+    func deleteItems(ids _: [UUID]) throws {
+        // No-op: this spy only exercises failed `updateItem`.
+    }
 }

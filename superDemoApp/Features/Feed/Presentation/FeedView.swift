@@ -83,9 +83,9 @@ struct FeedView: View {
         guard self.embedsOwnNavigation else { return }
         switch state {
         case let .content(posts, _):
-            AppNavigationStore.current.clearUnresolvedFeedPostOpen(matchingPosts: posts)
+            AppNavigationStore.current.clearUnresolvedFeedPostOpenIfMissing(from: posts)
         case .empty, .failed:
-            AppNavigationStore.current.clearUnresolvedFeedPostOpen(matchingPosts: nil)
+            AppNavigationStore.current.clearUnresolvedFeedPostOpenOnDefinitiveMiss()
         case .loading:
             break
         }
