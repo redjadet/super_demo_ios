@@ -53,4 +53,6 @@ reports.
 
 - Chooser: [`validation_routing_fast_vs_full.md`](validation_routing_fast_vs_full.md)
 - Quick ref: [`../agents_quick_reference.md`](../agents_quick_reference.md)
-- Flutter reference: `bin/checklist` → `tool/delivery_checklist.sh` (CI runs it)
+- Flutter reference (in `flutter_bloc_app`, not this repo): `bin/checklist` →
+  `tool/delivery_checklist.sh` — iOS equivalent is `./bin/checklist` (see
+  [`../tooling_map.md`](../tooling_map.md))

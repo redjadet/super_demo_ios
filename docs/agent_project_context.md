@@ -27,10 +27,10 @@ Machine-readable project facts for agents.
 
 ## Shipped features (current)
 
-- `Features/Items/` — SwiftData reference slice; cancel-safe refresh lifecycle.
-- `Features/Feed/` — JSONPlaceholder + read-through cache with explicit stale UI;
+- `superDemoApp/Features/Items/` — SwiftData reference slice; cancel-safe refresh lifecycle.
+- `superDemoApp/Features/Feed/` — JSONPlaceholder + read-through cache with explicit stale UI;
   `RefreshFeedUseCase` only.
-- `Features/ProductionReadiness/` — dashboard, shared networking, UIKit showcase.
+- `superDemoApp/Features/ProductionReadiness/` — dashboard, shared networking, UIKit showcase.
 - Deep links: `superdemo://dashboard|/risks|/feed|/items` via `AppNavigation`.
 - Diagnostics: `ReleaseDiagnostics` + `OSLogCrashMonitor`; ModelContainer
   recovery on store failure (delete + recreate disk store, then in-memory).
@@ -48,9 +48,9 @@ Machine-readable project facts for agents.
 | ------ | ------ |
 | `superDemoApp/` | Git root; run `./bin/*` and `./tool/*` here |
 | `super_demo_ios/` (parent) | Optional Cursor workspace root |
-| `superDemoApp/superDemoApp/` | App Swift sources |
-| `superDemoApp/superDemoAppTests/` | Unit tests |
-| `superDemoApp/superDemoAppUITests/` | UI tests |
+| `superDemoApp/superDemoApp/` | App Swift sources (`App/`, assets, entry) |
+| `superDemoAppTests/` | Unit tests (repo root) |
+| `superDemoAppUITests/` | UI tests (repo root) |
 | `superDemoApp/Features/` | Layered features (`Presentation` / `Domain` / `Data`) |
 | `superDemoApp/Shared/` | Cross-feature presentation helpers |
 
@@ -62,10 +62,10 @@ Machine-readable project facts for agents.
 - Unit test target: `superDemoAppTests`
 - UI test target: `superDemoAppUITests`
 - Current source shape: universal SwiftUI + SwiftData with layered reference feature.
-- Reference feature: `Features/Items/{Presentation,Domain,Data}/` (copy this layout).
-- Persistence model: `Features/Items/Data/Item.swift` (`@Model`).
-- Root UI: `App/AppRootView.swift` (`TabView`: Dashboard / Items / Feed);
-  composition in `App/*Composition.swift`.
+- Reference feature: `superDemoApp/Features/Items/{Presentation,Domain,Data}/` (copy this layout).
+- Persistence model: `superDemoApp/Features/Items/Data/Item.swift` (`@Model`).
+- Root UI: `superDemoApp/App/AppRootView.swift` (`TabView`: Dashboard / Items / Feed);
+  composition in `superDemoApp/App/*Composition.swift`.
 - Current platform settings include iPhone, iPad, and Mac support.
 
 ## Preferred Growth Direction

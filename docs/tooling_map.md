@@ -42,6 +42,7 @@ Canon gates: [`engineering/checklist_gate.md`](engineering/checklist_gate.md),
 | `integration_preflight` / device readiness | `tool/check_simulator_runtime_compat.sh` (+ `ensure_ci_simulator`) |
 | Associated Domains / AASA path parity | `tool/check_aasa_deep_links.sh` (via `check_common_issues`) |
 | Markdown relative-link existence | `tool/check_markdown_relative_links.sh` (via `check_common_issues`; `--self-test`) |
+| Router doc path honesty (CODEMAP / portfolio / tour) | `tool/check_router_doc_paths.sh` (via `check_common_issues`; `--self-test`) |
 | Cubit/BLoC/Hive/Dio gates | **Skip** — not applicable |
 | `create_agent_worktree.sh` | `tool/create_agent_worktree.sh` |
 | `clean_build_caches.sh` | `tool/clean_build_caches.sh` (Xcode) |

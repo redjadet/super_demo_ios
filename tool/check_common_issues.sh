@@ -325,6 +325,13 @@ require_file tool/check_markdown_relative_links.sh
   || fail "Markdown relative link self-test failed"
 ./tool/check_markdown_relative_links.sh || fail "Markdown relative link check failed"
 
+section "Router doc path honesty (CODEMAP / portfolio / tour)"
+require_file tool/check_router_doc_paths.sh
+[[ -x tool/check_router_doc_paths.sh ]] || fail "tool/check_router_doc_paths.sh must be executable"
+./tool/check_router_doc_paths.sh --self-test \
+  || fail "Router doc path self-test failed"
+./tool/check_router_doc_paths.sh || fail "Router doc path check failed"
+
 if ((failures > 0)); then
   echo
   echo "Common issue checks failed: $failures"

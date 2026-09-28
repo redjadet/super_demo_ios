@@ -37,7 +37,7 @@ Use declarative SwiftUI navigation that adapts across iOS, iPadOS, and macOS.
   | `superdemo://items` / `https://superdemo.app/items` | Items tab |
   | unsupported `superdemo` / associated-host HTTPS path | Dashboard + user-facing alert |
 
-  Parsing stays in `App/AppNavigation.swift` (`AppDeepLink` / `AppNavigationState`);
+  Parsing stays in `superDemoApp/App/AppNavigation.swift` (`AppDeepLink` / `AppNavigationState`);
   `@Observable` `AppNavigationStore` owns navigation state for the root shell.
   `AppRootView` binds the store, handles `onOpenURL` and
   `NSUserActivityTypeBrowsingWeb`, and applies deep links via `handle(url:)`.
@@ -52,7 +52,7 @@ Use declarative SwiftUI navigation that adapts across iOS, iPadOS, and macOS.
 - **Nested Feed (Stale Feed demo):** `FeedView(embedsOwnNavigation: false)` pushed
   onto Production Readiness's `NavigationStack` so post rows push detail without a
   nested split/stack fighting the dashboard.
-- Shared: `Shared/Presentation/AdaptiveNavigationShell.swift`
+- Shared: `superDemoApp/Shared/Presentation/AdaptiveNavigationShell.swift`
 - New features: reuse `AdaptiveNavigationShell`; add a thin feature shell only for a custom
   detail placeholder. See [`design_system.md`](design_system.md#ui-consistency-contract-all-features).
 

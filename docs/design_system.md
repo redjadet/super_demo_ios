@@ -26,13 +26,13 @@ literals.
 | App entry | `superDemoApp/superDemoAppApp.swift` | `@main struct SuperDemoApp`, `WindowGroup`, model container |
 | Composition | `superDemoApp/App/*Composition.swift` | Wire repositories, use cases, root views |
 | Feature UI | `superDemoApp/Features/<Name>/Presentation/` | Views, feature models, navigation shells |
-| Shared UI | `Shared/Presentation/` | `AdaptiveNavigationShell`, `featureScreenFrame()` |
-| Reference UI | `Features/Items/Presentation/` | `ItemsView`, state machine, toolbars |
+| Shared UI | `superDemoApp/Shared/Presentation/` | `AdaptiveNavigationShell`, `featureScreenFrame()` |
+| Reference UI | `superDemoApp/Features/Items/Presentation/` | `ItemsView`, state machine, toolbars |
 | Universal policy | [`universal-apple-platforms.md`](universal-apple-platforms.md) | iPhone / iPad / Mac matrix, proof commands |
 | Accent / assets | `superDemoApp/Assets.xcassets/` | `AccentColor`, app icon |
 | Layer enforcement | [`../tool/check_layer_boundaries.sh`](../tool/check_layer_boundaries.sh) | Presentation must not import SwiftData |
 
-`Shared/Presentation/` holds cross-feature UI primitives. New features must reuse them
+`superDemoApp/Shared/Presentation/` holds cross-feature UI primitives. New features must reuse them
 before inventing parallel shells or layout helpers.
 
 ## UI consistency contract (all features)
@@ -41,7 +41,7 @@ Every feature Presentation layer follows the same shape:
 
 | Piece | Rule | Reference |
 | ----- | ---- | --------- |
-| Navigation | `AdaptiveNavigationShell` (split view; collapses on iPhone) | `Shared/Presentation/AdaptiveNavigationShell.swift` |
+| Navigation | `AdaptiveNavigationShell` (split view; collapses on iPhone) | `superDemoApp/Shared/Presentation/AdaptiveNavigationShell.swift` |
 | Feature wrapper | Thin `*NavigationShell` only if feature needs a custom detail placeholder | `ItemsNavigationShell` |
 | Screen body | `@Bindable` model + `@ViewBuilder` state switch | `ItemsView.content` |
 | Toolbar | On feature root view, not hidden inside list-only branches | `ItemsView.itemsToolbar` |
@@ -144,7 +144,7 @@ Ship **both appearances on every new screen** — not a follow-up polish pass.
 
 ### Color rules
 
-- Use **semantic** colors only in `Presentation/` and `Shared/Presentation/`:
+- Use **semantic** colors only in `Presentation/` and `superDemoApp/Shared/Presentation/`:
   `foregroundStyle(.primary)`, `.secondary`, `Color.accentColor`, `List` / `Form` defaults,
   `ContentUnavailableView`, system button styles.
 - **Forbidden in views:** `Color.white`, `Color.black`, raw hex, `UIColor` fixed fills,
@@ -314,7 +314,7 @@ Forbidden: `UIDevice` model checks, duplicate screens per platform, Figma pixel 
 
 ## Previews
 
-Use `UniversalPreviewLayouts` (`Shared/Presentation/UniversalPreviewLayouts.swift`) so canvases
+Use `UniversalPreviewLayouts` (`superDemoApp/Shared/Presentation/UniversalPreviewLayouts.swift`) so canvases
 match iPhone, iPad, and Mac without device-specific view forks:
 
 ```swift
@@ -354,7 +354,7 @@ empty/error variants when useful);
 - [ ] Dynamic Type; **light and dark** `#Preview` + simulator Appearance toggle
 - [ ] iPhone + iPad + Mac: `./bin/ci.sh` or `./bin/checklist`
 - [ ] `#Preview` + UI tests for critical paths
-- [ ] `./bin/lint.sh` (includes layer boundaries for `Features/`)
+- [ ] `./bin/lint.sh` (includes layer boundaries for `superDemoApp/Features/`)
 
 ## Related docs
 

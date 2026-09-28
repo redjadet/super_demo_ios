@@ -9,13 +9,13 @@ read-through cache.
 
 | Quality theme | Path | Talk track | Proof |
 | --- | --- | --- | --- |
-| Layer boundaries | `Features/*/`, `docs/layers.md` | Presentation → Domain ← Data; composition in `App/` | `./bin/lint.sh` → `tool/check_layer_boundaries.sh` |
-| Concurrency cancel | `Shared/Presentation/AsyncLoadController.swift`, Feed/Items/Dashboard models | Cancel restores prior state; `CancellationError` not a Retry failure | Unit tests on feature models; UI Retry IDs |
-| Stale cache | `Features/Feed/Data/CachingFeedRepository.swift`, `FeedView`, `App/FeedComposition.swift` | Remote fail + fresh cache → `isStale` banner | `-StaleFeedDemo` / Engineering demos → Stale Feed; `#Preview("Feed — Stale")`; `CachingFeedRepositoryTests` |
-| Networking retry / 401 / 429 | `Shared/Networking/` | Injectable session; redacted logger | `URLSessionAPIClientTests`, `RetryPolicyTests` |
+| Layer boundaries | `superDemoApp/Features/*/`, `docs/layers.md` | Presentation → Domain ← Data; composition in `superDemoApp/App/` | `./bin/lint.sh` → `tool/check_layer_boundaries.sh` |
+| Concurrency cancel | `superDemoApp/Shared/Presentation/AsyncLoadController.swift`, Feed/Items/Dashboard models | Cancel restores prior state; `CancellationError` not a Retry failure | Unit tests on feature models; UI Retry IDs |
+| Stale cache | `superDemoApp/Features/Feed/Data/CachingFeedRepository.swift`, `FeedView`, `superDemoApp/App/FeedComposition.swift` | Remote fail + fresh cache → `isStale` banner | `-StaleFeedDemo` / Engineering demos → Stale Feed; `#Preview("Feed — Stale")`; `CachingFeedRepositoryTests` |
+| Networking retry / 401 / 429 | `superDemoApp/Shared/Networking/` | Injectable session; redacted logger | `URLSessionAPIClientTests`, `RetryPolicyTests` |
 | Idempotency | `APIRequest.idempotencyKey` + Dashboard **Idempotent POST** demo | Header enables POST retry; **simulated** duplicate-safe transport in Data | Demo UI + `IdempotentPostDemo*` tests |
-| UIKit showcase | `Features/ProductionReadiness/UIKitShowcase/` | Collection reuse, prefetch, hosting, custom transition | UI smoke: `uikitShowcaseLink` |
-| Diagnostics / crash swap | `Shared/Diagnostics/` | OSLog non-fatals today; vendor adapter later | [`incident-playbook.md`](incident-playbook.md); Engineering demos → Diagnostics |
+| UIKit showcase | `superDemoApp/Features/ProductionReadiness/UIKitShowcase/` | Collection reuse, prefetch, hosting, custom transition | UI smoke: `uikitShowcaseLink` |
+| Diagnostics / crash swap | `superDemoApp/Shared/Diagnostics/` | OSLog non-fatals today; vendor adapter later | [`incident-playbook.md`](incident-playbook.md); Engineering demos → Diagnostics |
 | CI / delivery | `bin/`, `.github/workflows/ci.yml`, Fastlane | Local `./bin/ci.sh` = merge proof; GHA build-heavy | [`ci-cd-map.md`](ci-cd-map.md) |
 | Performance signposts | `AppPerformanceSignposts`, Feed widget App Group path | Feed + UIKit `os_signpost`; widget recipe; Live Activity Feed-refresh recipe (gate A); concurrency cancel talk track | [`performance-lab.md`](performance-lab.md) |
 | Security habits | Keychain demo, ATS, redaction | Demo auth ≠ production OAuth | [`security-checklist.md`](security-checklist.md) |
@@ -26,11 +26,11 @@ read-through cache.
 ## Platform surfaces
 
 Apple-platform / hybrid-native skill map for reviewers (inventory after
-`origin/main` @ `d21d81a`, 2026-09-27 — **post P2 A–F + #36/#37/#38/#39**: WidgetKit, Live
+`origin/main` @ `6c5d4be`, 2026-09-28 — **post P2 A–F + #36–#40**: WidgetKit, Live
 Activity, Share, SIWA, StoreKit query, Vision OCR, Flutter embed, watchOS
 companion, Open Feed Post intent / AASA `/feed/*` + apex Associated Domains +
-Markdown relative-link gate; visionOS still deferred). Honest “not in repo”
-beats a broken link.
+Markdown relative-link gate + CODEMAP/router path honesty; visionOS still
+deferred). Honest “not in repo” beats a broken link.
 Sibling backlog (do not merge scopes): portfolio plan under agent store
 `job-4472017039-portfolio-plan.md`; Flutter quality-system maturity is separate
 (`flutter-parity-quality-plan.md`).
@@ -38,7 +38,7 @@ Sibling backlog (do not merge scopes): portfolio plan under agent store
 | Skill | Current path / proof | Status |
 | --- | --- | --- |
 | Clean layers + modularity | `superDemoApp/Features/*/`, [`layers.md`](layers.md), [`modularity.md`](modularity.md), `./tool/check_layer_boundaries.sh` | **In repo** |
-| SwiftUI + Observation + DI | Feed / Items / ProductionReadiness; `App/*Composition.swift` | **In repo** |
+| SwiftUI + Observation + DI | Feed / Items / ProductionReadiness; `superDemoApp/App/*Composition.swift` | **In repo** |
 | Swift Concurrency | `async`/`await` networking; actor token refreshers; `AsyncLoadController` | **In repo** |
 | Offline / networking | `CachingFeedRepository`, [`offline-first.md`](offline-first.md), [`offline-invariants.md`](offline-invariants.md), [`sync-and-networking.md`](sync-and-networking.md) | **In repo** |
 | App Intents (open-tab) | `superDemoApp/App/AppIntents/` + Shortcuts; tests | **In repo** |
@@ -52,10 +52,10 @@ Sibling backlog (do not merge scopes): portfolio plan under agent store
 | Live Activities / Dynamic Island | `FeedRefreshActivityAttributes`, `ActivityKitFeedRefreshLiveActivityController`, `FeedRefreshLiveActivity` in widget bundle; Feed refresh gate A | **In repo** (JP-P1-A; compile on GHA; device Island not claimed on hosted CI) |
 | Push / notification service extension | Engineering demos → Local stale-Feed reminder (local only); [`release-checklist.md`](release-checklist.md) mock TestFlight/APNs | **In repo** (JP-P1-C local + JP-P2-E labeled mock/demo checklist; no production APNs claim) |
 | Share extension | `ShareInboxShared/`, `superDemoAppShare/`, App Group inbox; Engineering demos → Share inbox | **In repo** (JP-P2-A; iOS embed; does **not** open SwiftData; Mac lane skips extension) |
-| Sign in with Apple | `Shared/Auth/`, Engineering demos → Sign in with Apple (demo) | **In repo** (JP-P2-B; Simulator-honest unavailable; not production auth) |
-| StoreKit 2 | `Config/Products.storekit`; `Shared/StoreKit/`; Engineering demos → StoreKit 2 product query (demo) | **In repo** (JP-P1-D query-only; no purchase / charge path) |
-| Native↔Flutter host bridge | `Shared/HostBridge/`, `Shared/FlutterEmbed/`, `flutter_module/`, [`native-host-boundary.md`](native-host-boundary.md), [`flutter-add-to-app.md`](flutter-add-to-app.md); Engineering demos → Host bridge ping / Flutter add-to-app | **In repo** (JP-P0-C contract + JP-P2-D module embed; `postCount` = full cache size; Mac unlinked; frameworks via prepare script) |
-| Core ML / Vision / Speech / Apple Intelligence | `Shared/OnDeviceAI/`, Engineering demos → On-device Vision OCR | **In repo** (JP-P2-C Vision OCR only; no Speech / Core ML model / Apple Intelligence claim) |
+| Sign in with Apple | `superDemoApp/Shared/Auth/`, Engineering demos → Sign in with Apple (demo) | **In repo** (JP-P2-B; Simulator-honest unavailable; not production auth) |
+| StoreKit 2 | `Config/Products.storekit`; `superDemoApp/Shared/StoreKit/`; Engineering demos → StoreKit 2 product query (demo) | **In repo** (JP-P1-D query-only; no purchase / charge path) |
+| Native↔Flutter host bridge | `superDemoApp/Shared/HostBridge/`, `superDemoApp/Shared/FlutterEmbed/`, `flutter_module/`, [`native-host-boundary.md`](native-host-boundary.md), [`flutter-add-to-app.md`](flutter-add-to-app.md); Engineering demos → Host bridge ping / Flutter add-to-app | **In repo** (JP-P0-C contract + JP-P2-D module embed; `postCount` = full cache size; Mac unlinked; frameworks via prepare script) |
+| Core ML / Vision / Speech / Apple Intelligence | `superDemoApp/Shared/OnDeviceAI/`, Engineering demos → On-device Vision OCR | **In repo** (JP-P2-C Vision OCR only; no Speech / Core ML model / Apple Intelligence claim) |
 | watchOS companion (Feed snapshot) | `superDemoAppWatch/`, `FeedWidgetShared/`, App Group `group.com.ilkersevim.superDemoApp`; Engineering demos → watchOS Feed companion; scheme `superDemoAppWatch` | **In repo** (JP-P2-F watchOS; embed `platformFilter = ios`; watch-local App Group — not phone sync; **visionOS deferred**) |
 | visionOS companion | Project may mention xr settings; no reviewer companion demo | **Not in repo** (deferred; JP-P2-F shipped watchOS only) |
 | tvOS companion | — | **Not in repo** |
@@ -70,22 +70,22 @@ Sibling backlog (do not merge scopes): portfolio plan under agent store
 2. [`../CODEMAP.md`](../CODEMAP.md) — task → path; timed walk
    [`architecture-tour.md`](architecture-tour.md).
 3. [`architecture.md`](architecture.md) + [`feature-template.md`](feature-template.md).
-4. **`Features/Items/`** — Reference (SwiftData, sync repository API).
-5. **`Features/Feed/`** — JSONPlaceholder client + SwiftData read-through cache;
+4. **`superDemoApp/Features/Items/`** — Reference (SwiftData, sync repository API).
+5. **`superDemoApp/Features/Feed/`** — JSONPlaceholder client + SwiftData read-through cache;
    see [`changes/2026-05-16_feed-feature-shipped.md`](changes/2026-05-16_feed-feature-shipped.md)
    and [`changes/2026-09-15_feed-items-diagnostics-hardening.md`](changes/2026-09-15_feed-items-diagnostics-hardening.md).
-6. **`Features/ProductionReadiness/`** — dashboard, networking demos, UIKit showcase;
+6. **`superDemoApp/Features/ProductionReadiness/`** — dashboard, networking demos, UIKit showcase;
    see [`changes/2026-05-18_production_readiness_dashboard.md`](changes/2026-05-18_production_readiness_dashboard.md).
-7. **`App/`** — `AppRootView` tabs; composition roots wire DI and feature models.
-8. **`Shared/Presentation/AdaptiveNavigationShell.swift`** — shared chrome.
+7. **`superDemoApp/App/`** — `AppRootView` tabs; composition roots wire DI and feature models.
+8. **`superDemoApp/Shared/Presentation/AdaptiveNavigationShell.swift`** — shared chrome.
 9. Deep links: open `superdemo://dashboard/risks`, `superdemo://feed`,
    `superdemo://feed/1`, or `superdemo://items` (or matching
    `https://superdemo.app/…` paths, including `/feed/<id>` via AASA `/feed/*`)
-   to review typed routing in `App/AppNavigation.swift`.
+   to review typed routing in `superDemoApp/App/AppNavigation.swift`.
 
 ## Launch and build flags
 
-Source: `Shared/AppLaunchConfiguration.swift`.
+Source: `superDemoApp/Shared/AppLaunchConfiguration.swift`.
 
 | Flag | Kind | Effect |
 | --- | --- | --- |
@@ -96,7 +96,7 @@ Source: `Shared/AppLaunchConfiguration.swift`.
 | `-UITestingFeedFailure` | Launch | Failing remote without cache seed (error + Retry UI) |
 | `-KeychainTokenDemo` or `SUPERDEMO_KEYCHAIN_TOKEN_DEMO=1` | Launch / env | Opt-in Keychain-backed token refresher demo |
 
-## Items walkthrough (`Features/Items/`)
+## Items walkthrough (`superDemoApp/Features/Items/`)
 
 - **Domain** — Entities; repository protocol; use cases (`LoadItemsUseCase`, …);
   `DisplayError`. Pure Swift.
@@ -107,7 +107,7 @@ Source: `Shared/AppLaunchConfiguration.swift`.
 
 Observation + thin use cases on a repository protocol.
 
-## Feed walkthrough (`Features/Feed/`)
+## Feed walkthrough (`superDemoApp/Features/Feed/`)
 
 - **Domain** — `FeedPost`, `FeedRepository` → `FeedLoadResult` (`posts` +
   `isStale`), **`RefreshFeedUseCase` only** (no separate load use case),
