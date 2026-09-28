@@ -64,10 +64,10 @@ private actor OnDeviceVisionOCRExecutor {
     }
 }
 
-/// Sync Vision/CoreGraphics helpers live outside `@MainActor` so we avoid
-/// `nonisolated` + ACL ordering fights between SwiftLint and SwiftFormat.
+/// Sync Vision/CoreGraphics helpers stay off the default MainActor isolation so
+/// the OCR actor can call them synchronously without `#ActorIsolatedCall`.
 private enum OnDeviceVisionDemoEngine {
-    static func recognizeText(in cgImage: CGImage) throws -> [VisionDemoObservation] {
+    nonisolated static func recognizeText(in cgImage: CGImage) throws -> [VisionDemoObservation] {
         let request = VNRecognizeTextRequest()
         request.recognitionLevel = .accurate
         request.usesLanguageCorrection = true
@@ -92,7 +92,7 @@ private enum OnDeviceVisionDemoEngine {
     }
 
     /// Synthetic bitmap via CoreGraphics + CoreText (avoids UIColor/NSString lint).
-    static func sampleCGImage() -> CGImage? {
+    nonisolated static func sampleCGImage() -> CGImage? {
         let height = 160
         let width = 480
         let colorSpace = CGColorSpaceCreateDeviceRGB()

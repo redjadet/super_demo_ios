@@ -122,7 +122,7 @@ struct CachingFeedRepositoryTests {
 
     @Test
     @MainActor
-    func fetchPostsIgnoresExpiredCacheWhenRemoteFails() throws {
+    func fetchPostsIgnoresExpiredCacheWhenRemoteFails() async throws {
         let context = try Self.makeContext()
         let now = Date(timeIntervalSince1970: 1_700_000_000)
         try Self.seed(
@@ -139,7 +139,7 @@ struct CachingFeedRepositoryTests {
             snapshotPublisher: publisher
         ) { now }
 
-        #expect(throws: FeedError.invalidResponse) {
+        await #expect(throws: FeedError.invalidResponse) {
             try await repository.fetchPosts()
         }
         #expect(remote.fetchCount == 1)
