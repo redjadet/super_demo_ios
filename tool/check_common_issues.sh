@@ -313,10 +313,10 @@ else
   fail "tool/check_simulator_runtime_compat.sh must be executable"
 fi
 
-section "AASA ↔ AppDeepLink path parity"
+section "AASA ↔ AppDeepLink path parity + live-host DNS honesty"
 require_file tool/check_aasa_deep_links.sh
 [[ -x tool/check_aasa_deep_links.sh ]] || fail "tool/check_aasa_deep_links.sh must be executable"
-./tool/check_aasa_deep_links.sh || fail "AASA deep-link path check failed"
+./tool/check_aasa_deep_links.sh || fail "AASA deep-link / live-host honesty check failed"
 
 section "Markdown relative link existence"
 require_file tool/check_markdown_relative_links.sh

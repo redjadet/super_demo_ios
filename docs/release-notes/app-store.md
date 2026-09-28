@@ -37,8 +37,9 @@ navigation as deep links (`AppIntentNavigationRouter`).
 Dashboard and show a "Link Not Available" alert. The app registers the
 `superdemo` custom URL scheme and Associated Domains for
 `applinks:superdemo.app`. HTTPS paths under that host parse the same routes as
-the custom scheme (sample AASA includes `/feed/*`). Full Safari handoff needs
-the hosted AASA file (see `Config/associated-domains/`).
+the custom scheme (sample AASA includes `/feed/*`). Public DNS for
+`superdemo.app` does not currently resolve, so Safari handoff is not claimed;
+host AASA only after DNS exists (see `Config/associated-domains/`).
 
 ## Capabilities (honest)
 

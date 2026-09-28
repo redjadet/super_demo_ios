@@ -17,9 +17,10 @@ Use before TestFlight or App Store submission.
   and `superdemo://items` (typed in `App/AppNavigation.swift`). Verify cold
   start, warm start, and missing-route alert on device. Universal links:
   entitlement `applinks:superdemo.app` + sample AASA in
-  `Config/associated-domains/` (includes `/feed/*` for post entity URLs);
-  host AASA on the live domain before relying on Safari → app handoff.
-  Local parity gate: `./tool/check_aasa_deep_links.sh`.
+  `Config/associated-domains/` (includes `/feed/*` for post entity URLs).
+  Public DNS for `superdemo.app` does not currently resolve — do **not** claim
+  Safari → app handoff until DNS + hosted AASA exist. Local gate (paths +
+  host parity + live-host DNS honesty): `./tool/check_aasa_deep_links.sh`.
 - Keychain: first install, reinstall, locked device, biometric changes.
 - Permissions: denied, limited, revoked, and Settings return paths.
 - Slow networks: timeout, retry, cancellation, 429, and offline messaging.

@@ -23,18 +23,20 @@ Use declarative SwiftUI navigation that adapts across iOS, iPadOS, and macOS.
 
 - Root shell: `AppRootView` (`TabView`) — Dashboard, Items, Feed tabs with
   `accessibilityIdentifier` on each tab (`dashboardTab`, `itemsTab`, `feedTab`).
-- Typed deep links — custom scheme `superdemo` (`Config/AppInfo.plist`) and
-  HTTPS universal links for apex `superdemo.app` only (Associated Domains
-  entitlement + sample AASA under `Config/associated-domains/`; `www` rejected
-  until entitlement + AASA cover it):
+- Typed deep links — custom scheme `superdemo` (`Config/AppInfo.plist`) is the
+  supported reviewer / UI-test path. HTTPS paths for apex `superdemo.app` parse
+  the same routes in-app (Associated Domains entitlement + sample AASA under
+  `Config/associated-domains/`; `www` rejected until entitlement + AASA cover
+  it). Public DNS for `superdemo.app` **does not currently resolve**, so
+  Safari → app handoff is **not** available and is **not** claimed:
 
   | URL | Result |
   | --- | --- |
-  | `superdemo://dashboard` / `https://superdemo.app/dashboard` | Dashboard tab, cleared path |
-  | `superdemo://dashboard/risks` / `https://superdemo.app/dashboard/risks` | Dashboard → Production Risks |
-  | `superdemo://feed` / `https://superdemo.app/feed` | Feed tab |
-  | `superdemo://feed/<id>` / `https://superdemo.app/feed/<id>` | Feed tab + select post when loaded (unknown id = tab only) |
-  | `superdemo://items` / `https://superdemo.app/items` | Items tab |
+  | `superdemo://dashboard` / `https://superdemo.app/dashboard` (parse-only) | Dashboard tab, cleared path |
+  | `superdemo://dashboard/risks` / `https://superdemo.app/dashboard/risks` (parse-only) | Dashboard → Production Risks |
+  | `superdemo://feed` / `https://superdemo.app/feed` (parse-only) | Feed tab |
+  | `superdemo://feed/<id>` / `https://superdemo.app/feed/<id>` (parse-only) | Feed tab + select post when loaded (unknown id = tab only) |
+  | `superdemo://items` / `https://superdemo.app/items` (parse-only) | Items tab |
   | unsupported `superdemo` / associated-host HTTPS path | Dashboard + user-facing alert |
 
   Parsing stays in `superDemoApp/App/AppNavigation.swift` (`AppDeepLink` / `AppNavigationState`);
