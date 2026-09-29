@@ -65,7 +65,7 @@ provides proof.
 | `testFeedWidgetSnapshotDemoIsReachable` | Feed widget App Group snapshot demo |
 | `testStoreKitProductQueryDemoIsReachable` | StoreKit Load → terminal empty / unavailable / product row (not idle/loading) |
 | `testLocalNotificationDemoIsReachable` | Local stale-Feed reminder demo chrome |
-| `testIdempotentPostDemoIsReachable` | Idempotent POST demo outcome |
+| `testIdempotentPostDemoIsReachable` | Idempotent POST: first send Accepted, second send Simulated duplicate-safe (not Failed) |
 | `testDiagnosticsDemoIsReachable` | Diagnostics Engineering demo screen |
 | `testWatchCompanionDemoIsReachable` | watchOS companion Engineering demo chrome + a11y labels |
 | `testDeepLinkOpensFeedPostDetail` | `superdemo://feed/1` opens `feedPostDetail-1` |
