@@ -112,6 +112,7 @@ private struct ThrowingRemoteAPIHealth: RemoteAPIHealthLoading {
     let kind: Kind
 
     func loadHealthCheck() async throws -> APIHealthCheck {
+        await Task.yield()
         switch self.kind {
         case .cancellation:
             throw CancellationError()
