@@ -26,7 +26,7 @@ read-through cache.
 ## Platform surfaces
 
 Apple-platform / hybrid-native skill map for reviewers (inventory after
-`origin/main` @ `9aa3e05`, 2026-09-28 — **post P2 A–F + #36–#43**: WidgetKit, Live
+`origin/main` @ `4a39dcb`, 2026-09-29 — **post P2 A–F + #36–#44**: WidgetKit, Live
 Activity, Share, SIWA, StoreKit query, Vision OCR, Flutter embed, watchOS
 companion, Open Feed Post intent / AASA `/feed/*` + apex Associated Domains +
 Markdown relative-link gate + CODEMAP/router path honesty + Engineering-demo

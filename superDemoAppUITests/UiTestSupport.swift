@@ -128,26 +128,29 @@ enum UiTestSupport {
         )
     }
 
-    /// Waits for Feed chrome (toolbar, states, list, or post detail).
+    /// Waits for Feed chrome (toolbar, states, list, row, or post detail).
     /// Compact `NavigationSplitView` may show only the detail column after
     /// `superdemo://feed/<id>` selection — treat `feedPostDetail-*` as Feed UI.
     /// `isSelected` on tab buttons is unreliable on CI.
+    /// Does **not** accept bare `app.cells.firstMatch` — Dashboard/Items also have
+    /// cells, which previously false-greened Feed tab / deep-link smoke.
     @MainActor
     static func waitForFeedChrome(in app: XCUIApplication, timeout: TimeInterval = 30) -> Bool {
         let deadline = Date().addingTimeInterval(timeout)
         let detailPredicate = NSPredicate(format: "identifier BEGINSWITH %@", "feedPostDetail-")
+        let rowPredicate = NSPredicate(format: "identifier BEGINSWITH %@", "feedPostRow-")
         while Date() < deadline {
             let refresh = app.buttons["refreshFeed"]
             let refreshToolbar = app.toolbars.buttons["refreshFeed"]
             let refreshEmpty = app.buttons["refreshFeedEmpty"]
             let refreshLabel = app.buttons["Refresh Feed"]
             let retry = app.buttons["feedRetry"]
-            let loading = app.progressIndicators.firstMatch
             let feedFailed = app.staticTexts["Could Not Load Feed"]
             let feedEmpty = app.staticTexts["No Posts"]
             let feedList = app.descendants(matching: .any).matching(identifier: "feedList").firstMatch
-            let firstPostCell = app.cells.firstMatch
+            let feedPostRow = app.descendants(matching: .any).matching(rowPredicate).firstMatch
             let feedPostDetail = app.descendants(matching: .any).matching(detailPredicate).firstMatch
+            let staleBanner = app.descendants(matching: .any).matching(identifier: "feedStaleBanner").firstMatch
 
             let hasFeedUI =
                 refresh.exists
@@ -155,12 +158,12 @@ enum UiTestSupport {
                     || refreshEmpty.exists
                     || refreshLabel.exists
                     || retry.exists
-                    || loading.exists
                     || feedFailed.exists
                     || feedEmpty.exists
                     || feedList.exists
-                    || firstPostCell.exists
+                    || feedPostRow.exists
                     || feedPostDetail.exists
+                    || staleBanner.exists
             if hasFeedUI {
                 return true
             }
@@ -181,6 +184,7 @@ enum UiTestSupport {
     }
 
     /// Resolves tabs on iPhone (`tabBars`) and iPad (top bar / sidebar), avoiding ambiguous multi-match taps.
+    /// Fails the test when no tab control can be tapped — never silently no-ops.
     @MainActor
     private static func openTab(
         titled title: String,
@@ -212,6 +216,7 @@ enum UiTestSupport {
     }
 
     /// Taps the first hittable match for an accessibility id (iPad can expose duplicate tab nodes).
+    /// Missing or non-hittable ids fail the test — silent return caused false greens on wrong tabs.
     @MainActor
     private static func tapFirstHittable(
         matching identifier: String,
@@ -220,6 +225,7 @@ enum UiTestSupport {
     ) {
         let query = app.descendants(matching: .any).matching(identifier: identifier)
         guard query.firstMatch.waitForExistence(timeout: timeout) else {
+            XCTFail("Tab control \(identifier) did not appear within \(timeout)s")
             return
         }
 
@@ -234,13 +240,21 @@ enum UiTestSupport {
             }
         }
 
-        query.firstMatch.tap()
+        let fallback = query.firstMatch
+        guard fallback.exists else {
+            XCTFail("Tab control \(identifier) vanished before tap")
+            return
+        }
+        // Last resort: XCTest may still accept tap when isHittable is flaky on CI.
+        fallback.tap()
     }
 
-    /// Waits for Items chrome (toolbar, empty-state action, list, or error).
+    /// Waits for Items chrome (toolbar, empty-state action, list, row, or error).
+    /// Does **not** accept bare `app.cells.firstMatch` — other tabs also have cells.
     @MainActor
     static func waitForItemsChrome(in app: XCUIApplication, timeout: TimeInterval = 25) -> Bool {
         let deadline = Date().addingTimeInterval(timeout)
+        let rowPredicate = NSPredicate(format: "identifier BEGINSWITH %@", "itemRow-")
         while Date() < deadline {
             let addItem = app.descendants(matching: .any).matching(identifier: "addItem").firstMatch
             let addItemEmpty = app.descendants(matching: .any).matching(identifier: "addItemEmpty").firstMatch
@@ -248,10 +262,15 @@ enum UiTestSupport {
                 return true
             }
 
+            let itemsList = app.descendants(matching: .any).matching(identifier: "itemsList").firstMatch
+            let itemRow = app.descendants(matching: .any).matching(rowPredicate).firstMatch
+            let itemDetail = app.descendants(matching: .any).matching(identifier: "itemDetail").firstMatch
             let hasItemsUI =
                 app.staticTexts["No Items"].exists
                     || app.staticTexts["Could Not Load Items"].exists
-                    || app.cells.firstMatch.exists
+                    || itemsList.exists
+                    || itemRow.exists
+                    || itemDetail.exists
             if hasItemsUI {
                 return true
             }
