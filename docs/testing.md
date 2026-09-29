@@ -52,7 +52,7 @@ provides proof.
 | `testFeedTabIsReachable` | Local Feed tab chrome (toolbar, list, empty, or error) |
 | `testFeedPostRowOpensDetail` | Feed list selection opens `feedPostDetail-1` |
 | `testItemRowOpensDetail` | Items list selection opens `itemDetail` (`-ReviewerDemoMode`) |
-| `testFeedAccessibilityChromeRowsAndRetry` | Feed VoiceOver-relevant refresh chrome, row label, and Retry label/tap |
+| `testFeedAccessibilityChromeRowsAndRetry` | Feed refresh chrome, row label, Retry label; post-tap `feedFailed-2` (not Retry-exists no-op) |
 | `testDeepLinkOpensFeedTab` | `superdemo://feed` selects Feed chrome |
 | `testDeepLinkOpensItemsTab` | `superdemo://items` selects Items chrome |
 | `testStaleFeedFixtureShowsBannerOnFeedTab` | `-StaleFeedDemo` shows stale banner + sample row |

@@ -161,12 +161,29 @@ final class superDemoAppUITests: XCTestCase {
         let failingApp = UiTestSupport.launchApplication(from: self, extraArguments: ["-UITestingFeedFailure"])
         UiTestSupport.openFeedTab(in: failingApp)
         XCTAssertTrue(failingApp.staticTexts["Could Not Load Feed"].waitForExistence(timeout: 10))
+        XCTAssertTrue(
+            UiTestSupport.waitForAnyIdentifier(["feedFailed-1"], in: failingApp, timeout: 10),
+            "Initial feed failure missing attempt-1 outcome chrome"
+        )
 
         let retry = failingApp.buttons["feedRetry"].firstMatch
         XCTAssertTrue(retry.waitForExistence(timeout: 10))
         XCTAssertEqual(retry.label, "Retry")
         retry.tap()
-        XCTAssertTrue(retry.waitForExistence(timeout: 10))
+        // Must advance completedRefreshCount — Retry-still-exists alone was a no-op pass.
+        XCTAssertTrue(
+            UiTestSupport.waitForAnyIdentifier(
+                ["feedFailed-2", "feedLoading"],
+                in: failingApp,
+                timeout: 15
+            ),
+            "Retry tap did not start a new feed refresh cycle"
+        )
+        XCTAssertTrue(
+            UiTestSupport.waitForAnyIdentifier(["feedFailed-2"], in: failingApp, timeout: 15),
+            "Retry tap did not return to failed outcome for attempt 2"
+        )
+        XCTAssertTrue(failingApp.buttons["feedRetry"].firstMatch.waitForExistence(timeout: 10))
     }
 
     @MainActor
