@@ -102,9 +102,9 @@ When `ProcessInfo` contains `-UITesting` (`AppLaunchConfiguration.isUITesting`):
 - **Feed** uses `SampleFeedRepository` via `FeedComposition` (no live posts fetch).
 - **Feed failure UI tests** add `-UITestingFeedFailure` to use
   `FailingSampleFeedRepository` and prove Retry without live network.
-  Retry must observe `feedLoading` (or brief absence of `feedFailed`) then
-  return to `feedFailed` + `feedRetry` — a no-op tap that only re-checks Retry
-  is not enough.
+  Retry must advance `completedRefreshCount` — UITest waits for
+  `feedFailed-1`, then post-tap `feedFailed-2` or `feedLoading` (not merely
+  that `feedRetry` still exists).
 
 Normal app runs still hit JSONPlaceholder for Feed and remote health checks.
 

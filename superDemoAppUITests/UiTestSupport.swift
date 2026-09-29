@@ -188,13 +188,14 @@ enum UiTestSupport {
         let deadline = Date().addingTimeInterval(timeout)
         let detailPredicate = NSPredicate(format: "identifier BEGINSWITH %@", "feedPostDetail-")
         let rowPredicate = NSPredicate(format: "identifier BEGINSWITH %@", "feedPostRow-")
+        let failedPredicate = NSPredicate(format: "identifier BEGINSWITH %@", "feedFailed-")
         while Date() < deadline {
             let refresh = app.buttons["refreshFeed"]
             let refreshToolbar = app.toolbars.buttons["refreshFeed"]
             let refreshEmpty = app.buttons["refreshFeedEmpty"]
             let refreshLabel = app.buttons["Refresh Feed"]
             let retry = app.buttons["feedRetry"]
-            let feedFailed = app.descendants(matching: .any).matching(identifier: "feedFailed").firstMatch
+            let feedFailed = app.descendants(matching: .any).matching(failedPredicate).firstMatch
             let feedFailedLabel = app.staticTexts["Could Not Load Feed"]
             let feedLoading = app.descendants(matching: .any).matching(identifier: "feedLoading").firstMatch
             let feedEmpty = app.staticTexts["No Posts"]

@@ -2,31 +2,32 @@
 
 ## Summary
 
-`testFeedAccessibilityChromeRowsAndRetry` must prove a real refresh attempt
-after tapping Retry under `-UITestingFeedFailure` — not that Retry still
-exists (a no-op tap would pass).
+`testFeedAccessibilityChromeRowsAndRetry` proves Retry advances a refresh cycle
+via `feedFailed-<n>` (backed by `FeedFeatureModel.completedRefreshCount`), not
+merely that the Retry control still exists after tap.
 
 ## Why
 
-Mac Codex scan on tip `ab6784c` (rank 2 / e2e-13 after #52): Retry tap then
-only `waitForExistence` on `feedRetry` false-greens when the button was
-already on screen.
+Mac Codex scan on tip `ab6784c` (rank 2 / e2e-13 after #52): tapping Retry then
+asserting Retry still exists was a no-op pass if the tap did nothing. First #53
+attempt used static `feedFailed` + polling — flaky on GHA (loading→failed
+re-assert timed out); folded closed #54 counter approach on same branch.
 
 ## Changes
 
-- `FeedView` — `feedLoading` on ProgressView; `feedFailed` on failed chrome
-- `FailingSampleFeedRepository` — short sleep so UITests can observe loading
-  before the fixture fails again
-- `testFeedAccessibilityChromeRowsAndRetry` — assert loading / failed-left,
-  then `feedFailed` + `feedRetry` outcome
-- `UiTestSupport.waitForFeedChrome` — accept `feedLoading` / `feedFailed` ids
+- `FeedFeatureModel.completedRefreshCount` — increments on success/failure
+  completion (not cancel)
+- `FeedView` — `feedLoading`, `feedFailed-<n>` (children contained)
+- `FailingSampleFeedRepository` — 200ms delay so loading is observable
+- UITest waits for `feedFailed-1` then post-tap `feedFailed-2` / `feedLoading`
+- Unit: `retryAfterFailureIncrementsCompletedRefreshCount`
 - Portfolio tip pin → `e399339` (#52)
 
 ## Proof
 
-- GHA Delivery UITests on this PR (iPhone lane)
-- Linux: `./bin/verify-swift.sh` + checklist-fast / common-issues
+- Unit test above; GHA Delivery UITests on [#53](https://github.com/redjadet/super_demo_ios/pull/53)
+- Linux: common-issues / scorecard / markdown / router
 
 ## Out of scope
 
-P2-A screenshots; visionOS; tip-pin-only ships.
+Mac P2-A screenshots; visionOS; tip-pin-only ships.

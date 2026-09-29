@@ -117,6 +117,7 @@ struct FeedView: View {
             ProgressView()
                 .featureScreenFrame()
                 .accessibilityIdentifier("feedLoading")
+                .accessibilityLabel("Loading feed")
         case let .failed(error):
             ContentUnavailableView {
                 Label("Could Not Load Feed", systemImage: "exclamationmark.triangle")
@@ -130,7 +131,11 @@ struct FeedView: View {
                 .accessibilityIdentifier("feedRetry")
             }
             .featureScreenFrame()
-            .accessibilityIdentifier("feedFailed")
+            // Contain children so `feedRetry` stays visible; count proves Retry
+            // advanced a cycle (not a no-op tap on prior chrome).
+            .accessibilityElement(children: .contain)
+            .accessibilityIdentifier("feedFailed-\(self.model.completedRefreshCount)")
+            .accessibilityLabel("Could not load feed")
         case .empty:
             ContentUnavailableView {
                 Label("No Posts", systemImage: "text.bubble")

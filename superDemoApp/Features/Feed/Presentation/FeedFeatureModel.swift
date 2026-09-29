@@ -21,6 +21,9 @@ final class FeedFeatureModel {
     private let liveActivity: FeedRefreshLiveActivityControlling
 
     private(set) var state: FeedState = .loading
+    /// Completed refresh cycles (success or failure). UITests use this to prove
+    /// Retry drove a new attempt — not a no-op tap that leaves prior chrome.
+    private(set) var completedRefreshCount = 0
     private let loadController = AsyncLoadController()
     private var stateBeforeRefresh: FeedState?
     /// Bumps on each `refresh` / `refreshAndWait` so a superseded in-flight
@@ -101,6 +104,7 @@ final class FeedFeatureModel {
                 postCount: result.posts.count,
                 isStale: result.isStale
             )
+            self.completedRefreshCount += 1
             self.stateBeforeRefresh = nil
         } catch is CancellationError {
             guard generation == self.refreshGeneration else { return }
@@ -117,6 +121,7 @@ final class FeedFeatureModel {
             )
             self.state = .failed(FeedDisplayError(error))
             self.liveActivity.refreshDidFail()
+            self.completedRefreshCount += 1
             self.stateBeforeRefresh = nil
         }
     }
