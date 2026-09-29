@@ -133,10 +133,12 @@ final class EngineeringDemosUITests: XCTestCase {
 
         let deadline = Date().addingTimeInterval(10)
         var label = response.label
-        while Date() < deadline,
-              label.contains("Tap Ping")
-              || label.isEmpty
-              || !label.contains(#""ok":true"#) {
+        while Date() < deadline {
+            let stillWaiting =
+                label.contains("Tap Ping")
+                    || label.isEmpty
+                    || !label.contains(#""ok":true"#)
+            guard stillWaiting else { break }
             RunLoop.current.run(until: Date().addingTimeInterval(0.2))
             label = response.label
         }
