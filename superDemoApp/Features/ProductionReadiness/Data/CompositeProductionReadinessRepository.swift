@@ -59,7 +59,8 @@ struct CompositeProductionReadinessRepository: ProductionReadinessRepository {
                 endpoint: self.remoteEndpoint.path(),
                 status: .warning,
                 latencyMilliseconds: 0,
-                lastChecked: self.now()
+                lastChecked: self.now(),
+                isLiveProbe: true
             )
         }
     }

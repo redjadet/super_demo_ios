@@ -30,7 +30,8 @@ struct RemoteAPIHealthRepository {
             endpoint: self.endpoint.path(),
             status: response.statusCode < 300 ? .healthy : .warning,
             latencyMilliseconds: latency,
-            lastChecked: self.now()
+            lastChecked: self.now(),
+            isLiveProbe: true
         )
     }
 }
