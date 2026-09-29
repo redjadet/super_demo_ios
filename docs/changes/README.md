@@ -4,6 +4,8 @@ Record durable implementation notes after meaningful changes.
 
 ## Entries
 
+- [`2026-09-29_uitest-flutter-host-screen-false-green.md`](2026-09-29_uitest-flutter-host-screen-false-green.md)
+  — Flutter demo UITest outcome excludes host screen id (false-green); tip `ab6784c`.
 - [`2026-09-29_uitest-launch-progress-retry.md`](2026-09-29_uitest-launch-progress-retry.md)
   — UITest launch-progress relaunch + CI sim reboot retry (no `launchTimeout` on Xcode 27); #51.
 - [`2026-09-29_widget-mixed-age-ttl.md`](2026-09-29_widget-mixed-age-ttl.md)

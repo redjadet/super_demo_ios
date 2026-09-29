@@ -236,12 +236,12 @@ final class EngineeringDemosUITests: XCTestCase {
             in: app
         )
 
-        // Embedded FlutterViewController often does not expose SwiftUI identifiers to XCTest;
-        // accept the host screen id (always set) plus unavailable / bridge chrome.
+        // `openEngineeringDemo` already required `flutterAddToAppDemoScreen`.
+        // Outcome must prove embedded **or** unavailable chrome — not the host
+        // screen id alone (always present → false green).
         XCTAssertTrue(
             UiTestSupport.waitForAnyIdentifier(
                 [
-                    "flutterAddToAppDemoScreen",
                     "flutterAddToAppEmbedded",
                     "flutterAddToAppUnavailable",
                     "flutterAddToAppUnavailableScreen",
@@ -249,7 +249,8 @@ final class EngineeringDemosUITests: XCTestCase {
                 ],
                 in: app,
                 timeout: 20
-            )
+            ),
+            "Flutter demo missing embedded or unavailable outcome chrome"
         )
 
         let screen = app.descendants(matching: .any)
