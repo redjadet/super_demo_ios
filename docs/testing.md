@@ -79,6 +79,13 @@ Helpers live in `superDemoAppUITests/UiTestSupport.swift`:
   instance, then launches and waits for foreground (avoids CI
   `Failed to terminate` between tests).
 - **`openDeepLink(_:in:)`** — opens a custom-scheme URL against the running app.
+- **`openFeedTab` / `openItemsTab` / `openDashboardTab`** — fail when no tab
+  control is tappable (no silent `tapFirstHittable` no-op).
+- **`waitForFeedChrome` / `waitForItemsChrome`** — require feature-scoped
+  identifiers (`feedList` / `feedPostRow-*` / `feedPostDetail-*` / refresh /
+  retry / empty / error; `itemsList` / `itemRow-*` / `addItem*`). Do **not**
+  accept bare `app.cells.firstMatch` (Dashboard/Items also have cells → false
+  green).
 - **`tearDown`** in `superDemoAppUITests` — `@MainActor`, calls
   `terminateApplication` so the next test does not inherit a stuck process
   (SwiftLint: balanced `setUp` / `tearDown`; required for Swift 6 on CI).

@@ -21,5 +21,6 @@ host set, so CI could print “AASA … OK” without live-host honesty.
 
 ## Deferred (unchanged)
 
-Mac P2-A screenshots, private Mac worker, visionOS, paid StoreKit, real APNs,
-UITest tab/Feed-chrome false-green harden (rank 3 — needs GHA sim proof).
+Mac P2-A screenshots, private Mac worker, visionOS, paid StoreKit, real APNs.
+UITest tab/Feed-chrome false-green harden shipped separately (see
+`2026-09-29_uitest-false-green-harden.md`).

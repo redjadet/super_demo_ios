@@ -4,6 +4,10 @@ Record durable implementation notes after meaningful changes.
 
 ## Entries
 
+- [`2026-09-29_uitest-false-green-harden.md`](2026-09-29_uitest-false-green-harden.md)
+  — UITest tab / Feed–Items chrome false-green harden; tip `4a39dcb`.
+- [`2026-09-28_aasa-live-host-honesty.md`](2026-09-28_aasa-live-host-honesty.md)
+  — AASA live-host DNS honesty gate + `superdemo://` cold-path; tip `9aa3e05`.
 - [`2026-09-28_portfolio-router-path-honesty.md`](2026-09-28_portfolio-router-path-honesty.md)
   — Portfolio/tour/navigation root-resolvable paths; router path gate; fix
   workspace test paths; tip `6c5d4be`.
