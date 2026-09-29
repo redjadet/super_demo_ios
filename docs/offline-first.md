@@ -64,7 +64,8 @@ forever-cache).
 
 After a successful remote refresh, the app publishes an App Group Feed widget
 snapshot (titles capped for UI; `postCount` is the full cache size for
-`feed.cacheStatus`). On **stale fallback**, `writtenAt` stays aligned with
-SwiftData `cachedAt` so widget TTL matches this section. On **OI-03 cache
-miss**, the publisher **clears** the snapshot so Home Screen / host-bridge do
-not keep a prior “ok” after the repository refused cache.
+`feed.cacheStatus`). On **stale fallback**, `writtenAt` is the **oldest**
+surviving SwiftData `cachedAt` so widget TTL expires with the oldest title
+still shown (not the newest). On **OI-03 cache miss**, the publisher **clears**
+the snapshot so Home Screen / host-bridge do not keep a prior “ok” after the
+repository refused cache.

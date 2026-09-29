@@ -4,6 +4,8 @@ Record durable implementation notes after meaningful changes.
 
 ## Entries
 
+- [`2026-09-29_widget-mixed-age-ttl.md`](2026-09-29_widget-mixed-age-ttl.md)
+  — Stale widget snapshot uses oldest surviving `cachedAt` for TTL; tip `a7424bc`.
 - [`2026-09-29_release-health-score-honesty.md`](2026-09-29_release-health-score-honesty.md)
   — Release health % excludes sample API when live Remote API probe present; tip `6544a31`.
 - [`2026-09-29_stale-feed-intent-isolation.md`](2026-09-29_stale-feed-intent-isolation.md)

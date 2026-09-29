@@ -76,8 +76,9 @@ final class CachingFeedRepository: FeedRepository {
                 self.signposter.emitEvent("cacheMiss", id: signpostID)
                 throw error
             }
-            // Keep snapshot TTL aligned with SwiftData `cachedAt`, not wall-clock now.
-            let writtenAt = cached.map(\.cachedAt).max() ?? self.now()
+            // Align widget TTL with the *oldest* surviving row. `max(cachedAt)`
+            // let newer titles keep an older title “ok” past its own age + TTL.
+            let writtenAt = cached.map(\.cachedAt).min() ?? self.now()
             self.publishSnapshot(
                 posts: cached.map(\.post),
                 isStale: true,
