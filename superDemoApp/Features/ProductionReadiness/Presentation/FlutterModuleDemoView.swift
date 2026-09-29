@@ -19,10 +19,9 @@ struct FlutterModuleDemoView: View {
     var body: some View {
         Group {
             #if canImport(Flutter) && os(iOS)
-            // Native outcome chrome above the embed: SwiftUI `.accessibilityIdentifier`
-            // on `UIViewControllerRepresentable` is not exposed through
-            // `FlutterViewController`, so XCTest must see a sibling native id
-            // (not the host `flutterAddToAppDemoScreen` alone).
+            // Native outcome chrome — SwiftUI id on UIViewControllerRepresentable is not
+            // exposed through FlutterViewController. Keep Flutter itself out of the
+            // a11y tree so XCTest descendant queries do not hang on the embed.
             VStack(spacing: 0) {
                 Text("Flutter module embedded")
                     .font(.caption2)
@@ -34,6 +33,7 @@ struct FlutterModuleDemoView: View {
 
                 FlutterModuleRepresentable()
                     .ignoresSafeArea(edges: .bottom)
+                    .accessibilityHidden(true)
             }
             #else
             FlutterModuleUnavailableView()
@@ -43,6 +43,9 @@ struct FlutterModuleDemoView: View {
         #if os(iOS)
         .navigationBarTitleDisplayMode(.inline)
         #endif
+        // Parent id+label alone would collapse children (false-green on host id;
+        // embedded / unavailable chrome invisible to XCTest). Contain children.
+        .accessibilityElement(children: .contain)
         .accessibilityIdentifier("flutterAddToAppDemoScreen")
         .accessibilityLabel("Flutter add-to-app Engineering demo")
     }
@@ -51,19 +54,13 @@ struct FlutterModuleDemoView: View {
 #if canImport(Flutter) && os(iOS)
 private struct FlutterModuleRepresentable: UIViewControllerRepresentable {
     func makeUIViewController(context _: Context) -> FlutterViewController {
-        let controller = FlutterAddToAppHost.makeViewController()
-        Self.applyEmbeddedAccessibility(to: controller)
-        return controller
+        FlutterAddToAppHost.makeViewController()
     }
 
-    func updateUIViewController(_ uiViewController: FlutterViewController, context _: Context) {
-        // Re-apply: Flutter may replace or clear root-view accessibility after run.
-        Self.applyEmbeddedAccessibility(to: uiViewController)
-    }
-
-    private static func applyEmbeddedAccessibility(to controller: FlutterViewController) {
-        controller.view.accessibilityIdentifier = "flutterAddToAppEmbedded"
-        controller.view.accessibilityLabel = "Embedded Flutter add-to-app module"
+    func updateUIViewController(_: FlutterViewController, context _: Context) {
+        // No-op: engine + MethodChannel are owned by FlutterAddToAppHost.
+        // Do not stamp UIKit a11y on FlutterViewController.view — that pulls the
+        // Flutter semantics tree into XCTest queries and can hang the suite.
     }
 }
 #endif
@@ -112,6 +109,7 @@ private struct FlutterModuleUnavailableView: View {
                 .foregroundStyle(.secondary)
             }
         }
+        .accessibilityElement(children: .contain)
         .accessibilityIdentifier("flutterAddToAppUnavailableScreen")
         .accessibilityLabel("Flutter add-to-app unavailable")
     }
