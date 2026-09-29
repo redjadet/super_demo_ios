@@ -133,12 +133,33 @@ final class EngineeringDemosUITests: XCTestCase {
 
         let deadline = Date().addingTimeInterval(10)
         var label = response.label
-        while Date() < deadline, label.contains("Tap Ping") || label.isEmpty {
+        while Date() < deadline {
+            let stillWaiting =
+                label.contains("Tap Ping")
+                    || label.isEmpty
+                    || !label.contains(#""ok":true"#)
+            guard stillWaiting else { break }
             RunLoop.current.run(until: Date().addingTimeInterval(0.2))
             label = response.label
         }
+        // Nonempty / non-placeholder alone false-greened error and ok:false.
         XCTAssertFalse(label.contains("Tap Ping"), "Host bridge response stayed on placeholder")
-        XCTAssertFalse(label.isEmpty)
+        XCTAssertTrue(
+            label.contains(#""ok":true"#),
+            "Expected successful feed.cacheStatus JSON (ok:true), got: \(label)"
+        )
+        XCTAssertFalse(
+            label.contains(#""ok":false"#),
+            "Host bridge returned ok:false — not a successful ping: \(label)"
+        )
+        XCTAssertTrue(
+            label.contains(#""id":"demo-1"#),
+            "Expected fixed request id demo-1 echoed in response: \(label)"
+        )
+        XCTAssertTrue(
+            label.contains(#""source"#),
+            "Expected cache-status result.source in successful response: \(label)"
+        )
     }
 
     @MainActor
