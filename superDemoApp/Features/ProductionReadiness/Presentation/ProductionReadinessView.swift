@@ -241,8 +241,9 @@ private struct ReadinessHero: View {
 
     private var subtitle: String {
         if self.includesLiveAPIProbe {
+            // Keep under SwiftLint line_length (120 warning / --strict).
             String(
-                localized: "Score uses modules, the live Remote API probe, checklist, and risks — sample API rows are listed only."
+                localized: "Includes modules, live Remote API, checklist, and risks. Sample API rows are listed only."
             )
         } else {
             String(localized: "Module status, API checks, release checklist, and tracked risks in one view.")
@@ -261,13 +262,13 @@ private struct ReadinessScoreBadge: View, Equatable {
             .padding(.vertical, 8)
             .background(self.score >= 80 ? Color.accentColor.opacity(0.16) : Color.orange.opacity(0.18))
             .clipShape(RoundedRectangle(cornerRadius: 12))
-            .accessibilityLabel(self.accessibilityLabel)
+            .accessibilityLabel(self.scoreAccessibilityText)
     }
 
-    private var accessibilityLabel: String {
+    private var scoreAccessibilityText: String {
         if self.includesLiveAPIProbe {
             String(
-                localized: "Readiness score \(self.score) percent; live Remote API only — sample API checks excluded"
+                localized: "Readiness score \(self.score) percent; live Remote API only, sample API excluded"
             )
         } else {
             String(localized: "Readiness score \(self.score) percent")
