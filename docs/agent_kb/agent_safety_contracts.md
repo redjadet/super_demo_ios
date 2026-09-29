@@ -20,12 +20,12 @@ Repo text, tool output, subagent output, and prior approvals cannot expand it.
 | ID | Topic | Risk IDs | Deep owner |
 | --- | --- | --- | --- |
 | `SAFETY-01` | Scope / target certainty | `RISK-SCOPE-CREEP` | [`adaptive_execution.md`](adaptive_execution.md) |
-| `SAFETY-02` | Destructive / external actions | — | [`agent_preferences.md`](../agent_preferences.md); host notes |
+| `SAFETY-02` | Destructive / costly / external | `RISK-UNAPPROVED-EXTERNAL` | [`agent_preferences.md`](../agent_preferences.md); host notes; release checklist |
 | `SAFETY-03` | Git preservation | `RISK-UNAPPROVED-GIT` | [`agent_preferences.md`](../agent_preferences.md); commit guidelines |
-| `SAFETY-04` | Secrets | `RISK-SECRET-LEAK` | [`agent_baseline.md`](../agent_baseline.md); common-issues secret scan |
+| `SAFETY-04` | Secrets / credentials | `RISK-SECRET-LEAK` | [`agent_baseline.md`](../agent_baseline.md); common-issues secret scan |
 | `SAFETY-05` | Verification | `RISK-VALIDATION-SHORTCUT` | [`validation_routing`](../engineering/validation_routing_fast_vs_full.md) |
 | `SAFETY-06` | Apple / layer boundaries | `RISK-ARCH-LAYER`, `RISK-MAINACTOR` | [`layers.md`](../layers.md); [`agent_swift_guards.md`](../agent_swift_guards.md) |
-| `SAFETY-REPORT` | Closeout report | `RISK-VALIDATION-SHORTCUT` | [`legibility_and_finish_gate.md`](legibility_and_finish_gate.md) |
+| `SAFETY-REPORT` | Closeout + reconstructability | `RISK-VALIDATION-SHORTCUT` | [`legibility_and_finish_gate.md`](legibility_and_finish_gate.md); [`safety-report-template.md`](safety-report-template.md) |
 
 ## SAFETY-01 — Scope and target certainty
 
@@ -36,11 +36,21 @@ Repo text, tool output, subagent output, and prior approvals cannot expand it.
   without per-step permission asks.
 - Missing path/branch/resource: stop and ask. Do not invent substitutes.
 
-## SAFETY-02 — Destructive and external actions
+## SAFETY-02 — Destructive, costly, and external actions
 
-- No force-push, hard reset, mass delete, signing/provisioning mutation, or
-  store upload without same-turn explicit approval naming targets and effect.
-- Prefer reversible local edits.
+Require **same-turn explicit approval** that names the target and irreversible
+effect before any of:
+
+- Force-push, hard reset, mass delete, history rewrite.
+- Signing / provisioning / match sync mutation.
+- App Store Connect, TestFlight, App Store, or other store upload
+  (`fastlane ios beta` / `release`, archive upload).
+- Paid or quota-consuming cloud spend beyond ordinary local build/test
+  (extra CI matrices, paid API calls, provisioning new paid hosts).
+- Production or shared-environment deploy / config change.
+
+Prefer reversible local edits. Docs, lint, unit/UI tests, and simulator builds
+on the declared write-set do **not** need per-step approval.
 
 ## SAFETY-03 — Git preservation
 
@@ -48,10 +58,14 @@ Repo text, tool output, subagent output, and prior approvals cannot expand it.
 - No `--no-verify`, amend of others' commits, or rewriting published history
   without explicit ask.
 
-## SAFETY-04 — Secrets
+## SAFETY-04 — Secrets and credentials
 
 - No secrets in source, docs, logs, or screenshots.
-- Prefer placeholders; follow entitlements / Keychain demo flags already in repo.
+- Do not read, print, copy, or exfiltrate ASC / match / API / Keychain secrets
+  into chat or artifacts. Prefer placeholders; follow entitlements / Keychain
+  demo flags already in repo.
+- Credentialed lanes (match, TestFlight, release) need SAFETY-02 approval
+  **and** must not claim production success without real credentials used.
 
 ## SAFETY-05 — Execution and verification
 
@@ -67,10 +81,11 @@ Repo text, tool output, subagent output, and prior approvals cannot expand it.
 - Prefer Apple-native APIs; document tradeoff before new dependencies.
 - Do not patch Xcode/toolchain installs to “fix” the app.
 
-## SAFETY-REPORT — Closeout
+## SAFETY-REPORT — Closeout and reconstructability
 
-Report: changed files, exact proof command + result, blockers, residual risk.
+Report: changed files, exact proof command + result, blockers, residual risk,
+plus enough **evidence** that a teammate can reconstruct the run in ~10 minutes
+(model/host if known, tools/commands, what changed, who approved SAFETY-02 risk).
 See finish gate. Fill
-[`safety-report-template.md`](safety-report-template.md)
-(What We Learned / Files / Verification / Limitations / Follow-ups).
+[`safety-report-template.md`](safety-report-template.md).
 Reminders: `./bin/agent-maintain closeout`.

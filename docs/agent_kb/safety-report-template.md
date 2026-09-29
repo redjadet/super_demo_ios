@@ -6,6 +6,9 @@ Fill this before claiming non-trivial work done. Canon:
 
 Print reminders: `./bin/agent-maintain closeout`.
 
+A teammate who was not in the session should reconstruct the run in
+**~10 minutes** from this report + the named proof command output.
+
 ---
 
 ## SAFETY-REPORT
@@ -26,6 +29,16 @@ Print reminders: `./bin/agent-maintain closeout`.
 | --- | --- |
 | `./bin/…` | Pass / Fail (+ note) |
 
+### Evidence (reconstructability)
+
+| Field | Value |
+| --- | --- |
+| Model / agent (if known) | e.g. Cursor cloud / Codex / local — name or “unknown” |
+| Where it ran | host / VM / CI job / worktree path |
+| Tools used | repo scripts, MCP, `gh`, Simulator, etc. (names only) |
+| What changed | write-set summary or `git diff --stat` pointer |
+| Risk approvals | SAFETY-02 actions: who approved, target, effect — or **None** |
+
 ### Known limitations
 
 - …
@@ -34,10 +47,11 @@ Print reminders: `./bin/agent-maintain closeout`.
 
 - …
 
-### Destructive / external actions
+### Destructive / costly / external actions
 
-None. *(Or list approved targets + effect.)*
+None. *(Or list approved targets + effect + approver.)*
 
 ---
 
 Do not treat an empty template as proof. Cite real command output.
+Do not paste secrets, tokens, or credential values into evidence fields.

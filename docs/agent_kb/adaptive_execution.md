@@ -15,7 +15,8 @@ requires it.
    - Implementation: current Apple repo architecture and validation.
 4. Plan once, then execute end-to-end.
 5. Ask only hard blockers: missing credentials/tooling, unsafe ambiguity below
-   95% confident, or user-owned decision.
+   95% confident, user-owned decision, or SAFETY-02 costly/external actions
+   without same-turn approval.
 6. Do not edit until goal, scope, and approach are at least 95% confident.
 7. Vague/risky work: state assumptions, data flow, failure handling, smallest
    verifiable slice, and what could be false about the codebase.

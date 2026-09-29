@@ -16,7 +16,7 @@ details.
 | Missing capability beats retry. | Repeated failure needs a small doc/test/script/check, not another prompt. |
 | Enforce invariants, not taste. | Automate boundaries; keep local implementation freedom. |
 | Fast feedback is a product constraint. | Use previews, mocks, tests, and platform proof to shorten manual loops. |
-| Harness beats model choice. | Protect context, memory, orchestration, and recovery. |
+| Boundaries + evidence beat prompt scaffolding. | Keep approval gates and reconstructable logs; slim long prompts/maps only after they prove redundant. |
 
 ## AI Productivity Traps
 
@@ -43,25 +43,20 @@ Repo guardrails:
 
 ## Progressive Disclosure
 
-Canonical ladder: [`ai/context_loading.md`](ai/context_loading.md).
-
-Short path for most work:
-
-1. [`../AGENTS.md`](../AGENTS.md)
-2. This file (workflow / finish gate)
-3. [`ai/ai_failure_risks.md`](ai/ai_failure_risks.md) +
-   [`agent_kb/agent_safety_contracts.md`](agent_kb/agent_safety_contracts.md) for
-   non-trivial tasks
-4. Task-matched owners from the context ladder
-5. Targeted source and tests
+Canonical ladder (do not duplicate here):
+[`ai/context_loading.md`](ai/context_loading.md). Non-trivial work also loads
+[`ai/ai_failure_risks.md`](ai/ai_failure_risks.md) +
+[`agent_kb/agent_safety_contracts.md`](agent_kb/agent_safety_contracts.md).
+This file owns workflow / finish gate only.
 
 ## Agent loop
 
 Plan once → execute end-to-end → verify → report proof. Ask only blockers:
-credentials/tooling, ambiguity below ~95% confidence, user-owned choice.
+credentials/tooling, ambiguity below ~95% confidence, user-owned choice,
+SAFETY-02 costly/external actions.
 
-Non-trivial work: local `tasks/codex/todo.md` (gitignored), context ladder below, one
-observe/revise loop.
+Non-trivial work: local `tasks/codex/todo.md` (gitignored), context ladder,
+finish with SAFETY-REPORT evidence (reconstructability).
 
 ## Execution Contract
 
