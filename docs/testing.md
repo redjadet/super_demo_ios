@@ -61,7 +61,7 @@ provides proof.
 | `testSignInWithAppleDemoIsReachable` | SIWA Engineering demo chrome (Simulator-honest) |
 | `testOnDeviceVisionDemoRecognizesOrReportsHonestState` | Vision OCR run → lines or honest failure |
 | `testHostBridgePingDemoReturnsResponse` | Host bridge ping returns non-placeholder JSON |
-| `testFlutterAddToAppDemoIsReachable` | Flutter add-to-app demo (embedded or unavailable) |
+| `testFlutterAddToAppDemoIsReachable` | Flutter add-to-app: embedded **or** unavailable chrome (not host screen id alone) |
 | `testFeedWidgetSnapshotDemoIsReachable` | Feed widget App Group snapshot demo |
 | `testStoreKitProductQueryDemoIsReachable` | StoreKit Load → terminal empty / unavailable / product row (not idle/loading) |
 | `testLocalNotificationDemoIsReachable` | Local stale-Feed reminder demo chrome |

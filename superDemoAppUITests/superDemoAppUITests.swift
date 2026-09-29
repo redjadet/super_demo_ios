@@ -31,14 +31,13 @@ final class superDemoAppUITests: XCTestCase {
     func testDashboardShowsProductionRisks() {
         let app = UiTestSupport.launchApplication(from: self)
 
-        UiTestSupport.openDashboardTab(in: app)
-        _ = UiTestSupport.waitForListOrCollection(identifier: "productionReadinessDashboard", in: app)
-
-        let risksLink = app.buttons["productionRisksLink"]
-        UiTestSupport.scrollToElement(risksLink, in: app)
-        XCTAssertTrue(risksLink.waitForExistence(timeout: 10))
-        risksLink.tap()
-        _ = UiTestSupport.waitForListOrCollection(identifier: "productionRisksScreen", in: app)
+        // Same dashboard scroll path as Engineering demos — `app.buttons[...]` +
+        // unscrolled `scrollToElement` missed the CollectionView link on CI.
+        UiTestSupport.openEngineeringDemo(
+            linkIdentifier: "productionRisksLink",
+            screenIdentifier: "productionRisksScreen",
+            in: app
+        )
     }
 
     @MainActor

@@ -236,20 +236,36 @@ final class EngineeringDemosUITests: XCTestCase {
             in: app
         )
 
-        // Embedded FlutterViewController often does not expose SwiftUI identifiers to XCTest;
-        // accept the host screen id (always set) plus unavailable / bridge chrome.
+        // `openEngineeringDemo` already required `flutterAddToAppDemoScreen`.
+        // Outcome must prove embedded **or** unavailable chrome — not the host
+        // screen id alone (always present → false green). Prefer staticTexts /
+        // buttons so we do not stall on Flutter's semantics tree.
+        let embedded = app.staticTexts.matching(identifier: "flutterAddToAppEmbedded").firstMatch
+        let unavailable = app.staticTexts.matching(identifier: "flutterAddToAppUnavailable").firstMatch
+        let unavailableScreen = app.otherElements
+            .matching(identifier: "flutterAddToAppUnavailableScreen")
+            .firstMatch
+        let hostBridge = app.descendants(matching: .any)
+            .matching(identifier: "flutterAddToAppHostBridgeLink")
+            .firstMatch
+        let sawOutcome =
+            embedded.waitForExistence(timeout: 12)
+                || unavailable.waitForExistence(timeout: 2)
+                || unavailableScreen.waitForExistence(timeout: 2)
+                || hostBridge.waitForExistence(timeout: 2)
+                || UiTestSupport.waitForAnyIdentifier(
+                    [
+                        "flutterAddToAppEmbedded",
+                        "flutterAddToAppUnavailable",
+                        "flutterAddToAppUnavailableScreen",
+                        "flutterAddToAppHostBridgeLink",
+                    ],
+                    in: app,
+                    timeout: 8
+                )
         XCTAssertTrue(
-            UiTestSupport.waitForAnyIdentifier(
-                [
-                    "flutterAddToAppDemoScreen",
-                    "flutterAddToAppEmbedded",
-                    "flutterAddToAppUnavailable",
-                    "flutterAddToAppUnavailableScreen",
-                    "flutterAddToAppHostBridgeLink",
-                ],
-                in: app,
-                timeout: 20
-            )
+            sawOutcome,
+            "Flutter demo missing embedded or unavailable outcome chrome"
         )
 
         let screen = app.descendants(matching: .any)

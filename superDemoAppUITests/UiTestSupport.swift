@@ -96,22 +96,25 @@ enum UiTestSupport {
             in: app
         )
 
-        let link = app.descendants(matching: .any).matching(identifier: linkIdentifier).firstMatch
-        // Scroll the dashboard List/collection — plain `swipeUp` is flaky on CI Xcode 27
-        // (mid/lower demos: Feed widget … watch companion never enter the a11y tree).
+        // Prefer dashboard-scoped query — app-wide `.any` walks are slow/flaky on
+        // long Engineering demo lists under Xcode 27 CI sims.
+        let link = dashboard.descendants(matching: .any).matching(identifier: linkIdentifier).firstMatch
+        // Reset to top so mid/lower links (Feed widget … watch) are reached by
+        // downward scroll even when a prior demo left the list mid-way.
+        self.scrollToTop(on: dashboard)
         self.scrollToElement(
             link,
             in: app,
             within: dashboard,
-            timeout: max(timeout, 40),
-            maxSwipes: 40
+            timeout: max(timeout, 55),
+            maxSwipes: 55
         )
         XCTAssertTrue(
-            link.waitForExistence(timeout: timeout),
+            link.waitForExistence(timeout: min(timeout, 12)),
             "Missing demo link \(linkIdentifier)"
         )
         if !link.isHittable {
-            self.scrollToElement(link, in: app, within: dashboard, maxSwipes: 12)
+            self.scrollToElement(link, in: app, within: dashboard, timeout: 15, maxSwipes: 16)
         }
         XCTAssertTrue(link.isHittable, "Demo link \(linkIdentifier) exists but is not hittable")
         link.tap()
@@ -121,6 +124,9 @@ enum UiTestSupport {
     }
 
     /// True when any descendant matches `identifier` within `timeout`.
+    ///
+    /// Prefers typed queries (`staticTexts` / `buttons`) before `descendants(.any)`
+    /// so Flutter / large trees do not stall each poll.
     @MainActor
     static func waitForAnyIdentifier(
         _ identifiers: [String],
@@ -130,7 +136,16 @@ enum UiTestSupport {
         let deadline = Date().addingTimeInterval(timeout)
         while Date() < deadline {
             let found = identifiers.contains { identifier in
-                app.descendants(matching: .any).matching(identifier: identifier).firstMatch.exists
+                if app.staticTexts.matching(identifier: identifier).firstMatch.exists {
+                    return true
+                }
+                if app.buttons.matching(identifier: identifier).firstMatch.exists {
+                    return true
+                }
+                if app.otherElements.matching(identifier: identifier).firstMatch.exists {
+                    return true
+                }
+                return app.descendants(matching: .any).matching(identifier: identifier).firstMatch.exists
             }
             if found {
                 return true
@@ -363,12 +378,27 @@ enum UiTestSupport {
             // Prefer a long drag on the list/collection; `swipeUp` alone often
             // no-ops on SwiftUI List under Xcode 27 / iOS 27 CI sims.
             self.dragScrollUp(on: scroller)
-            if remainingSwipes % 3 == 0 {
+            if remainingSwipes % 2 == 0 {
+                scroller.swipeUp(velocity: .slow)
+            }
+            if remainingSwipes % 5 == 0 {
                 app.swipeUp()
             }
             remainingSwipes -= 1
-            RunLoop.current.run(until: Date().addingTimeInterval(0.2))
+            RunLoop.current.run(until: Date().addingTimeInterval(0.15))
         }
+    }
+
+    /// Pull the Engineering demos list back to the top before searching mid/lower links.
+    @MainActor
+    private static func scrollToTop(on scroller: XCUIElement) {
+        guard scroller.exists else {
+            return
+        }
+        for _ in 0 ..< 6 {
+            self.dragScrollDown(on: scroller)
+        }
+        scroller.swipeDown(velocity: .fast)
     }
 
     /// Slow vertical drag — more reliable than `swipeUp` for long Engineering demos lists.
@@ -377,8 +407,18 @@ enum UiTestSupport {
         guard scroller.exists else {
             return
         }
-        let start = scroller.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.82))
-        let end = scroller.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.22))
+        let start = scroller.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.85))
+        let end = scroller.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.18))
+        start.press(forDuration: 0.08, thenDragTo: end)
+    }
+
+    @MainActor
+    private static func dragScrollDown(on scroller: XCUIElement) {
+        guard scroller.exists else {
+            return
+        }
+        let start = scroller.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.22))
+        let end = scroller.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.85))
         start.press(forDuration: 0.05, thenDragTo: end)
     }
 }

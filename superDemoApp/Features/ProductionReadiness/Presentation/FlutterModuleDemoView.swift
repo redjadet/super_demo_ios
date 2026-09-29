@@ -19,10 +19,22 @@ struct FlutterModuleDemoView: View {
     var body: some View {
         Group {
             #if canImport(Flutter) && os(iOS)
-            FlutterModuleRepresentable()
-                .ignoresSafeArea(edges: .bottom)
-                .accessibilityIdentifier("flutterAddToAppEmbedded")
-                .accessibilityLabel("Embedded Flutter add-to-app module")
+            // Native outcome chrome — SwiftUI id on UIViewControllerRepresentable is not
+            // exposed through FlutterViewController. Keep Flutter itself out of the
+            // a11y tree so XCTest descendant queries do not hang on the embed.
+            VStack(spacing: 0) {
+                Text("Flutter module embedded")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 4)
+                    .accessibilityIdentifier("flutterAddToAppEmbedded")
+                    .accessibilityLabel("Embedded Flutter add-to-app module")
+
+                FlutterModuleRepresentable()
+                    .ignoresSafeArea(edges: .bottom)
+                    .accessibilityHidden(true)
+            }
             #else
             FlutterModuleUnavailableView()
             #endif
@@ -31,6 +43,9 @@ struct FlutterModuleDemoView: View {
         #if os(iOS)
         .navigationBarTitleDisplayMode(.inline)
         #endif
+        // Parent id+label alone would collapse children (false-green on host id;
+        // embedded / unavailable chrome invisible to XCTest). Contain children.
+        .accessibilityElement(children: .contain)
         .accessibilityIdentifier("flutterAddToAppDemoScreen")
         .accessibilityLabel("Flutter add-to-app Engineering demo")
     }
@@ -44,6 +59,8 @@ private struct FlutterModuleRepresentable: UIViewControllerRepresentable {
 
     func updateUIViewController(_: FlutterViewController, context _: Context) {
         // No-op: engine + MethodChannel are owned by FlutterAddToAppHost.
+        // Do not stamp UIKit a11y on FlutterViewController.view — that pulls the
+        // Flutter semantics tree into XCTest queries and can hang the suite.
     }
 }
 #endif
@@ -92,6 +109,7 @@ private struct FlutterModuleUnavailableView: View {
                 .foregroundStyle(.secondary)
             }
         }
+        .accessibilityElement(children: .contain)
         .accessibilityIdentifier("flutterAddToAppUnavailableScreen")
         .accessibilityLabel("Flutter add-to-app unavailable")
     }
