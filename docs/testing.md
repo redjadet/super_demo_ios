@@ -60,7 +60,7 @@ provides proof.
 | `testShareInboxDemoIsReachable` | Share inbox Seed must be hittable; after Seed → entry / unavailable / seed-failed (not pre-seed absent) |
 | `testSignInWithAppleDemoIsReachable` | SIWA Engineering demo chrome (Simulator-honest) |
 | `testOnDeviceVisionDemoRecognizesOrReportsHonestState` | Vision OCR run → lines or honest failure |
-| `testHostBridgePingDemoReturnsResponse` | Host bridge ping returns non-placeholder JSON |
+| `testHostBridgePingDemoReturnsResponse` | Host bridge ping returns successful `feed.cacheStatus` JSON (`ok:true`, id `demo-1`) — not error / `ok:false` |
 | `testFlutterAddToAppDemoIsReachable` | Flutter add-to-app: embedded **or** unavailable chrome (not host screen id alone) |
 | `testFeedWidgetSnapshotDemoIsReachable` | Feed widget App Group snapshot demo |
 | `testStoreKitProductQueryDemoIsReachable` | StoreKit Load → terminal empty / unavailable / product row (not idle/loading) |

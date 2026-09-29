@@ -4,6 +4,8 @@ Record durable implementation notes after meaningful changes.
 
 ## Entries
 
+- [`2026-09-29_uitest-host-bridge-ping-honesty.md`](2026-09-29_uitest-host-bridge-ping-honesty.md)
+  — Host bridge ping UITest requires ok:true + demo-1 id (not any text); tip `87455ec`.
 - [`2026-09-29_uitest-feed-retry-honesty.md`](2026-09-29_uitest-feed-retry-honesty.md)
   — Feed Retry UITest must observe loading→failed (no-op tap false-green); tip `e399339`.
 - [`2026-09-29_uitest-flutter-host-screen-false-green.md`](2026-09-29_uitest-flutter-host-screen-false-green.md)
