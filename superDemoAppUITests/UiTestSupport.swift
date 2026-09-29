@@ -7,6 +7,10 @@ import XCTest
 
 enum UiTestSupport {
     private static let terminateTimeout: TimeInterval = 20
+    /// Cap launch handshake so a wedged Simulator cannot burn the CI 3600s budget
+    /// (run 36576125333: Vision demo hung ~917s on “launch progress”).
+    private static let launchTimeout: TimeInterval = 90
+    private static let foregroundTimeout: TimeInterval = 30
 
     /// Ends a running app instance so the next `launch()` does not hang on XCTest terminate (common on CI).
     @MainActor
@@ -18,13 +22,42 @@ enum UiTestSupport {
     }
 
     /// Launches the app with flags that disable live network in UI-test builds.
+    ///
+    /// Pass `from:` so launch-progress XCTFails (`continueAfterFailure`) can
+    /// terminate + retry once — needed when Simulator wedges mid-suite.
     @MainActor
-    static func launchApplication(extraArguments: [String] = []) -> XCUIApplication {
+    static func launchApplication(
+        from testCase: XCTestCase? = nil,
+        extraArguments: [String] = []
+    ) -> XCUIApplication {
         let app = XCUIApplication()
         app.launchArguments = ["-UITesting"] + extraArguments
-        self.terminateApplication(app)
-        app.launch()
-        XCTAssertTrue(app.wait(for: .runningForeground, timeout: 30))
+        app.launchTimeout = self.launchTimeout
+
+        let previousContinue = testCase?.continueAfterFailure
+        if let testCase {
+            testCase.continueAfterFailure = true
+        }
+        defer {
+            if let testCase, let previousContinue {
+                testCase.continueAfterFailure = previousContinue
+            }
+        }
+
+        let attempts = testCase == nil ? 1 : 2
+        for attempt in 1 ... attempts {
+            self.terminateApplication(app)
+            app.launch()
+            if app.wait(for: .runningForeground, timeout: self.foregroundTimeout) {
+                return app
+            }
+            self.terminateApplication(app)
+            if attempt < attempts {
+                RunLoop.current.run(until: Date().addingTimeInterval(2))
+            }
+        }
+
+        XCTFail("App did not reach runningForeground after \(attempts) launch attempt(s)")
         return app
     }
 

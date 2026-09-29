@@ -21,7 +21,7 @@ final class EngineeringDemosUITests: XCTestCase {
 
     @MainActor
     func testShareInboxDemoIsReachable() {
-        let app = UiTestSupport.launchApplication()
+        let app = UiTestSupport.launchApplication(from: self)
         UiTestSupport.openEngineeringDemo(
             linkIdentifier: "shareInboxDemoLink",
             screenIdentifier: "shareInboxDemoScreen",
@@ -65,7 +65,7 @@ final class EngineeringDemosUITests: XCTestCase {
 
     @MainActor
     func testSignInWithAppleDemoIsReachable() {
-        let app = UiTestSupport.launchApplication()
+        let app = UiTestSupport.launchApplication(from: self)
         UiTestSupport.openEngineeringDemo(
             linkIdentifier: "signInWithAppleDemoLink",
             screenIdentifier: "signInWithAppleDemoScreen",
@@ -87,7 +87,7 @@ final class EngineeringDemosUITests: XCTestCase {
 
     @MainActor
     func testOnDeviceVisionDemoRecognizesOrReportsHonestState() {
-        let app = UiTestSupport.launchApplication()
+        let app = UiTestSupport.launchApplication(from: self)
         UiTestSupport.openEngineeringDemo(
             linkIdentifier: "onDeviceVisionDemoLink",
             screenIdentifier: "onDeviceVisionDemoScreen",
@@ -115,7 +115,7 @@ final class EngineeringDemosUITests: XCTestCase {
 
     @MainActor
     func testHostBridgePingDemoReturnsResponse() {
-        let app = UiTestSupport.launchApplication()
+        let app = UiTestSupport.launchApplication(from: self)
         UiTestSupport.openEngineeringDemo(
             linkIdentifier: "hostBridgePingDemoLink",
             screenIdentifier: "hostBridgePingDemoScreen",
@@ -143,7 +143,7 @@ final class EngineeringDemosUITests: XCTestCase {
 
     @MainActor
     func testFeedWidgetSnapshotDemoIsReachable() {
-        let app = UiTestSupport.launchApplication()
+        let app = UiTestSupport.launchApplication(from: self)
         UiTestSupport.openEngineeringDemo(
             linkIdentifier: "feedWidgetSnapshotDemoLink",
             screenIdentifier: "feedWidgetSnapshotDemoScreen",
@@ -160,7 +160,7 @@ final class EngineeringDemosUITests: XCTestCase {
 
     @MainActor
     func testStoreKitProductQueryDemoIsReachable() {
-        let app = UiTestSupport.launchApplication()
+        let app = UiTestSupport.launchApplication(from: self)
         UiTestSupport.openEngineeringDemo(
             linkIdentifier: "storeKitProductQueryDemoLink",
             screenIdentifier: "storeKitProductQueryDemoScreen",
@@ -185,7 +185,7 @@ final class EngineeringDemosUITests: XCTestCase {
 
     @MainActor
     func testLocalNotificationDemoIsReachable() {
-        let app = UiTestSupport.launchApplication()
+        let app = UiTestSupport.launchApplication(from: self)
         UiTestSupport.openEngineeringDemo(
             linkIdentifier: "localNotificationDemoLink",
             screenIdentifier: "localNotificationDemoScreen",
@@ -207,7 +207,7 @@ final class EngineeringDemosUITests: XCTestCase {
 
     @MainActor
     func testIdempotentPostDemoIsReachable() {
-        let app = UiTestSupport.launchApplication()
+        let app = UiTestSupport.launchApplication(from: self)
         UiTestSupport.openEngineeringDemo(
             linkIdentifier: "idempotentPostDemoLink",
             screenIdentifier: "idempotentPostDemoScreen",
@@ -229,7 +229,7 @@ final class EngineeringDemosUITests: XCTestCase {
 
     @MainActor
     func testFlutterAddToAppDemoIsReachable() {
-        let app = UiTestSupport.launchApplication()
+        let app = UiTestSupport.launchApplication(from: self)
         UiTestSupport.openEngineeringDemo(
             linkIdentifier: "flutterAddToAppDemoLink",
             screenIdentifier: "flutterAddToAppDemoScreen",
@@ -266,7 +266,7 @@ final class EngineeringDemosUITests: XCTestCase {
 
     @MainActor
     func testWatchCompanionDemoIsReachable() {
-        let app = UiTestSupport.launchApplication()
+        let app = UiTestSupport.launchApplication(from: self)
         UiTestSupport.openEngineeringDemo(
             linkIdentifier: "watchCompanionDemoLink",
             screenIdentifier: "watchCompanionDemoScreen",
@@ -293,7 +293,7 @@ final class EngineeringDemosUITests: XCTestCase {
 
     @MainActor
     func testDiagnosticsDemoIsReachable() {
-        let app = UiTestSupport.launchApplication()
+        let app = UiTestSupport.launchApplication(from: self)
         UiTestSupport.openEngineeringDemo(
             linkIdentifier: "diagnosticsDemoLink",
             screenIdentifier: "diagnosticsDemoScreen",

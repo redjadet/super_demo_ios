@@ -30,7 +30,8 @@ Detailed routing: [`engineering/validation_routing_fast_vs_full.md`](engineering
 UI smoke (CI `iphone-test` / `bin/ci-iphone-test.sh`): Items launch, Dashboard →
 Production Risks, UIKit showcase, Feed tab, Feed/Items deep links, Engineering
 demos (incl. watch companion) — see [`testing.md`](testing.md#ui-smoke-ci).
-Launch via `UiTestSupport.launchApplication()` (`-UITesting`, terminate between tests).
+Launch via `UiTestSupport.launchApplication(from:)` (`-UITesting`, terminate +
+launch-progress retry between tests).
 Optional coverage (not a PR gate): `./bin/coverage-iphone.sh`.
 AASA ↔ deep-link path parity + live-host DNS honesty:
 `./tool/check_aasa_deep_links.sh` (also via `./tool/check_common_issues.sh` /

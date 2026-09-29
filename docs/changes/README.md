@@ -4,6 +4,8 @@ Record durable implementation notes after meaningful changes.
 
 ## Entries
 
+- [`2026-09-29_uitest-launch-progress-retry.md`](2026-09-29_uitest-launch-progress-retry.md)
+  — UITest launch-progress timeout cap + retry; CI sim reboot retry; #51 Delivery flake.
 - [`2026-09-29_widget-mixed-age-ttl.md`](2026-09-29_widget-mixed-age-ttl.md)
   — Stale widget snapshot uses oldest surviving `cachedAt` for TTL; tip `a7424bc`.
 - [`2026-09-29_release-health-score-honesty.md`](2026-09-29_release-health-score-honesty.md)
