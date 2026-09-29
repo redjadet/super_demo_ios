@@ -19,10 +19,22 @@ struct FlutterModuleDemoView: View {
     var body: some View {
         Group {
             #if canImport(Flutter) && os(iOS)
-            FlutterModuleRepresentable()
-                .ignoresSafeArea(edges: .bottom)
-                .accessibilityIdentifier("flutterAddToAppEmbedded")
-                .accessibilityLabel("Embedded Flutter add-to-app module")
+            // Native outcome chrome above the embed: SwiftUI `.accessibilityIdentifier`
+            // on `UIViewControllerRepresentable` is not exposed through
+            // `FlutterViewController`, so XCTest must see a sibling native id
+            // (not the host `flutterAddToAppDemoScreen` alone).
+            VStack(spacing: 0) {
+                Text("Flutter module embedded")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 4)
+                    .accessibilityIdentifier("flutterAddToAppEmbedded")
+                    .accessibilityLabel("Embedded Flutter add-to-app module")
+
+                FlutterModuleRepresentable()
+                    .ignoresSafeArea(edges: .bottom)
+            }
             #else
             FlutterModuleUnavailableView()
             #endif
@@ -39,11 +51,19 @@ struct FlutterModuleDemoView: View {
 #if canImport(Flutter) && os(iOS)
 private struct FlutterModuleRepresentable: UIViewControllerRepresentable {
     func makeUIViewController(context _: Context) -> FlutterViewController {
-        FlutterAddToAppHost.makeViewController()
+        let controller = FlutterAddToAppHost.makeViewController()
+        Self.applyEmbeddedAccessibility(to: controller)
+        return controller
     }
 
-    func updateUIViewController(_: FlutterViewController, context _: Context) {
-        // No-op: engine + MethodChannel are owned by FlutterAddToAppHost.
+    func updateUIViewController(_ uiViewController: FlutterViewController, context _: Context) {
+        // Re-apply: Flutter may replace or clear root-view accessibility after run.
+        Self.applyEmbeddedAccessibility(to: uiViewController)
+    }
+
+    private static func applyEmbeddedAccessibility(to controller: FlutterViewController) {
+        controller.view.accessibilityIdentifier = "flutterAddToAppEmbedded"
+        controller.view.accessibilityLabel = "Embedded Flutter add-to-app module"
     }
 }
 #endif

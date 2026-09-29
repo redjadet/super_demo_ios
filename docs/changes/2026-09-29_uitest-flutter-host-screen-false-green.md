@@ -17,11 +17,17 @@ the outcome set let a missing embed/unavailable surface still pass.
 
 - `EngineeringDemosUITests.testFlutterAddToAppDemoIsReachable` — drop host id
   from outcome set; fail message names missing outcome chrome
+- `FlutterModuleDemoView` — native embedded caption + UIKit
+  `FlutterViewController.view` accessibility for `flutterAddToAppEmbedded`
+  (SwiftUI id on `UIViewControllerRepresentable` is not XCTest-visible through
+  Flutter; GHA iPhone links Flutter so unavailable chrome is absent)
 - Portfolio tip pin → `ab6784c` / #51; `docs/testing.md` row clarified
 
 ## Proof
 
-- GHA Delivery UITests on this PR (iPhone lane)
+- GHA Delivery UITests on this PR (iPhone lane) — recovery after
+  `Flutter demo missing embedded or unavailable outcome chrome` on tip
+  `5bd83dc` / run 36591691457
 - Linux: common-issues / scorecard / markdown / router
 
 ## Out of scope
