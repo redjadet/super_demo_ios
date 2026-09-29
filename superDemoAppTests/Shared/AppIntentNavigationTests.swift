@@ -220,6 +220,48 @@ struct AppIntentNavigationTests {
         #expect(repository.fetchCount >= 1)
     }
 
+    /// Stale Feed Engineering demo must not register — an unregistered demo
+    /// model must not receive App Intent refresh while the live tab is active.
+    @Test
+    @MainActor
+    func feedRefreshCoordinatorIgnoresUnregisteredDemoModel() async {
+        FeedRefreshCoordinator.resetForTesting()
+        defer { FeedRefreshCoordinator.resetForTesting() }
+
+        let store = AppNavigationStore()
+        AppNavigationStore.testingOverride = store
+        defer { AppNavigationStore.testingOverride = nil }
+
+        let liveRepository = CoordinatorFeedRepositorySpy()
+        liveRepository.posts = [FeedPost(id: 1, userID: 1, title: "Live", body: "B")]
+        let liveModel = FeedFeatureModel(
+            refreshFeed: RefreshFeedUseCase(repository: liveRepository)
+        )
+        FeedRefreshCoordinator.register(liveModel)
+        defer { FeedRefreshCoordinator.unregister(liveModel) }
+
+        let demoRepository = CoordinatorFeedRepositorySpy()
+        demoRepository.posts = [FeedPost(id: 99, userID: 1, title: "Demo", body: "B")]
+        let demoModel = FeedFeatureModel(
+            refreshFeed: RefreshFeedUseCase(repository: demoRepository)
+        )
+        // Intentionally do **not** register demoModel (StaleFeedDemoView contract).
+
+        let liveBefore = liveRepository.fetchCount
+        FeedRefreshCoordinator.requestRefresh(openFeedTab: false)
+
+        for _ in 0 ..< 100 where liveRepository.fetchCount == liveBefore {
+            await Task.yield()
+        }
+
+        #expect(liveRepository.fetchCount > liveBefore)
+        #expect(demoRepository.fetchCount == 0)
+        // Demo model must not receive App Intent refresh content.
+        if case .content = demoModel.state {
+            Issue.record("Unregistered Stale Feed demo model was refreshed by App Intent")
+        }
+    }
+
     @Test
     func clearPendingFeedPostOpenClearsID() {
         var state = AppNavigationState()

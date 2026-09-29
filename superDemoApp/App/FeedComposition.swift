@@ -117,6 +117,8 @@ struct StaleFeedDemoView: View {
     var body: some View {
         // Push onto Production Readiness's stack. Own `NavigationSplitView` /
         // nested `NavigationStack` here made list taps and a11y ids no-op.
+        // `embedsOwnNavigation: false` also skips `FeedRefreshCoordinator`
+        // registration so App Intents keep targeting the live Feed tab.
         FeedView(model: self.session.model, embedsOwnNavigation: false)
             .navigationTitle("Stale Feed")
             .iosInlineNavigationBarTitle()
