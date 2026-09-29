@@ -22,8 +22,12 @@ struct SampleFeedRepository: FeedRepository {
 }
 
 struct FailingSampleFeedRepository: FeedRepository {
+    /// Brief pause so UITests can observe `feedLoading` after Retry (yield-only
+    /// often completes before XCTest polls). Stale-demo / unit spies unchanged.
+    private static let uiObservableFailureDelayNanoseconds: UInt64 = 200_000_000
+
     func fetchPosts() async throws -> FeedLoadResult {
-        await Task.yield()
+        try await Task.sleep(nanoseconds: Self.uiObservableFailureDelayNanoseconds)
         throw FeedError.invalidResponse
     }
 }

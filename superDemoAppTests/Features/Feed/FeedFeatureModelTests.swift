@@ -145,8 +145,30 @@ struct FeedFeatureModelTests {
 
         if case .failed = model.state {
             #expect(diagnostics.failedChecks.map(\.name) == ["feed-refresh"])
+            #expect(model.completedRefreshCount == 1)
         } else {
             Issue.record("Expected failed state")
+        }
+    }
+
+    @Test
+    @MainActor
+    func retryAfterFailureIncrementsCompletedRefreshCount() async {
+        let repository = FeedModelRepositorySpy()
+        repository.error = FeedError.invalidResponse
+        let model = FeedFeatureModel(
+            refreshFeed: RefreshFeedUseCase(repository: repository)
+        )
+
+        await model.refreshAndWait()
+        #expect(model.completedRefreshCount == 1)
+
+        await model.refreshAndWait()
+        #expect(model.completedRefreshCount == 2)
+        if case .failed = model.state {
+            // Expected — fixture keeps failing.
+        } else {
+            Issue.record("Expected failed state after retry")
         }
     }
 
