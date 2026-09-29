@@ -59,6 +59,9 @@ Core networking rules stay below.
 - exponential backoff plus jitter; limited attempts
 - POST retries only when an idempotency key is present
 - cancellation remains cancellation, not a user-facing server failure
+  (`URLSessionAPIClient` rethrows `CancellationError` / `URLError.cancelled`;
+  Dashboard `CompositeProductionReadinessRepository` does **not** turn cancel
+  into a Remote API warning row)
 - logs use host/status/error metadata only; no secrets or authorization headers
 
 Feature Data adapters map `APIError` into domain/UI-safe messages.

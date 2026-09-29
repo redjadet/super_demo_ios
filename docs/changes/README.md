@@ -4,6 +4,8 @@ Record durable implementation notes after meaningful changes.
 
 ## Entries
 
+- [`2026-09-29_cancel-honesty-dashboard.md`](2026-09-29_cancel-honesty-dashboard.md)
+  — Dashboard remote-health cancel honesty; tip `3a2569c`.
 - [`2026-09-29_uitest-false-green-harden.md`](2026-09-29_uitest-false-green-harden.md)
   — UITest tab / Feed–Items chrome false-green harden; tip `4a39dcb`.
 - [`2026-09-28_aasa-live-host-honesty.md`](2026-09-28_aasa-live-host-honesty.md)
