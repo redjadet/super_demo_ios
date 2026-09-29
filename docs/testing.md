@@ -38,10 +38,11 @@ runtime can provision a standard iPhone. Fixture mode: `--self-test`.
 
 Escape hatch: set `CI_IPHONE_GENERIC_BUILD=1` for the legacy
 `generic/platform=iOS Simulator` **build-only** path (no XCTest). The lane
-retries once after a simulator reboot on Accessibility load timeouts only
-(hard `xcodebuild` timeouts do **not** re-run the full suite — that can lose
-the hosted runner). On CI, `testLaunchPerformance` is skipped. This Linux/cloud
-agent cannot execute simulators — GHA `xcode-27` (or Mac) provides proof.
+retries once after a simulator reboot on Accessibility **or** launch-progress
+timeouts only (hard `xcodebuild` timeouts do **not** re-run the full suite —
+that can lose the hosted runner). On CI, `testLaunchPerformance` is skipped.
+This Linux/cloud agent cannot execute simulators — GHA `xcode-27` (or Mac)
+provides proof.
 
 | UI test | What it proves |
 | --- | --- |
@@ -75,9 +76,11 @@ agent cannot execute simulators — GHA `xcode-27` (or Mac) provides proof.
 
 Helpers live in `superDemoAppUITests/UiTestSupport.swift`:
 
-- **`launchApplication()`** — passes `-UITesting`, terminates any running app
-  instance, then launches and waits for foreground (avoids CI
-  `Failed to terminate` between tests).
+- **`launchApplication(from:)`** — passes `-UITesting`, terminates any running
+  app, launches, waits for foreground; with a test case, allows one
+  terminate+relaunch after launch-progress XCTFail (CI Simulator wedge —
+  e.g. Vision demo on run 36576125333). Does **not** set
+  `XCUIApplication.launchTimeout` (unavailable on CI Xcode 27).
 - **`openDeepLink(_:in:)`** — opens a custom-scheme URL against the running app.
 - **`openFeedTab` / `openItemsTab` / `openDashboardTab`** — fail when no tab
   control is tappable (no silent `tapFirstHittable` no-op).

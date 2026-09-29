@@ -16,7 +16,7 @@ final class superDemoAppUITestsLaunchTests: XCTestCase {
     func testLaunch() {
         continueAfterFailure = false
 
-        let app = UiTestSupport.launchApplication()
+        let app = UiTestSupport.launchApplication(from: self)
         XCTAssertTrue(app.wait(for: .runningForeground, timeout: 30))
 
         UiTestSupport.openItemsTab(in: app)

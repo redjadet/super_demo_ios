@@ -251,6 +251,40 @@ struct CachingFeedRepositoryTests {
         #expect(snapshot.writtenAt == now.addingTimeInterval(-60))
     }
 
+    /// Two in-TTL ages: widget `writtenAt` must be the older stamp so TTL cannot
+    /// keep a newer title “ok” while an older surviving title is past expiry.
+    @Test
+    @MainActor
+    func fetchPostsUsesOldestCachedAtForStaleWidgetSnapshot() async throws {
+        let context = try Self.makeContext()
+        let now = Date(timeIntervalSince1970: 1_700_000_000)
+        let olderAt = now.addingTimeInterval(-800)
+        let newerAt = now.addingTimeInterval(-100)
+        let older = FeedPost(id: 1, userID: 1, title: "Older", body: "Keep")
+        let newer = FeedPost(id: 2, userID: 1, title: "Newer", body: "Keep")
+        context.insert(CachedFeedPost(post: older, cachedAt: olderAt))
+        context.insert(CachedFeedPost(post: newer, cachedAt: newerAt))
+        try context.save()
+
+        let remote = RemoteFeedRepositorySpy(error: FeedError.invalidResponse)
+        let publisher = RecordingFeedWidgetSnapshotPublisher()
+        let repository = CachingFeedRepository(
+            remote: remote,
+            context: context,
+            cacheTTL: 60 * 15,
+            snapshotPublisher: publisher
+        ) { now }
+
+        let fetched = try await repository.fetchPosts()
+
+        #expect(Set(fetched.posts.map(\.id)) == [1, 2])
+        #expect(fetched.isStale)
+        let snapshot = try #require(publisher.published.first)
+        #expect(snapshot.writtenAt == olderAt)
+        #expect(snapshot.writtenAt != newerAt)
+        #expect(snapshot.postCount == 2)
+    }
+
     @MainActor
     private static func makeContext() throws -> ModelContext {
         let schema = Schema([CachedFeedPost.self])

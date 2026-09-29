@@ -21,7 +21,7 @@ final class superDemoAppUITests: XCTestCase {
 
     @MainActor
     func testLaunchShowsAddItemControl() {
-        let app = UiTestSupport.launchApplication()
+        let app = UiTestSupport.launchApplication(from: self)
 
         UiTestSupport.openItemsTab(in: app)
         XCTAssertTrue(UiTestSupport.waitForItemsChrome(in: app))
@@ -29,7 +29,7 @@ final class superDemoAppUITests: XCTestCase {
 
     @MainActor
     func testDashboardShowsProductionRisks() {
-        let app = UiTestSupport.launchApplication()
+        let app = UiTestSupport.launchApplication(from: self)
 
         UiTestSupport.openDashboardTab(in: app)
         _ = UiTestSupport.waitForListOrCollection(identifier: "productionReadinessDashboard", in: app)
@@ -43,7 +43,7 @@ final class superDemoAppUITests: XCTestCase {
 
     @MainActor
     func testDeepLinkOpensFeedTab() {
-        let app = UiTestSupport.launchApplication()
+        let app = UiTestSupport.launchApplication(from: self)
 
         UiTestSupport.openDeepLink("superdemo://feed", in: app)
         XCTAssertTrue(UiTestSupport.waitForFeedChrome(in: app))
@@ -51,7 +51,7 @@ final class superDemoAppUITests: XCTestCase {
 
     @MainActor
     func testDeepLinkOpensItemsTab() {
-        let app = UiTestSupport.launchApplication()
+        let app = UiTestSupport.launchApplication(from: self)
 
         UiTestSupport.openDeepLink("superdemo://items", in: app)
         XCTAssertTrue(UiTestSupport.waitForItemsChrome(in: app))
@@ -59,7 +59,7 @@ final class superDemoAppUITests: XCTestCase {
 
     @MainActor
     func testDeepLinkOpensFeedPostDetail() {
-        let app = UiTestSupport.launchApplication()
+        let app = UiTestSupport.launchApplication(from: self)
 
         UiTestSupport.openDeepLink("superdemo://feed/1", in: app)
 
@@ -78,7 +78,7 @@ final class superDemoAppUITests: XCTestCase {
 
     @MainActor
     func testUIKitShowcaseCollectionIsReachable() {
-        let app = UiTestSupport.launchApplication()
+        let app = UiTestSupport.launchApplication(from: self)
 
         UiTestSupport.openDashboardTab(in: app)
         _ = UiTestSupport.waitForListOrCollection(identifier: "productionReadinessDashboard", in: app)
@@ -100,7 +100,7 @@ final class superDemoAppUITests: XCTestCase {
 
     @MainActor
     func testFeedTabIsReachable() {
-        let app = UiTestSupport.launchApplication()
+        let app = UiTestSupport.launchApplication(from: self)
 
         UiTestSupport.openFeedTab(in: app)
         XCTAssertTrue(UiTestSupport.waitForFeedChrome(in: app))
@@ -108,7 +108,7 @@ final class superDemoAppUITests: XCTestCase {
 
     @MainActor
     func testFeedPostRowOpensDetail() {
-        let app = UiTestSupport.launchApplication()
+        let app = UiTestSupport.launchApplication(from: self)
 
         UiTestSupport.openFeedTab(in: app)
         XCTAssertTrue(UiTestSupport.waitForFeedChrome(in: app))
@@ -125,7 +125,7 @@ final class superDemoAppUITests: XCTestCase {
     /// Hosted iPad/Mac lanes are **build-only** — see `docs/testing.md` (adaptive shell note).
     @MainActor
     func testItemRowOpensDetail() {
-        let app = UiTestSupport.launchApplication(extraArguments: ["-ReviewerDemoMode"])
+        let app = UiTestSupport.launchApplication(from: self, extraArguments: ["-ReviewerDemoMode"])
 
         UiTestSupport.openItemsTab(in: app)
         XCTAssertTrue(UiTestSupport.waitForItemsChrome(in: app))
@@ -145,7 +145,7 @@ final class superDemoAppUITests: XCTestCase {
 
     @MainActor
     func testFeedAccessibilityChromeRowsAndRetry() {
-        let app = UiTestSupport.launchApplication()
+        let app = UiTestSupport.launchApplication(from: self)
 
         UiTestSupport.openFeedTab(in: app)
         XCTAssertTrue(UiTestSupport.waitForFeedChrome(in: app))
@@ -159,7 +159,7 @@ final class superDemoAppUITests: XCTestCase {
         XCTAssertEqual(postRow.label, "UI Test Post. Stable feed content for UI tests and simulator runs.")
 
         app.terminate()
-        let failingApp = UiTestSupport.launchApplication(extraArguments: ["-UITestingFeedFailure"])
+        let failingApp = UiTestSupport.launchApplication(from: self, extraArguments: ["-UITestingFeedFailure"])
         UiTestSupport.openFeedTab(in: failingApp)
         XCTAssertTrue(failingApp.staticTexts["Could Not Load Feed"].waitForExistence(timeout: 10))
 
@@ -172,7 +172,7 @@ final class superDemoAppUITests: XCTestCase {
 
     @MainActor
     func testStaleFeedFixtureShowsBannerOnFeedTab() {
-        let app = UiTestSupport.launchApplication(extraArguments: ["-StaleFeedDemo"])
+        let app = UiTestSupport.launchApplication(from: self, extraArguments: ["-StaleFeedDemo"])
         UiTestSupport.openFeedTab(in: app)
         XCTAssertTrue(UiTestSupport.waitForFeedChrome(in: app))
 
@@ -185,7 +185,7 @@ final class superDemoAppUITests: XCTestCase {
 
     @MainActor
     func testStaleFeedEngineeringDemoShowsBanner() {
-        let app = UiTestSupport.launchApplication()
+        let app = UiTestSupport.launchApplication(from: self)
         UiTestSupport.openEngineeringDemo(
             linkIdentifier: "staleFeedDemoLink",
             screenIdentifier: "staleFeedDemoScreen",

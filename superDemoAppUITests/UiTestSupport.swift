@@ -7,6 +7,7 @@ import XCTest
 
 enum UiTestSupport {
     private static let terminateTimeout: TimeInterval = 20
+    private static let foregroundTimeout: TimeInterval = 30
 
     /// Ends a running app instance so the next `launch()` does not hang on XCTest terminate (common on CI).
     @MainActor
@@ -18,13 +19,46 @@ enum UiTestSupport {
     }
 
     /// Launches the app with flags that disable live network in UI-test builds.
+    ///
+    /// Pass `from:` so launch-progress XCTFails (`continueAfterFailure`) can
+    /// terminate + retry once — needed when Simulator wedges mid-suite.
+    ///
+    /// Note: `XCUIApplication.launchTimeout` is unavailable on CI Xcode 27
+    /// (compile error on run 36585758371). Cap relies on foreground wait +
+    /// one relaunch here, and `bin/ci-iphone-test.sh` sim-reboot retry on
+    /// “Timed out while requesting launch progress”.
     @MainActor
-    static func launchApplication(extraArguments: [String] = []) -> XCUIApplication {
+    static func launchApplication(
+        from testCase: XCTestCase? = nil,
+        extraArguments: [String] = []
+    ) -> XCUIApplication {
         let app = XCUIApplication()
         app.launchArguments = ["-UITesting"] + extraArguments
-        self.terminateApplication(app)
-        app.launch()
-        XCTAssertTrue(app.wait(for: .runningForeground, timeout: 30))
+
+        let previousContinue = testCase?.continueAfterFailure
+        if let testCase {
+            testCase.continueAfterFailure = true
+        }
+        defer {
+            if let testCase, let previousContinue {
+                testCase.continueAfterFailure = previousContinue
+            }
+        }
+
+        let attempts = testCase == nil ? 1 : 2
+        for attempt in 1 ... attempts {
+            self.terminateApplication(app)
+            app.launch()
+            if app.wait(for: .runningForeground, timeout: self.foregroundTimeout) {
+                return app
+            }
+            self.terminateApplication(app)
+            if attempt < attempts {
+                RunLoop.current.run(until: Date().addingTimeInterval(2))
+            }
+        }
+
+        XCTFail("App did not reach runningForeground after \(attempts) launch attempt(s)")
         return app
     }
 
