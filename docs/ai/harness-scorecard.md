@@ -21,7 +21,8 @@ Do **not** substitute harness maturity for Engineering score (or the reverse).
 | AGENTS map | 10/10 | [`../../AGENTS.md`](../../AGENTS.md), [`../../CODEMAP.md`](../../CODEMAP.md) | Map-only `AGENTS.md` (≤70 lines); CODEMAP routes task → path |
 | Validation routing | 10/10 | [`../agents_quick_reference.md`](../agents_quick_reference.md), [`../engineering/validation_routing_fast_vs_full.md`](../engineering/validation_routing_fast_vs_full.md) | Fast vs full lanes documented; PR-lane vs local-test honesty |
 | Finish gate | 10/10 | [`../agent_kb/legibility_and_finish_gate.md`](../agent_kb/legibility_and_finish_gate.md), [`../agent_knowledge_base.md`](../agent_knowledge_base.md) | Finish gate linked from knowledge base; inspectable proof required |
-| Safety contracts | 10/10 | [`../agent_kb/agent_safety_contracts.md`](../agent_kb/agent_safety_contracts.md), [`../agent_kb/safety-report-template.md`](../agent_kb/safety-report-template.md) | SAFETY-01…06 + SAFETY-REPORT; closeout template present |
+| Safety contracts | 10/10 | [`../agent_kb/agent_safety_contracts.md`](../agent_kb/agent_safety_contracts.md), [`../agent_kb/safety-report-template.md`](../agent_kb/safety-report-template.md) | SAFETY-01…06 + SAFETY-REPORT; SAFETY-02 covers costly/credentialed external actions |
+| Evidence / reconstructability | 10/10 | [`../agent_kb/safety-report-template.md`](../agent_kb/safety-report-template.md), `./bin/agent-maintain closeout` | Evidence fields (model/host, tools, changes, approvals); ~10 min reconstructability stated |
 | Quick reference | 10/10 | [`../agents_quick_reference.md`](../agents_quick_reference.md), `./bin/agent-maintain` | Chooser table + `session` / `preflight` / `closeout` entrypoints |
 
 **Overall: 10/10** (min of areas) — revisit if any area proof regresses.

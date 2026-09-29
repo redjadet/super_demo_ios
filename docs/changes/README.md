@@ -4,6 +4,8 @@ Record durable implementation notes after meaningful changes.
 
 ## Entries
 
+- [`2026-09-29_agent-harness-boundaries-evidence.md`](2026-09-29_agent-harness-boundaries-evidence.md)
+  — SAFETY-02 costly/credential gates + SAFETY-REPORT evidence / reconstructability.
 - [`2026-09-29_uitest-storekit-share-false-green.md`](2026-09-29_uitest-storekit-share-false-green.md)
   — StoreKit / Share inbox UITest false-green harden; tip `c8479a2`.
 - [`2026-09-29_cancel-honesty-dashboard.md`](2026-09-29_cancel-honesty-dashboard.md)

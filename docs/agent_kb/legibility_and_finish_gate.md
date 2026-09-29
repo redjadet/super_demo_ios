@@ -36,9 +36,11 @@ Agents reason over inspectable state.
 
 ## Finish Gate
 
-Closeout template: [`safety-report-template.md`](safety-report-template.md).
-Reminders: `./bin/agent-maintain closeout`. Host ops:
-[`host-maintenance.md`](host-maintenance.md).
+Closeout template: [`safety-report-template.md`](safety-report-template.md)
+(includes Evidence / ~10 min reconstructability). Reminders:
+`./bin/agent-maintain closeout`. Host ops:
+[`host-maintenance.md`](host-maintenance.md). Costly/credentialed actions:
+[`agent_safety_contracts.md`](agent_safety_contracts.md) SAFETY-02.
 
 Before final report or commit, self-verify:
 
