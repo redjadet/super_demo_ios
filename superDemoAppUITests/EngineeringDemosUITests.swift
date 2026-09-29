@@ -43,17 +43,24 @@ final class EngineeringDemosUITests: XCTestCase {
         )
 
         let seed = app.buttons["shareInboxSeed"]
-        if seed.waitForExistence(timeout: 5), seed.isHittable {
-            seed.tap()
-            XCTAssertTrue(
-                UiTestSupport.waitForAnyIdentifier(
-                    ["shareInboxAbsent", "shareInboxUnavailable", "shareInboxCorrupt"],
+        XCTAssertTrue(seed.waitForExistence(timeout: 10), "Share inbox Seed missing")
+        XCTAssertTrue(seed.isHittable, "Share inbox Seed exists but is not hittable")
+        seed.tap()
+
+        // After Seed: entry when App Group OK, unavailable when container missing,
+        // or honest seed-failed status. Do not accept pre-seed absent/corrupt —
+        // that false-greened a silent Seed no-op.
+        let afterSeed =
+            UiTestSupport.waitForIdentifierPrefix("shareInboxEntry_", in: app, timeout: 15)
+                || UiTestSupport.waitForAnyIdentifier(
+                    ["shareInboxUnavailable", "shareInboxSeedFailed"],
                     in: app,
-                    timeout: 10
+                    timeout: 5
                 )
-                    || UiTestSupport.waitForIdentifierPrefix("shareInboxEntry_", in: app, timeout: 10)
-            )
-        }
+        XCTAssertTrue(
+            afterSeed,
+            "Share inbox Seed did not reach entry / unavailable / seed-failed"
+        )
     }
 
     @MainActor
@@ -161,22 +168,19 @@ final class EngineeringDemosUITests: XCTestCase {
         )
 
         let load = app.buttons["storeKitLoadProducts"]
-        XCTAssertTrue(load.waitForExistence(timeout: 10))
+        XCTAssertTrue(load.waitForExistence(timeout: 10), "StoreKit Load missing")
+        XCTAssertTrue(load.isHittable, "StoreKit Load exists but is not hittable")
         load.tap()
 
-        XCTAssertTrue(
-            UiTestSupport.waitForAnyIdentifier(
-                [
-                    "storeKitStatusIdle",
-                    "storeKitStatusLoading",
-                    "storeKitStatusEmpty",
-                    "storeKitStatusUnavailable",
-                ],
-                in: app,
-                timeout: 20
-            )
-                || UiTestSupport.waitForIdentifierPrefix("storeKitProductRow_", in: app, timeout: 5)
-        )
+        // Terminal only — idle/loading after Load previously false-greened.
+        let finished =
+            UiTestSupport.waitForIdentifierPrefix("storeKitProductRow_", in: app, timeout: 30)
+                || UiTestSupport.waitForAnyIdentifier(
+                    ["storeKitStatusEmpty", "storeKitStatusUnavailable"],
+                    in: app,
+                    timeout: 5
+                )
+        XCTAssertTrue(finished, "StoreKit query did not reach a terminal UI state")
     }
 
     @MainActor

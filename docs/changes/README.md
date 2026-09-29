@@ -4,6 +4,8 @@ Record durable implementation notes after meaningful changes.
 
 ## Entries
 
+- [`2026-09-29_uitest-storekit-share-false-green.md`](2026-09-29_uitest-storekit-share-false-green.md)
+  — StoreKit / Share inbox UITest false-green harden; tip `c8479a2`.
 - [`2026-09-29_cancel-honesty-dashboard.md`](2026-09-29_cancel-honesty-dashboard.md)
   — Dashboard remote-health cancel honesty; tip `3a2569c`.
 - [`2026-09-29_uitest-false-green-harden.md`](2026-09-29_uitest-false-green-harden.md)
