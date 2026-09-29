@@ -194,7 +194,9 @@ enum UiTestSupport {
             let refreshEmpty = app.buttons["refreshFeedEmpty"]
             let refreshLabel = app.buttons["Refresh Feed"]
             let retry = app.buttons["feedRetry"]
-            let feedFailed = app.staticTexts["Could Not Load Feed"]
+            let feedFailed = app.descendants(matching: .any).matching(identifier: "feedFailed").firstMatch
+            let feedFailedLabel = app.staticTexts["Could Not Load Feed"]
+            let feedLoading = app.descendants(matching: .any).matching(identifier: "feedLoading").firstMatch
             let feedEmpty = app.staticTexts["No Posts"]
             let feedList = app.descendants(matching: .any).matching(identifier: "feedList").firstMatch
             let feedPostRow = app.descendants(matching: .any).matching(rowPredicate).firstMatch
@@ -208,6 +210,8 @@ enum UiTestSupport {
                     || refreshLabel.exists
                     || retry.exists
                     || feedFailed.exists
+                    || feedFailedLabel.exists
+                    || feedLoading.exists
                     || feedEmpty.exists
                     || feedList.exists
                     || feedPostRow.exists

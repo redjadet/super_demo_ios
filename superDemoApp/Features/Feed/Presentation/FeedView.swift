@@ -116,6 +116,7 @@ struct FeedView: View {
         case .loading:
             ProgressView()
                 .featureScreenFrame()
+                .accessibilityIdentifier("feedLoading")
         case let .failed(error):
             ContentUnavailableView {
                 Label("Could Not Load Feed", systemImage: "exclamationmark.triangle")
@@ -129,6 +130,7 @@ struct FeedView: View {
                 .accessibilityIdentifier("feedRetry")
             }
             .featureScreenFrame()
+            .accessibilityIdentifier("feedFailed")
         case .empty:
             ContentUnavailableView {
                 Label("No Posts", systemImage: "text.bubble")

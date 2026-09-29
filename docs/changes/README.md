@@ -4,6 +4,8 @@ Record durable implementation notes after meaningful changes.
 
 ## Entries
 
+- [`2026-09-29_uitest-feed-retry-honesty.md`](2026-09-29_uitest-feed-retry-honesty.md)
+  — Feed Retry UITest must observe loading→failed (no-op tap false-green); tip `e399339`.
 - [`2026-09-29_uitest-flutter-host-screen-false-green.md`](2026-09-29_uitest-flutter-host-screen-false-green.md)
   — Flutter demo UITest outcome excludes host screen id (false-green); tip `ab6784c`.
 - [`2026-09-29_uitest-launch-progress-retry.md`](2026-09-29_uitest-launch-progress-retry.md)

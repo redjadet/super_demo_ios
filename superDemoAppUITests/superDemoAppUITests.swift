@@ -160,13 +160,40 @@ final class superDemoAppUITests: XCTestCase {
         app.terminate()
         let failingApp = UiTestSupport.launchApplication(from: self, extraArguments: ["-UITestingFeedFailure"])
         UiTestSupport.openFeedTab(in: failingApp)
-        XCTAssertTrue(failingApp.staticTexts["Could Not Load Feed"].waitForExistence(timeout: 10))
 
+        let failed = failingApp.descendants(matching: .any).matching(identifier: "feedFailed").firstMatch
+        let loading = failingApp.descendants(matching: .any).matching(identifier: "feedLoading").firstMatch
         let retry = failingApp.buttons["feedRetry"].firstMatch
+
+        XCTAssertTrue(failed.waitForExistence(timeout: 10), "Expected feedFailed with -UITestingFeedFailure")
+        XCTAssertTrue(failingApp.staticTexts["Could Not Load Feed"].waitForExistence(timeout: 10))
         XCTAssertTrue(retry.waitForExistence(timeout: 10))
         XCTAssertEqual(retry.label, "Retry")
+
         retry.tap()
+
+        // No-op tap would leave feedFailed in place forever — require a real
+        // loading→failed cycle (or brief absence of failed while loading).
+        let attemptDeadline = Date().addingTimeInterval(5)
+        var sawRefreshAttempt = false
+        while Date() < attemptDeadline {
+            if loading.exists || !failed.exists {
+                sawRefreshAttempt = true
+                break
+            }
+            RunLoop.current.run(until: Date().addingTimeInterval(0.05))
+        }
+        XCTAssertTrue(
+            sawRefreshAttempt,
+            "Retry tap did not start a feed refresh (missing feedLoading / feedFailed never left)"
+        )
+
+        XCTAssertTrue(
+            failed.waitForExistence(timeout: 10),
+            "Expected feedFailed again after Retry with -UITestingFeedFailure"
+        )
         XCTAssertTrue(retry.waitForExistence(timeout: 10))
+        XCTAssertEqual(retry.label, "Retry")
     }
 
     @MainActor
