@@ -4,6 +4,8 @@ Record durable implementation notes after meaningful changes.
 
 ## Entries
 
+- [`2026-09-29_uitest-idempotent-post-honesty.md`](2026-09-29_uitest-idempotent-post-honesty.md)
+  — Idempotent POST UITest Accepted → Simulated duplicate-safe replay; tip `8dd35a5`.
 - [`2026-09-29_uitest-host-bridge-ping-honesty.md`](2026-09-29_uitest-host-bridge-ping-honesty.md)
   — Host bridge ping UITest requires ok:true + demo-1 id (not any text); tip `87455ec`.
 - [`2026-09-29_uitest-feed-retry-honesty.md`](2026-09-29_uitest-feed-retry-honesty.md)

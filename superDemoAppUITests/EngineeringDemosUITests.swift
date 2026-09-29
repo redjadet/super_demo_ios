@@ -239,13 +239,30 @@ final class EngineeringDemosUITests: XCTestCase {
         XCTAssertTrue(send.waitForExistence(timeout: 10))
         send.tap()
 
-        XCTAssertTrue(
-            UiTestSupport.waitForAnyIdentifier(
-                ["idempotentPostOutcomeTitle", "idempotentPostOutcomeDetail"],
-                in: app,
-                timeout: 15
-            )
+        let outcomeTitle = app.descendants(matching: .any)
+            .matching(identifier: "idempotentPostOutcomeTitle")
+            .firstMatch
+        XCTAssertTrue(outcomeTitle.waitForExistence(timeout: 15))
+        // Any outcome title (incl. Failed) was a false-green — require Accepted.
+        XCTAssertEqual(
+            outcomeTitle.label,
+            "Accepted",
+            "First send must show Accepted, got: \(outcomeTitle.label)"
         )
+
+        send.tap()
+        let deadline = Date().addingTimeInterval(15)
+        var label = outcomeTitle.label
+        while Date() < deadline, label != "Simulated duplicate-safe" {
+            RunLoop.current.run(until: Date().addingTimeInterval(0.2))
+            label = outcomeTitle.label
+        }
+        XCTAssertEqual(
+            label,
+            "Simulated duplicate-safe",
+            "Second send must prove replay, got: \(label)"
+        )
+        XCTAssertNotEqual(label, "Failed")
     }
 
     @MainActor
