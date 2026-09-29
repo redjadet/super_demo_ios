@@ -53,7 +53,9 @@ Use declarative SwiftUI navigation that adapts across iOS, iPadOS, and macOS.
   `NavigationLink { View }` inside a nested split often no-ops.
 - **Nested Feed (Stale Feed demo):** `FeedView(embedsOwnNavigation: false)` pushed
   onto Production Readiness's `NavigationStack` so post rows push detail without a
-  nested split/stack fighting the dashboard.
+  nested split/stack fighting the dashboard. That flag also **skips**
+  `FeedRefreshCoordinator` registration so App Intents keep targeting the live
+  Feed tab model.
 - Shared: `superDemoApp/Shared/Presentation/AdaptiveNavigationShell.swift`
 - New features: reuse `AdaptiveNavigationShell`; add a thin feature shell only for a custom
   detail placeholder. See [`design_system.md`](design_system.md#ui-consistency-contract-all-features).
@@ -77,8 +79,9 @@ Deep-link parsing and cold/warm navigation-state behavior:
   parameterized `RefreshFeedIntent` (`openFeedTab`), and thin entity
   `OpenFeedPostIntent` (`postID`) via `AppIntentNavigationRouter` →
   `FeedRefreshCoordinator` / `requestOpenFeedPost` + `feedOpenPostID`.
-  Coordinator refreshes a registered `FeedFeatureModel` when present; cold start
-  relies on Feed `.task` after the tab opens. Post open selects a matching row
-  when content loads (unknown id = tab only). Phrases in `SuperDemoAppShortcuts`.
+  Coordinator refreshes a registered `FeedFeatureModel` when present (live Feed
+  tab only — not Engineering Stale Feed); cold start relies on Feed `.task`
+  after the tab opens. Post open selects a matching row when content loads
+  (unknown id = tab only). Phrases in `SuperDemoAppShortcuts`.
 
 Details: [`testing.md`](testing.md#ui-smoke-ci).

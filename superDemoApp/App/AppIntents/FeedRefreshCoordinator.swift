@@ -11,6 +11,11 @@ import Foundation
 /// When the model is unmounted, the pending `feedRefreshRequestID` is consumed
 /// on the next `register` so `openFeedTab: false` refreshes are not dropped.
 ///
+/// Only the live Feed tab registers (`FeedView` with `embedsOwnNavigation`).
+/// Engineering Stale Feed embeds a separate model and must **not** register —
+/// otherwise `RefreshFeedIntent(openFeedTab: false)` refreshes the demo and
+/// consumes the request while the real Feed tab misses it.
+///
 /// Registration is cleared in `FeedView.onDisappear` (no `weak static` —
 /// SwiftFormat and SwiftLint disagree on that modifier order).
 @MainActor

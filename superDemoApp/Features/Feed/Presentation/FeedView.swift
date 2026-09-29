@@ -44,7 +44,12 @@ struct FeedView: View {
             }
         }
         .task {
-            FeedRefreshCoordinator.register(self.model)
+            // Engineering Stale Feed embeds `FeedView` with
+            // `embedsOwnNavigation: false` — must not steal App Intent
+            // registration from the live Feed tab model.
+            if self.embedsOwnNavigation {
+                FeedRefreshCoordinator.register(self.model)
+            }
             await self.model.refreshAndWait()
             self.applyPendingFeedPostOpenIfPossible()
         }
@@ -52,6 +57,7 @@ struct FeedView: View {
             self.applyPendingFeedPostOpenIfPossible()
         }
         .onChange(of: navigation.state.feedRefreshRequestID) { _, _ in
+            guard self.embedsOwnNavigation else { return }
             FeedRefreshCoordinator.consumePendingRefreshIfNeeded(using: self.model)
         }
         .onChange(of: self.model.state) { _, newState in
@@ -59,7 +65,9 @@ struct FeedView: View {
             self.clearUnresolvedFeedPostOpenIfNeeded(for: newState)
         }
         .onDisappear {
-            FeedRefreshCoordinator.unregister(self.model)
+            if self.embedsOwnNavigation {
+                FeedRefreshCoordinator.unregister(self.model)
+            }
             self.model.cancelRefresh()
         }
     }
