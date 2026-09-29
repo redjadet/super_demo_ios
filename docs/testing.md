@@ -56,13 +56,13 @@ agent cannot execute simulators — GHA `xcode-27` (or Mac) provides proof.
 | `testDeepLinkOpensItemsTab` | `superdemo://items` selects Items chrome |
 | `testStaleFeedFixtureShowsBannerOnFeedTab` | `-StaleFeedDemo` shows stale banner + sample row |
 | `testStaleFeedEngineeringDemoShowsBanner` | Dashboard → Stale Feed demo shows banner |
-| `testShareInboxDemoIsReachable` | Share inbox Engineering demo (absent / seed / unavailable) |
+| `testShareInboxDemoIsReachable` | Share inbox Seed must be hittable; after Seed → entry / unavailable / seed-failed (not pre-seed absent) |
 | `testSignInWithAppleDemoIsReachable` | SIWA Engineering demo chrome (Simulator-honest) |
 | `testOnDeviceVisionDemoRecognizesOrReportsHonestState` | Vision OCR run → lines or honest failure |
 | `testHostBridgePingDemoReturnsResponse` | Host bridge ping returns non-placeholder JSON |
 | `testFlutterAddToAppDemoIsReachable` | Flutter add-to-app demo (embedded or unavailable) |
 | `testFeedWidgetSnapshotDemoIsReachable` | Feed widget App Group snapshot demo |
-| `testStoreKitProductQueryDemoIsReachable` | StoreKit 2 product query demo |
+| `testStoreKitProductQueryDemoIsReachable` | StoreKit Load → terminal empty / unavailable / product row (not idle/loading) |
 | `testLocalNotificationDemoIsReachable` | Local stale-Feed reminder demo chrome |
 | `testIdempotentPostDemoIsReachable` | Idempotent POST demo outcome |
 | `testDiagnosticsDemoIsReachable` | Diagnostics Engineering demo screen |

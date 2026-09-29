@@ -10,6 +10,9 @@ import SwiftUI
 /// Engineering demo: list Share extension inbox entries or honest empty/unavailable.
 struct ShareInboxDemoView: View {
     @State private var loadState: ShareInboxLoadState = .absent
+    /// Surfaced when Seed write fails for a reason other than “unavailable”
+    /// (which `loadState` already shows after reload).
+    @State private var seedFailureMessage: String?
 
     var body: some View {
         List {
@@ -42,6 +45,15 @@ struct ShareInboxDemoView: View {
                     self.clearInbox()
                 }
                 .accessibilityIdentifier("shareInboxClear")
+            }
+
+            if let seedFailureMessage {
+                Section("Seed status") {
+                    Text(seedFailureMessage)
+                        .font(.footnote)
+                        .foregroundStyle(.red)
+                        .accessibilityIdentifier("shareInboxSeedFailed")
+                }
             }
 
             switch self.loadState {
@@ -106,7 +118,16 @@ struct ShareInboxDemoView: View {
             text: "Demo note from Engineering demos",
             urlString: "https://superdemo.app/items"
         )
-        try? ShareInboxStore.append(entry)
+        do {
+            try ShareInboxStore.append(entry)
+            self.seedFailureMessage = nil
+        } catch ShareInboxStoreError.containerUnavailable {
+            // Reload shows `shareInboxUnavailable` — no separate seed error.
+            self.seedFailureMessage = nil
+        } catch {
+            self.seedFailureMessage =
+                "Could not seed Share inbox: \(error.localizedDescription)"
+        }
         self.reload()
     }
 
