@@ -7,9 +7,6 @@ import XCTest
 
 enum UiTestSupport {
     private static let terminateTimeout: TimeInterval = 20
-    /// Cap launch handshake so a wedged Simulator cannot burn the CI 3600s budget
-    /// (run 36576125333: Vision demo hung ~917s on “launch progress”).
-    private static let launchTimeout: TimeInterval = 90
     private static let foregroundTimeout: TimeInterval = 30
 
     /// Ends a running app instance so the next `launch()` does not hang on XCTest terminate (common on CI).
@@ -25,6 +22,11 @@ enum UiTestSupport {
     ///
     /// Pass `from:` so launch-progress XCTFails (`continueAfterFailure`) can
     /// terminate + retry once — needed when Simulator wedges mid-suite.
+    ///
+    /// Note: `XCUIApplication.launchTimeout` is unavailable on CI Xcode 27
+    /// (compile error on run 36585758371). Cap relies on foreground wait +
+    /// one relaunch here, and `bin/ci-iphone-test.sh` sim-reboot retry on
+    /// “Timed out while requesting launch progress”.
     @MainActor
     static func launchApplication(
         from testCase: XCTestCase? = nil,
@@ -32,7 +34,6 @@ enum UiTestSupport {
     ) -> XCUIApplication {
         let app = XCUIApplication()
         app.launchArguments = ["-UITesting"] + extraArguments
-        app.launchTimeout = self.launchTimeout
 
         let previousContinue = testCase?.continueAfterFailure
         if let testCase {

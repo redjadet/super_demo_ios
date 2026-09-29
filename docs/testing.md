@@ -76,10 +76,11 @@ provides proof.
 
 Helpers live in `superDemoAppUITests/UiTestSupport.swift`:
 
-- **`launchApplication(from:)`** — passes `-UITesting`, caps `launchTimeout`
-  (90s), terminates any running app, launches, waits for foreground; with a
-  test case, allows one terminate+relaunch after launch-progress XCTFail
-  (CI Simulator wedge — e.g. Vision demo on run 36576125333).
+- **`launchApplication(from:)`** — passes `-UITesting`, terminates any running
+  app, launches, waits for foreground; with a test case, allows one
+  terminate+relaunch after launch-progress XCTFail (CI Simulator wedge —
+  e.g. Vision demo on run 36576125333). Does **not** set
+  `XCUIApplication.launchTimeout` (unavailable on CI Xcode 27).
 - **`openDeepLink(_:in:)`** — opens a custom-scheme URL against the running app.
 - **`openFeedTab` / `openItemsTab` / `openDashboardTab`** — fail when no tab
   control is tappable (no silent `tapFirstHittable` no-op).
