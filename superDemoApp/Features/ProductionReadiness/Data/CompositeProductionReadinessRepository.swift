@@ -7,14 +7,14 @@ import Foundation
 
 struct CompositeProductionReadinessRepository: ProductionReadinessRepository {
     private let sample: SampleProductionReadinessRepository
-    private let remoteHealth: RemoteAPIHealthRepository
+    private let remoteHealth: any RemoteAPIHealthLoading
     private let remoteEndpoint: URL
     private let diagnostics: ReleaseDiagnosticsReporting
     private let now: @Sendable () -> Date
 
     init(
         sample: SampleProductionReadinessRepository,
-        remoteHealth: RemoteAPIHealthRepository,
+        remoteHealth: some RemoteAPIHealthLoading,
         remoteEndpoint: URL,
         diagnostics: ReleaseDiagnosticsReporting = ReleaseDiagnostics.shared,
         now: @escaping @Sendable () -> Date = Date.init
@@ -28,7 +28,7 @@ struct CompositeProductionReadinessRepository: ProductionReadinessRepository {
 
     func loadSnapshot() async throws -> ProductionReadinessSnapshot {
         let snapshot = try await self.sample.loadSnapshot()
-        let remoteEntry = await self.loadRemoteHealthEntry()
+        let remoteEntry = try await self.loadRemoteHealthEntry()
         return ProductionReadinessSnapshot(
             modules: snapshot.modules,
             apiHealth: [remoteEntry] + snapshot.apiHealth,
@@ -37,7 +37,7 @@ struct CompositeProductionReadinessRepository: ProductionReadinessRepository {
         )
     }
 
-    private func loadRemoteHealthEntry() async -> APIHealthCheck {
+    private func loadRemoteHealthEntry() async throws -> APIHealthCheck {
         let check = ReleaseDiagnosticCheck(
             name: "remote-api-health",
             metadata: ["endpoint": self.remoteEndpoint.path()]
@@ -46,6 +46,11 @@ struct CompositeProductionReadinessRepository: ProductionReadinessRepository {
             let entry = try await self.remoteHealth.loadHealthCheck()
             self.diagnostics.releaseCheckPassed(check)
             return entry
+        } catch is CancellationError {
+            // Cancel is not a Remote API warning — keep OI cancel honesty.
+            throw CancellationError()
+        } catch APIError.cancelled {
+            throw CancellationError()
         } catch {
             self.diagnostics.releaseCheckFailed(check, reason: String(describing: error))
             return APIHealthCheck(

@@ -15,6 +15,7 @@ struct URLSessionAPIClientTests {
         try await self.refreshesTokenOnceThenRetriesOriginalRequest()
         try await self.respectsRetryAfterForRateLimit()
         try await self.mapsTransportAndHTTPFailures()
+        try await self.preservesCancellationError()
     }
 
     private func refreshesTokenOnceThenRetriesOriginalRequest() async throws {
@@ -85,6 +86,38 @@ struct URLSessionAPIClientTests {
             )
 
             await #expect(throws: APIError.httpStatus(400)) {
+                _ = try await client.send(APIRequest(url: url))
+            }
+        }
+    }
+
+    private func preservesCancellationError() async throws {
+        let url = try #require(URL(string: "https://example.com/cancel"))
+        try await self.withStubSession(stubs: [.response(statusCode: 200)]) { session in
+            let client = URLSessionAPIClient(
+                session: session,
+                retryPolicy: RetryPolicy(maxAttempts: 1),
+                logger: NoopAPILogger(),
+                sleeper: TestRetrySleeper()
+            )
+            let request = APIRequest(url: url)
+            let task = Task {
+                try await client.send(request)
+            }
+            task.cancel()
+            await #expect(throws: CancellationError.self) {
+                _ = try await task.value
+            }
+        }
+
+        try await self.withStubSession(stubs: [.error(URLError(.cancelled))]) { session in
+            let client = URLSessionAPIClient(
+                session: session,
+                retryPolicy: RetryPolicy(maxAttempts: 1),
+                logger: NoopAPILogger(),
+                sleeper: TestRetrySleeper()
+            )
+            await #expect(throws: CancellationError.self) {
                 _ = try await client.send(APIRequest(url: url))
             }
         }

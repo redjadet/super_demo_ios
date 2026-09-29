@@ -65,7 +65,8 @@ struct URLSessionAPIClient: APIClient {
                 }
                 throw error
             } catch is CancellationError {
-                throw APIError.cancelled
+                // Preserve cooperative cancel — do not map to a domain failure.
+                throw CancellationError()
             } catch let error as APIError {
                 self.logger.requestFailed(url: request.url, error: error, attempt: attempt)
                 if self.retryPolicy.shouldRetry(error: error, request: request, attempt: attempt) {
@@ -74,6 +75,8 @@ struct URLSessionAPIClient: APIClient {
                     continue
                 }
                 throw error
+            } catch let error as URLError where error.code == .cancelled {
+                throw CancellationError()
             } catch let error as URLError {
                 let apiError = APIError.transport(error.code)
                 self.logger.requestFailed(url: request.url, error: apiError, attempt: attempt)

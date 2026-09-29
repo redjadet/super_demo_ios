@@ -14,6 +14,8 @@ struct CompositeProductionReadinessRepositoryTests {
     func exercisesLiveAndFallbackRemoteHealth() async throws {
         try await self.prependsLiveRemoteHealthWhenRequestSucceeds()
         try await self.keepsSampleSnapshotWhenRemoteHealthFails()
+        try await self.rethrowsCancellationInsteadOfRemoteWarning()
+        try await self.rethrowsAPIErrorCancelledAsCancellationError()
     }
 
     private func prependsLiveRemoteHealthWhenRequestSucceeds() async throws {
@@ -46,6 +48,38 @@ struct CompositeProductionReadinessRepositoryTests {
         }
     }
 
+    private func rethrowsCancellationInsteadOfRemoteWarning() async throws {
+        let endpoint = try #require(URL(string: "https://example.com/posts"))
+        let diagnostics = RecordingReleaseDiagnostics()
+        let repository = CompositeProductionReadinessRepository(
+            sample: SampleProductionReadinessRepository { Date(timeIntervalSince1970: 0) },
+            remoteHealth: ThrowingRemoteAPIHealth(kind: .cancellation),
+            remoteEndpoint: endpoint,
+            diagnostics: diagnostics
+        ) { Date(timeIntervalSince1970: 0) }
+
+        await #expect(throws: CancellationError.self) {
+            _ = try await repository.loadSnapshot()
+        }
+        #expect(diagnostics.failedReasons.isEmpty)
+    }
+
+    private func rethrowsAPIErrorCancelledAsCancellationError() async throws {
+        let endpoint = try #require(URL(string: "https://example.com/posts"))
+        let diagnostics = RecordingReleaseDiagnostics()
+        let repository = CompositeProductionReadinessRepository(
+            sample: SampleProductionReadinessRepository { Date(timeIntervalSince1970: 0) },
+            remoteHealth: ThrowingRemoteAPIHealth(kind: .apiCancelled),
+            remoteEndpoint: endpoint,
+            diagnostics: diagnostics
+        ) { Date(timeIntervalSince1970: 0) }
+
+        await #expect(throws: CancellationError.self) {
+            _ = try await repository.loadSnapshot()
+        }
+        #expect(diagnostics.failedReasons.isEmpty)
+    }
+
     private static func makeRepository(
         endpoint: URL,
         session: URLSession,
@@ -67,6 +101,37 @@ struct CompositeProductionReadinessRepositoryTests {
             diagnostics: NoopReleaseDiagnostics()
         ) { referenceDate }
     }
+}
+
+private struct ThrowingRemoteAPIHealth: RemoteAPIHealthLoading {
+    enum Kind: Sendable {
+        case cancellation
+        case apiCancelled
+    }
+
+    let kind: Kind
+
+    func loadHealthCheck() async throws -> APIHealthCheck {
+        await Task.yield()
+        switch self.kind {
+        case .cancellation:
+            throw CancellationError()
+        case .apiCancelled:
+            throw APIError.cancelled
+        }
+    }
+}
+
+private final class RecordingReleaseDiagnostics: ReleaseDiagnosticsReporting, @unchecked Sendable {
+    private(set) var failedReasons: [String] = []
+
+    func releaseCheckPassed(_: ReleaseDiagnosticCheck) { /* no-op */ }
+
+    func releaseCheckFailed(_: ReleaseDiagnosticCheck, reason: String) {
+        self.failedReasons.append(reason)
+    }
+
+    func deviceOnlyFailure(_: DeviceOnlyFailure) { /* no-op */ }
 }
 
 private struct NoopReleaseDiagnostics: ReleaseDiagnosticsReporting {
