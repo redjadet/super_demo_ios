@@ -24,6 +24,8 @@ the outcome set let a missing embed/unavailable surface still pass.
   on Flutter semantics); no UIKit stamp on `FlutterViewController.view`
 - `UiTestSupport.openEngineeringDemo` — dashboard-scoped link query, scroll
   to top before search, stronger drag/swipe for mid-list links (Feed widget)
+- `testDashboardShowsProductionRisks` — use `openEngineeringDemo` (CI missed
+  CollectionView link via `app.buttons` + unscrolled swipe; tip `31e25c3`)
 - Portfolio tip pin → `ab6784c` / #51; `docs/testing.md` row clarified
 
 ## Proof
@@ -31,7 +33,9 @@ the outcome set let a missing embed/unavailable surface still pass.
 - GHA Delivery UITests on this PR (iPhone lane) — recovery after
   `Flutter demo missing embedded or unavailable outcome chrome` on tip
   `5bd83dc` / run 36591691457 and tip `8b79706` / run 36596285410
-  (also `Missing demo link feedWidgetSnapshotDemoLink` + 3600s hang)
+  (also `Missing demo link feedWidgetSnapshotDemoLink` + 3600s hang);
+  tip `31e25c3` / run 36606688446: Flutter + Feed widget **passed**; lone
+  fail `testDashboardShowsProductionRisks`
 - Linux: common-issues / scorecard / markdown / router
 
 ## Out of scope
