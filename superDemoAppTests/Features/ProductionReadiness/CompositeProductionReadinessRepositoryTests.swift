@@ -28,8 +28,10 @@ struct CompositeProductionReadinessRepositoryTests {
 
             #expect(snapshot.apiHealth.first?.id == "remote-api")
             #expect(snapshot.apiHealth.first?.status == .healthy)
+            #expect(snapshot.apiHealth.first?.isLiveProbe == true)
             #expect(snapshot.apiHealth.first.map { $0.latencyMilliseconds >= 0 } == true)
             #expect(snapshot.apiHealth.count == 4)
+            #expect(snapshot.apiHealth.dropFirst().allSatisfy { !$0.isLiveProbe })
         }
     }
 
@@ -43,6 +45,7 @@ struct CompositeProductionReadinessRepositoryTests {
 
             #expect(snapshot.apiHealth.first?.id == "remote-api")
             #expect(snapshot.apiHealth.first?.status == .warning)
+            #expect(snapshot.apiHealth.first?.isLiveProbe == true)
             #expect(snapshot.apiHealth.first?.latencyMilliseconds == 0)
             #expect(snapshot.modules.count == 4)
         }

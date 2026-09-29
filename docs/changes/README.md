@@ -4,6 +4,8 @@ Record durable implementation notes after meaningful changes.
 
 ## Entries
 
+- [`2026-09-29_release-health-score-honesty.md`](2026-09-29_release-health-score-honesty.md)
+  — Release health % excludes sample API when live Remote API probe present; tip `6544a31`.
 - [`2026-09-29_stale-feed-intent-isolation.md`](2026-09-29_stale-feed-intent-isolation.md)
   — Stale Feed demo must not steal App Intent refresh registration; tip `bc71880`.
 - [`2026-09-29_agent-harness-boundaries-evidence.md`](2026-09-29_agent-harness-boundaries-evidence.md)

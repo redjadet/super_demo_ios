@@ -46,6 +46,78 @@ struct ProductionReadinessTests {
         #expect(score == 66)
     }
 
+    /// Live Remote API probe must not share the hero % with sample Auth/Release/Push.
+    @Test
+    func scoreExcludesSampleAPIWhenLiveProbePresent() {
+        let reference = Date(timeIntervalSince1970: 0)
+        let mixed = ProductionReadinessSnapshot(
+            modules: [
+                FeatureModule(
+                    id: "a",
+                    name: "A",
+                    layerBoundary: "Domain",
+                    owner: "iOS",
+                    status: .healthy,
+                    summary: ""
+                ),
+            ],
+            apiHealth: [
+                APIHealthCheck(
+                    id: "remote-api",
+                    name: "Remote API",
+                    endpoint: "/posts",
+                    status: .healthy,
+                    latencyMilliseconds: 10,
+                    lastChecked: reference,
+                    isLiveProbe: true
+                ),
+                APIHealthCheck(
+                    id: "push",
+                    name: "Push Token Sync",
+                    endpoint: "/v1/devices/push-token",
+                    status: .warning,
+                    latencyMilliseconds: 420,
+                    lastChecked: reference
+                ),
+            ],
+            checklist: [
+                ReleaseChecklistItem(id: "done", title: "Done", detail: "", isComplete: true, owner: "iOS"),
+            ],
+            risks: [
+                ProductionRisk(
+                    id: "risk",
+                    title: "Risk",
+                    detail: "",
+                    mitigation: "",
+                    status: .healthy,
+                    legacyCode: "RISK"
+                ),
+            ]
+        )
+
+        let withSampleOnly = ProductionReadinessSnapshot(
+            modules: mixed.modules,
+            apiHealth: [
+                APIHealthCheck(
+                    id: "remote-api",
+                    name: "Remote API",
+                    endpoint: "/posts",
+                    status: .healthy,
+                    latencyMilliseconds: 10,
+                    lastChecked: reference,
+                    isLiveProbe: true
+                ),
+            ],
+            checklist: mixed.checklist,
+            risks: mixed.risks
+        )
+
+        let score = ScoreProductionReadinessUseCase()
+        #expect(score(snapshot: mixed) == score(snapshot: withSampleOnly))
+        // Sample warning must not pull the mixed score below the live-only score.
+        #expect(score(snapshot: mixed) == 100)
+    }
+
     @Test
     func sampleSnapshotClaimsOSLogCrashMonitorIsWired() async throws {
         let snapshot = try await SampleProductionReadinessRepository().loadSnapshot()

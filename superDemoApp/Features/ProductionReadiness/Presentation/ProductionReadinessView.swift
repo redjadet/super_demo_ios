@@ -86,8 +86,11 @@ private struct ProductionReadinessContent: View {
     var body: some View {
         List {
             Section {
-                ReadinessHero(score: self.score)
-                    .listRowInsets(EdgeInsets(top: 16, leading: 16, bottom: 16, trailing: 16))
+                ReadinessHero(
+                    score: self.score,
+                    includesLiveAPIProbe: self.snapshot.apiHealth.contains(where: \.isLiveProbe)
+                )
+                .listRowInsets(EdgeInsets(top: 16, leading: 16, bottom: 16, trailing: 16))
             }
 
             Section("Feature Modules") {
@@ -98,7 +101,10 @@ private struct ProductionReadinessContent: View {
 
             Section("API Health") {
                 ForEach(self.snapshot.apiHealth) { health in
-                    APIHealthRow(health: health)
+                    APIHealthRow(
+                        health: health,
+                        scoreExcludesSampleAPI: self.snapshot.apiHealth.contains(where: \.isLiveProbe)
+                    )
                 }
             }
 
@@ -216,6 +222,7 @@ private struct ProductionReadinessContent: View {
 
 private struct ReadinessHero: View {
     let score: Int
+    let includesLiveAPIProbe: Bool
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -224,17 +231,29 @@ private struct ReadinessHero: View {
                     .font(.title2)
                     .fontWeight(.semibold)
                 Spacer()
-                ReadinessScoreBadge(score: self.score)
+                ReadinessScoreBadge(score: self.score, includesLiveAPIProbe: self.includesLiveAPIProbe)
                     .equatable()
             }
-            Text("Module status, API checks, release checklist, and tracked risks in one view.")
+            Text(self.subtitle)
                 .foregroundStyle(.secondary)
+        }
+    }
+
+    private var subtitle: String {
+        if self.includesLiveAPIProbe {
+            // Keep under SwiftLint line_length (120 warning / --strict).
+            String(
+                localized: "Includes modules, live Remote API, checklist, and risks. Sample API rows are listed only."
+            )
+        } else {
+            String(localized: "Module status, API checks, release checklist, and tracked risks in one view.")
         }
     }
 }
 
 private struct ReadinessScoreBadge: View, Equatable {
     let score: Int
+    let includesLiveAPIProbe: Bool
 
     var body: some View {
         Text("\(self.score)%")
@@ -243,7 +262,17 @@ private struct ReadinessScoreBadge: View, Equatable {
             .padding(.vertical, 8)
             .background(self.score >= 80 ? Color.accentColor.opacity(0.16) : Color.orange.opacity(0.18))
             .clipShape(RoundedRectangle(cornerRadius: 12))
-            .accessibilityLabel(String(localized: "Readiness score \(self.score) percent"))
+            .accessibilityLabel(self.scoreAccessibilityText)
+    }
+
+    private var scoreAccessibilityText: String {
+        if self.includesLiveAPIProbe {
+            String(
+                localized: "Readiness score \(self.score) percent; live Remote API only, sample API excluded"
+            )
+        } else {
+            String(localized: "Readiness score \(self.score) percent")
+        }
     }
 }
 
@@ -271,6 +300,7 @@ private struct ModuleRow: View {
 
 private struct APIHealthRow: View {
     let health: APIHealthCheck
+    let scoreExcludesSampleAPI: Bool
 
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
@@ -278,8 +308,12 @@ private struct APIHealthRow: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text(self.health.name)
                     .font(.headline)
-                if self.health.isLiveNetworkProbe {
-                    Text("Live network probe (prepended to sample checks)")
+                if self.health.isLiveProbe {
+                    Text("Live network probe (included in Release health score)")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                } else if self.scoreExcludesSampleAPI {
+                    Text("Sample check (not in live Release health score)")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
@@ -288,12 +322,6 @@ private struct APIHealthRow: View {
                     .foregroundStyle(.secondary)
             }
         }
-    }
-}
-
-private extension APIHealthCheck {
-    var isLiveNetworkProbe: Bool {
-        self.id == "remote-api"
     }
 }
 
