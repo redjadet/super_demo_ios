@@ -1,7 +1,15 @@
 # superDemoApp
 
+Universal SwiftUI + SwiftData demo (iPhone / iPad / Mac) with a thin watchOS
+Feed-snapshot companion. Portfolio sample for architecture, offline Feed,
+networking, UIKit interop, optional Flutter add-to-app, and local CI proof —
+not a shipped App Store product.
+
+[3-minute reviewer path](docs/portfolio.md) ·
+[Architecture tour](docs/architecture-tour.md) ·
+[Engineering evidence](docs/engineering/engineering-quality-scorecard.md)
+
 [![CI](https://github.com/redjadet/super_demo_ios/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/redjadet/super_demo_ios/actions/workflows/ci.yml)
-![Engineering](https://img.shields.io/badge/Engineering-10%2F10-0A7A3E)
 
 ![Xcode](https://img.shields.io/badge/Xcode-27.0-147EFB?logo=xcode&logoColor=white)
 ![Swift](https://img.shields.io/badge/Swift-6.4-F05138?logo=swift&logoColor=white)
@@ -12,11 +20,6 @@
 ![Platforms](https://img.shields.io/badge/Platforms-iOS%20%7C%20iPadOS%20%7C%20macOS%20%7C%20watchOS-000000?logo=apple&logoColor=white)
 ![Minimum OS](https://img.shields.io/badge/Minimum%20OS-26.0-6E6E73?logo=apple&logoColor=white)
 ![Architecture](https://img.shields.io/badge/Architecture-Clean%20layers-0A7A3E)
-
-Universal SwiftUI + SwiftData demo (iPhone / iPad / Mac) with a thin watchOS
-Feed-snapshot companion. Portfolio sample for architecture, offline Feed,
-networking, UIKit interop, optional Flutter add-to-app, and local CI proof —
-not a shipped App Store product.
 
 ## What this proves
 
