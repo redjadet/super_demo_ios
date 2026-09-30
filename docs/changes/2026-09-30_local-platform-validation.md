@@ -1,4 +1,10 @@
-# 2026-09-30 — Local platform validation
+# 2026-09-30 — visionOS shared SwiftUI API compile guards (#57)
+
+## Summary
+
+Tip `fc2837a` / [#57](https://github.com/redjadet/super_demo_ios/pull/57): guard
+shared SwiftUI APIs so a visionOS **SDK compile** succeeds. This is **not** a
+visionOS companion demo — companion remains deferred.
 
 ## Repairs
 
@@ -10,6 +16,12 @@ macOS, where the API is supported.
 `VisionDemoObservation` is a Sendable value constructed by the OCR worker.
 Mark its initializer `nonisolated` so Swift's default MainActor isolation does
 not require a hop to construct that value.
+
+## Honesty
+
+- **In repo:** shared SwiftUI / OCR API availability guards for visionOS compile.
+- **Still deferred:** visionOS companion reviewer demo / product surface.
+- SDK-only build ≠ visionOS Simulator UITest execution.
 
 ## Verification
 

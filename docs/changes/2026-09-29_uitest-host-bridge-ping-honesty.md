@@ -16,7 +16,7 @@ response after Ping could pass, including encode failures and `"ok":false`.
 - `EngineeringDemosUITests.testHostBridgePingDemoReturnsResponse` — assert
   successful decoded shape for the fixed demo request
 - `docs/testing.md` row clarified
-- Portfolio tip pin → `87455ec` (#53)
+- Portfolio tip pin → `8dd35a5` (#55)
 
 ## Proof
 

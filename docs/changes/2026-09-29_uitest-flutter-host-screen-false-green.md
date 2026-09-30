@@ -26,7 +26,7 @@ the outcome set let a missing embed/unavailable surface still pass.
   to top before search, stronger drag/swipe for mid-list links (Feed widget)
 - `testDashboardShowsProductionRisks` — use `openEngineeringDemo` (CI missed
   CollectionView link via `app.buttons` + unscrolled swipe; tip `31e25c3`)
-- Portfolio tip pin → `ab6784c` / #51; `docs/testing.md` row clarified
+- Portfolio tip pin → `e399339` (#52); `docs/testing.md` row clarified
 
 ## Proof
 
