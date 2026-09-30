@@ -30,10 +30,7 @@ not a shipped App Store product.
 5. Optional Flutter host bridge — [`docs/flutter-add-to-app.md`](docs/flutter-add-to-app.md)
 6. Merge proof (`./bin/ci.sh` / GHA) — [`docs/ci-cd-map.md`](docs/ci-cd-map.md)
 
-[`CODEMAP.md`](CODEMAP.md) ·
-[`docs/architecture-tour.md`](docs/architecture-tour.md) ·
-[`docs/engineering/engineering-quality-scorecard.md`](docs/engineering/engineering-quality-scorecard.md) ·
-[`docs/portfolio.md`](docs/portfolio.md)
+Task → path: [`CODEMAP.md`](CODEMAP.md).
 
 ## 3-minute path
 
