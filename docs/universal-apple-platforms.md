@@ -25,7 +25,8 @@ Current project settings already target Apple multi-platform builds:
 
 Required product proof remains iOS, iPadOS, and macOS unless the task adds
 watchOS/visionOS. **watchOS** compile proof is part of
-`./bin/ci-platform-builds.sh` (`./bin/ci-watch-build.sh`). **visionOS** companion
+`./bin/ci-platform-builds.sh` (`./bin/ci-watch-build.sh`). **visionOS** shared
+SwiftUI API compile guards landed in tip `fc2837a` (#57); a visionOS **companion**
 UI remains deferred.
 
 ## Layout Rules

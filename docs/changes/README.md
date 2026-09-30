@@ -4,14 +4,21 @@ Record durable implementation notes after meaningful changes.
 
 ## Entries
 
+- [`2026-09-30_local-platform-validation.md`](2026-09-30_local-platform-validation.md)
+  — visionOS shared SwiftUI API compile guards (sidebar / glass / OCR init); tip
+  `fc2837a` (#57); companion still deferred.
 - [`2026-09-29_uitest-idempotent-post-honesty.md`](2026-09-29_uitest-idempotent-post-honesty.md)
-  — Idempotent POST UITest Accepted → Simulated duplicate-safe replay; tip `8dd35a5`.
+  — Idempotent POST UITest Accepted → Simulated duplicate-safe replay; tip
+  `db25cfc` (#56).
 - [`2026-09-29_uitest-host-bridge-ping-honesty.md`](2026-09-29_uitest-host-bridge-ping-honesty.md)
-  — Host bridge ping UITest requires ok:true + demo-1 id (not any text); tip `87455ec`.
+  — Host bridge ping UITest requires ok:true + demo-1 id (not any text); tip
+  `8dd35a5` (#55).
 - [`2026-09-29_uitest-feed-retry-honesty.md`](2026-09-29_uitest-feed-retry-honesty.md)
-  — Feed Retry UITest must observe loading→failed (no-op tap false-green); tip `e399339`.
+  — Feed Retry UITest must observe loading→failed (no-op tap false-green); tip
+  `87455ec` (#53).
 - [`2026-09-29_uitest-flutter-host-screen-false-green.md`](2026-09-29_uitest-flutter-host-screen-false-green.md)
-  — Flutter demo UITest outcome excludes host screen id (false-green); tip `ab6784c`.
+  — Flutter demo UITest outcome excludes host screen id (false-green); tip
+  `e399339` (#52).
 - [`2026-09-29_uitest-launch-progress-retry.md`](2026-09-29_uitest-launch-progress-retry.md)
   — UITest launch-progress relaunch + CI sim reboot retry (no `launchTimeout` on Xcode 27); #51.
 - [`2026-09-29_widget-mixed-age-ttl.md`](2026-09-29_widget-mixed-age-ttl.md)

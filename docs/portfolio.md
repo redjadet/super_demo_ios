@@ -26,7 +26,7 @@ read-through cache.
 ## Platform surfaces
 
 Apple-platform / hybrid-native skill map for reviewers (inventory after
-`origin/main` @ `8dd35a5`, 2026-09-29 — **post P2 A–F + #36–#55**: WidgetKit, Live
+`origin/main` @ `fc2837a`, 2026-09-30 — **post P2 A–F + #36–#57**: WidgetKit, Live
 Activity, Share, SIWA, StoreKit query, Vision OCR, Flutter embed, watchOS
 companion, Open Feed Post intent / AASA `/feed/*` + apex Associated Domains +
 Markdown relative-link gate + CODEMAP/router path honesty + Engineering-demo
@@ -35,7 +35,9 @@ UITest scroll restore (#43) + UITest tab/Feed–Items chrome false-green harden
 harden (#47) + agent harness evidence (#48) + Stale Feed App Intent isolation
 (#49) + Release health sample-vs-live score (#50) + mixed-age widget TTL (#51) +
 Flutter host-screen UITest false-green (#52) + Feed Retry UITest honesty (#53) +
-Host bridge ping UITest honesty (#55); visionOS still deferred).
+Host bridge ping UITest honesty (#55) + Idempotent POST UITest replay honesty
+(#56) + visionOS **shared SwiftUI API compile guards** (#57); visionOS
+**companion demo still deferred**).
 Honest “not in repo” beats a broken link.
 Sibling backlog (do not merge scopes): portfolio plan under agent store
 `job-4472017039-portfolio-plan.md`; Flutter quality-system maturity is separate
@@ -62,8 +64,9 @@ Sibling backlog (do not merge scopes): portfolio plan under agent store
 | StoreKit 2 | `Config/Products.storekit`; `superDemoApp/Shared/StoreKit/`; Engineering demos → StoreKit 2 product query (demo) | **In repo** (JP-P1-D query-only; no purchase / charge path) |
 | Native↔Flutter host bridge | `superDemoApp/Shared/HostBridge/`, `superDemoApp/Shared/FlutterEmbed/`, `flutter_module/`, [`native-host-boundary.md`](native-host-boundary.md), [`flutter-add-to-app.md`](flutter-add-to-app.md); Engineering demos → Host bridge ping / Flutter add-to-app | **In repo** (JP-P0-C contract + JP-P2-D module embed; `postCount` = full cache size; Mac unlinked; frameworks via prepare script) |
 | Core ML / Vision / Speech / Apple Intelligence | `superDemoApp/Shared/OnDeviceAI/`, Engineering demos → On-device Vision OCR | **In repo** (JP-P2-C Vision OCR only; no Speech / Core ML model / Apple Intelligence claim) |
-| watchOS companion (Feed snapshot) | `superDemoAppWatch/`, `FeedWidgetShared/`, App Group `group.com.ilkersevim.superDemoApp`; Engineering demos → watchOS Feed companion; scheme `superDemoAppWatch` | **In repo** (JP-P2-F watchOS; embed `platformFilter = ios`; watch-local App Group — not phone sync; **visionOS deferred**) |
-| visionOS companion | Project may mention xr settings; no reviewer companion demo | **Not in repo** (deferred; JP-P2-F shipped watchOS only) |
+| watchOS companion (Feed snapshot) | `superDemoAppWatch/`, `FeedWidgetShared/`, App Group `group.com.ilkersevim.superDemoApp`; Engineering demos → watchOS Feed companion; scheme `superDemoAppWatch` | **In repo** (JP-P2-F watchOS; embed `platformFilter = ios`; watch-local App Group — not phone sync) |
+| visionOS shared SwiftUI API guards | `AdaptiveNavigationShell` / glass chrome availability; `OnDeviceVisionDemo` `nonisolated` init — [#57](https://github.com/redjadet/super_demo_ios/pull/57) / tip `fc2837a` | **In repo** (compile guards only; SDK build may pass without a visionOS Simulator runtime) |
+| visionOS companion | Project may mention xr settings; no reviewer companion demo | **Not in repo** (deferred; #57 ≠ companion; JP-P2-F shipped watchOS only) |
 | tvOS companion | — | **Not in repo** |
 | App Store–shipped product | README honesty | **Not claimed** |
 

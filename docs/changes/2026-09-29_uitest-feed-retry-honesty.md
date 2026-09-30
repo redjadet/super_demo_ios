@@ -21,7 +21,7 @@ re-assert timed out); folded closed #54 counter approach on same branch.
 - `FailingSampleFeedRepository` — 200ms delay so loading is observable
 - UITest waits for `feedFailed-1` then post-tap `feedFailed-2` / `feedLoading`
 - Unit: `retryAfterFailureIncrementsCompletedRefreshCount`
-- Portfolio tip pin → `e399339` (#52)
+- Portfolio tip pin → `87455ec` (#53)
 
 ## Proof
 

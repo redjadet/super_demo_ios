@@ -15,7 +15,7 @@ for `idempotentPostOutcomeTitle` alone never exercises replay and accepts Failed
 
 - UITest: assert title `Accepted`, tap again, assert `Simulated duplicate-safe`
 - `docs/testing.md` row clarified
-- Portfolio tip pin → `8dd35a5` (#55)
+- Portfolio tip pin → `db25cfc` (#56)
 
 ## Proof
 
