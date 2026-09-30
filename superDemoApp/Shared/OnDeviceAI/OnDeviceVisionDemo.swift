@@ -16,7 +16,7 @@ struct VisionDemoObservation: Equatable, Identifiable, Sendable {
     let confidence: Float
     let id: UUID
 
-    init(text: String, confidence: Float, id: UUID = UUID()) {
+    nonisolated init(text: String, confidence: Float, id: UUID = UUID()) {
         self.text = text
         self.confidence = confidence
         self.id = id
