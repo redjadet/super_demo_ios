@@ -67,21 +67,25 @@ extension View {
         ideal: CGFloat = 220,
         max: CGFloat = 320
     ) -> some View {
-        #if os(macOS)
-        self.navigationSplitViewColumnWidth(min: min, ideal: ideal, max: max)
-        #else
+        #if os(iOS)
         self.modifier(FeatureSidebarColumnWidthModifier(min: min, ideal: ideal, max: max))
+        #else
+        self.navigationSplitViewColumnWidth(min: min, ideal: ideal, max: max)
         #endif
     }
 
     /// Liquid Glass for chrome controls (toolbar / empty-state actions). Never use on list rows or cards.
     @ViewBuilder
     func chromeGlassButtonStyle() -> some View {
+        #if os(iOS) || os(macOS)
         if #available(iOS 26.0, macOS 26.0, *) {
             self.buttonStyle(.glass)
         } else {
             self
         }
+        #else
+        self
+        #endif
     }
 }
 

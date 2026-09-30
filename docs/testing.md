@@ -179,3 +179,19 @@ That script runs `xcodebuild test -enableCodeCoverage YES` on the same iPhone
 destination resolution as `ci-iphone-test` and prints the `.xcresult` path.
 Inspect with Xcode Organizer or `xcrun xccov`. Do **not** invent a `%` for
 README — see [`code-quality.md`](code-quality.md).
+
+## Local platform matrix
+
+The main scheme has unit and UI tests for iPhone, iPad, macOS, and visionOS.
+Run each destination explicitly; an iPhone pass does not prove iPad or Mac UI.
+The watch companion scheme currently has no test target, so its existing local
+lane (`./bin/ci-watch-build.sh`) proves compilation only.
+
+Check installed destinations with `xcodebuild -showdestinations -project
+superDemoApp.xcodeproj -scheme superDemoApp`. visionOS execution requires an
+installed visionOS Simulator runtime; SDK-only builds do not execute tests.
+
+Mac UI tests require authenticated Automation Mode and a valid local test-host
+signing setup. A failure before the runner starts is environment evidence,
+not an app assertion failure. Temporary ad-hoc test-host overrides that remove
+sandbox or App Group entitlements cannot prove those production capabilities.
