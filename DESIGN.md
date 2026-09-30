@@ -172,8 +172,9 @@ custom drop shadows and gradient hero backgrounds. Depth clarifies grouping, not
 
 **Liquid Glass (chrome only):** tab bar and toolbar / empty-state action buttons adopt
 system Liquid Glass via `Tab { … }`, `.chromeGlassButtonStyle()` (`.buttonStyle(.glass)`),
-Do **not** put `glassEffect` on list rows, cards, or
-content panels — that creates hierarchy noise (see review protocol).
+and `tabBarMinimizeBehavior(.automatic)` on the root `TabView`. Do **not** put
+`glassEffect` on list rows, cards, or content panels — that creates hierarchy noise
+(see [`docs/ai_code_review_protocol.md`](docs/ai_code_review_protocol.md)).
 
 ## Shapes
 

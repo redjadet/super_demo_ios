@@ -4,6 +4,8 @@ Record durable implementation notes after meaningful changes.
 
 ## Entries
 
+- [`2026-09-30_amateur-design-polish.md`](2026-09-30_amateur-design-polish.md)
+  — DESIGN Liquid Glass prose, README cold-path dedupe, AccentColor token fill.
 - [`2026-09-30_local-platform-validation.md`](2026-09-30_local-platform-validation.md)
   — visionOS shared SwiftUI API compile guards (sidebar / glass / OCR init); tip
   `fc2837a` (#57); companion still deferred.
