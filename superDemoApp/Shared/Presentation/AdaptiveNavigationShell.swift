@@ -75,8 +75,8 @@ extension View {
     }
 
     /// Liquid Glass for chrome controls (toolbar / empty-state actions). Never use on list rows or cards.
-    /// `.glass` landed in iOS/macOS 26.0; iPhone deploy floor is 26.7 so iOS always takes glass.
-    /// Keep the availability gate for macOS 26.0 floor and any temporary lower-SDK builds.
+    /// `.glass` landed in iOS/macOS 26.0; deploy floors are 26.7 so ship always takes glass.
+    /// Keep the availability gate for temporary lower-SDK / older-sim builds.
     @ViewBuilder
     func chromeGlassButtonStyle() -> some View {
         #if os(iOS) || os(macOS)

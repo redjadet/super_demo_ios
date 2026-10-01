@@ -21,7 +21,7 @@ Current project settings already target Apple multi-platform builds:
 - Main app: `SUPPORTED_PLATFORMS = iphoneos iphonesimulator macosx xros xrsimulator`
 - Main app: `TARGETED_DEVICE_FAMILY = 1,2,7`
 - Main app **iPhone / iOS floor:** `IPHONEOS_DEPLOYMENT_TARGET = 26.7` (not iOS 27-only)
-- Mac / watch companions: `MACOSX_DEPLOYMENT_TARGET` / `WATCHOS_DEPLOYMENT_TARGET` **26.0**
+- Mac / watch companions: `MACOSX_DEPLOYMENT_TARGET` / `WATCHOS_DEPLOYMENT_TARGET` **26.7**
 - Watch companion: `SUPPORTED_PLATFORMS = watchos watchsimulator`,
   `TARGETED_DEVICE_FAMILY = 4` (scheme `superDemoAppWatch`)
 
