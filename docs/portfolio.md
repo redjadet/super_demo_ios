@@ -55,7 +55,7 @@ Sibling backlog (do not merge scopes): portfolio plan under agent store
 | Observability / crash swap | `superDemoApp/Shared/Diagnostics/`, [`incident-playbook.md`](incident-playbook.md) | **In repo** |
 | Performance (Feed + UIKit) | `AppPerformanceSignposts`, [`performance-lab.md`](performance-lab.md) | **In repo** |
 | Performance (widget / concurrency lab) | [`performance-lab.md`](performance-lab.md) widget App Group + Live Activity Feed-refresh recipes + concurrency talk track | **In repo** (JP-P1-E + JP-P1-A) |
-| Universal shell (iPhone / iPad / Mac) | Adaptive navigation; CI platform builds | **In repo** |
+| Universal shell (iPhone / iPad / Mac) | Adaptive navigation; CI platform builds; iOS floor **26.7** (`IPHONEOS_DEPLOYMENT_TARGET`) | **In repo** |
 | WidgetKit / Home Screen widget | `FeedWidgetShared/`, `superDemoAppWidget/`, App Group `group.com.ilkersevim.superDemoApp`; Engineering demos → Feed widget snapshot | **In repo** (JP-P0-B; iOS embed; Mac lane skips extension) |
 | Live Activities / Dynamic Island | `FeedRefreshActivityAttributes`, `ActivityKitFeedRefreshLiveActivityController`, `FeedRefreshLiveActivity` in widget bundle; Feed refresh gate A | **In repo** (JP-P1-A; compile on GHA; device Island not claimed on hosted CI) |
 | Push / notification service extension | Engineering demos → Local stale-Feed reminder (local only); [`release-checklist.md`](release-checklist.md) mock TestFlight/APNs | **In repo** (JP-P1-C local + JP-P2-E labeled mock/demo checklist; no production APNs claim) |

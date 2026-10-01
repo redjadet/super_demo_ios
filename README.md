@@ -18,7 +18,7 @@ not a shipped App Store product.
 ![Flutter](https://img.shields.io/badge/Flutter-add--to--app-02569B?logo=flutter&logoColor=white)
 
 ![Platforms](https://img.shields.io/badge/Platforms-iOS%20%7C%20iPadOS%20%7C%20macOS%20%7C%20watchOS-000000?logo=apple&logoColor=white)
-![Minimum OS](https://img.shields.io/badge/Minimum%20OS-26.0-6E6E73?logo=apple&logoColor=white)
+![Minimum OS](https://img.shields.io/badge/Minimum%20OS-26.7-6E6E73?logo=apple&logoColor=white)
 ![Architecture](https://img.shields.io/badge/Architecture-Clean%20layers-0A7A3E)
 
 ## What this proves
