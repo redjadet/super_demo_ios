@@ -4,6 +4,8 @@ Record durable implementation notes after meaningful changes.
 
 ## Entries
 
+- [`2026-10-01_uitest-production-risks-honesty.md`](2026-10-01_uitest-production-risks-honesty.md)
+  — Production Risks UITest requires seeded push-notifications row (not screen alone).
 - [`2026-10-01_macos-watchos-26-7-deployment-floor.md`](2026-10-01_macos-watchos-26-7-deployment-floor.md)
   — macOS / watchOS deployment floors **26.0 → 26.7** (parity with iPhone #63).
 - [`2026-10-01_ios-26-7-deployment-floor.md`](2026-10-01_ios-26-7-deployment-floor.md)

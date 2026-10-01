@@ -38,6 +38,27 @@ final class superDemoAppUITests: XCTestCase {
             screenIdentifier: "productionRisksScreen",
             in: app
         )
+
+        // Screen id alone false-greens an empty risks list. Seeded sample risks
+        // always include `push-notifications` — require that row + title/mitigation.
+        let pushRow = app.descendants(matching: .any)
+            .matching(identifier: "productionRiskRow-push-notifications")
+            .firstMatch
+        XCTAssertTrue(
+            pushRow.waitForExistence(timeout: 10),
+            "Missing seeded productionRiskRow-push-notifications"
+        )
+        let label = pushRow.label
+        XCTAssertTrue(
+            label.contains("Push Notifications"),
+            "Push risk row title missing from accessibility label: \(label)"
+        )
+        XCTAssertTrue(
+            label.localizedCaseInsensitiveContains("Mitigation")
+                || label.localizedCaseInsensitiveContains("APNs")
+                || label.localizedCaseInsensitiveContains("TestFlight"),
+            "Push risk mitigation/detail missing from accessibility label: \(label)"
+        )
     }
 
     @MainActor
