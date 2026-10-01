@@ -13,9 +13,9 @@ Machine-readable project facts for agents.
 ## CI and repo tooling
 
 - **Local toolchain (README badges):** Xcode **27.0**, Swift **6.4**, iOS SDK **27**.
-- **iPhone / iOS deployment floor:** `IPHONEOS_DEPLOYMENT_TARGET = 26.7` (supports
-  iOS **26.7+**, not iOS 27-only). macOS / watchOS companion floors stay **26.0**
-  unless a shared product story requires alignment.
+- **Deployment floors (26.7):** `IPHONEOS_DEPLOYMENT_TARGET`,
+  `MACOSX_DEPLOYMENT_TARGET`, and `WATCHOS_DEPLOYMENT_TARGET` are **26.7**
+  (supports **26.7+**, not 27-only). CI still builds with Xcode 27 / SDK 27.
 - **GitHub Actions** runs on `xcode-27`. `tool/select_xcode.sh` picks the **newest
   released** Xcode ≥ 27 (GM build preferred; seed/beta only if no release qualifies —
   currently **27.1** on the image). iPhone sims use the newest runtime shipping with
