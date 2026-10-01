@@ -26,6 +26,7 @@ struct ProductionRisksView: View {
                     .foregroundStyle(.secondary)
             }
             .accessibilityElement(children: .combine)
+            .accessibilityIdentifier("productionRiskRow-\(risk.id)")
         }
         .navigationTitle("Production Risks")
         .accessibilityIdentifier("productionRisksScreen")
