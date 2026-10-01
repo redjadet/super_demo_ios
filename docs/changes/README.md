@@ -4,6 +4,9 @@ Record durable implementation notes after meaningful changes.
 
 ## Entries
 
+- [`2026-10-01_eng-demo-composition-di.md`](2026-10-01_eng-demo-composition-di.md)
+  — Inject Engineering demo factories from App composition (Presentation DI).
+
 - [`2026-10-01_uitest-production-risks-honesty.md`](2026-10-01_uitest-production-risks-honesty.md)
   — Production Risks UITest requires seeded push-notifications row (not screen alone).
 - [`2026-10-01_macos-watchos-26-7-deployment-floor.md`](2026-10-01_macos-watchos-26-7-deployment-floor.md)
