@@ -9,6 +9,9 @@ adding a deterministic test, mock fixture, preview state, or script.
 
 ## Defaults
 
+- **Minimum iOS:** app targets `IPHONEOS_DEPLOYMENT_TARGET = 26.7`. CI may run
+  tests on newer Simulator runtimes (e.g. iOS 27 with Xcode 27); that proves the
+  build SDK path, not a higher App Store floor.
 - New unit/integration tests: prefer Swift Testing when target supports it.
 - Existing XCTest files may stay XCTest.
 - UI tests: XCTest/XCUIAutomation.
