@@ -26,7 +26,7 @@ read-through cache.
 ## Platform surfaces
 
 Apple-platform / hybrid-native skill map for reviewers (inventory after
-`origin/main` @ `fc2837a`, 2026-09-30 — **post P2 A–F + #36–#57**: WidgetKit, Live
+`origin/main` @ `cf1aa4d`, 2026-10-01 — **post P2 A–F + #36–#63**: WidgetKit, Live
 Activity, Share, SIWA, StoreKit query, Vision OCR, Flutter embed, watchOS
 companion, Open Feed Post intent / AASA `/feed/*` + apex Associated Domains +
 Markdown relative-link gate + CODEMAP/router path honesty + Engineering-demo
@@ -36,8 +36,10 @@ harden (#47) + agent harness evidence (#48) + Stale Feed App Intent isolation
 (#49) + Release health sample-vs-live score (#50) + mixed-age widget TTL (#51) +
 Flutter host-screen UITest false-green (#52) + Feed Retry UITest honesty (#53) +
 Host bridge ping UITest honesty (#55) + Idempotent POST UITest replay honesty
-(#56) + visionOS **shared SwiftUI API compile guards** (#57); visionOS
-**companion demo still deferred**).
+(#56) + visionOS **shared SwiftUI API compile guards** (#57) + portfolio tip-pin
+honesty (#58) + README cold-path polish (#59) + amateur DESIGN/AccentColor polish
+(#60/#61) + README image badges (#62) + iPhone deployment floor **26.7** (#63);
+visionOS **companion demo still deferred**).
 Honest “not in repo” beats a broken link.
 Sibling backlog (do not merge scopes): portfolio plan under agent store
 `job-4472017039-portfolio-plan.md`; Flutter quality-system maturity is separate
