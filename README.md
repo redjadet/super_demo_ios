@@ -5,9 +5,9 @@ Feed-snapshot companion. Portfolio sample for architecture, offline Feed,
 networking, UIKit interop, optional Flutter add-to-app, and local CI proof —
 not a shipped App Store product.
 
-[3-minute reviewer path](docs/portfolio.md) ·
-[Architecture tour](docs/architecture-tour.md) ·
-[Engineering evidence](docs/engineering/engineering-quality-scorecard.md)
+[![3-minute path](https://img.shields.io/badge/3--minute-reviewer%20path-0066CC)](docs/portfolio.md)
+[![Architecture tour](https://img.shields.io/badge/Architecture-tour-0A7A3E)](docs/architecture-tour.md)
+[![Engineering evidence](https://img.shields.io/badge/Engineering-evidence-6E6E73)](docs/engineering/engineering-quality-scorecard.md)
 
 [![CI](https://github.com/redjadet/super_demo_ios/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/redjadet/super_demo_ios/actions/workflows/ci.yml)
 
