@@ -4,6 +4,12 @@ Record durable implementation notes after meaningful changes.
 
 ## Entries
 
+- [`2026-10-01_ios-26-7-deployment-floor.md`](2026-10-01_ios-26-7-deployment-floor.md)
+  — iPhone / iOS deployment floor **26.7** (`IPHONEOS_DEPLOYMENT_TARGET`); README
+  Minimum OS badge; glass availability honesty; tip `cf1aa4d` (#63).
+- [`2026-10-01_post63-docs-honesty.md`](2026-10-01_post63-docs-honesty.md)
+  — Index #63 change note + portfolio Platform surfaces tip pin through #58–#63.
+
 - [`2026-09-30_amateur-design-polish.md`](2026-09-30_amateur-design-polish.md)
   — DESIGN Liquid Glass prose, README cold-path dedupe, AccentColor token fill.
 - [`2026-09-30_local-platform-validation.md`](2026-09-30_local-platform-validation.md)
