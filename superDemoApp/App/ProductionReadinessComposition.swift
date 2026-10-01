@@ -58,6 +58,23 @@ struct ProductionReadinessRootView: View {
     @Binding var path: [AppRoute]
 
     var body: some View {
-        ProductionReadinessView(model: self.model, path: self.$path)
+        ProductionReadinessView(
+            model: self.model,
+            path: self.$path,
+            engineeringDemos: ProductionReadinessEngineeringDemos(
+                makeIdempotentPost: {
+                    AnyView(
+                        IdempotentPostDemoView(
+                            model: ProductionReadinessComposition.makeIdempotentPostDemoModel()
+                        )
+                    )
+                },
+                makeStaleFeed: {
+                    AnyView(
+                        StaleFeedDemoView(session: FeedComposition.makeStaleDemoSession())
+                    )
+                }
+            )
+        )
     }
 }

@@ -5,13 +5,48 @@
 
 import SwiftUI
 
+/// App-owned Engineering demo destinations that need composition-root wiring.
+/// Keeps Presentation free of `*Composition` calls (layers / DI boundary).
+struct ProductionReadinessEngineeringDemos {
+    let makeIdempotentPost: @MainActor () -> AnyView
+    let makeStaleFeed: @MainActor () -> AnyView
+
+    @MainActor static var preview: Self {
+        Self(
+            makeIdempotentPost: {
+                AnyView(
+                    IdempotentPostDemoView(
+                        model: IdempotentPostDemoModel(
+                            submit: SubmitIdempotentPostDemoUseCase(
+                                transport: SimulatedIdempotentPostTransport()
+                            )
+                        )
+                    )
+                )
+            },
+            makeStaleFeed: {
+                AnyView(
+                    Text("Stale Feed preview")
+                        .accessibilityIdentifier("staleFeedDemoScreen")
+                )
+            }
+        )
+    }
+}
+
 struct ProductionReadinessView: View {
     @Bindable private var model: ProductionReadinessFeatureModel
     @Binding private var path: [AppRoute]
+    private let engineeringDemos: ProductionReadinessEngineeringDemos
 
-    init(model: ProductionReadinessFeatureModel, path: Binding<[AppRoute]>) {
+    init(
+        model: ProductionReadinessFeatureModel,
+        path: Binding<[AppRoute]>,
+        engineeringDemos: ProductionReadinessEngineeringDemos
+    ) {
         self.model = model
         self._path = path
+        self.engineeringDemos = engineeringDemos
     }
 
     var body: some View {
@@ -74,7 +109,11 @@ struct ProductionReadinessView: View {
             }
             .featureScreenFrame()
         case let .content(snapshot, score):
-            ProductionReadinessContent(snapshot: snapshot, score: score)
+            ProductionReadinessContent(
+                snapshot: snapshot,
+                score: score,
+                engineeringDemos: self.engineeringDemos
+            )
         }
     }
 }
@@ -82,6 +121,7 @@ struct ProductionReadinessView: View {
 private struct ProductionReadinessContent: View {
     let snapshot: ProductionReadinessSnapshot
     let score: Int
+    let engineeringDemos: ProductionReadinessEngineeringDemos
 
     var body: some View {
         List {
@@ -137,16 +177,14 @@ private struct ProductionReadinessContent: View {
                 .accessibilityIdentifier("diagnosticsDemoLink")
 
                 NavigationLink {
-                    IdempotentPostDemoView(
-                        model: ProductionReadinessComposition.makeIdempotentPostDemoModel()
-                    )
+                    self.engineeringDemos.makeIdempotentPost()
                 } label: {
                     Label("Idempotent POST (simulated duplicate-safe)", systemImage: "arrow.triangle.2.circlepath")
                 }
                 .accessibilityIdentifier("idempotentPostDemoLink")
 
                 NavigationLink {
-                    StaleFeedDemoView(session: FeedComposition.makeStaleDemoSession())
+                    self.engineeringDemos.makeStaleFeed()
                 } label: {
                     Label("Stale Feed cache fallback", systemImage: "externaldrive.badge.exclamationmark")
                 }
@@ -418,7 +456,11 @@ private struct ProductionReadinessPreviewRoot: View {
     @State private var path: [AppRoute] = []
 
     var body: some View {
-        ProductionReadinessView(model: self.model, path: self.$path)
-            .task { await self.model.refreshAndWait() }
+        ProductionReadinessView(
+            model: self.model,
+            path: self.$path,
+            engineeringDemos: .preview
+        )
+        .task { await self.model.refreshAndWait() }
     }
 }
