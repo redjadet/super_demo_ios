@@ -71,7 +71,7 @@ Router doc path honesty (CODEMAP / portfolio / architecture-tour):
 | iPhone tests lane | `./bin/fastlane-run iphone_test` |
 | iPad + Mac lane | `./bin/fastlane-run platform_builds` |
 | iPhone build/test lane only | `./bin/ci-iphone-test.sh` |
-| iPad + Mac + watchOS builds | `./bin/ci-platform-builds.sh` (watch: `./bin/ci-watch-build.sh`; skip watch: `CI_SKIP_WATCH_BUILD=1`) |
+| iPad + Mac + watchOS builds | `./bin/ci-platform-builds.sh` (watch: `./bin/ci-watch-build.sh`; skip watch: `CI_SKIP_WATCH_BUILD=1`; Mac lane defaults to unsigned compile-proof — set `CI_MAC_REQUIRE_CODE_SIGN=1` only when Mac Development profiles exist) |
 | Install Cursor rules + hooks (after clone) | `./tool/install-cursor-rules.sh` |
 | Install git pre-commit | `./bin/install-git-hooks` |
 | Restore team Apple skills from lockfile | `npx skills experimental_install -y` (from git root) |
