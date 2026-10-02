@@ -26,7 +26,7 @@ read-through cache.
 ## Platform surfaces
 
 Apple-platform / hybrid-native skill map for reviewers (inventory after
-`origin/main` @ `cf1aa4d`, 2026-10-01 — **post P2 A–F + #36–#63**: WidgetKit, Live
+`origin/main` @ `031cc37`, 2026-10-01 — **post P2 A–F + #36–#67**: WidgetKit, Live
 Activity, Share, SIWA, StoreKit query, Vision OCR, Flutter embed, watchOS
 companion, Open Feed Post intent / AASA `/feed/*` + apex Associated Domains +
 Markdown relative-link gate + CODEMAP/router path honesty + Engineering-demo
@@ -38,8 +38,13 @@ Flutter host-screen UITest false-green (#52) + Feed Retry UITest honesty (#53) +
 Host bridge ping UITest honesty (#55) + Idempotent POST UITest replay honesty
 (#56) + visionOS **shared SwiftUI API compile guards** (#57) + portfolio tip-pin
 honesty (#58) + README cold-path polish (#59) + amateur DESIGN/AccentColor polish
-(#60/#61) + README image badges (#62) + iPhone deployment floor **26.7** (#63);
-visionOS **companion demo still deferred**).
+(#60/#61) + README image badges (#62) + iPhone deployment floor **26.7** (#63) +
+post-#63 docs honesty (#64) + macOS/watchOS deployment floor **26.7** parity
+(#65) + seeded Production Risks UITest row honesty
+(`productionRiskRow-push-notifications`, #66) + Engineering-demo factories
+injected from App composition (#67); visionOS **companion demo still deferred**;
+paid StoreKit / production APNs / App Icon PNGs / P2-A light–dark screenshots
+stay deferred/human-only).
 Honest “not in repo” beats a broken link.
 Sibling backlog (do not merge scopes): portfolio plan under agent store
 `job-4472017039-portfolio-plan.md`; Flutter quality-system maturity is separate
@@ -48,7 +53,7 @@ Sibling backlog (do not merge scopes): portfolio plan under agent store
 | Skill | Current path / proof | Status |
 | --- | --- | --- |
 | Clean layers + modularity | `superDemoApp/Features/*/`, [`layers.md`](layers.md), [`modularity.md`](modularity.md), `./tool/check_layer_boundaries.sh` | **In repo** |
-| SwiftUI + Observation + DI | Feed / Items / ProductionReadiness; `superDemoApp/App/*Composition.swift` | **In repo** |
+| SwiftUI + Observation + DI | Feed / Items / ProductionReadiness; `superDemoApp/App/*Composition.swift`; Engineering demos injected from App composition factories (#67) | **In repo** |
 | Swift Concurrency | `async`/`await` networking; actor token refreshers; `AsyncLoadController` | **In repo** |
 | Offline / networking | `CachingFeedRepository`, [`offline-first.md`](offline-first.md), [`offline-invariants.md`](offline-invariants.md), [`sync-and-networking.md`](sync-and-networking.md) | **In repo** |
 | App Intents (open-tab) | `superDemoApp/App/AppIntents/` + Shortcuts; tests | **In repo** |
@@ -57,7 +62,7 @@ Sibling backlog (do not merge scopes): portfolio plan under agent store
 | Observability / crash swap | `superDemoApp/Shared/Diagnostics/`, [`incident-playbook.md`](incident-playbook.md) | **In repo** |
 | Performance (Feed + UIKit) | `AppPerformanceSignposts`, [`performance-lab.md`](performance-lab.md) | **In repo** |
 | Performance (widget / concurrency lab) | [`performance-lab.md`](performance-lab.md) widget App Group + Live Activity Feed-refresh recipes + concurrency talk track | **In repo** (JP-P1-E + JP-P1-A) |
-| Universal shell (iPhone / iPad / Mac) | Adaptive navigation; CI platform builds; iOS / macOS floors **26.7** | **In repo** |
+| Universal shell (iPhone / iPad / Mac) | Adaptive navigation; CI platform builds; iOS / macOS floors **26.7** (#63 / #65) | **In repo** |
 | WidgetKit / Home Screen widget | `FeedWidgetShared/`, `superDemoAppWidget/`, App Group `group.com.ilkersevim.superDemoApp`; Engineering demos → Feed widget snapshot | **In repo** (JP-P0-B; iOS embed; Mac lane skips extension) |
 | Live Activities / Dynamic Island | `FeedRefreshActivityAttributes`, `ActivityKitFeedRefreshLiveActivityController`, `FeedRefreshLiveActivity` in widget bundle; Feed refresh gate A | **In repo** (JP-P1-A; compile on GHA; device Island not claimed on hosted CI) |
 | Push / notification service extension | Engineering demos → Local stale-Feed reminder (local only); [`release-checklist.md`](release-checklist.md) mock TestFlight/APNs | **In repo** (JP-P1-C local + JP-P2-E labeled mock/demo checklist; no production APNs claim) |
@@ -66,7 +71,7 @@ Sibling backlog (do not merge scopes): portfolio plan under agent store
 | StoreKit 2 | `Config/Products.storekit`; `superDemoApp/Shared/StoreKit/`; Engineering demos → StoreKit 2 product query (demo) | **In repo** (JP-P1-D query-only; no purchase / charge path) |
 | Native↔Flutter host bridge | `superDemoApp/Shared/HostBridge/`, `superDemoApp/Shared/FlutterEmbed/`, `flutter_module/`, [`native-host-boundary.md`](native-host-boundary.md), [`flutter-add-to-app.md`](flutter-add-to-app.md); Engineering demos → Host bridge ping / Flutter add-to-app | **In repo** (JP-P0-C contract + JP-P2-D module embed; `postCount` = full cache size; Mac unlinked; frameworks via prepare script) |
 | Core ML / Vision / Speech / Apple Intelligence | `superDemoApp/Shared/OnDeviceAI/`, Engineering demos → On-device Vision OCR | **In repo** (JP-P2-C Vision OCR only; no Speech / Core ML model / Apple Intelligence claim) |
-| watchOS companion (Feed snapshot) | `superDemoAppWatch/`, `FeedWidgetShared/`, App Group `group.com.ilkersevim.superDemoApp`; Engineering demos → watchOS Feed companion; scheme `superDemoAppWatch`; `WATCHOS_DEPLOYMENT_TARGET` **26.7** | **In repo** (JP-P2-F watchOS; embed `platformFilter = ios`; watch-local App Group — not phone sync) |
+| watchOS companion (Feed snapshot) | `superDemoAppWatch/`, `FeedWidgetShared/`, App Group `group.com.ilkersevim.superDemoApp`; Engineering demos → watchOS Feed companion; scheme `superDemoAppWatch`; `WATCHOS_DEPLOYMENT_TARGET` **26.7** (#65) | **In repo** (JP-P2-F watchOS; embed `platformFilter = ios`; watch-local App Group — not phone sync) |
 | visionOS shared SwiftUI API guards | `AdaptiveNavigationShell` / glass chrome availability; `OnDeviceVisionDemo` `nonisolated` init — [#57](https://github.com/redjadet/super_demo_ios/pull/57) / tip `fc2837a` | **In repo** (compile guards only; SDK build may pass without a visionOS Simulator runtime) |
 | visionOS companion | Project may mention xr settings; no reviewer companion demo | **Not in repo** (deferred; #57 ≠ companion; JP-P2-F shipped watchOS only) |
 | tvOS companion | — | **Not in repo** |
