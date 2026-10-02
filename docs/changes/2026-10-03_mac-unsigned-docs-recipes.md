@@ -5,7 +5,11 @@
 
 ## Why
 
-[#69](https://github.com/redjadet/super_demo_ios/pull/69) made `./bin/ci-platform-builds.sh` default to unsigned Mac compile-proof (`CODE_SIGNING_ALLOWED=NO`, `CODE_SIGN_IDENTITY=-`). Three standalone `xcodebuild … -destination 'platform=macOS' build` recipes still documented the pre-#69 signed path and would hit missing Mac Development profiles locally.
+[#69](https://github.com/redjadet/super_demo_ios/pull/69) made `./bin/ci-platform-builds.sh`
+default to unsigned Mac compile-proof (`CODE_SIGNING_ALLOWED=NO`,
+`CODE_SIGN_IDENTITY=-`). Three standalone
+`xcodebuild … -destination 'platform=macOS' build` recipes still documented the
+pre-#69 signed path and would hit missing Mac Development profiles locally.
 
 ## Change
 
