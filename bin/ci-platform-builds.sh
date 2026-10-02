@@ -88,14 +88,17 @@ run_mac_build() {
     unset MAC_DERIVED_DATA_FLAGS
   fi
 
-  if [[ "${CI:-}" == "true" ]]; then
-    # GitHub-hosted runners have no Mac Development certificate for the project team.
+  # Compile-proof only (same as watchOS lane). GHA runners and most local Macs
+  # lack a Mac App Development profile for this bundle ID; requiring real
+  # signing fails checklist with "No profiles for …". Opt into signed Mac
+  # builds with CI_MAC_REQUIRE_CODE_SIGN=1 when certificates/profiles exist.
+  if [[ "${CI_MAC_REQUIRE_CODE_SIGN:-0}" == "1" ]]; then
+    unset MAC_BUILD_FLAGS
+  else
     MAC_BUILD_FLAGS=(
       CODE_SIGNING_ALLOWED=NO
       CODE_SIGN_IDENTITY=-
     )
-  else
-    unset MAC_BUILD_FLAGS
   fi
 
   run_platform_xcodebuild \
