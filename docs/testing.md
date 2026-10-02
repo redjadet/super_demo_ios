@@ -159,7 +159,9 @@ For responsive UI build sanity:
 
 ```bash
 xcodebuild -project superDemoApp.xcodeproj -scheme superDemoApp -destination 'platform=iOS Simulator,name=iPad Pro 13-inch (M5)' build
-xcodebuild -project superDemoApp.xcodeproj -scheme superDemoApp -destination 'platform=macOS' build
+# Unsigned Mac compile-proof (same default as ./bin/ci-platform-builds.sh / #69).
+# Omit CODE_SIGN* overrides only when Mac Development profiles exist.
+xcodebuild -project superDemoApp.xcodeproj -scheme superDemoApp -destination 'platform=macOS' CODE_SIGNING_ALLOWED=NO CODE_SIGN_IDENTITY=- build
 ```
 
 Production Readiness unit coverage:

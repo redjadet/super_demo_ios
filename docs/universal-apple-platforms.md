@@ -97,7 +97,8 @@ For meaningful UI changes, run or record the narrowest honest matrix:
 ```bash
 xcodebuild -project superDemoApp.xcodeproj -scheme superDemoApp -destination 'platform=iOS Simulator,name=iPhone 17' build
 xcodebuild -project superDemoApp.xcodeproj -scheme superDemoApp -destination 'platform=iOS Simulator,name=iPad Pro 13-inch (M5)' build
-xcodebuild -project superDemoApp.xcodeproj -scheme superDemoApp -destination 'platform=macOS' build
+# Unsigned Mac compile-proof (same default as ./bin/ci-platform-builds.sh / #69).
+xcodebuild -project superDemoApp.xcodeproj -scheme superDemoApp -destination 'platform=macOS' CODE_SIGNING_ALLOWED=NO CODE_SIGN_IDENTITY=- build
 ./bin/ci-watch-build.sh   # or: xcodebuild … -scheme superDemoAppWatch -destination 'generic/platform=watchOS Simulator' build
 ```
 

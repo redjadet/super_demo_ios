@@ -78,7 +78,7 @@ Router doc path honesty (CODEMAP / portfolio / architecture-tour):
 | Safe formatting | `./bin/format` |
 | Compile app | `xcodebuild -project superDemoApp.xcodeproj -scheme superDemoApp -destination 'platform=iOS Simulator,name=iPhone 18 Pro' build` |
 | iPad build sanity | `xcodebuild -project superDemoApp.xcodeproj -scheme superDemoApp -destination 'platform=iOS Simulator,name=iPad Pro 13-inch (M5)' build` |
-| Mac build sanity | `xcodebuild -project superDemoApp.xcodeproj -scheme superDemoApp -destination 'platform=macOS' build` |
+| Mac build sanity | `xcodebuild -project superDemoApp.xcodeproj -scheme superDemoApp -destination 'platform=macOS' CODE_SIGNING_ALLOWED=NO CODE_SIGN_IDENTITY=- build` (matches `./bin/ci-platform-builds.sh` unsigned compile-proof; set `CI_MAC_REQUIRE_CODE_SIGN=1` / omit the two `CODE_SIGN*` overrides only when Mac Development profiles exist) |
 | Unit + UI test sweep | `xcodebuild -project superDemoApp.xcodeproj -scheme superDemoApp -destination 'platform=iOS Simulator,name=iPhone 18 Pro' test` |
 | Available simulators | `xcrun simctl list devices available` |
 | Xcode destinations | `xcodebuild -showdestinations -project superDemoApp.xcodeproj -scheme superDemoApp` |
