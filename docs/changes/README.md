@@ -4,6 +4,8 @@ Record durable implementation notes after meaningful changes.
 
 ## Entries
 
+- [`2026-10-03_senior-coding-patterns-map.md`](2026-10-03_senior-coding-patterns-map.md)
+  — Stackademic 7 patterns → present/gap/N/A map; feature-flag wording honesty.
 - [`2026-10-01_eng-demo-composition-di.md`](2026-10-01_eng-demo-composition-di.md)
   — Inject Engineering demo factories from App composition (Presentation DI).
 

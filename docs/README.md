@@ -31,6 +31,8 @@ Source-of-truth docs for `superDemoApp`.
 - Development feedback loop: [`development-feedback-loop.md`](development-feedback-loop.md)
 - Validation routing: [`engineering/validation_routing_fast_vs_full.md`](engineering/validation_routing_fast_vs_full.md)
 - Engineering quality scorecard: [`engineering/engineering-quality-scorecard.md`](engineering/engineering-quality-scorecard.md)
+- Senior coding patterns map (Stackademic 7 → present/gap/N/A):
+  [`engineering/senior-coding-patterns-map.md`](engineering/senior-coding-patterns-map.md)
 - Harness scorecard (agent): [`ai/harness-scorecard.md`](ai/harness-scorecard.md)
 - Agent worktrees / maintain: [`agent_kb/host-maintenance.md`](agent_kb/host-maintenance.md)
 - SAFETY-REPORT template: [`agent_kb/safety-report-template.md`](agent_kb/safety-report-template.md)

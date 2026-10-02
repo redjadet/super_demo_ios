@@ -74,6 +74,7 @@ results. Bitrise rows in the CI map are equivalents only — not live.
 | Layers / features | [`layers.md`](layers.md), [`feature-template.md`](feature-template.md), [`modularity.md`](modularity.md) |
 | Offline rules | [`offline-invariants.md`](offline-invariants.md) |
 | Decisions | [`adr/README.md`](adr/README.md) |
+| Senior habits map | [`engineering/senior-coding-patterns-map.md`](engineering/senior-coding-patterns-map.md) |
 | Style | [`code-style.md`](code-style.md), [`agent_swift_guards.md`](agent_swift_guards.md) |
 | Review | [`ai_code_review_protocol.md`](ai_code_review_protocol.md) |
 | Sonar deferral | [`sonar-decision.md`](sonar-decision.md) |
