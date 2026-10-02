@@ -77,7 +77,10 @@ acceptable under the 2026-09-26 portfolio waiver.
   `device-only-failures`, with `OSLogCrashMonitor` for non-fatals. Replace the
   monitor with Firebase Crashlytics, Sentry, or an equivalent provider before
   shipping production crash analytics.
-- Feature flags or remote config default to safe states.
+- Demo / review toggles default to safe states (launch args such as
+  `-ReviewerDemoMode`, `-UITesting`, composition factories). This portfolio app
+  does **not** ship remote feature flags or Remote Config — do not treat this
+  row as proof of a production flag service.
 - Feedback path is monitored after upload.
 
 ## Fastlane Beta

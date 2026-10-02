@@ -38,6 +38,21 @@ targeted tests + `./bin/ci.sh` for merge.
 Default: **skip**. Require a named maintainer go decision before any SonarCloud
 setup (no secrets in repo). Static analysis today = SwiftLint + layer check.
 
+## Senior habits (Swift portfolio)
+
+Keep article-shaped senior habits aligned with what this app actually ships:
+
+- **Failure-first networking** — retries, timeouts, cancel honesty, stale Feed
+  fallback ([`sync-and-networking.md`](sync-and-networking.md)).
+- **Boring over clever** — layers + Observation + small feature models.
+- **Reversible demos** — launch-argument / composition toggles; **not** remote
+  feature flags ([`testing.md`](testing.md)).
+- **Idempotent POST demo** — `Idempotency-Key` + simulated duplicate-safe replay.
+- **Why on decisions** — ADRs + change notes; short why at surprising seams.
+
+Full map (present / gap / N/A):
+[`engineering/senior-coding-patterns-map.md`](engineering/senior-coding-patterns-map.md).
+
 ## Repaid debt example
 
 `AsyncLoadController` centralizes cancel-safe refresh so Feed/Items/Dashboard do

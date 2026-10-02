@@ -84,7 +84,8 @@ trusting local checks alone:
 
 - Crashlytics or equivalent crash monitoring when configured by the app
 - OSLog categories for diagnosable failures
-- feature flags for risky rollouts
+- reversible demo toggles (launch arguments / composition factories) for risky
+  local or TestFlight paths — **not** a remote feature-flag service in this repo
 - TestFlight scenarios for device-only behavior
 - App Store review notes when capabilities or permissions need context
 
