@@ -7,7 +7,8 @@
 #
 # Lanes (same scripts CI uses):
 #   markdown → DesignMD → Swift lint/modularity → common checks → scheme list
-#   → iPhone tests (bin/ci-iphone-test.sh) → iPad/Mac builds (bin/ci-platform-builds.sh)
+#   → iPhone tests (bin/ci-iphone-test.sh)
+#   → iPad + Mac + watchOS builds (bin/ci-platform-builds.sh)
 #
 # Xcode warnings are errors by default (tool/xcode_warnings_as_errors_flags.sh).
 # Escape: XCODEBUILD_ALLOW_WARNINGS=1 or CHECKLIST_SKIP_PLATFORM_BUILDS=1
@@ -34,7 +35,7 @@ Full local delivery checklist (merge gate):
   - iPad + Mac + watchOS builds (./bin/ci-platform-builds.sh) — unless skipped
 
 Env:
-  CHECKLIST_SKIP_PLATFORM_BUILDS=1  Skip iPad/Mac builds
+  CHECKLIST_SKIP_PLATFORM_BUILDS=1  Skip iPad/Mac/watchOS builds
   XCODEBUILD_ALLOW_WARNINGS=1       Do not treat Xcode warnings as errors
 
 Narrow docs/tooling: ./bin/checklist-fast
@@ -79,7 +80,7 @@ if [[ "${CHECKLIST_SKIP_PLATFORM_BUILDS:-0}" != "1" ]]; then
   echo "==> iPad + Mac + watchOS builds (./bin/ci-platform-builds.sh; warnings as errors)"
   ./bin/ci-platform-builds.sh
 else
-  echo "info: skipping iPad/Mac builds because CHECKLIST_SKIP_PLATFORM_BUILDS=1"
+  echo "info: skipping iPad/Mac/watchOS builds because CHECKLIST_SKIP_PLATFORM_BUILDS=1"
 fi
 
 echo "Checklist passed."

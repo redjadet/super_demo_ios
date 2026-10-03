@@ -4,6 +4,9 @@ Record durable implementation notes after meaningful changes.
 
 ## Entries
 
+- [`2026-10-03_docs-honesty-watchos-ci.md`](2026-10-03_docs-honesty-watchos-ci.md)
+  — Portfolio tip pin through #69–#74; CI/checklist proof wording includes
+  watchOS (was iPad/Mac-only underclaim).
 - [`2026-10-03_mac-unsigned-docs-recipes.md`](2026-10-03_mac-unsigned-docs-recipes.md)
   — Align three standalone Mac `xcodebuild` recipes with #69 unsigned
   compile-proof (`CODE_SIGNING_ALLOWED=NO`, `CODE_SIGN_IDENTITY=-`).

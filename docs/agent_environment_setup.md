@@ -73,8 +73,8 @@ Format only:
 
 See [`agent_swift_guards.md`](agent_swift_guards.md#automated-hooks-optional-recommended).
 
-Full CI locally (lint + iPhone test/build + parallel iPad/Mac builds; same proof
-lanes as GitHub Actions):
+Full CI locally (lint + iPhone test/build + parallel iPad/Mac/watchOS builds; same
+proof lanes as GitHub Actions):
 
 ```bash
 ./bin/ci.sh
@@ -89,7 +89,8 @@ Fastlane wrapper (bootstraps Bundler when needed, then runs the same repo script
 ./bin/fastlane-run platform_builds
 ```
 
-iPad/Mac compile only (same as CI platform step; parallel by default with isolated DerivedData):
+iPad/Mac/watchOS compile only (same as CI platform step; iPad + Mac parallel by
+default with isolated DerivedData, then watch):
 
 ```bash
 ./bin/ci-platform-builds.sh
@@ -101,7 +102,8 @@ Fast checklist (lint + focused common issue checks + project sanity):
 ./bin/checklist-fast
 ```
 
-Full checklist (lint + common issue checks + iPhone build/test + iPad/Mac builds).
+Full checklist (lint + common issue checks + iPhone build/test +
+iPad/Mac/watchOS builds).
 It uses `CHECKLIST_IPHONE_DEST` when provided; otherwise it chooses an
 available existing iPhone simulator, preferring a booted simulator first.
 Checklist tests run serially by default to avoid Xcode spawning multiple
