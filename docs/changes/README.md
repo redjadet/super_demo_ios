@@ -4,6 +4,9 @@ Record durable implementation notes after meaningful changes.
 
 ## Entries
 
+- [`2026-10-03_mac-unsigned-docs-recipes.md`](2026-10-03_mac-unsigned-docs-recipes.md)
+  — Align three standalone Mac `xcodebuild` recipes with #69 unsigned
+  compile-proof (`CODE_SIGNING_ALLOWED=NO`, `CODE_SIGN_IDENTITY=-`).
 - [`2026-10-03_senior-coding-patterns-map.md`](2026-10-03_senior-coding-patterns-map.md)
   — Stackademic 7 patterns → present/gap/N/A map; feature-flag wording honesty.
 - [`2026-10-01_eng-demo-composition-di.md`](2026-10-01_eng-demo-composition-di.md)
