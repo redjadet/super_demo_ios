@@ -5,7 +5,8 @@ Portfolio honesty map for the habits in
 (friend-link article). This is **not** a mandate to import Java/backend
 infrastructure into a SwiftUI offline-first demo.
 
-**Tip pin (inventory):** `c8df504` (`fix(platforms): unsigned Mac compile-proof…` #69).
+**Tip pin (inventory):** `bf9b626` (post #70 map + #71/#74 Mac unsigned recipes
+index; pattern table unchanged since #70).
 
 | # | Pattern | Status | Where it shows up here | Do not claim |
 | ---: | --- | --- | --- | --- |

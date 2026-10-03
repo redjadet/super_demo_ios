@@ -26,7 +26,7 @@ read-through cache.
 ## Platform surfaces
 
 Apple-platform / hybrid-native skill map for reviewers (inventory after
-`origin/main` @ `031cc37`, 2026-10-01 — **post P2 A–F + #36–#67**: WidgetKit, Live
+`origin/main` @ `bf9b626`, 2026-10-03 — **post P2 A–F + #36–#74**: WidgetKit, Live
 Activity, Share, SIWA, StoreKit query, Vision OCR, Flutter embed, watchOS
 companion, Open Feed Post intent / AASA `/feed/*` + apex Associated Domains +
 Markdown relative-link gate + CODEMAP/router path honesty + Engineering-demo
@@ -42,7 +42,12 @@ honesty (#58) + README cold-path polish (#59) + amateur DESIGN/AccentColor polis
 post-#63 docs honesty (#64) + macOS/watchOS deployment floor **26.7** parity
 (#65) + seeded Production Risks UITest row honesty
 (`productionRiskRow-push-notifications`, #66) + Engineering-demo factories
-injected from App composition (#67); visionOS **companion demo still deferred**;
+injected from App composition (#67) + portfolio Platform surfaces through #65–#67
+(#68) + Mac lane **unsigned compile-proof** default (#69;
+`CI_MAC_REQUIRE_CODE_SIGN=1` escape) + Stackademic senior-patterns map +
+launch-arg / composition toggle honesty (no remote feature-flag claim) (#70) +
+standalone Mac `xcodebuild` recipes aligned with #69 (#71 / index #74) + README
+engineering-evidence cold path (#72); visionOS **companion demo still deferred**;
 paid StoreKit / production APNs / App Icon PNGs / P2-A light–dark screenshots
 stay deferred/human-only).
 Honest “not in repo” beats a broken link.
@@ -62,7 +67,7 @@ Sibling backlog (do not merge scopes): portfolio plan under agent store
 | Observability / crash swap | `superDemoApp/Shared/Diagnostics/`, [`incident-playbook.md`](incident-playbook.md) | **In repo** |
 | Performance (Feed + UIKit) | `AppPerformanceSignposts`, [`performance-lab.md`](performance-lab.md) | **In repo** |
 | Performance (widget / concurrency lab) | [`performance-lab.md`](performance-lab.md) widget App Group + Live Activity Feed-refresh recipes + concurrency talk track | **In repo** (JP-P1-E + JP-P1-A) |
-| Universal shell (iPhone / iPad / Mac) | Adaptive navigation; CI platform builds; iOS / macOS floors **26.7** (#63 / #65) | **In repo** |
+| Universal shell (iPhone / iPad / Mac) | Adaptive navigation; CI platform builds (iPad + Mac + watchOS; Mac **unsigned** compile-proof #69); iOS / macOS floors **26.7** (#63 / #65) | **In repo** |
 | WidgetKit / Home Screen widget | `FeedWidgetShared/`, `superDemoAppWidget/`, App Group `group.com.ilkersevim.superDemoApp`; Engineering demos → Feed widget snapshot | **In repo** (JP-P0-B; iOS embed; Mac lane skips extension) |
 | Live Activities / Dynamic Island | `FeedRefreshActivityAttributes`, `ActivityKitFeedRefreshLiveActivityController`, `FeedRefreshLiveActivity` in widget bundle; Feed refresh gate A | **In repo** (JP-P1-A; compile on GHA; device Island not claimed on hosted CI) |
 | Push / notification service extension | Engineering demos → Local stale-Feed reminder (local only); [`release-checklist.md`](release-checklist.md) mock TestFlight/APNs | **In repo** (JP-P1-C local + JP-P2-E labeled mock/demo checklist; no production APNs claim) |
@@ -78,7 +83,8 @@ Sibling backlog (do not merge scopes): portfolio plan under agent store
 | App Store–shipped product | README honesty | **Not claimed** |
 
 **Maps:** [`../CODEMAP.md`](../CODEMAP.md) · [`architecture-tour.md`](architecture-tour.md) ·
-[`engineering/engineering-quality-scorecard.md`](engineering/engineering-quality-scorecard.md).
+[`engineering/engineering-quality-scorecard.md`](engineering/engineering-quality-scorecard.md) ·
+[`engineering/senior-coding-patterns-map.md`](engineering/senior-coding-patterns-map.md).
 
 ## How to read this repo (cold reviewer)
 
@@ -166,7 +172,7 @@ Both seed a fresh SwiftData cache and fail remote through existing
 
 - [x] Layer imports pass `./bin/lint.sh` (also in `./bin/ci.sh`)
 - [x] Feed tab reachable; list, Retry, toolbar refresh (`testFeedTabIsReachable` / `FeedView`)
-- [x] `./bin/ci.sh` passes on merge (lint + iPhone tests + iPad/Mac builds)
+- [x] `./bin/ci.sh` passes on merge (lint + iPhone tests + iPad/Mac/watchOS builds)
 - [x] Previews cover light/dark for `FeedView` (`#Preview` + `UniversalPreviewLayouts`)
 - [x] VoiceOver-relevant Feed chrome / rows / Retry proof (`testFeedAccessibilityChromeRowsAndRetry`)
 - [x] Deep links for Feed / Items / Feed post (`testDeepLinkOpensFeedTab` /
