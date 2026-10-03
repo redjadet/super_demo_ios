@@ -1,3 +1,5 @@
+# superDemoApp — iOS and iPadOS engineering portfolio
+
 [![3-minute path](https://img.shields.io/badge/3--minute-reviewer%20path-0066CC)](docs/portfolio.md)
 [![Architecture tour](https://img.shields.io/badge/Architecture-tour-0A7A3E)](docs/architecture-tour.md)
 [![Engineering evidence](https://img.shields.io/badge/Engineering-evidence-6E6E73)](docs/engineering/engineering-quality-scorecard.md)
@@ -13,8 +15,6 @@
 ![Platforms](https://img.shields.io/badge/Platforms-iOS%20%7C%20iPadOS%20%7C%20macOS%20%7C%20watchOS-000000?logo=apple&logoColor=white)
 ![Minimum OS](https://img.shields.io/badge/Minimum%20OS-26.7-6E6E73?logo=apple&logoColor=white)
 ![Architecture](https://img.shields.io/badge/Architecture-Clean%20layers-0A7A3E)
-
-# superDemoApp — iOS and iPadOS engineering portfolio
 
 A **Swift / SwiftUI / SwiftData** reference app for iPhone, iPad and Mac,
 with a thin watchOS Feed-snapshot companion. It demonstrates layered
