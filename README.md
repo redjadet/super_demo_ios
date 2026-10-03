@@ -1,3 +1,19 @@
+[![3-minute path](https://img.shields.io/badge/3--minute-reviewer%20path-0066CC)](docs/portfolio.md)
+[![Architecture tour](https://img.shields.io/badge/Architecture-tour-0A7A3E)](docs/architecture-tour.md)
+[![Engineering evidence](https://img.shields.io/badge/Engineering-evidence-6E6E73)](docs/engineering/engineering-quality-scorecard.md)
+
+[![CI](https://github.com/redjadet/super_demo_ios/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/redjadet/super_demo_ios/actions/workflows/ci.yml)
+
+![Xcode](https://img.shields.io/badge/Xcode-27.0-147EFB?logo=xcode&logoColor=white)
+![Swift](https://img.shields.io/badge/Swift-6.4-F05138?logo=swift&logoColor=white)
+![SwiftUI](https://img.shields.io/badge/SwiftUI-SDK%2027-0D96F6?logo=swift&logoColor=white)
+![SwiftData](https://img.shields.io/badge/SwiftData-persistence-F05138?logo=swift&logoColor=white)
+![Flutter](https://img.shields.io/badge/Flutter-add--to--app-02569B?logo=flutter&logoColor=white)
+
+![Platforms](https://img.shields.io/badge/Platforms-iOS%20%7C%20iPadOS%20%7C%20macOS%20%7C%20watchOS-000000?logo=apple&logoColor=white)
+![Minimum OS](https://img.shields.io/badge/Minimum%20OS-26.7-6E6E73?logo=apple&logoColor=white)
+![Architecture](https://img.shields.io/badge/Architecture-Clean%20layers-0A7A3E)
+
 # superDemoApp — iOS and iPadOS engineering portfolio
 
 A **Swift / SwiftUI / SwiftData** reference app for iPhone, iPad and Mac,
@@ -65,21 +81,3 @@ From the repository root:
 | CI / CD map | [`docs/ci-cd-map.md`](docs/ci-cd-map.md) |
 | Code quality honesty | [`docs/code-quality.md`](docs/code-quality.md) |
 | Full index | [`docs/README.md`](docs/README.md) |
-
-## Platform, toolchain and CI status
-
-[![3-minute path](https://img.shields.io/badge/3--minute-reviewer%20path-0066CC)](docs/portfolio.md)
-[![Architecture tour](https://img.shields.io/badge/Architecture-tour-0A7A3E)](docs/architecture-tour.md)
-[![Engineering evidence](https://img.shields.io/badge/Engineering-evidence-6E6E73)](docs/engineering/engineering-quality-scorecard.md)
-
-[![CI](https://github.com/redjadet/super_demo_ios/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/redjadet/super_demo_ios/actions/workflows/ci.yml)
-
-![Xcode](https://img.shields.io/badge/Xcode-27.0-147EFB?logo=xcode&logoColor=white)
-![Swift](https://img.shields.io/badge/Swift-6.4-F05138?logo=swift&logoColor=white)
-![SwiftUI](https://img.shields.io/badge/SwiftUI-SDK%2027-0D96F6?logo=swift&logoColor=white)
-![SwiftData](https://img.shields.io/badge/SwiftData-persistence-F05138?logo=swift&logoColor=white)
-![Flutter](https://img.shields.io/badge/Flutter-add--to--app-02569B?logo=flutter&logoColor=white)
-
-![Platforms](https://img.shields.io/badge/Platforms-iOS%20%7C%20iPadOS%20%7C%20macOS%20%7C%20watchOS-000000?logo=apple&logoColor=white)
-![Minimum OS](https://img.shields.io/badge/Minimum%20OS-26.7-6E6E73?logo=apple&logoColor=white)
-![Architecture](https://img.shields.io/badge/Architecture-Clean%20layers-0A7A3E)
