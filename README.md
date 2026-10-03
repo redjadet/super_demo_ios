@@ -1,49 +1,49 @@
-# superDemoApp
+# superDemoApp — iOS and iPadOS engineering portfolio
 
-Universal SwiftUI + SwiftData demo (iPhone / iPad / Mac) with a thin watchOS
-Feed-snapshot companion. Portfolio sample for architecture, offline Feed,
-networking, UIKit interop, optional Flutter add-to-app, and local CI proof —
-not a shipped App Store product.
+A **Swift / SwiftUI / SwiftData** reference app for iPhone, iPad and Mac,
+with a thin watchOS Feed-snapshot companion. It demonstrates layered
+architecture, offline caching, async networking, UIKit interoperability and
+an optional Flutter add-to-app module.
 
-[![3-minute path](https://img.shields.io/badge/3--minute-reviewer%20path-0066CC)](docs/portfolio.md)
-[![Architecture tour](https://img.shields.io/badge/Architecture-tour-0A7A3E)](docs/architecture-tour.md)
-[![Engineering evidence](https://img.shields.io/badge/Engineering-evidence-6E6E73)](docs/engineering/engineering-quality-scorecard.md)
+[3-minute reviewer path](#3-minute-path) ·
+[Architecture tour](docs/architecture-tour.md) ·
+[Detailed portfolio guide](docs/portfolio.md) ·
+[İlker Sevim's portfolio](https://redjadet.github.io/react-web-portfolio/)
 
-[![CI](https://github.com/redjadet/super_demo_ios/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/redjadet/super_demo_ios/actions/workflows/ci.yml)
+This is a portfolio sample, not a shipped App Store product. Platform support,
+simulated flows and optional integrations are documented in the
+[reviewer guide](docs/portfolio.md).
 
-![Xcode](https://img.shields.io/badge/Xcode-27.0-147EFB?logo=xcode&logoColor=white)
-![Swift](https://img.shields.io/badge/Swift-6.4-F05138?logo=swift&logoColor=white)
-![SwiftUI](https://img.shields.io/badge/SwiftUI-SDK%2027-0D96F6?logo=swift&logoColor=white)
-![SwiftData](https://img.shields.io/badge/SwiftData-persistence-F05138?logo=swift&logoColor=white)
-![Flutter](https://img.shields.io/badge/Flutter-add--to--app-02569B?logo=flutter&logoColor=white)
+## Engineering decisions and evidence
 
-![Platforms](https://img.shields.io/badge/Platforms-iOS%20%7C%20iPadOS%20%7C%20macOS%20%7C%20watchOS-000000?logo=apple&logoColor=white)
-![Minimum OS](https://img.shields.io/badge/Minimum%20OS-26.7-6E6E73?logo=apple&logoColor=white)
-![Architecture](https://img.shields.io/badge/Architecture-Clean%20layers-0A7A3E)
-
-## What this proves
-
-1. Feature layers with lint enforcement — [`docs/layers.md`](docs/layers.md)
-2. Offline Feed + stale-cache path — [`docs/offline-first.md`](docs/offline-first.md)
-3. Production-minded URLSession client — [`docs/sync-and-networking.md`](docs/sync-and-networking.md)
-4. UIKit ↔ SwiftUI showcase — [`docs/portfolio.md`](docs/portfolio.md)
-5. Optional Flutter host bridge — [`docs/flutter-add-to-app.md`](docs/flutter-add-to-app.md)
-6. Merge proof (`./bin/ci.sh` / GHA) — [`docs/ci-cd-map.md`](docs/ci-cd-map.md)
+| Mobile engineering skill | Decision to inspect | Implementation and verification |
+| --- | --- | --- |
+| **SwiftUI architecture and state** | Feature layers separate presentation, use cases and repositories; composition supplies dependencies. | [Layer map](docs/layers.md) · [Feed feature](superDemoApp/Features/Feed/) · [Feature-model tests](superDemoAppTests/Features/Feed/FeedFeatureModelTests.swift) |
+| **Offline caching with SwiftData** | Use valid cached Feed rows after a remote failure, expose stale state, expire old rows and propagate cancellation. | [Caching repository](superDemoApp/Features/Feed/Data/CachingFeedRepository.swift) · [Cache and cancellation tests](superDemoAppTests/Features/Feed/CachingFeedRepositoryTests.swift) |
+| **URLSession and Swift concurrency** | Inject the session and retry policy; handle token refresh, Retry-After and cooperative cancellation. | [API client](superDemoApp/Shared/Networking/URLSessionAPIClient.swift) · [Client tests](superDemoAppTests/Shared/Networking/URLSessionAPIClientTests.swift) · [Retry tests](superDemoAppTests/Shared/Networking/RetryPolicyTests.swift) |
+| **UIKit / SwiftUI interoperability** | Demonstrate collection reuse, prefetching, hosting and custom transitions. | [UIKit showcase](superDemoApp/Features/ProductionReadiness/UIKitShowcase/) · [UI test suite](superDemoAppUITests/) · [Talk track](docs/portfolio.md) |
+| **Native iOS + Flutter integration** | An optional iOS module exchanges typed host-bridge messages; binaries without frameworks show an unavailable state. | [Add-to-app setup](docs/flutter-add-to-app.md) · [Swift channel tests](superDemoAppTests/Shared/FlutterEmbed/FlutterHostBridgeChannelTests.swift) · [Dart channel tests](flutter_module/test/host_bridge_channel_test.dart) |
+| **Testing and CI/CD** | Keep implementation evidence, local validation and hosted merge checks traceable. | [CI map](docs/ci-cd-map.md) · [Current workflow](https://github.com/redjadet/super_demo_ios/actions/workflows/ci.yml) · [Quality scope](docs/code-quality.md) |
 
 Task → path: [`CODEMAP.md`](CODEMAP.md).
 
 ## 3-minute path
 
-1. **Dashboard** — release health
-2. **Feed** — list / Retry; stale banner (`-StaleFeedDemo` or Engineering demos)
-3. **UIKit Showcase** — from Dashboard
-4. **Engineering demos** — Risks / Diagnostics / Idempotent POST / Flutter add-to-app
+1. **Dashboard:** inspect release-health states and navigation.
+2. **Feed:** inspect loading, Retry and stale-cache presentation
+   (`-StaleFeedDemo` or Engineering demos), then compare the cache tests above.
+3. **UIKit Showcase:** open from Dashboard and inspect the native UI bridge.
+4. **Engineering demos:** inspect Diagnostics, simulated Idempotent POST and
+   optional Flutter add-to-app; availability depends on the selected platform.
 
 Deep links and launch flags: [`docs/portfolio.md`](docs/portfolio.md).
 
 ## Run and proof
 
-Open `superDemoApp.xcodeproj`. From repo root:
+Open `superDemoApp.xcodeproj` and choose an iPhone, iPad or Mac destination.
+Use `-ReviewerDemoMode` for seeded review data. The Flutter module is iOS-only
+and requires the [separate framework preparation step](docs/flutter-add-to-app.md).
+From the repository root:
 
 ```bash
 ./bin/lint.sh
@@ -65,3 +65,21 @@ Open `superDemoApp.xcodeproj`. From repo root:
 | CI / CD map | [`docs/ci-cd-map.md`](docs/ci-cd-map.md) |
 | Code quality honesty | [`docs/code-quality.md`](docs/code-quality.md) |
 | Full index | [`docs/README.md`](docs/README.md) |
+
+## Platform, toolchain and CI status
+
+[![3-minute path](https://img.shields.io/badge/3--minute-reviewer%20path-0066CC)](docs/portfolio.md)
+[![Architecture tour](https://img.shields.io/badge/Architecture-tour-0A7A3E)](docs/architecture-tour.md)
+[![Engineering evidence](https://img.shields.io/badge/Engineering-evidence-6E6E73)](docs/engineering/engineering-quality-scorecard.md)
+
+[![CI](https://github.com/redjadet/super_demo_ios/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/redjadet/super_demo_ios/actions/workflows/ci.yml)
+
+![Xcode](https://img.shields.io/badge/Xcode-27.0-147EFB?logo=xcode&logoColor=white)
+![Swift](https://img.shields.io/badge/Swift-6.4-F05138?logo=swift&logoColor=white)
+![SwiftUI](https://img.shields.io/badge/SwiftUI-SDK%2027-0D96F6?logo=swift&logoColor=white)
+![SwiftData](https://img.shields.io/badge/SwiftData-persistence-F05138?logo=swift&logoColor=white)
+![Flutter](https://img.shields.io/badge/Flutter-add--to--app-02569B?logo=flutter&logoColor=white)
+
+![Platforms](https://img.shields.io/badge/Platforms-iOS%20%7C%20iPadOS%20%7C%20macOS%20%7C%20watchOS-000000?logo=apple&logoColor=white)
+![Minimum OS](https://img.shields.io/badge/Minimum%20OS-26.7-6E6E73?logo=apple&logoColor=white)
+![Architecture](https://img.shields.io/badge/Architecture-Clean%20layers-0A7A3E)
