@@ -1254,7 +1254,6 @@
 		};
 
 /* End XCConfigurationList section */
-	};
 
 /* Begin XCRemoteSwiftPackageReference section */
 		A1NETPKG0100000000000001 /* XCRemoteSwiftPackageReference "ilkersevim_networking" */ = {
@@ -1279,6 +1278,7 @@
 			productName = IlkerSevimNetworking;
 		};
 /* End XCSwiftPackageProductDependency section */
+	};
 
 	rootObject = 56D79ACE2FB7787300B9E63E /* Project object */;
 }
