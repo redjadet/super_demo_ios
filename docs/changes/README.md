@@ -4,6 +4,9 @@ Record durable implementation notes after meaningful changes.
 
 ## Entries
 
+- [`2026-10-04_import-leak-scanner-exit.md`](2026-10-04_import-leak-scanner-exit.md)
+  — Import-leak guard must fail when the Python scanner exits non-zero
+  (process-substitution exit loss).
 - [`2026-10-04_session-pattern-check-spm.md`](2026-10-04_session-pattern-check-spm.md)
   — Restore shared-`URLSession` pattern check after #77 removed in-tree
   `AppURLSession.swift`; SPM wording honesty.
