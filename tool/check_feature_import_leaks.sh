@@ -112,6 +112,34 @@ for from_f, to_f, name, path, line in leaks:
 PY
 }
 
+# Capture scanner stdout and fail if the scanner itself exits non-zero.
+# Process substitution (`done < <(cmd)`) drops cmd's exit status under bash.
+consume_leak_scan() {
+  local features_root="$1"
+  local scan_tmp scan_status
+  scan_tmp="$(mktemp "${TMPDIR:-/tmp}/feature-import-leaks.XXXXXX")"
+  set +e
+  run_leak_scan "$features_root" >"$scan_tmp"
+  scan_status=$?
+  set -e
+  if ((scan_status != 0)); then
+    rm -f "$scan_tmp"
+    echo "error: import leak scanner failed (exit ${scan_status})" >&2
+    return 1
+  fi
+  while IFS= read -r row || [[ -n "${row:-}" ]]; do
+    [[ -n "$row" ]] || continue
+    IFS='|' read -r from_f to_f type_name loc <<<"$row"
+    if is_allowlisted "$from_f" "$to_f" "$type_name"; then
+      echo "info: allowlisted ${from_f} → ${to_f}.${type_name} (${loc})"
+      continue
+    fi
+    fail "${from_f} must not reference ${to_f} type '${type_name}' (${loc})"
+  done <"$scan_tmp"
+  rm -f "$scan_tmp"
+  return 0
+}
+
 run_self_test() {
   local fixture="$ROOT/tool/fixtures/feature_import_leaks"
   echo "==> Self-test against ${fixture#"$ROOT"/}"
@@ -120,13 +148,29 @@ run_self_test() {
     exit 1
   fi
   local hits
-  hits="$(run_leak_scan "$fixture/Features" || true)"
+  set +e
+  hits="$(run_leak_scan "$fixture/Features")"
+  local scan_ok=$?
+  set -e
+  if ((scan_ok != 0)); then
+    echo "error: self-test scanner failed unexpectedly (exit ${scan_ok})" >&2
+    exit 1
+  fi
   if [[ -z "$hits" ]]; then
     echo "error: self-test expected cross-feature leak in fixture" >&2
     exit 1
   fi
   echo "$hits" | head -n 5
   echo "Self-test passed (fixture leaks detected as expected)."
+
+  echo "==> Scanner-failure regression (must not false-pass)"
+  # Temporarily replace the scanner with a hard failure; consume_leak_scan must fail.
+  run_leak_scan() { python3 -c 'import sys; sys.exit(42)'; }
+  if consume_leak_scan "$fixture/Features"; then
+    echo "error: scanner-failure regression false-passed" >&2
+    exit 1
+  fi
+  echo "Scanner-failure regression passed (non-zero scanner fails the guard)."
   exit 0
 }
 
@@ -172,15 +216,7 @@ if [[ ! -d "$SCAN_ROOT" ]]; then
   exit 0
 fi
 
-while IFS= read -r row; do
-  [[ -n "$row" ]] || continue
-  IFS='|' read -r from_f to_f type_name loc <<<"$row"
-  if is_allowlisted "$from_f" "$to_f" "$type_name"; then
-    echo "info: allowlisted ${from_f} → ${to_f}.${type_name} (${loc})"
-    continue
-  fi
-  fail "${from_f} must not reference ${to_f} type '${type_name}' (${loc})"
-done < <(run_leak_scan "$SCAN_ROOT")
+consume_leak_scan "$SCAN_ROOT"
 
 if ((failures > 0)); then
   echo
