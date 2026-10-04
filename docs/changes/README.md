@@ -4,6 +4,8 @@ Record durable implementation notes after meaningful changes.
 
 ## Entries
 
+- [`2026-10-04_ilkersevim-networking-spm.md`](2026-10-04_ilkersevim-networking-spm.md)
+  — Adopt SPM `IlkerSevimNetworking` `1.0.0`; thin app re-export + factory.
 - [`2026-10-03_docs-honesty-watchos-ci.md`](2026-10-03_docs-honesty-watchos-ci.md)
   — Portfolio tip pin through #69–#74; CI/checklist proof wording includes
   watchOS (was iPad/Mac-only underclaim).

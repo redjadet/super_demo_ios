@@ -15,6 +15,8 @@
 		A1FEED010000000000000014 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1FEED010000000000000013 /* SwiftUI.framework */; };
 		A1LIVE010000000000000002 /* ActivityKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1LIVE010000000000000001 /* ActivityKit.framework */; platformFilter = ios; };
 		A1LIVE010000000000000004 /* ActivityKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1LIVE010000000000000003 /* ActivityKit.framework */; };
+		A1NETPKG0100000000000004 /* IlkerSevimNetworking in Frameworks */ = {isa = PBXBuildFile; productRef = A1NETPKG0100000000000002 /* IlkerSevimNetworking */; };
+		A1NETPKG0100000000000005 /* IlkerSevimNetworking in Frameworks */ = {isa = PBXBuildFile; productRef = A1NETPKG0100000000000003 /* IlkerSevimNetworking */; };
 /* End PBXBuildFile section */
 
 
@@ -181,6 +183,7 @@
 			files = (
 				A1FEED010000000000000010 /* WidgetKit.framework in Frameworks */,
 				A1LIVE010000000000000002 /* ActivityKit.framework in Frameworks */,
+				A1NETPKG0100000000000004 /* IlkerSevimNetworking in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -212,6 +215,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A1NETPKG0100000000000005 /* IlkerSevimNetworking in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -292,6 +296,7 @@
 			);
 			name = superDemoApp;
 			packageProductDependencies = (
+				A1NETPKG0100000000000002 /* IlkerSevimNetworking */,
 			);
 			productName = superDemoApp;
 			productReference = 56D79AD62FB7787300B9E63E /* superDemoApp.app */;
@@ -315,6 +320,7 @@
 			);
 			name = superDemoAppTests;
 			packageProductDependencies = (
+				A1NETPKG0100000000000003 /* IlkerSevimNetworking */,
 			);
 			productName = superDemoAppTests;
 			productReference = 56D79AE52FB7787400B9E63E /* superDemoAppTests.xctest */;
@@ -454,6 +460,9 @@
 			);
 			mainGroup = 56D79ACD2FB7787300B9E63E;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				A1NETPKG0100000000000001 /* XCRemoteSwiftPackageReference "ilkersevim_networking" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 56D79AD72FB7787300B9E63E /* Products */;
 			projectDirPath = "";
@@ -1246,5 +1255,30 @@
 
 /* End XCConfigurationList section */
 	};
+
+/* Begin XCRemoteSwiftPackageReference section */
+		A1NETPKG0100000000000001 /* XCRemoteSwiftPackageReference "ilkersevim_networking" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/redjadet/ilkersevim_networking";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		A1NETPKG0100000000000002 /* IlkerSevimNetworking */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A1NETPKG0100000000000001 /* XCRemoteSwiftPackageReference "ilkersevim_networking" */;
+			productName = IlkerSevimNetworking;
+		};
+		A1NETPKG0100000000000003 /* IlkerSevimNetworking */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A1NETPKG0100000000000001 /* XCRemoteSwiftPackageReference "ilkersevim_networking" */;
+			productName = IlkerSevimNetworking;
+		};
+/* End XCSwiftPackageProductDependency section */
+
 	rootObject = 56D79ACE2FB7787300B9E63E /* Project object */;
 }
