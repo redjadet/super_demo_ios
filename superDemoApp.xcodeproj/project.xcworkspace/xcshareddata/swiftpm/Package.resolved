@@ -1,0 +1,14 @@
+{
+  "pins": [
+    {
+      "identity": "ilkersevim_networking",
+      "kind": "remoteSourceControl",
+      "location": "https://github.com/redjadet/ilkersevim_networking",
+      "state": {
+        "revision": "c9e1fc52499e0dacceebd32448fe4ecfe4ad34f2",
+        "version": "1.0.0"
+      }
+    }
+  ],
+  "version": 3
+}

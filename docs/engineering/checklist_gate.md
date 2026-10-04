@@ -16,9 +16,12 @@ merge — not a second parallel theater.
 | iPad + Mac + watchOS builds | `./bin/ci-platform-builds.sh` (watch: `./bin/ci-watch-build.sh`) | job `platform-builds` |
 | Aggregate gate | `./bin/checklist` (single command) | job **`checklist`** (needs the three macos jobs) |
 
-**Xcode warnings are errors** on checklist / CI xcodebuild lanes
-(`SWIFT_TREAT_WARNINGS_AS_ERRORS=YES`, `GCC_TREAT_WARNINGS_AS_ERRORS=YES`).
-Escape only with `XCODEBUILD_ALLOW_WARNINGS=1` (not for merge proof).
+**Xcode warnings are errors** on checklist / CI xcodebuild lanes via project
+build settings (`SWIFT_TREAT_WARNINGS_AS_ERRORS=YES`,
+`GCC_TREAT_WARNINGS_AS_ERRORS=YES` on `superDemoApp.xcodeproj` configs — not
+xcodebuild CLI overrides, which break SPM packages that already get
+`-suppress-warnings`). Escape only with `XCODEBUILD_ALLOW_WARNINGS=1` (not for
+merge proof).
 
 ## When to run
 

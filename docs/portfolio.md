@@ -12,7 +12,7 @@ read-through cache.
 | Layer boundaries | `superDemoApp/Features/*/`, `docs/layers.md` | Presentation → Domain ← Data; composition in `superDemoApp/App/` | `./bin/lint.sh` → `tool/check_layer_boundaries.sh` |
 | Concurrency cancel | `superDemoApp/Shared/Presentation/AsyncLoadController.swift`, Feed/Items/Dashboard models | Cancel restores prior state; `CancellationError` not a Retry failure | Unit tests on feature models; UI Retry IDs |
 | Stale cache | `superDemoApp/Features/Feed/Data/CachingFeedRepository.swift`, `FeedView`, `superDemoApp/App/FeedComposition.swift` | Remote fail + fresh cache → `isStale` banner | `-StaleFeedDemo` / Engineering demos → Stale Feed; `#Preview("Feed — Stale")`; `CachingFeedRepositoryTests` |
-| Networking retry / 401 / 429 | `superDemoApp/Shared/Networking/` | Injectable session; redacted logger | `URLSessionAPIClientTests`, `RetryPolicyTests` |
+| Networking retry / 401 / 429 | SPM [`IlkerSevimNetworking`](https://github.com/redjadet/ilkersevim_networking) + app re-export | Injectable session; redacted logger | `URLSessionAPIClientTests`, `RetryPolicyTests` |
 | Idempotency | `APIRequest.idempotencyKey` + Dashboard **Idempotent POST** demo | Header enables POST retry; **simulated** duplicate-safe transport in Data | Demo UI + `IdempotentPostDemo*` tests |
 | UIKit showcase | `superDemoApp/Features/ProductionReadiness/UIKitShowcase/` | Collection reuse, prefetch, hosting, custom transition | UI smoke: `uikitShowcaseLink` |
 | Diagnostics / crash swap | `superDemoApp/Shared/Diagnostics/` | OSLog non-fatals today; vendor adapter later | [`incident-playbook.md`](incident-playbook.md); Engineering demos → Diagnostics |

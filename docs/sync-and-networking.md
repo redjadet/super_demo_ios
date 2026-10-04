@@ -50,7 +50,10 @@ Core networking rules stay below.
 
 ## Production Networking Client
 
-`Shared/Networking/` demonstrates production retry policy without third-party dependencies:
+Core client types ship as SPM package
+[`IlkerSevimNetworking`](https://github.com/redjadet/ilkersevim_networking)
+(`1.0.0+`). The app keeps a thin `Shared/Networking/` re-export plus
+`TokenRefreshingFactory` (launch-flag Keychain demo). Behavior:
 
 - retryable: timeout/connectivity failures, 429, and selected 5xx statuses
 - non-retryable: most 4xx statuses
