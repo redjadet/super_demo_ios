@@ -40,12 +40,19 @@ if [[ -n "$matches" ]]; then
   fail "UIKit in deinit is unsafe off main thread — use teardown() from dismantleUIViewController / viewDidDisappear"
 fi
 
-section "AppURLSession must not allocate per call"
-if [[ -f "$APP/Shared/Networking/AppURLSession.swift" ]]; then
-  if rg -n 'func makeDefault\(\)[^\n]*URLSession\s*\(\s*configuration' "$APP/Shared/Networking/AppURLSession.swift" \
-    >/dev/null 2>&1
-  then
-    fail "AppURLSession.makeDefault() must return a shared URLSession, not URLSession(configuration:) each call"
+section "Shared URLSession must not allocate per call"
+# After IlkerSevimNetworking SPM adopt, `AppURLSession` is a local typealias to
+# SDK `DefaultURLSession`. Lint does not always resolve SPM, so enforce local
+# Shared/Networking regressions here; SDK pin owns the published makeDefault.
+if [[ -d "$APP/Shared/Networking" ]]; then
+  matches="$(
+    rg -n --glob '*.swift' \
+      'func makeDefault\(\)[^\n]*URLSession\s*\(\s*configuration' \
+      "$APP/Shared/Networking" 2>/dev/null || true
+  )"
+  if [[ -n "$matches" ]]; then
+    echo "$matches" >&2
+    fail "makeDefault() must return a shared URLSession, not URLSession(configuration:) each call (use SPM DefaultURLSession / AppURLSession alias)"
   fi
 fi
 

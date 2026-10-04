@@ -176,7 +176,12 @@ unsafe there). `deinit` may only cancel detached `Task` handles.
 ### Shared `URLSession`
 
 Do not return `URLSession(configuration:)` from every `makeDefault()` call — use
-one process-wide session (`AppURLSession`). The pattern check enforces this.
+one process-wide session. Canonical owner is SPM
+[`IlkerSevimNetworking`](https://github.com/redjadet/ilkersevim_networking)
+`DefaultURLSession`; the app keeps `typealias AppURLSession = DefaultURLSession`
+in `Shared/Networking/IlkerSevimNetworkingExport.swift`.
+`tool/check_agent_swift_patterns.sh` rejects local `makeDefault` allocations under
+`Shared/Networking/` (SDK sources are not always on disk during lint).
 
 ## URLProtocol tests (no global stub queue)
 

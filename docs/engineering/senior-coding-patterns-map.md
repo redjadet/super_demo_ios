@@ -10,7 +10,7 @@ index; pattern table unchanged since #70).
 
 | # | Pattern | Status | Where it shows up here | Do not claim |
 | ---: | --- | --- | --- | --- |
-| 1 | Design for failure (not only happy path) | **Present** (client-shaped) | [`sync-and-networking.md`](../sync-and-networking.md); `Shared/Networking` retry/backoff/jitter; Feed stale + error/Retry; cancel ≠ server failure | Server circuit breakers / dead-letter queues for JSONPlaceholder |
+| 1 | Design for failure (not only happy path) | **Present** (client-shaped) | [`sync-and-networking.md`](../sync-and-networking.md); SPM `IlkerSevimNetworking` retry/backoff/jitter; Feed stale + error/Retry; cancel ≠ server failure | Server circuit breakers / dead-letter queues for JSONPlaceholder |
 | 2 | Prefer boring over clever | **Present** | [`layers.md`](../layers.md), [`state-management.md`](../state-management.md), [`agent_swift_guards.md`](../agent_swift_guards.md) | Clever one-liners as a style goal |
 | 3 | Make changes easy to reverse | **Present** (demo toggles) / **absent** (remote flags) | Launch args in [`testing.md`](../testing.md) / `AppLaunchConfiguration`; composition factories (#67) | Remote feature-flag / Remote Config product |
 | 4 | Idempotent operations | **Present** | `APIRequest.idempotencyKey`; Dashboard **Idempotent POST** demo; UITest honesty (#56) | Live server-side idempotency beyond the simulated transport |

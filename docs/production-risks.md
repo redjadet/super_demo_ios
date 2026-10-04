@@ -20,7 +20,9 @@ devices, TestFlight, or after App Store release.
 ## How This Project Surfaces Risk Earlier
 
 - Mock states and sample repositories make failure UI launchable without live services.
-- `Shared/Networking` encodes retry and idempotency rules with tests.
+- SPM [`IlkerSevimNetworking`](https://github.com/redjadet/ilkersevim_networking)
+  encodes retry and idempotency rules with tests (app re-export in
+  `Shared/Networking/`).
 - UIKit collection view uses reusable cells, prefetching, and cancellation.
 - Dashboard checklist + OSLog release diagnostics / `OSLogCrashMonitor` keep
   release risk visible before a vendor crash SDK is wired.

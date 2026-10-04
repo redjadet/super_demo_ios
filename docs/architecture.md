@@ -68,7 +68,8 @@ Data repository + SwiftData model, Presentation `@Observable` feature model + Sw
 
 - Domain owns dashboard entities, scoring rules, repository protocol, and display errors.
 - Data owns deterministic sample data plus the remote API-health adapter backed by
-  `Shared/Networking`.
+  SPM [`IlkerSevimNetworking`](https://github.com/redjadet/ilkersevim_networking)
+  (thin `Shared/Networking/` re-export).
 - Presentation owns SwiftUI state, conditional visual modifiers, preview states, and the
   UIKit showcase entry.
 - UIKit interop stays intentionally bounded: collection performance and custom transitions
