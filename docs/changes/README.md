@@ -4,6 +4,9 @@ Record durable implementation notes after meaningful changes.
 
 ## Entries
 
+- [`2026-10-04_session-pattern-check-spm.md`](2026-10-04_session-pattern-check-spm.md)
+  — Restore shared-`URLSession` pattern check after #77 removed in-tree
+  `AppURLSession.swift`; SPM wording honesty.
 - [`2026-10-04_ilkersevim-networking-spm.md`](2026-10-04_ilkersevim-networking-spm.md)
   — Adopt SPM `IlkerSevimNetworking` `1.0.0`; thin app re-export + factory.
 - [`2026-10-03_docs-honesty-watchos-ci.md`](2026-10-03_docs-honesty-watchos-ci.md)
