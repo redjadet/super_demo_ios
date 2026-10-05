@@ -3,7 +3,7 @@
 //  superDemoApp
 //
 //  Composition-owned ActivityKit bridge for Feed refresh Live Activity.
-//  Gate A: activity spans refresh + short post-complete hold, then ends.
+//  Activity spans refresh and a short post-completion hold, then ends.
 //
 
 import Foundation
@@ -12,9 +12,9 @@ import Foundation
 import ActivityKit
 #endif
 
-/// Gate A post-complete hold so a reviewer can see the Island/banner before end.
+/// Short post-completion hold so the activity remains visible before it ends.
 private enum FeedRefreshLiveActivityTiming {
-    /// ≤ few seconds (plan gate A). Not a fake long-running workload.
+    /// A brief hold, not a fake long-running workload.
     static let postCompleteHoldNanoseconds: UInt64 = 2_500_000_000
 }
 

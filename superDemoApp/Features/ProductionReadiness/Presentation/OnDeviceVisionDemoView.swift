@@ -2,7 +2,7 @@
 //  OnDeviceVisionDemoView.swift
 //  superDemoApp
 //
-//  Engineering demo: on-device Vision text recognition (JP-P2-C).
+//  Engineering demo: on-device Vision text recognition.
 //
 
 import SwiftUI

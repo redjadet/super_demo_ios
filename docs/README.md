@@ -30,7 +30,7 @@ Source-of-truth docs for `superDemoApp`.
 - Apple development practices: [`apple-development-practices.md`](apple-development-practices.md)
 - Development feedback loop: [`development-feedback-loop.md`](development-feedback-loop.md)
 - Validation routing: [`engineering/validation_routing_fast_vs_full.md`](engineering/validation_routing_fast_vs_full.md)
-- Engineering quality scorecard: [`engineering/engineering-quality-scorecard.md`](engineering/engineering-quality-scorecard.md)
+- Engineering evidence map: [`engineering/engineering-evidence-map.md`](engineering/engineering-evidence-map.md)
 - Senior coding patterns map (Stackademic 7 → present/gap/N/A):
   [`engineering/senior-coding-patterns-map.md`](engineering/senior-coding-patterns-map.md)
 - Harness scorecard (agent): [`ai/harness-scorecard.md`](ai/harness-scorecard.md)

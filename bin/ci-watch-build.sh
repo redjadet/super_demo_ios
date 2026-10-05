@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# watchOS Simulator compile proof (JP-P2-F). Used by ci-platform-builds.sh.
+# watchOS Simulator compile proof. Used by ci-platform-builds.sh.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"

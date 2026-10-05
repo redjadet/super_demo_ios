@@ -6,7 +6,7 @@
 import SwiftUI
 import UserNotifications
 
-/// Engineering demo: schedule a local “stale Feed” reminder (JP-P1-C).
+/// Engineering demo: schedule a local “stale Feed” reminder.
 /// Honesty: not APNs / TestFlight push.
 struct LocalNotificationDemoView: View {
     @State private var model: LocalNotificationDemoModel

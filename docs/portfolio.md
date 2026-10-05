@@ -29,40 +29,40 @@ Apple-platform and hybrid-native skill map for reviewers. The table separates
 **in repo** from **not claimed**; merge history and UITest hardening notes live
 in [`changes/README.md`](changes/README.md) instead of this page.
 
-**Deferred (human, ops, or out of scope for this sample):** custom App Icon
-PNGs, App Store marketing screenshots, production APNs, paid StoreKit checkout,
+**Deferred (human, ops, or out of scope for this sample):** App Store marketing
+screenshots, production APNs, paid StoreKit checkout,
 visionOS companion demo, and live public DNS for `superdemo.app` universal links
 (sample AASA paths parse in-app; Safari handoff is not claimed).
 
 | Skill | Current path / proof | Status |
 | --- | --- | --- |
 | Clean layers + modularity | `superDemoApp/Features/*/`, [`layers.md`](layers.md), [`modularity.md`](modularity.md), `./tool/check_layer_boundaries.sh` | **In repo** |
-| SwiftUI + Observation + DI | Feed / Items / ProductionReadiness; `superDemoApp/App/*Composition.swift`; Engineering demos injected from App composition factories (#67) | **In repo** |
+| SwiftUI + Observation + DI | Feed / Items / ProductionReadiness; `superDemoApp/App/*Composition.swift`; App composition injects Engineering demo dependencies | **In repo** |
 | Swift Concurrency | `async`/`await` networking; actor token refreshers; `AsyncLoadController` | **In repo** |
 | Offline / networking | `CachingFeedRepository`, [`offline-first.md`](offline-first.md), [`offline-invariants.md`](offline-invariants.md), [`sync-and-networking.md`](sync-and-networking.md) | **In repo** |
 | App Intents (open-tab) | `superDemoApp/App/AppIntents/` + Shortcuts; tests | **In repo** |
-| Parameterized Feed/Items intents | `RefreshFeedIntent` (`openFeedTab`); `OpenFeedPostIntent` (`postID`) → `feedOpenPostID` + `superdemo://feed/<id>`; tests | **In repo** (JP-P1-B + thin entity open) |
+| Parameterized Feed/Items intents | `RefreshFeedIntent` (`openFeedTab`); `OpenFeedPostIntent` (`postID`) → `feedOpenPostID` + `superdemo://feed/<id>`; tests | **In repo** (typed navigation and entity open) |
 | ObjC legacy interop | `superDemoApp/Shared/LegacyObjC/` + bridging header | **In repo** (thin) |
 | Observability / crash swap | `superDemoApp/Shared/Diagnostics/`, [`incident-playbook.md`](incident-playbook.md) | **In repo** |
 | Performance (Feed + UIKit) | `AppPerformanceSignposts`, [`performance-lab.md`](performance-lab.md) | **In repo** |
-| Performance (widget / concurrency lab) | [`performance-lab.md`](performance-lab.md) widget App Group + Live Activity Feed-refresh recipes + concurrency talk track | **In repo** (JP-P1-E + JP-P1-A) |
-| Universal shell (iPhone / iPad / Mac) | Adaptive navigation; CI platform builds (iPad + Mac + watchOS; Mac **unsigned** compile-proof #69); iOS / macOS floors **26.7** (#63 / #65) | **In repo** |
-| WidgetKit / Home Screen widget | `FeedWidgetShared/`, `superDemoAppWidget/`, App Group `group.com.ilkersevim.superDemoApp`; Engineering demos → Feed widget snapshot | **In repo** (JP-P0-B; iOS embed; Mac lane skips extension) |
-| Live Activities / Dynamic Island | `FeedRefreshActivityAttributes`, `ActivityKitFeedRefreshLiveActivityController`, `FeedRefreshLiveActivity` in widget bundle; Feed refresh gate A | **In repo** (JP-P1-A; compile on GHA; device Island not claimed on hosted CI) |
-| Push / notification service extension | Engineering demos → Local stale-Feed reminder (local only); [`release-checklist.md`](release-checklist.md) mock TestFlight/APNs | **In repo** (JP-P1-C local + JP-P2-E labeled mock/demo checklist; no production APNs claim) |
-| Share extension | `ShareInboxShared/`, `superDemoAppShare/`, App Group inbox; Engineering demos → Share inbox | **In repo** (JP-P2-A; iOS embed; does **not** open SwiftData; Mac lane skips extension) |
-| Sign in with Apple | `superDemoApp/Shared/Auth/`, Engineering demos → Sign in with Apple (demo) | **In repo** (JP-P2-B; Simulator-honest unavailable; not production auth) |
-| StoreKit 2 | `Config/Products.storekit`; `superDemoApp/Shared/StoreKit/`; Engineering demos → StoreKit 2 product query (demo) | **In repo** (JP-P1-D query-only; no purchase / charge path) |
-| Native↔Flutter host bridge | `superDemoApp/Shared/HostBridge/`, `superDemoApp/Shared/FlutterEmbed/`, `flutter_module/`, [`native-host-boundary.md`](native-host-boundary.md), [`flutter-add-to-app.md`](flutter-add-to-app.md); Engineering demos → Host bridge ping / Flutter add-to-app | **In repo** (JP-P0-C contract + JP-P2-D module embed; `postCount` = full cache size; Mac unlinked; frameworks via prepare script) |
-| Core ML / Vision / Speech / Apple Intelligence | `superDemoApp/Shared/OnDeviceAI/`, Engineering demos → On-device Vision OCR | **In repo** (JP-P2-C Vision OCR only; no Speech / Core ML model / Apple Intelligence claim) |
-| watchOS companion (Feed snapshot) | `superDemoAppWatch/`, `FeedWidgetShared/`, App Group `group.com.ilkersevim.superDemoApp`; Engineering demos → watchOS Feed companion; scheme `superDemoAppWatch`; `WATCHOS_DEPLOYMENT_TARGET` **26.7** (#65) | **In repo** (JP-P2-F watchOS; embed `platformFilter = ios`; watch-local App Group — not phone sync) |
-| visionOS shared SwiftUI API guards | `AdaptiveNavigationShell` / glass chrome availability; `OnDeviceVisionDemo` `nonisolated` init — [#57](https://github.com/redjadet/super_demo_ios/pull/57) / tip `fc2837a` | **In repo** (compile guards only; SDK build may pass without a visionOS Simulator runtime) |
-| visionOS companion | Project may mention xr settings; no reviewer companion demo | **Not in repo** (deferred; #57 ≠ companion; JP-P2-F shipped watchOS only) |
+| Performance (widget / concurrency lab) | [`performance-lab.md`](performance-lab.md) widget App Group + Live Activity Feed-refresh recipes + concurrency talk track | **In repo** |
+| Universal shell (iPhone / iPad / Mac) | Adaptive navigation; CI platform builds (iPad + Mac + watchOS; Mac unsigned compile proof); iOS / macOS deployment floors **26.7** | **In repo** |
+| WidgetKit / Home Screen widget | `FeedWidgetShared/`, `superDemoAppWidget/`, App Group `group.com.ilkersevim.superDemoApp`; Engineering demos → Feed widget snapshot | **In repo** (iOS embed; Mac lane skips extension) |
+| Live Activities / Dynamic Island | `FeedRefreshActivityAttributes`, `ActivityKitFeedRefreshLiveActivityController`, `FeedRefreshLiveActivity` in widget bundle | **In repo** (compiles on hosted CI; device Dynamic Island behavior is not claimed there) |
+| Push / notification service extension | Engineering demos → Local stale-Feed reminder (local only); [`release-checklist.md`](release-checklist.md) mock TestFlight/APNs | **In repo** (local reminder and labeled mock/demo checklist; no production APNs claim) |
+| Share extension | `ShareInboxShared/`, `superDemoAppShare/`, App Group inbox; Engineering demos → Share inbox | **In repo** (iOS embed; does **not** open SwiftData; Mac lane skips extension) |
+| Sign in with Apple | `superDemoApp/Shared/Auth/`, Engineering demos → Sign in with Apple (demo) | **In repo** (simulator shows unavailable; not production auth) |
+| StoreKit 2 | `Config/Products.storekit`; `superDemoApp/Shared/StoreKit/`; Engineering demos → StoreKit 2 product query (demo) | **In repo** (product query only; no purchase path) |
+| Native↔Flutter host bridge | `superDemoApp/Shared/HostBridge/`, `superDemoApp/Shared/FlutterEmbed/`, `flutter_module/`, [`native-host-boundary.md`](native-host-boundary.md), [`flutter-add-to-app.md`](flutter-add-to-app.md); Engineering demos → Host bridge ping / Flutter add-to-app | **In repo** (typed contract and optional module embed; `postCount` = full cache size; Mac target excludes Flutter linkage; prepare script builds frameworks) |
+| Core ML / Vision / Speech / Apple Intelligence | `superDemoApp/Shared/OnDeviceAI/`, Engineering demos → On-device Vision OCR | **In repo** (Vision OCR only; no Speech, Core ML model, or Apple Intelligence claim) |
+| watchOS companion (Feed snapshot) | `superDemoAppWatch/`, `FeedWidgetShared/`, App Group `group.com.ilkersevim.superDemoApp`; Engineering demos → watchOS Feed companion; scheme `superDemoAppWatch`; `WATCHOS_DEPLOYMENT_TARGET` **26.7** | **In repo** (iOS embeds the extension; watch-local App Group; not phone sync) |
+| visionOS shared SwiftUI API guards | `AdaptiveNavigationShell` / glass chrome availability; `OnDeviceVisionDemo` `nonisolated` init | **In repo** (availability guards only; no visionOS Simulator behavior is claimed) |
+| visionOS companion | Project settings may include visionOS entries; no companion app or reviewer demo | **Not in repo** |
 | tvOS companion | — | **Not in repo** |
 | App Store–shipped product | README honesty | **Not claimed** |
 
 **Maps:** [`../CODEMAP.md`](../CODEMAP.md) · [`architecture-tour.md`](architecture-tour.md) ·
-[`engineering/engineering-quality-scorecard.md`](engineering/engineering-quality-scorecard.md) ·
+[`engineering/engineering-evidence-map.md`](engineering/engineering-evidence-map.md) ·
 [`engineering/senior-coding-patterns-map.md`](engineering/senior-coding-patterns-map.md).
 
 ## How to read this repo (cold reviewer)

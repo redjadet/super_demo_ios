@@ -26,7 +26,8 @@ scope or architecture churn.
 
 ## Left alone
 
-- App Icon PNG (Xcode placeholder) — human design asset.
+- App Icon PNG was an Xcode placeholder at the time; the
+  [follow-up](2026-10-05_reviewer-facing-polish.md) adds the app icon assets.
 - Architecture, CI workflows, CocoaPods trunk publishing, visionOS companion.
 - No Xcode build or simulator run on this Linux agent host.
 

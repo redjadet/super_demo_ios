@@ -38,7 +38,7 @@ Canon gates: [`engineering/checklist_gate.md`](engineering/checklist_gate.md),
 | `check_feature_folder_contract.sh` | same name (via `./bin/lint`) |
 | `check_feature_modularity_leaks.sh` | `tool/check_feature_import_leaks.sh` |
 | `check_clean_architecture_imports.sh` | `tool/check_layer_boundaries.sh` |
-| `check_engineering_quality_scorecard_gate.sh` | `tool/check_engineering_quality_scorecard.sh` |
+| Engineering evidence map gate | `tool/check_engineering_evidence_map.sh` |
 | `integration_preflight` / device readiness | `tool/check_simulator_runtime_compat.sh` (+ `ensure_ci_simulator`) |
 | Associated Domains / AASA path parity + live-host DNS honesty | `tool/check_aasa_deep_links.sh` (via `check_common_issues`) |
 | Markdown relative-link existence | `tool/check_markdown_relative_links.sh` (via `check_common_issues`; `--self-test`) |

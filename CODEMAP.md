@@ -23,7 +23,7 @@ Timed walk: [`docs/architecture-tour.md`](docs/architecture-tour.md).
 | Share → Items inbox | `ShareInboxShared/`, `superDemoAppShare/`, App Group file name `share-inbox.json` (runtime; not a repo path); Engineering demos → Share inbox (not SwiftData) |
 | Feed refresh Live Activity | `FeedWidgetShared/FeedRefreshActivityAttributes.swift`, `superDemoApp/App/ActivityKitFeedRefreshLiveActivityController.swift`, `superDemoAppWidget/FeedRefreshLiveActivity.swift` |
 | Local notifications (demo) | `superDemoApp/Shared/Notifications/`, Engineering demos → Local stale-Feed reminder (not APNs) |
-| Mock TestFlight / APNs checklist | [`docs/release-checklist.md`](docs/release-checklist.md) Portfolio demo / mock proofs (JP-P2-E) |
+| Mock TestFlight / APNs checklist | [`docs/release-checklist.md`](docs/release-checklist.md) Portfolio demo / mock proofs |
 | StoreKit 2 product query (demo) | `Config/Products.storekit`, `superDemoApp/Shared/StoreKit/`, Engineering demos → StoreKit 2 product query (no purchase) |
 | On-device Vision OCR (demo) | `superDemoApp/Shared/OnDeviceAI/`, Engineering demos → On-device Vision OCR (no Apple Intelligence) |
 | Sign in with Apple (demo) | `superDemoApp/Shared/Auth/`, Engineering demos → Sign in with Apple (not production auth) |
@@ -36,7 +36,7 @@ Timed walk: [`docs/architecture-tour.md`](docs/architecture-tour.md).
 | Validation / proof commands | [`docs/agents_quick_reference.md`](docs/agents_quick_reference.md); `./bin/checklist-fast`, `./bin/checklist`, `./bin/lint`, `./bin/ci` |
 | Delivery checklist gate | [`docs/engineering/checklist_gate.md`](docs/engineering/checklist_gate.md) — local `./bin/checklist`; GHA job `checklist` |
 | Flutter → iOS tooling map | [`docs/tooling_map.md`](docs/tooling_map.md) |
-| Engineering quality scorecard | [`docs/engineering/engineering-quality-scorecard.md`](docs/engineering/engineering-quality-scorecard.md); `./tool/check_engineering_quality_scorecard.sh` |
+| Engineering evidence map | [`docs/engineering/engineering-evidence-map.md`](docs/engineering/engineering-evidence-map.md); `./tool/check_engineering_evidence_map.sh` |
 | Agent worktree / maintain | `./bin/agent-worktree`, `./bin/agent-maintain`; [`docs/agent_kb/host-maintenance.md`](docs/agent_kb/host-maintenance.md) |
 | Harness scorecard (agent) | [`docs/ai/harness-scorecard.md`](docs/ai/harness-scorecard.md) — separate from Engineering |
 | SAFETY-REPORT closeout | [`docs/agent_kb/safety-report-template.md`](docs/agent_kb/safety-report-template.md); `./bin/agent-maintain closeout` |
@@ -55,7 +55,7 @@ Timed walk: [`docs/architecture-tour.md`](docs/architecture-tour.md).
 | `superDemoApp/App/` | Composition roots, tabs, navigation, App Intents |
 | `FeedWidgetShared/`, `superDemoAppWidget/` | Feed App Group snapshot + Home Screen / Live Activity UI |
 | `ShareInboxShared/`, `superDemoAppShare/` | Share → App Group inbox (not SwiftData) |
-| `superDemoAppWatch/` | watchOS Feed snapshot companion (JP-P2-F; visionOS deferred) |
+| `superDemoAppWatch/` | watchOS Feed snapshot companion |
 | `docs/` | Behavior canon and agent routing |
 | `bin/`, `tool/` | Proof / lint / CI wrappers |
 

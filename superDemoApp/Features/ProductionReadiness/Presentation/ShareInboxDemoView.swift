@@ -2,7 +2,7 @@
 //  ShareInboxDemoView.swift
 //  superDemoApp
 //
-//  Engineering demo: read Share App Group inbox (JP-P2-A).
+//  Engineering demo: read the Share extension's App Group inbox.
 //
 
 import SwiftUI

@@ -2,7 +2,7 @@
 //  SignInWithAppleDemo.swift
 //  superDemoApp
 //
-//  Sign in with Apple demo surface (JP-P2-B). Separate from Keychain token refresher.
+//  Sign in with Apple demo surface. Separate from Keychain token refresher.
 //
 
 import AuthenticationServices

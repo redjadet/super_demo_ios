@@ -2,7 +2,7 @@
 //  HostBridgePingDemoView.swift
 //  superDemoApp
 //
-//  Engineering demo: ping native host-bridge facade (JP-P0-C).
+//  Engineering demo: ping the native host-bridge facade.
 //
 
 import SwiftUI

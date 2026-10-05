@@ -3,7 +3,8 @@
     {
       "idiom" : "universal",
       "platform" : "ios",
-      "size" : "1024x1024"
+      "size" : "1024x1024",
+      "filename" : "AppIcon.png"
     },
     {
       "appearances" : [
@@ -14,7 +15,8 @@
       ],
       "idiom" : "universal",
       "platform" : "ios",
-      "size" : "1024x1024"
+      "size" : "1024x1024",
+      "filename" : "AppIcon-Dark.png"
     },
     {
       "appearances" : [
@@ -25,57 +27,68 @@
       ],
       "idiom" : "universal",
       "platform" : "ios",
-      "size" : "1024x1024"
+      "size" : "1024x1024",
+      "filename" : "AppIcon-Tinted.png"
     },
     {
       "idiom" : "mac",
       "scale" : "1x",
-      "size" : "16x16"
+      "size" : "16x16",
+      "filename" : "AppIcon-mac-16pt-1x.png"
     },
     {
       "idiom" : "mac",
       "scale" : "2x",
-      "size" : "16x16"
+      "size" : "16x16",
+      "filename" : "AppIcon-mac-16pt-2x.png"
     },
     {
       "idiom" : "mac",
       "scale" : "1x",
-      "size" : "32x32"
+      "size" : "32x32",
+      "filename" : "AppIcon-mac-32pt-1x.png"
     },
     {
       "idiom" : "mac",
       "scale" : "2x",
-      "size" : "32x32"
+      "size" : "32x32",
+      "filename" : "AppIcon-mac-32pt-2x.png"
     },
     {
       "idiom" : "mac",
       "scale" : "1x",
-      "size" : "128x128"
+      "size" : "128x128",
+      "filename" : "AppIcon-mac-128pt-1x.png"
     },
     {
       "idiom" : "mac",
       "scale" : "2x",
-      "size" : "128x128"
+      "size" : "128x128",
+      "filename" : "AppIcon-mac-128pt-2x.png"
     },
     {
       "idiom" : "mac",
       "scale" : "1x",
-      "size" : "256x256"
+      "size" : "256x256",
+      "filename" : "AppIcon-mac-256pt-1x.png"
     },
     {
       "idiom" : "mac",
       "scale" : "2x",
-      "size" : "256x256"
+      "size" : "256x256",
+      "filename" : "AppIcon-mac-256pt-2x.png"
     },
     {
       "idiom" : "mac",
       "scale" : "1x",
-      "size" : "512x512"
+      "size" : "512x512",
+      "filename" : "AppIcon-mac-512pt-1x.png"
     },
     {
       "idiom" : "mac",
       "scale" : "2x",
-      "size" : "512x512"
+      "size" : "512x512",
+      "filename" : "AppIcon-mac-512pt-2x.png"
     }
   ],
   "info" : {

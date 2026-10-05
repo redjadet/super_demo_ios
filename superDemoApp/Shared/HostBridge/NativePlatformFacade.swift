@@ -8,8 +8,8 @@
 import Foundation
 
 /// Native side of a Flutter-shaped platform channel. Dart invokes this via
-/// MethodChannel when the Flutter module is embedded (JP-P2-D); the codec +
-/// facade remain the reviewable native contract (JP-P0-C).
+/// MethodChannel when the Flutter module is embedded. The codec and facade
+/// remain the reviewable native contract.
 nonisolated struct NativePlatformFacade: Sendable {
     private let cacheStatusProvider: any FeedCacheStatusProviding
     private let now: @Sendable () -> Date

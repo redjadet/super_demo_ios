@@ -21,7 +21,7 @@ enum AppIntentNavigationRouter {
         }
     }
 
-    /// Typed Feed refresh request (JP-P1-B). Optionally switches to the Feed tab.
+    /// Typed Feed refresh request that can also switch to the Feed tab.
     nonisolated static func requestFeedRefresh(openFeedTab: Bool = true) {
         if Thread.isMainThread {
             MainActor.assumeIsolated {

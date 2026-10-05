@@ -44,7 +44,7 @@ struct OpenProductionRisksIntent: AppIntent {
     }
 }
 
-/// Parameterized Feed refresh via typed navigation + app-owned coordinator (JP-P1-B).
+/// Opens a parameterized Feed destination through app-owned typed navigation.
 /// Requests a refresh; does not wait for network completion.
 struct RefreshFeedIntent: AppIntent {
     static var title: LocalizedStringResource = "Refresh Feed"

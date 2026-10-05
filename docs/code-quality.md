@@ -3,8 +3,8 @@
 Human-readable quality map for `superDemoApp`. **Not** the enforcement layer —
 gates live in `bin/` / `tool/` and must pass on their own.
 
-Measured Engineering claim: [`engineering/engineering-quality-scorecard.md`](engineering/engineering-quality-scorecard.md)
-(overall = **min** of areas; README Engineering badge only when gate passes).
+Reviewer evidence map:
+[`engineering/engineering-evidence-map.md`](engineering/engineering-evidence-map.md).
 
 ## Coverage honesty
 
@@ -32,8 +32,8 @@ named summary artifact exists and a change note allows it.
 explicit change note. Until then, say “coverage undocumented” — never invent a
 `%`.
 
-Scorecard gate already forbids fake coverage badges on README
-(`./tool/check_engineering_quality_scorecard.sh`).
+Evidence-map gate also forbids fake coverage badges on README
+(`./tool/check_engineering_evidence_map.sh`).
 
 ## CI honesty (PR-lane vs local)
 
@@ -58,10 +58,10 @@ results. Bitrise rows in the CI map are equivalents only — not live.
 | Concern | Command / doc |
 | --- | --- |
 | Format + SwiftLint + agent patterns | `./bin/verify-swift.sh` |
-| Layers + modularity + Eng scorecard | `./bin/lint.sh` |
+| Layers + modularity + evidence map | `./bin/lint.sh` |
 | Layer boundaries only | `./tool/check_layer_boundaries.sh` |
 | Feature folder + import leaks | `./tool/check_feature_folder_contract.sh`, `./tool/check_feature_import_leaks.sh` — [`modularity.md`](modularity.md) |
-| Engineering X/10 gate | `./tool/check_engineering_quality_scorecard.sh` |
+| Evidence map gate | `./tool/check_engineering_evidence_map.sh` |
 | Docs / fast proof | `./bin/checklist-fast` |
 | Local merge proof | `./bin/ci.sh` |
 | Validation chooser | [`agents_quick_reference.md`](agents_quick_reference.md), [`engineering/validation_routing_fast_vs_full.md`](engineering/validation_routing_fast_vs_full.md) |
@@ -82,6 +82,6 @@ results. Bitrise rows in the CI map are equivalents only — not live.
 ## Out of scope (this overview)
 
 - Inventing coverage thresholds or `%` badges.
-- Replacing scorecard / lint gates with prose.
+- Replacing enforcement gates with prose.
 - Supply-chain scanners (FP-P2-A) or live SonarCloud.
-- Agent harness score (separate from Engineering X/10).
+- Agent harness maturity (tracked separately from app implementation evidence).

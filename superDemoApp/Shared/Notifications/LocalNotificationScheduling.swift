@@ -6,7 +6,7 @@
 import Foundation
 import UserNotifications
 
-/// Authorization + schedule surface for the local-notification Engineering demo (JP-P1-C).
+/// Authorization + schedule surface for the local-notification Engineering demo.
 /// Not production APNs — in-app / Simulator local delivery only.
 @MainActor
 protocol LocalNotificationScheduling: AnyObject {

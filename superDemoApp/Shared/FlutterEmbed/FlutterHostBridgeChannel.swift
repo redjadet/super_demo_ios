@@ -2,7 +2,7 @@
 //  FlutterHostBridgeChannel.swift
 //  superDemoApp
 //
-//  MethodChannel ↔ NativePlatformFacade (JP-P0-C).
+//  Shared channel names for the optional Flutter host bridge.
 //
 
 import Foundation
