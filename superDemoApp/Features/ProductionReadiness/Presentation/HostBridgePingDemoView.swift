@@ -12,7 +12,7 @@ struct HostBridgePingDemoView: View {
     @State private var requestJSON: String = """
     {"v":1,"method":"feed.cacheStatus","id":"demo-1"}
     """
-    @State private var responseText: String = "Tap Ping to call the native facade."
+    @State private var responseText: String = "Response appears here after you run Ping."
     @State private var isBusy = false
 
     /// Prefer App-injected facade in production; default uses the same

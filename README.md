@@ -30,6 +30,15 @@ This is a portfolio sample, not a shipped App Store product. Platform support,
 simulated flows and optional integrations are documented in the
 [reviewer guide](docs/portfolio.md).
 
+## Portfolio honesty (cold reviewers)
+
+| Topic | What to expect |
+| --- | --- |
+| **Seeded demo data** | Launch with `-ReviewerDemoMode` (or `SUPERDEMO_REVIEWER_DEMO_MODE=1`) for deterministic Dashboard, Feed, and Items. Normal runs still use live JSONPlaceholder for Feed where configured. |
+| **Engineering demos** | Dashboard → **Engineering demos** — labeled simulations (StoreKit query-only, local notifications, Flutter when frameworks are prepared, and similar). Not production integrations. |
+| **Assets** | App Icon uses the Xcode asset-catalog placeholder (no custom marketing mark in-repo). |
+| **Universal links** | `https://superdemo.app/…` routes parse like the custom scheme; public DNS for the apex domain is **not** claimed — prefer `superdemo://` for demos. |
+
 ## Engineering decisions and evidence
 
 | Mobile engineering skill | Decision to inspect | Implementation and verification |
