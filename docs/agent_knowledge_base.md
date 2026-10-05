@@ -76,7 +76,8 @@ Detailed finish/report rules:
 Closeout template: [`agent_kb/safety-report-template.md`](agent_kb/safety-report-template.md)
 (`./bin/agent-maintain closeout`). Worktrees / thin maintain:
 [`agent_kb/host-maintenance.md`](agent_kb/host-maintenance.md).
-Harness (≠ Engineering): [`ai/harness-scorecard.md`](ai/harness-scorecard.md).
+Agent harness: [`ai/harness-scorecard.md`](ai/harness-scorecard.md). App proof:
+[`engineering/engineering-evidence-map.md`](engineering/engineering-evidence-map.md).
 
 Check every non-trivial iOS change:
 

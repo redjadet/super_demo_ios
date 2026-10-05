@@ -49,7 +49,7 @@ Router doc path honesty (CODEMAP / portfolio / architecture-tour):
 | Layer boundaries only | `./tool/check_layer_boundaries.sh` |
 | Feature folder contract | `./tool/check_feature_folder_contract.sh` (also via `./bin/lint.sh`) |
 | Cross-feature import leaks | `./tool/check_feature_import_leaks.sh` (also via `./bin/lint.sh`) |
-| Engineering scorecard gate | `./tool/check_engineering_quality_scorecard.sh` (also via `./bin/lint.sh`) |
+| Engineering evidence map gate | `./tool/check_engineering_evidence_map.sh` (also via `./bin/lint.sh`) |
 | Clean build caches (dry-run) | `./bin/clean-build-caches` |
 | Prune stale worktrees/branches (dry-run) | `./bin/prune-git-stale` |
 | Install git hooks | `./bin/install-git-hooks` |

@@ -2,7 +2,7 @@
 //  SignInWithAppleDemoView.swift
 //  superDemoApp
 //
-//  Engineering demo: Sign in with Apple (JP-P2-B). Labeled demo — not production auth.
+//  Engineering demo: Sign in with Apple. Not production authentication.
 //
 
 import AuthenticationServices

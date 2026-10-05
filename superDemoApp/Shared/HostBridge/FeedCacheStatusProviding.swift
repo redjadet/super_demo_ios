@@ -11,7 +11,7 @@ nonisolated protocol FeedCacheStatusProviding: Sendable {
     func cacheStatus(now: Date) -> FeedCacheStatusResult
 }
 
-/// App Group snapshot-backed status (JP-P0-B). Prefer this over inventing a
+/// App Group snapshot-backed status. Prefer this over inventing a
 /// second repository read path on day-1.
 nonisolated struct SnapshotFeedCacheStatusProvider: FeedCacheStatusProviding {
     /// Unit-test override; production leaves this `nil` (live App Group).

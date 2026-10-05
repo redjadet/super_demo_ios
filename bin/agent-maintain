@@ -111,7 +111,7 @@ Tooling map: docs/tooling_map.md
 
 == Harness vs Engineering ==
 Harness: docs/ai/harness-scorecard.md (agent maturity)
-Engineering: docs/engineering/engineering-quality-scorecard.md (app quality)
+Engineering evidence: docs/engineering/engineering-evidence-map.md (app proof)
 Do not substitute one for the other.
 
 closeout|template|docs/agent_kb/safety-report-template.md

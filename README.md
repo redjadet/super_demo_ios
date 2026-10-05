@@ -2,7 +2,7 @@
 
 [![3-minute path](https://img.shields.io/badge/3--minute-reviewer%20path-0066CC)](docs/portfolio.md)
 [![Architecture tour](https://img.shields.io/badge/Architecture-tour-0A7A3E)](docs/architecture-tour.md)
-[![Engineering evidence](https://img.shields.io/badge/Engineering-evidence-6E6E73)](docs/engineering/engineering-quality-scorecard.md)
+[![Engineering evidence](https://img.shields.io/badge/Engineering-evidence-6E6E73)](docs/engineering/engineering-evidence-map.md)
 
 [![CI](https://github.com/redjadet/super_demo_ios/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/redjadet/super_demo_ios/actions/workflows/ci.yml)
 
@@ -36,7 +36,7 @@ simulated flows and optional integrations are documented in the
 | --- | --- |
 | **Seeded demo data** | Launch with `-ReviewerDemoMode` (or `SUPERDEMO_REVIEWER_DEMO_MODE=1`) for deterministic Dashboard, Feed, and Items. Normal runs still use live JSONPlaceholder for Feed where configured. |
 | **Engineering demos** | Dashboard → **Engineering demos** — labeled simulations (StoreKit query-only, local notifications, Flutter when frameworks are prepared, and similar). Not production integrations. |
-| **Assets** | App Icon uses the Xcode asset-catalog placeholder (no custom marketing mark in-repo). |
+| **Assets** | Custom blue monogram app icon includes Light, Dark, Tinted, and Mac size variants in the [asset catalog](superDemoApp/Assets.xcassets/AppIcon.appiconset/Contents.json). App Store marketing screenshots are not included. |
 | **Universal links** | `https://superdemo.app/…` routes parse like the custom scheme; public DNS for the apex domain is **not** claimed — prefer `superdemo://` for demos. |
 
 ## Engineering decisions and evidence
@@ -88,5 +88,6 @@ From the repository root:
 | Offline / networking | [`docs/offline-first.md`](docs/offline-first.md) |
 | Flutter add-to-app | [`docs/flutter-add-to-app.md`](docs/flutter-add-to-app.md) |
 | CI / CD map | [`docs/ci-cd-map.md`](docs/ci-cd-map.md) |
+| Engineering evidence map | [`docs/engineering/engineering-evidence-map.md`](docs/engineering/engineering-evidence-map.md) |
 | Code quality honesty | [`docs/code-quality.md`](docs/code-quality.md) |
 | Full index | [`docs/README.md`](docs/README.md) |

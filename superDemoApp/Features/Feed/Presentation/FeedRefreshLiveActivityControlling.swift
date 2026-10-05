@@ -2,7 +2,7 @@
 //  FeedRefreshLiveActivityControlling.swift
 //  superDemoApp
 //
-//  Presentation-facing Live Activity lifecycle for Feed refresh (JP-P1-A).
+//  Presentation-facing Live Activity lifecycle for Feed refresh.
 //  ActivityKit stays in App composition — this protocol keeps Feature models
 //  free of ActivityKit imports (Mac / visionOS / tests).
 //

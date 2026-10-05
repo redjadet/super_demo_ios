@@ -53,7 +53,7 @@ echo "==> Feature folder contract"
 echo "==> Cross-feature import leaks"
 "$ROOT/tool/check_feature_import_leaks.sh"
 
-echo "==> Engineering quality scorecard"
-"$ROOT/tool/check_engineering_quality_scorecard.sh"
+echo "==> Engineering evidence map"
+"$ROOT/tool/check_engineering_evidence_map.sh"
 
 echo "Lint passed."

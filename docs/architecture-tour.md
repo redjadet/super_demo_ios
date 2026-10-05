@@ -26,7 +26,7 @@ full demo script. Companion to [`portfolio.md`](portfolio.md) (theme table) and
 | “Widget / Share / watch?” | `FeedWidgetShared/`, `superDemoAppWidget/`, `superDemoAppShare/`, `superDemoAppWatch/`; [`portfolio.md`](portfolio.md) Platform surfaces |
 | “Diagnostics / crash later?” | `superDemoApp/Shared/Diagnostics/`, [`incident-playbook.md`](incident-playbook.md), [`adr/0003-crash-vendor-deferred.md`](adr/0003-crash-vendor-deferred.md) |
 | “Validation chooser?” | [`agents_quick_reference.md`](agents_quick_reference.md), [`engineering/validation_routing_fast_vs_full.md`](engineering/validation_routing_fast_vs_full.md) |
-| “Engineering X/10?” | [`engineering/engineering-quality-scorecard.md`](engineering/engineering-quality-scorecard.md) |
+| “What evidence supports the engineering claims?” | [`engineering/engineering-evidence-map.md`](engineering/engineering-evidence-map.md) |
 | “Coverage % / quality overview?” | [`code-quality.md`](code-quality.md) — measured `%` unavailable; no fake badge |
 | “Why layering / offline / Sonar / CI honesty?” | [`adr/README.md`](adr/README.md) |
 

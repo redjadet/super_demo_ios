@@ -40,7 +40,7 @@ Host / MCP / skills: [`docs/agent_host_notes.md`](docs/agent_host_notes.md),
 | Tests | [`docs/testing.md`](docs/testing.md) |
 | Proof / merge | [`docs/engineering/checklist_gate.md`](docs/engineering/checklist_gate.md); `./bin/checklist` + GHA `checklist` |
 | Tooling map | [`docs/tooling_map.md`](docs/tooling_map.md) |
-| Engineering scorecard | [`docs/engineering/engineering-quality-scorecard.md`](docs/engineering/engineering-quality-scorecard.md) |
+| Reviewer evidence map | [`docs/engineering/engineering-evidence-map.md`](docs/engineering/engineering-evidence-map.md) |
 | Agent worktree / maintain | `./bin/agent-worktree`; `./bin/agent-maintain`; [`docs/agent_kb/host-maintenance.md`](docs/agent_kb/host-maintenance.md) |
 | Code quality / coverage | [`docs/code-quality.md`](docs/code-quality.md) |
 

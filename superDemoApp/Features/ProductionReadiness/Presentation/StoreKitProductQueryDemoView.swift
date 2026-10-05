@@ -2,7 +2,7 @@
 //  StoreKitProductQueryDemoView.swift
 //  superDemoApp
 //
-//  Engineering demo: StoreKit 2 product query (JP-P1-D). Query-only — no charge path.
+//  Engineering demo: StoreKit 2 product query. Query-only; no purchase path.
 //
 
 import SwiftUI

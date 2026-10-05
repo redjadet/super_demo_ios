@@ -2,7 +2,7 @@
 //  StoreKitProductQuerying.swift
 //  superDemoApp
 //
-//  StoreKit 2 product query surface for the JP-P1-D Engineering demo.
+//  StoreKit 2 product query surface for the Engineering demo.
 //  Query-only — no purchase / charge path.
 //
 

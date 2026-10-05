@@ -2,7 +2,7 @@
 //  WatchCompanionDemoView.swift
 //  superDemoApp
 //
-//  Engineering demo (iPhone): documents JP-P2-F watchOS companion + honesty.
+//  iPhone demo that describes the watchOS Feed companion and its limits.
 //
 
 import SwiftUI
@@ -63,7 +63,7 @@ struct WatchCompanionDemoView: View {
             } header: {
                 Text("Honesty")
             } footer: {
-                Text("visionOS companion is still deferred (JP-P2-F watch-only).")
+                Text("A visionOS companion app is not included in this sample.")
             }
         }
         .navigationTitle("Watch companion")

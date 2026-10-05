@@ -2,7 +2,7 @@
 
 Measured contract for claiming **Harness X/10** on this repo’s *agent*
 tooling — separate from app **Engineering** quality
-([`../engineering/engineering-quality-scorecard.md`](../engineering/engineering-quality-scorecard.md)).
+([`../engineering/engineering-evidence-map.md`](../engineering/engineering-evidence-map.md)).
 
 Do **not** substitute harness maturity for Engineering score (or the reverse).
 
@@ -34,7 +34,8 @@ Claim Harness 10/10 only when:
 1. Overall above is **10/10**.
 2. `./bin/agent-maintain preflight` and `./bin/agent-maintain closeout` print
    the expected paths (smoke: exit 0).
-3. Engineering claims stay on the Engineering scorecard — not this file.
+3. App implementation claims belong on the [Engineering evidence
+   map](../engineering/engineering-evidence-map.md).
 
 ## Proof commands
 
@@ -54,5 +55,5 @@ Claim Harness 10/10 only when:
 ## Related
 
 - Host maintenance: [`../agent_kb/host-maintenance.md`](../agent_kb/host-maintenance.md)
-- Engineering scorecard: [`../engineering/engineering-quality-scorecard.md`](../engineering/engineering-quality-scorecard.md)
+- Engineering evidence map: [`../engineering/engineering-evidence-map.md`](../engineering/engineering-evidence-map.md)
 - Task router: [`../../CODEMAP.md`](../../CODEMAP.md)

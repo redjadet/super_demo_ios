@@ -28,7 +28,7 @@ Usage: ./bin/checklist [--help]
 Full local delivery checklist (merge gate):
   - Markdown lint
   - DESIGN.md DesignMD lint
-  - Swift lint + modularity + engineering scorecard (./bin/lint.sh)
+  - Swift lint + modularity + engineering evidence map (./bin/lint.sh)
   - Common issue checks (incl. simulator runtime ↔ device-type compat)
   - Xcode project/scheme listing
   - iPhone unit/UI tests (./bin/ci-iphone-test.sh) — warnings as errors

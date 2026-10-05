@@ -5,7 +5,7 @@
 
 import Foundation
 
-/// App-owned Feed refresh handoff for App Intents (JP-P1-B).
+/// App-owned Feed refresh handoff for App Intents.
 /// Survives Feed tab remount: bumps typed navigation request ID and, when a
 /// live `FeedFeatureModel` is registered, starts refresh immediately.
 /// When the model is unmounted, the pending `feedRefreshRequestID` is consumed

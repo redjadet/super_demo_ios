@@ -2,7 +2,7 @@
 //  OnDeviceVisionDemo.swift
 //  superDemoApp
 //
-//  On-device Vision text recognition demo (JP-P2-C). No Apple Intelligence claim.
+//  On-device Vision text recognition demo. No Apple Intelligence claim.
 //
 
 import CoreGraphics
