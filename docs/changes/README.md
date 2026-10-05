@@ -4,6 +4,9 @@ Record durable implementation notes after meaningful changes.
 
 ## Entries
 
+- [`2026-10-05_portfolio-reviewer-polish.md`](2026-10-05_portfolio-reviewer-polish.md)
+  — Reviewer Feed copy, portfolio intro trim, README honesty table, host-bridge
+  idle copy.
 - [`2026-10-04_import-leak-scanner-exit.md`](2026-10-04_import-leak-scanner-exit.md)
   — Import-leak guard must fail when the Python scanner exits non-zero
   (process-substitution exit loss).

@@ -176,7 +176,10 @@ final class superDemoAppUITests: XCTestCase {
 
         let postRow = app.descendants(matching: .any).matching(identifier: "feedPostRow-1").firstMatch
         XCTAssertTrue(postRow.waitForExistence(timeout: 10))
-        XCTAssertEqual(postRow.label, "UI Test Post. Stable feed content for UI tests and simulator runs.")
+        XCTAssertEqual(
+            postRow.label,
+            "Architecture snapshot. Deterministic Feed row for reviewer mode, UI tests, and simulator walks."
+        )
 
         app.terminate()
         let failingApp = UiTestSupport.launchApplication(from: self, extraArguments: ["-UITestingFeedFailure"])

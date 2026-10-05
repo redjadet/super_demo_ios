@@ -14,14 +14,14 @@ enum ReviewerDemoFixtures {
         FeedPost(
             id: 1,
             userID: 1,
-            title: "UI Test Post",
-            body: "Stable feed content for UI tests and simulator runs."
+            title: "Architecture snapshot",
+            body: "Deterministic Feed row for reviewer mode, UI tests, and simulator walks."
         ),
         FeedPost(
             id: 2,
             userID: 1,
-            title: "Cached offline post",
-            body: "Shown with the stale banner when remote fetch fails."
+            title: "Offline cache scenario",
+            body: "Shown with the stale banner when the remote fetch fails."
         ),
     ]
 

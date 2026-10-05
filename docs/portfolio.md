@@ -25,35 +25,14 @@ read-through cache.
 
 ## Platform surfaces
 
-Apple-platform / hybrid-native skill map for reviewers (inventory after
-`origin/main` @ `bf9b626`, 2026-10-03 — **post P2 A–F + #36–#74**: WidgetKit, Live
-Activity, Share, SIWA, StoreKit query, Vision OCR, Flutter embed, watchOS
-companion, Open Feed Post intent / AASA `/feed/*` + apex Associated Domains +
-Markdown relative-link gate + CODEMAP/router path honesty + Engineering-demo
-UITest scroll restore (#43) + UITest tab/Feed–Items chrome false-green harden
-(#45) + Dashboard remote-health cancel honesty (#46) + StoreKit/Share UITest
-harden (#47) + agent harness evidence (#48) + Stale Feed App Intent isolation
-(#49) + Release health sample-vs-live score (#50) + mixed-age widget TTL (#51) +
-Flutter host-screen UITest false-green (#52) + Feed Retry UITest honesty (#53) +
-Host bridge ping UITest honesty (#55) + Idempotent POST UITest replay honesty
-(#56) + visionOS **shared SwiftUI API compile guards** (#57) + portfolio tip-pin
-honesty (#58) + README cold-path polish (#59) + amateur DESIGN/AccentColor polish
-(#60/#61) + README image badges (#62) + iPhone deployment floor **26.7** (#63) +
-post-#63 docs honesty (#64) + macOS/watchOS deployment floor **26.7** parity
-(#65) + seeded Production Risks UITest row honesty
-(`productionRiskRow-push-notifications`, #66) + Engineering-demo factories
-injected from App composition (#67) + portfolio Platform surfaces through #65–#67
-(#68) + Mac lane **unsigned compile-proof** default (#69;
-`CI_MAC_REQUIRE_CODE_SIGN=1` escape) + Stackademic senior-patterns map +
-launch-arg / composition toggle honesty (no remote feature-flag claim) (#70) +
-standalone Mac `xcodebuild` recipes aligned with #69 (#71 / index #74) + README
-engineering-evidence cold path (#72); visionOS **companion demo still deferred**;
-paid StoreKit / production APNs / App Icon PNGs / P2-A light–dark screenshots
-stay deferred/human-only).
-Honest “not in repo” beats a broken link.
-Sibling backlog (do not merge scopes): portfolio plan under agent store
-`job-4472017039-portfolio-plan.md`; Flutter quality-system maturity is separate
-(`flutter-parity-quality-plan.md`).
+Apple-platform and hybrid-native skill map for reviewers. The table separates
+**in repo** from **not claimed**; merge history and UITest hardening notes live
+in [`changes/README.md`](changes/README.md) instead of this page.
+
+**Deferred (human, ops, or out of scope for this sample):** custom App Icon
+PNGs, App Store marketing screenshots, production APNs, paid StoreKit checkout,
+visionOS companion demo, and live public DNS for `superdemo.app` universal links
+(sample AASA paths parse in-app; Safari handoff is not claimed).
 
 | Skill | Current path / proof | Status |
 | --- | --- | --- |
