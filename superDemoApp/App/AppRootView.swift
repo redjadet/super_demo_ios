@@ -16,16 +16,19 @@ struct AppRootView: View {
                 ProductionReadinessRootView(path: $navigation.state.dashboardPath)
             }
             .accessibilityIdentifier("dashboardTab")
+            .accessibilityLabel("Dashboard")
 
             Tab("Items", systemImage: "list.bullet", value: AppTab.items) {
                 ItemsRootView()
             }
             .accessibilityIdentifier("itemsTab")
+            .accessibilityLabel("Items")
 
             Tab("Feed", systemImage: "text.bubble", value: AppTab.feed) {
                 FeedRootView()
             }
             .accessibilityIdentifier("feedTab")
+            .accessibilityLabel("Feed")
         }
         .tabBarMinimizeBehavior(.automatic)
         .onOpenURL { url in

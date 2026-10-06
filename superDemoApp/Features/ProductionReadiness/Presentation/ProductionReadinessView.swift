@@ -39,6 +39,8 @@ struct ProductionReadinessView: View {
     @Binding private var path: [AppRoute]
     private let engineeringDemos: ProductionReadinessEngineeringDemos
 
+    @State private var refreshFeedbackTick = 0
+
     init(
         model: ProductionReadinessFeatureModel,
         path: Binding<[AppRoute]>,
@@ -57,12 +59,14 @@ struct ProductionReadinessView: View {
                 .toolbar {
                     ToolbarItem {
                         Button {
+                            self.refreshFeedbackTick &+= 1
                             self.model.refresh()
                         } label: {
                             Label("Refresh", systemImage: "arrow.clockwise")
                         }
                         .chromeGlassButtonStyle()
                         .accessibilityIdentifier("refreshProductionReadiness")
+                        .accessibilityHint("Reloads dashboard modules, API health, and checklist")
                         .disabled(self.model.isInitialLoading)
                     }
                 }
@@ -70,6 +74,7 @@ struct ProductionReadinessView: View {
                     self.destination(for: route)
                 }
         }
+        .sensoryFeedback(.selection, trigger: self.refreshFeedbackTick)
         .task {
             await self.model.refreshAndWait()
         }
@@ -85,8 +90,11 @@ struct ProductionReadinessView: View {
             if case let .content(snapshot, _) = self.model.state {
                 ProductionRisksView(risks: snapshot.risks)
             } else {
-                ProgressView()
-                    .featureScreenFrame()
+                FeatureLoadingPlaceholder(
+                    accessibilityIdentifier: "productionRisksLoading",
+                    accessibilityLabel: "Loading production risks",
+                    rowCount: 3
+                )
             }
         }
     }
@@ -94,8 +102,10 @@ struct ProductionReadinessView: View {
     @ViewBuilder private var content: some View {
         switch self.model.state {
         case .loading:
-            ProgressView()
-                .featureScreenFrame()
+            FeatureLoadingPlaceholder(
+                accessibilityIdentifier: "productionReadinessLoading",
+                accessibilityLabel: "Loading production readiness"
+            )
         case let .failed(error):
             ContentUnavailableView {
                 Label("Could Not Load Dashboard", systemImage: "exclamationmark.triangle")
@@ -103,11 +113,16 @@ struct ProductionReadinessView: View {
                 Text(error.message)
             } actions: {
                 Button("Retry") {
+                    self.refreshFeedbackTick &+= 1
                     self.model.refresh()
                 }
                 .chromeGlassButtonStyle()
+                .accessibilityIdentifier("productionReadinessRetry")
             }
             .featureScreenFrame()
+            .accessibilityElement(children: .contain)
+            .accessibilityIdentifier("productionReadinessFailed")
+            .accessibilityLabel("Could not load dashboard")
         case let .content(snapshot, score):
             ProductionReadinessContent(
                 snapshot: snapshot,
@@ -130,7 +145,14 @@ private struct ProductionReadinessContent: View {
                     score: self.score,
                     includesLiveAPIProbe: self.snapshot.apiHealth.contains(where: \.isLiveProbe)
                 )
-                .listRowInsets(EdgeInsets(top: 16, leading: 16, bottom: 16, trailing: 16))
+                .listRowInsets(
+                    EdgeInsets(
+                        top: DesignSpacing.md,
+                        leading: DesignSpacing.md,
+                        bottom: DesignSpacing.md,
+                        trailing: DesignSpacing.md
+                    )
+                )
             }
 
             Section("Feature Modules") {
@@ -263,7 +285,7 @@ private struct ReadinessHero: View {
     let includesLiveAPIProbe: Bool
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: DesignSpacing.sm + DesignSpacing.xs) {
             HStack(alignment: .firstTextBaseline) {
                 Text("Release health")
                     .font(.title2)
@@ -273,8 +295,10 @@ private struct ReadinessHero: View {
                     .equatable()
             }
             Text(self.subtitle)
+                .font(.subheadline)
                 .foregroundStyle(.secondary)
         }
+        .accessibilityElement(children: .combine)
     }
 
     private var subtitle: String {
@@ -296,11 +320,12 @@ private struct ReadinessScoreBadge: View, Equatable {
     var body: some View {
         Text("\(self.score)%")
             .font(.headline)
-            .padding(.horizontal, 12)
-            .padding(.vertical, 8)
+            .padding(.horizontal, DesignSpacing.sm + DesignSpacing.xs)
+            .padding(.vertical, DesignSpacing.sm)
             .background(self.score >= 80 ? Color.accentColor.opacity(0.16) : Color.orange.opacity(0.18))
-            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .clipShape(RoundedRectangle(cornerRadius: DesignSpacing.cornerMD))
             .accessibilityLabel(self.scoreAccessibilityText)
+            .accessibilityAddTraits(.isStaticText)
     }
 
     private var scoreAccessibilityText: String {
@@ -318,7 +343,7 @@ private struct ModuleRow: View {
     let module: FeatureModule
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
+        VStack(alignment: .leading, spacing: DesignSpacing.xs + 2) {
             HStack {
                 Text(self.module.name)
                     .font(.headline)
@@ -333,6 +358,12 @@ private struct ModuleRow: View {
                 .foregroundStyle(.secondary)
         }
         .accessibilityElement(children: .combine)
+        .accessibilityLabel(self.moduleAccessibilityLabel)
+    }
+
+    private var moduleAccessibilityLabel: String {
+        let status = self.module.status.accessibilityLabel
+        return "\(self.module.name), \(status). \(self.module.layerBoundary). \(self.module.summary)"
     }
 }
 
@@ -341,9 +372,9 @@ private struct APIHealthRow: View {
     let scoreExcludesSampleAPI: Bool
 
     var body: some View {
-        HStack(alignment: .top, spacing: 12) {
+        HStack(alignment: .top, spacing: DesignSpacing.sm + DesignSpacing.xs) {
             StatusPill(status: self.health.status)
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: DesignSpacing.xs) {
                 Text(self.health.name)
                     .font(.headline)
                 if self.health.isLiveProbe {
@@ -360,6 +391,22 @@ private struct APIHealthRow: View {
                     .foregroundStyle(.secondary)
             }
         }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(self.accessibilitySummary)
+    }
+
+    private var accessibilitySummary: String {
+        var parts = [
+            self.health.name,
+            self.health.status.accessibilityLabel,
+            "\(self.health.endpoint), \(self.health.latencyMilliseconds) milliseconds",
+        ]
+        if self.health.isLiveProbe {
+            parts.append("Live network probe included in Release health score")
+        } else if self.scoreExcludesSampleAPI {
+            parts.append("Sample check not in live Release health score")
+        }
+        return parts.joined(separator: ". ")
     }
 }
 
@@ -367,11 +414,11 @@ private struct ChecklistRow: View {
     let item: ReleaseChecklistItem
 
     var body: some View {
-        HStack(alignment: .top, spacing: 12) {
+        HStack(alignment: .top, spacing: DesignSpacing.sm + DesignSpacing.xs) {
             Image(systemName: self.item.isComplete ? "checkmark.circle.fill" : "circle")
                 .foregroundStyle(self.item.isComplete ? Color.accentColor : .secondary)
                 .accessibilityHidden(true)
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: DesignSpacing.xs) {
                 Text(self.item.title)
                     .font(.headline)
                 Text(self.item.detail)
@@ -380,6 +427,23 @@ private struct ChecklistRow: View {
             }
         }
         .accessibilityElement(children: .combine)
+        .accessibilityLabel(
+            "\(self.item.title), \(self.item.isComplete ? "Complete" : "Incomplete"). \(self.item.detail)"
+        )
+        .accessibilityAddTraits(self.item.isComplete ? .isSelected : AccessibilityTraits())
+    }
+}
+
+private extension ReadinessStatus {
+    var accessibilityLabel: String {
+        switch self {
+        case .healthy:
+            String(localized: "Healthy")
+        case .warning:
+            String(localized: "Watch")
+        case .blocked:
+            String(localized: "Blocked")
+        }
     }
 }
 
@@ -391,12 +455,13 @@ private struct StatusPill: View {
         Text(self.label)
             .font(.caption)
             .fontWeight(.semibold)
-            .padding(.horizontal, 8)
-            .padding(.vertical, 4)
+            .padding(.horizontal, DesignSpacing.sm)
+            .padding(.vertical, DesignSpacing.xs)
             .foregroundStyle(self.foregroundStyle)
             .background(self.backgroundStyle)
             .clipShape(Capsule())
             .opacity(self.status == .blocked ? 0.9 : 1)
+            .accessibilityHidden(true)
     }
 
     private var label: LocalizedStringKey {
