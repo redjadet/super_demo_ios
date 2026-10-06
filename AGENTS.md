@@ -47,6 +47,16 @@ Host / MCP / skills: [`docs/agent_host_notes.md`](docs/agent_host_notes.md),
 | Agent worktree / maintain | `./bin/agent-worktree`; `./bin/agent-maintain`; [`docs/agent_kb/host-maintenance.md`](docs/agent_kb/host-maintenance.md) |
 | Code quality / coverage | [`docs/code-quality.md`](docs/code-quality.md) |
 
+## Progressive prompting: rules for Cursor/Codex agents
+
+- **One verifiable behavior per step** — each prompt adds a single behavior you
+  can see or test; start from green `main` / passing tests.
+- **Verify before the next step** — run the lane in
+  [`docs/ai-sdlc/gates.md`](docs/ai-sdlc/gates.md) (`./bin/verify-swift.sh`,
+  `./bin/lint-markdown.sh`, `./bin/checklist`, …).
+- **No one-shot multi-feature asks** — land a thin slice, then expand; see
+  [`docs/ai-sdlc/skills/progressive-prompting.md`](docs/ai-sdlc/skills/progressive-prompting.md).
+
 Baseline: [`docs/agent_baseline.md`](docs/agent_baseline.md). Portfolio:
 [`docs/portfolio.md`](docs/portfolio.md). Index: [`docs/README.md`](docs/README.md).
 
