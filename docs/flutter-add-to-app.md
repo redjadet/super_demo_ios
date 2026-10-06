@@ -2,6 +2,9 @@
 
 Real Flutter **module** embedded in the iOS host — not contract-only theater.
 
+**Reviewer deep-dive (engine, channel, fallback, CI):**
+[`architecture/flutter-add-to-app.md`](architecture/flutter-add-to-app.md).
+
 ## Honesty
 
 | Claim | Reality |

@@ -7,6 +7,7 @@ Timed walk: [`docs/architecture-tour.md`](docs/architecture-tour.md).
 | --- | --- |
 | Compact AI context | [`llms.txt`](llms.txt), this file, [`AGENTS.md`](AGENTS.md) |
 | ≤15 min architecture tour | [`docs/architecture-tour.md`](docs/architecture-tour.md) |
+| Reviewer deep-dives (cancel / cache / offline / Flutter) | [`docs/architecture/`](docs/architecture/README.md) |
 | Portfolio / reviewer map | [`docs/portfolio.md`](docs/portfolio.md), [`README.md`](README.md) |
 | Platform surfaces (WidgetKit, bridge, …) | [`docs/portfolio.md`](docs/portfolio.md) → **Platform surfaces** (honest inventory; missing rows marked) |
 | Agent onboard / loop | [`AGENTS.md`](AGENTS.md), [`docs/agent_knowledge_base.md`](docs/agent_knowledge_base.md) |

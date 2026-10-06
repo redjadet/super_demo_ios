@@ -1,5 +1,10 @@
 # Sync And Networking
 
+**Reviewer deep-dives:**
+[`architecture/native-cancellation.md`](architecture/native-cancellation.md),
+[`architecture/cache-behavior.md`](architecture/cache-behavior.md),
+[`architecture/offline-first-behavior.md`](architecture/offline-first-behavior.md).
+
 ## Portfolio Feed
 
 The **Feed** feature (see [`docs/portfolio.md`](portfolio.md) and
