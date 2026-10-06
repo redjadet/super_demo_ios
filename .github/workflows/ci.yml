@@ -311,6 +311,13 @@ jobs:
           SUPERDEMO_REQUIRE_FLUTTER_EMBED: "1"
         run: ./bin/ci-iphone-test.sh
 
+      - name: Strip dSYMs from test products (shrink shard downloads)
+        run: |
+          set -euo pipefail
+          products="${{ runner.temp }}/DerivedData-iPhone/Build/Products"
+          find "$products" -type d -name '*.dSYM' -prune -print -exec rm -rf {} + 2>/dev/null || true
+          du -sh "$products" || true
+
       - name: Upload iPhone test products
         uses: actions/upload-artifact@v7
         with:
@@ -318,6 +325,7 @@ jobs:
           path: ${{ runner.temp }}/DerivedData-iPhone/Build/Products
           if-no-files-found: error
           retention-days: 1
+          compression-level: 6
 
   iphone-test:
     name: Checklist · iPhone test
@@ -340,7 +348,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
 
-      - name: Select Xcode + pick existing simulator + start background boot
+      - name: Select Xcode + pick existing simulator
         env:
           CI: true
           CI_SIMULATOR_REUSE_ONLY: "1"
@@ -348,7 +356,6 @@ jobs:
           set -euo pipefail
           source ./tool/select_xcode.sh
           source ./tool/ci_simulator_pick_existing.sh
-          ./tool/ci_simulator_boot_bg.sh
 
       - name: Download iPhone test products
         uses: actions/download-artifact@v7
@@ -356,10 +363,15 @@ jobs:
           name: iphone-test-products
           path: ${{ runner.temp }}/iphone-test-products
 
-      - name: Await simulator boot
+      # Boot after artifact download — concurrent product I/O starved bootstatus (240s)
+      # when boot overlapped the ~5–7m shard downloads (ui-4 failure on run 37490468148).
+      - name: Boot simulator (ready, with retry)
         env:
           CI: true
-        run: ./tool/ci_simulator_await.sh
+          CI_SIM_BOOT_AWAIT_SECONDS: "420"
+          CI_SIM_BOOTSTATUS_TIMEOUT_SECONDS: "360"
+          CI_SIM_BOOT_MAX_ATTEMPTS: "2"
+        run: ./tool/ci_simulator_boot_ready.sh
 
       - name: iPhone UI tests (test-without-building shard, serial)
         env:

@@ -58,10 +58,12 @@ echo "starting" >"$status_file"
   set +e
   echo "==> Background boot ${udid}" >>"$log_file"
   xcrun simctl boot "$udid" >>"$log_file" 2>&1 || true
+  # Default 360s — artifact I/O on the same host used to starve bootstatus at 240s.
+  bootstatus_timeout="${CI_SIM_BOOTSTATUS_TIMEOUT_SECONDS:-360}"
   if command -v timeout >/dev/null 2>&1; then
-    timeout 240 xcrun simctl bootstatus "$udid" -b >>"$log_file" 2>&1
+    timeout "$bootstatus_timeout" xcrun simctl bootstatus "$udid" -b >>"$log_file" 2>&1
   else
-    python3 "$ROOT/tool/run_with_timeout.py" --timeout 240 -- \
+    python3 "$ROOT/tool/run_with_timeout.py" --timeout "$bootstatus_timeout" -- \
       xcrun simctl bootstatus "$udid" -b >>"$log_file" 2>&1
   fi
   status=$?
