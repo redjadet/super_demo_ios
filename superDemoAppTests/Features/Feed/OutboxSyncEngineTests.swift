@@ -52,35 +52,39 @@ private final class RecordingBookmarkRemote: BookmarkRemoteClient, @unchecked Se
         }
     }
 
-    func setBookmark(postID: Int, idempotencyKey: String) async throws -> Int? {
-        let callIndex: Int
-        let shouldHang: Bool
+    /// Sync so `NSLock` stays out of async contexts (Swift 6).
+    private func recordSet(postID: Int, idempotencyKey: String) -> (shouldHang: Bool, error: Error?) {
         self.lock.lock()
+        defer { self.lock.unlock() }
         self._calls.append(Call(kind: "set", postID: postID, idempotencyKey: idempotencyKey))
-        callIndex = self._calls.count - 1
-        shouldHang = self._hangUntilCancelled
-        let error = self._errorForCallIndex[callIndex]
-        self.lock.unlock()
+        let callIndex = self._calls.count - 1
+        return (self._hangUntilCancelled, self._errorForCallIndex[callIndex])
+    }
 
-        if shouldHang {
+    /// Sync so `NSLock` stays out of async contexts (Swift 6).
+    private func recordClear(postID: Int, idempotencyKey: String) -> Error? {
+        self.lock.lock()
+        defer { self.lock.unlock() }
+        self._calls.append(Call(kind: "clear", postID: postID, idempotencyKey: idempotencyKey))
+        let callIndex = self._calls.count - 1
+        return self._errorForCallIndex[callIndex]
+    }
+
+    func setBookmark(postID: Int, idempotencyKey: String) async throws -> Int? {
+        let recorded = self.recordSet(postID: postID, idempotencyKey: idempotencyKey)
+        if recorded.shouldHang {
             try await Task.sleep(nanoseconds: 60_000_000_000)
         } else {
             await Task.yield()
         }
-        if let error {
+        if let error = recorded.error {
             throw error
         }
         return postID + 100
     }
 
     func clearBookmark(postID: Int, remoteBookmarkID _: Int?, idempotencyKey: String) async throws {
-        let error: Error?
-        self.lock.lock()
-        self._calls.append(Call(kind: "clear", postID: postID, idempotencyKey: idempotencyKey))
-        let callIndex = self._calls.count - 1
-        error = self._errorForCallIndex[callIndex]
-        self.lock.unlock()
-        if let error {
+        if let error = self.recordClear(postID: postID, idempotencyKey: idempotencyKey) {
             throw error
         }
         await Task.yield()
