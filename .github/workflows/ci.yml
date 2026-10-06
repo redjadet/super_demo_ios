@@ -138,17 +138,16 @@ jobs:
           source ./tool/ci_simulator_pick_existing.sh
           ./tool/ci_simulator_boot_bg.sh
 
-      - name: Setup iOS CI (Flutter + Brewfile + caches; Xcode already selected)
+      - name: Setup iOS CI (Flutter + Brewfile + SPM/Flutter caches; Xcode already selected)
         if: needs.changes.outputs.docs_only != 'true'
         uses: ./.github/actions/setup-ios-ci
         with:
           select-xcode: "false"
           flutter: "true"
-          ruby: "true"
+          ruby: "false"
           brewfile: "true"
           cache-flutter-embed: "true"
           cache-key-suffix: iphone-single
-          derived-data-paths: ${{ runner.temp }}/DerivedData-iPhone
 
       - name: Prepare Flutter add-to-app frameworks (cached hash skips rebuild)
         if: needs.changes.outputs.docs_only != 'true'
@@ -181,15 +180,33 @@ jobs:
           CI: true
         run: ./tool/ci_simulator_await.sh
 
-      - name: iPhone tests (units + UI, parallel workers)
+      # Units first (serial): parallel workers previously spent ~27m cloning for
+      # unit suites and barely reached UI before the 35m timeout.
+      - name: iPhone unit tests (serial)
         if: needs.changes.outputs.docs_only != 'true'
         env:
           CI: true
           CI_PREPARE_IPAD: "0"
           CI_IPHONE_GENERIC_BUILD: "0"
           CI_IPHONE_TEST_MODE: test-without-building
+          CI_IPHONE_TEST_SHARD: unit
           CI_IPHONE_PRODUCTS_DIR: ${{ runner.temp }}/DerivedData-iPhone/Build/Products
-          CI_IPHONE_XCODEBUILD_TIMEOUT_SECONDS: "2100"
+          CI_IPHONE_XCODEBUILD_TIMEOUT_SECONDS: "600"
+          CI_ALLOW_PARALLEL_TESTS: "0"
+          CI_SIMULATOR_REUSE_ONLY: "1"
+          SUPERDEMO_REQUIRE_FLUTTER_EMBED: "1"
+        run: ./bin/ci-iphone-test.sh
+
+      - name: iPhone UI tests (parallel workers, UI only)
+        if: needs.changes.outputs.docs_only != 'true'
+        env:
+          CI: true
+          CI_PREPARE_IPAD: "0"
+          CI_IPHONE_GENERIC_BUILD: "0"
+          CI_IPHONE_TEST_MODE: test-without-building
+          CI_IPHONE_TEST_SHARD: ui
+          CI_IPHONE_PRODUCTS_DIR: ${{ runner.temp }}/DerivedData-iPhone/Build/Products
+          CI_IPHONE_XCODEBUILD_TIMEOUT_SECONDS: "1500"
           CI_ALLOW_PARALLEL_TESTS: "1"
           CI_PARALLEL_TESTING_WORKER_COUNT: "3"
           CI_SIMULATOR_REUSE_ONLY: "1"
@@ -224,16 +241,15 @@ jobs:
           source ./tool/ci_simulator_pick_existing.sh
           ./tool/ci_simulator_boot_bg.sh
 
-      - name: Setup iOS CI (Flutter + Brewfile + caches; Xcode already selected)
+      - name: Setup iOS CI (Flutter + Brewfile + SPM/Flutter caches; Xcode already selected)
         uses: ./.github/actions/setup-ios-ci
         with:
           select-xcode: "false"
           flutter: "true"
-          ruby: "true"
+          ruby: "false"
           brewfile: "true"
           cache-flutter-embed: "true"
           cache-key-suffix: iphone-build
-          derived-data-paths: ${{ runner.temp }}/DerivedData-iPhone
 
       - name: Prepare Flutter add-to-app frameworks (cached hash skips rebuild)
         run: |
@@ -268,7 +284,8 @@ jobs:
           CI_IPHONE_TEST_MODE: test-without-building
           CI_IPHONE_TEST_SHARD: unit
           CI_IPHONE_PRODUCTS_DIR: ${{ runner.temp }}/DerivedData-iPhone/Build/Products
-          CI_IPHONE_XCODEBUILD_TIMEOUT_SECONDS: "900"
+          CI_IPHONE_XCODEBUILD_TIMEOUT_SECONDS: "600"
+          CI_ALLOW_PARALLEL_TESTS: "0"
           CI_SIMULATOR_REUSE_ONLY: "1"
           SUPERDEMO_REQUIRE_FLUTTER_EMBED: "1"
         run: ./bin/ci-iphone-test.sh

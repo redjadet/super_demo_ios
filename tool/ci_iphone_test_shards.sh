@@ -11,7 +11,7 @@
 #   unit-and-app-ui / engineering-a / engineering-b
 
 ci_iphone_shard_ids() {
-  printf '%s\n' unit ui-a ui-b
+  printf '%s\n' unit ui ui-a ui-b
 }
 
 ci_iphone_shard_only_testing_args() {
@@ -20,6 +20,11 @@ ci_iphone_shard_only_testing_args() {
     unit)
       printf '%s\n' \
         "-only-testing:superDemoAppTests"
+      ;;
+    ui)
+      # All UI XCTest (24 cases); caller still skips testLaunchPerformance on CI.
+      printf '%s\n' \
+        "-only-testing:superDemoAppUITests"
       ;;
     ui-a)
       # ~12 UI cases — heavier demos + a few app UI (balanced vs ui-b by prior timings)

@@ -77,34 +77,30 @@ runs:
         restore-keys: |
           brew-${{ runner.os }}-${{ runner.arch }}-
 
-    - name: Cache Xcode + SwiftPM (+ Flutter embed)
+    # Cache SPM + Flutter embed only — full DerivedData restores were multi‑minute
+    # and dominated setup (observed ~7m) without enough compile payoff on critical path.
+    - name: Cache SwiftPM + Flutter embed
       if: ${{ inputs.cache-flutter-embed == 'true' }}
       uses: actions/cache@v6
       with:
         path: |
           ~/Library/Caches/org.swift.swiftpm
-          ~/Library/Developer/Xcode/DerivedData
-          ~/Library/Developer/Xcode/DerivedData/**/SourcePackages
-          ${{ inputs.derived-data-paths }}
           Flutter
         key: >-
-          xcode27-${{ runner.os }}-${{ runner.arch }}-${{ inputs.cache-key-suffix }}-flutter-${{ hashFiles('**/Package.resolved', '**/*.xcodeproj/project.pbxproj', 'flutter_module/pubspec.lock', 'flutter_module/lib/**') }}
+          xcode27-spm-flutter-${{ runner.os }}-${{ runner.arch }}-${{ inputs.cache-key-suffix }}-${{ hashFiles('**/Package.resolved', 'flutter_module/pubspec.lock', 'flutter_module/lib/**') }}
         restore-keys: |
-          xcode27-${{ runner.os }}-${{ runner.arch }}-${{ inputs.cache-key-suffix }}-flutter-
+          xcode27-spm-flutter-${{ runner.os }}-${{ runner.arch }}-${{ inputs.cache-key-suffix }}-
 
-    - name: Cache Xcode + SwiftPM
+    - name: Cache SwiftPM
       if: ${{ inputs.cache-flutter-embed != 'true' }}
       uses: actions/cache@v6
       with:
         path: |
           ~/Library/Caches/org.swift.swiftpm
-          ~/Library/Developer/Xcode/DerivedData
-          ~/Library/Developer/Xcode/DerivedData/**/SourcePackages
-          ${{ inputs.derived-data-paths }}
         key: >-
-          xcode27-${{ runner.os }}-${{ runner.arch }}-${{ inputs.cache-key-suffix }}-${{ hashFiles('**/Package.resolved', '**/*.xcodeproj/project.pbxproj') }}
+          xcode27-spm-${{ runner.os }}-${{ runner.arch }}-${{ inputs.cache-key-suffix }}-${{ hashFiles('**/Package.resolved') }}
         restore-keys: |
-          xcode27-${{ runner.os }}-${{ runner.arch }}-${{ inputs.cache-key-suffix }}-
+          xcode27-spm-${{ runner.os }}-${{ runner.arch }}-${{ inputs.cache-key-suffix }}-
 
     - name: Install Brewfile tools
       if: ${{ inputs.brewfile == 'true' }}
