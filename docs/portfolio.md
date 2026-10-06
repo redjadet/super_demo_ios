@@ -39,7 +39,7 @@ visionOS companion demo, and live public DNS for `superdemo.app` universal links
 | Clean layers + modularity | `superDemoApp/Features/*/`, [`layers.md`](layers.md), [`modularity.md`](modularity.md), `./tool/check_layer_boundaries.sh` | **In repo** |
 | SwiftUI + Observation + DI | Feed / Items / ProductionReadiness; `superDemoApp/App/*Composition.swift`; App composition injects Engineering demo dependencies | **In repo** |
 | Swift Concurrency | `async`/`await` networking; actor token refreshers; `AsyncLoadController` | **In repo** |
-| Offline / networking | `CachingFeedRepository`, [`offline-first.md`](offline-first.md), [`offline-invariants.md`](offline-invariants.md), [`sync-and-networking.md`](sync-and-networking.md) | **In repo** |
+| Offline / networking | `CachingFeedRepository`, Feed bookmark outbox (`OutboxSyncEngine`), [`offline-first.md`](offline-first.md), [`offline-invariants.md`](offline-invariants.md) (OI-08), [`architecture/offline-first-behavior.md`](architecture/offline-first-behavior.md), [`sync-and-networking.md`](sync-and-networking.md) | **In repo** |
 | App Intents (open-tab) | `superDemoApp/App/AppIntents/` + Shortcuts; tests | **In repo** |
 | Parameterized Feed/Items intents | `RefreshFeedIntent` (`openFeedTab`); `OpenFeedPostIntent` (`postID`) → `feedOpenPostID` + `superdemo://feed/<id>`; tests | **In repo** (typed navigation and entity open) |
 | ObjC legacy interop | `superDemoApp/Shared/LegacyObjC/` + bridging header | **In repo** (thin) |
@@ -97,6 +97,7 @@ Source: `superDemoApp/Shared/AppLaunchConfiguration.swift`.
 | `REVIEWER_DEMO` | **Compile-time** (TestFlight beta via Fastlane) | Same seeded path when built into the binary — not a launch argument |
 | `-StaleFeedDemo` or `SUPERDEMO_STALE_FEED_DEMO=1` | **Launch / env** | Seed Feed SwiftData cache + failing remote → real stale banner via `CachingFeedRepository` |
 | `-UITesting` | Launch | UI-test fixtures / in-memory store |
+| `-OfflineBookmarkDemo` or `SUPERDEMO_OFFLINE_BOOKMARK_DEMO=1` | **Launch / env** | Force bookmark outbox offline (`ManualConnectivityMonitor`) for pending UI |
 | `-UITestingFeedFailure` | Launch | Failing remote without cache seed (error + Retry UI) |
 | `-KeychainTokenDemo` or `SUPERDEMO_KEYCHAIN_TOKEN_DEMO=1` | Launch / env | Opt-in Keychain-backed token refresher demo |
 
@@ -114,13 +115,15 @@ Observation + thin use cases on a repository protocol.
 ## Feed walkthrough (`superDemoApp/Features/Feed/`)
 
 - **Domain** — `FeedPost`, `FeedRepository` → `FeedLoadResult` (`posts` +
-  `isStale`), **`RefreshFeedUseCase` only** (no separate load use case),
-  typed error surface (`FeedDisplayError`).
+  `isStale`), **`RefreshFeedUseCase`**, bookmark toggle/retry use cases,
+  typed error surface (`FeedDisplayError`), outbox domain models.
 - **Data** — `PostDTO`, `FeedAPIClient` + live `URLSession`, `RemoteFeedRepository`,
   `CachedFeedPost` + `CachingFeedRepository` (remote fail + non-empty cache →
-  `isStale: true`).
+  `isStale: true`); bookmark outbox (`OutboxEntry`, `BookmarkedPost`,
+  `OutboxSyncEngine`, JSONPlaceholder POST/DELETE mapping).
 - **Presentation** — `FeedFeatureModel` (cancel restores prior state; diagnostics on
-  failure/stale), list + Retry + **stale banner**, `FeedNavigationShell`.
+  failure/stale; bookmark pending/failed), list + Retry + **stale banner** +
+  bookmark chrome, `FeedNavigationShell`.
 
 **Reviewer boundary:** Presentation never imports `URLSession`; unit tests stub
 HTTP — no live network on default CI.

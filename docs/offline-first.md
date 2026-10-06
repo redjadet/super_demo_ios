@@ -14,9 +14,12 @@ Default product posture: local data first, sync opportunistically.
 ## Principles
 
 - Reads should work from local storage when possible.
-- Writes should be recorded locally before remote sync when feature allows it.
+- Writes should be recorded locally before remote sync when feature allows it
+  (Feed bookmarks: SwiftData outbox — see
+  [`architecture/offline-first-behavior.md`](architecture/offline-first-behavior.md)).
 - Sync must be idempotent and retryable.
-- Conflicts need explicit policy: local wins, remote wins, merge, or user choice.
+- Conflicts need explicit policy: local wins, remote wins, merge, or user choice
+  (bookmarks: last-writer-wins in queue; server-wins on 409/412).
 - UI should distinguish offline, syncing, synced, and failed states when relevant.
 
 ## SwiftData Rules

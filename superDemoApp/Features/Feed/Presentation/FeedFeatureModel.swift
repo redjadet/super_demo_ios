@@ -17,10 +17,16 @@ enum FeedState: Equatable {
 @Observable
 final class FeedFeatureModel {
     private let refreshFeed: RefreshFeedUseCase
+    private let toggleBookmark: ToggleBookmarkUseCase?
+    private let retryBookmarkSync: RetryBookmarkSyncUseCase?
+    private let bookmarkRepository: BookmarkRepository?
+    private let syncEngine: (any OutboxSyncing)?
     private let diagnostics: ReleaseDiagnosticsReporting
     private let liveActivity: FeedRefreshLiveActivityControlling
 
     private(set) var state: FeedState = .loading
+    private(set) var bookmarksByPostID: [Int: PostBookmark] = [:]
+    private(set) var failedOutboxCount = 0
     /// Completed refresh cycles (success or failure). UITests use this to prove
     /// Retry drove a new attempt — not a no-op tap that leaves prior chrome.
     private(set) var completedRefreshCount = 0
@@ -32,14 +38,33 @@ final class FeedFeatureModel {
 
     init(
         refreshFeed: RefreshFeedUseCase,
+        toggleBookmark: ToggleBookmarkUseCase? = nil,
+        retryBookmarkSync: RetryBookmarkSyncUseCase? = nil,
+        bookmarkRepository: BookmarkRepository? = nil,
+        syncEngine: (any OutboxSyncing)? = nil,
         diagnostics: ReleaseDiagnosticsReporting = ReleaseDiagnostics.shared,
         liveActivity: FeedRefreshLiveActivityControlling? = nil
     ) {
         self.refreshFeed = refreshFeed
+        self.toggleBookmark = toggleBookmark
+        self.retryBookmarkSync = retryBookmarkSync
+        self.bookmarkRepository = bookmarkRepository
+        self.syncEngine = syncEngine
         self.diagnostics = diagnostics
         // Resolve NoOp inside MainActor init — default args are nonisolated under
         // SWIFT_DEFAULT_ACTOR_ISOLATION=MainActor.
         self.liveActivity = liveActivity ?? NoOpFeedRefreshLiveActivityController()
+    }
+
+    func startOutboxSync() {
+        guard let syncEngine else { return }
+        Task { await syncEngine.start() }
+        self.reloadBookmarks()
+    }
+
+    func flushOutbox() {
+        guard let syncEngine else { return }
+        Task { await syncEngine.requestFlush() }
     }
 
     func refresh() {
@@ -61,6 +86,59 @@ final class FeedFeatureModel {
     func cancelRefresh() {
         self.loadController.cancel()
         self.restorePriorStateAfterCancelledRefresh()
+    }
+
+    func bookmark(for postID: Int) -> PostBookmark {
+        self.bookmarksByPostID[postID]
+            ?? PostBookmark(postID: postID, isBookmarked: false, syncStatus: .synced)
+    }
+
+    func toggleBookmark(for postID: Int) {
+        guard let toggleBookmark else { return }
+        do {
+            let updated = try toggleBookmark(postID: postID)
+            self.bookmarksByPostID[postID] = updated
+            self.reloadFailedCount()
+            self.flushOutbox()
+        } catch {
+            self.diagnostics.releaseCheckFailed(
+                ReleaseDiagnosticCheck(name: "feed-bookmark-toggle"),
+                reason: ErrorDiagnostics.reason(for: error)
+            )
+        }
+    }
+
+    func retryFailedBookmarks(postID: Int? = nil) {
+        guard let retryBookmarkSync else { return }
+        do {
+            try retryBookmarkSync(postID: postID)
+            self.reloadBookmarks()
+            self.flushOutbox()
+        } catch {
+            self.diagnostics.releaseCheckFailed(
+                ReleaseDiagnosticCheck(name: "feed-bookmark-retry"),
+                reason: ErrorDiagnostics.reason(for: error)
+            )
+        }
+    }
+
+    func reloadBookmarks() {
+        guard let bookmarkRepository else { return }
+        do {
+            let all = try bookmarkRepository.allBookmarks()
+            self.bookmarksByPostID = Dictionary(uniqueKeysWithValues: all.map { ($0.postID, $0) })
+            self.reloadFailedCount()
+        } catch {
+            // Keep last known map.
+        }
+    }
+
+    private func reloadFailedCount() {
+        guard let bookmarkRepository else {
+            self.failedOutboxCount = 0
+            return
+        }
+        self.failedOutboxCount = (try? bookmarkRepository.failedMutationCount()) ?? 0
     }
 
     private func beginRefresh() -> Int {
@@ -100,6 +178,7 @@ final class FeedFeatureModel {
                     )
                 }
             }
+            self.reloadBookmarks()
             self.liveActivity.refreshDidSucceed(
                 postCount: result.posts.count,
                 isStale: result.isStale

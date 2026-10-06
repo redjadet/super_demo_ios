@@ -14,6 +14,8 @@ struct FeedView: View {
     @State private var selectedPost: FeedPost?
     @State private var preferredCompactColumn = NavigationSplitViewColumn.sidebar
     @State private var navigation = AppNavigationStore.shared
+    @Environment(\.scenePhase)
+    private var scenePhase
 
     init(model: FeedFeatureModel, embedsOwnNavigation: Bool = true) {
         self.model = model
@@ -27,7 +29,10 @@ struct FeedView: View {
             if self.embedsOwnNavigation {
                 FeedNavigationShell(
                     selectedPost: self.$selectedPost,
-                    preferredCompactColumn: self.$preferredCompactColumn
+                    preferredCompactColumn: self.$preferredCompactColumn,
+                    detail: { post in
+                        FeedPostDetailView(post: post, model: self.model)
+                    }
                 ) {
                     self.content
                         .navigationTitle("Feed")
@@ -50,8 +55,15 @@ struct FeedView: View {
             if self.embedsOwnNavigation {
                 FeedRefreshCoordinator.register(self.model)
             }
+            self.model.startOutboxSync()
             await self.model.refreshAndWait()
             self.applyPendingFeedPostOpenIfPossible()
+        }
+        .onChange(of: self.scenePhase) { _, phase in
+            if phase == .active {
+                self.model.flushOutbox()
+                self.model.reloadBookmarks()
+            }
         }
         .onChange(of: navigation.state.feedOpenPostRequestID) { _, _ in
             self.applyPendingFeedPostOpenIfPossible()
@@ -188,26 +200,49 @@ struct FeedView: View {
             }
         }
 
-        ForEach(posts) { post in
-            Group {
-                if self.embedsOwnNavigation {
-                    NavigationLink(value: post) {
-                        self.postRowLabel(post)
-                    }
-                } else {
-                    NavigationLink {
-                        FeedPostDetailView(post: post)
-                    } label: {
-                        self.postRowLabel(post)
-                    }
+        if self.model.failedOutboxCount > 0 {
+            Section {
+                Label(
+                    "\(self.model.failedOutboxCount) bookmark sync failed. Tap to retry.",
+                    systemImage: "exclamationmark.triangle"
+                )
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+                .accessibilityIdentifier("feedOutboxFailedBanner")
+                .onTapGesture {
+                    self.model.retryFailedBookmarks()
                 }
             }
-            .accessibilityIdentifier("feedPostRow-\(post.id)")
+        }
+
+        ForEach(posts) { post in
+            HStack(alignment: .top, spacing: 8) {
+                Group {
+                    if self.embedsOwnNavigation {
+                        NavigationLink(value: post) {
+                            self.postTextLabel(post)
+                        }
+                    } else {
+                        NavigationLink {
+                            FeedPostDetailView(post: post, model: self.model)
+                        } label: {
+                            self.postTextLabel(post)
+                        }
+                    }
+                }
+                .accessibilityIdentifier("feedPostRow-\(post.id)")
+
+                FeedBookmarkButton(
+                    bookmark: self.model.bookmark(for: post.id),
+                    action: { self.model.toggleBookmark(for: post.id) },
+                    onRetry: { self.model.retryFailedBookmarks(postID: post.id) }
+                )
+            }
             .tag(post)
         }
     }
 
-    private func postRowLabel(_ post: FeedPost) -> some View {
+    private func postTextLabel(_ post: FeedPost) -> some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(post.title)
                 .font(.headline)
@@ -217,6 +252,7 @@ struct FeedView: View {
                 .foregroundStyle(.secondary)
                 .lineLimit(2)
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
         .accessibilityElement(children: .combine)
         .accessibilityLabel("\(post.title). \(post.body)")
     }

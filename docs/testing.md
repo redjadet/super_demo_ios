@@ -80,7 +80,7 @@ provides proof.
 | `testFeedAccessibilityChromeRowsAndRetry` | Feed VoiceOver-relevant refresh chrome, row label, and Retry label/tap |
 | `testDeepLinkOpensFeedTab` | `superdemo://feed` selects Feed chrome |
 | `testDeepLinkOpensItemsTab` | `superdemo://items` selects Items chrome |
-| `testStaleFeedFixtureShowsBannerOnFeedTab` | `-StaleFeedDemo` shows stale banner + sample row |
+| `testOfflineBookmarkToggleShowsPending` | `-OfflineBookmarkDemo`: Feed bookmark toggle shows pending sync indicator |
 | `testStaleFeedEngineeringDemoShowsBanner` | Dashboard → Stale Feed demo shows banner |
 | `testShareInboxDemoIsReachable` | Share inbox Seed must be hittable; after Seed → entry / unavailable / seed-failed (not pre-seed absent) |
 | `testSignInWithAppleDemoIsReachable` | SIWA Engineering demo chrome (Simulator-honest) |

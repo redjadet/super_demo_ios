@@ -12,6 +12,10 @@ The **Feed** feature (see [`docs/portfolio.md`](portfolio.md) and
 
 - **GET** `https://jsonplaceholder.typicode.com/posts`
   (`{ userId, id, title, body }` rows in a JSON array).
+- **Bookmark writes (outbox):** optimistic local `BookmarkedPost` + durable
+  `OutboxEntry`; remote maps to `POST` / `DELETE /posts` via
+  `JSONPlaceholderBookmarkRemoteClient` (JSONPlaceholder fakes persistence —
+  see [`architecture/offline-first-behavior.md`](architecture/offline-first-behavior.md)).
 - **`FeedAPIClient`** lives under `Features/Feed/Data/` only.
 - Injectable **`URLSession`**; **`timeoutIntervalForRequest` ~ 30s** in app
   composition when using a custom configuration.
@@ -77,11 +81,15 @@ Feature Data adapters map `APIError` into domain/UI-safe messages.
 ## Sync Rules
 
 - Local write first when offline-first requirement applies.
-- Queue pending operations with stable IDs.
-- Make retries idempotent.
-- Track sync state per record or operation.
-- Handle conflict policy explicitly.
+- Queue pending operations with stable IDs (`OutboxEntry` + `idempotencyKey`).
+- Make retries idempotent (`Idempotency-Key` header).
+- Track sync state per record or operation (`BookmarkSyncStatus`).
+- Handle conflict policy explicitly (Feed bookmarks: LWW queue + server-wins on
+  409/412 — see [`architecture/offline-first-behavior.md`](architecture/offline-first-behavior.md)).
 - Surface durable failure state to users when action cannot complete.
+
+**Shipped:** Feed bookmark outbox (`OutboxSyncEngine`). **Not shipped:** Items
+remote sync (OI-06).
 
 ## Security
 

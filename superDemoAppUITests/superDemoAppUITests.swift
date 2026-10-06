@@ -141,6 +141,29 @@ final class superDemoAppUITests: XCTestCase {
         XCTAssertTrue(detail.waitForExistence(timeout: 10), "Feed post detail did not open from list selection")
     }
 
+    /// Offline bookmark outbox: toggle queues locally and shows pending chrome.
+    @MainActor
+    func testOfflineBookmarkToggleShowsPending() {
+        let app = UiTestSupport.launchApplication(
+            from: self,
+            extraArguments: ["-OfflineBookmarkDemo"]
+        )
+        UiTestSupport.openFeedTab(in: app)
+        XCTAssertTrue(UiTestSupport.waitForFeedChrome(in: app))
+
+        let bookmark = app.descendants(matching: .any).matching(identifier: "feedBookmark-1").firstMatch
+        XCTAssertTrue(bookmark.waitForExistence(timeout: 10))
+        bookmark.tap()
+
+        let pending = app.descendants(matching: .any)
+            .matching(identifier: "feedBookmarkPending-1")
+            .firstMatch
+        XCTAssertTrue(
+            pending.waitForExistence(timeout: 10),
+            "Offline bookmark toggle should show pending sync indicator"
+        )
+    }
+
     /// Selection-driven Feed/Items smoke on the hosted iPhone destination.
     /// Hosted iPad/Mac lanes are **build-only** — see `docs/testing.md` (adaptive shell note).
     @MainActor

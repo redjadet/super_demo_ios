@@ -4,6 +4,7 @@ Record durable implementation notes after meaningful changes.
 
 ## Entries
 
+<<<<<<< HEAD
 - [`2026-10-06_ui-trends-low-risk-polish.md`](2026-10-06_ui-trends-low-risk-polish.md)
   — Views/a11y polish mapped to Apr 2026 UI trends; Feed/CI left alone.
 - [`2026-10-06_ci-faster-pr-checks.md`](2026-10-06_ci-faster-pr-checks.md)
@@ -13,6 +14,11 @@ Record durable implementation notes after meaningful changes.
   — Tool-agnostic AI-native SDLC kit (intent/spec/plan/REVIEW, skills, gates).
 - [`2026-10-06_using-agents-here-sdlc.md`](2026-10-06_using-agents-here-sdlc.md)
   — Human agent entry (New SDLC / Gite themes); cross-links; no product claims.
+=======
+- [`2026-10-06_feed-bookmark-outbox.md`](2026-10-06_feed-bookmark-outbox.md)
+  — Feed bookmark SwiftData outbox + sync engine (OI-08); removes “no mutation
+  queue” architecture claim.
+>>>>>>> bd39922 (feat: add Feed bookmark offline mutation outbox)
 - [`2026-10-05_reviewer-facing-polish.md`](2026-10-05_reviewer-facing-polish.md)
   — Custom icon variants, reviewer copy cleanup, public proof map.
 - [`2026-10-05_portfolio-reviewer-polish.md`](2026-10-05_portfolio-reviewer-polish.md)

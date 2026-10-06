@@ -15,7 +15,7 @@ Timed walk: [`docs/architecture-tour.md`](docs/architecture-tour.md).
 | AI-native SDLC kit | [`docs/ai-sdlc/README.md`](docs/ai-sdlc/README.md); skills [`docs/ai-sdlc/skills/`](docs/ai-sdlc/skills/); gates [`docs/ai-sdlc/gates.md`](docs/ai-sdlc/gates.md) |
 | Feature shape / layers | [`docs/feature-template.md`](docs/feature-template.md), [`docs/layers.md`](docs/layers.md), [`docs/modularity.md`](docs/modularity.md), `superDemoApp/Features/<Name>/{Presentation,Domain,Data}/` |
 | Modularity / import leaks | [`docs/modularity.md`](docs/modularity.md); `./tool/check_feature_folder_contract.sh`, `./tool/check_feature_import_leaks.sh` |
-| Feed (offline JSON + cache) | `superDemoApp/Features/Feed/`, [`docs/offline-first.md`](docs/offline-first.md), [`docs/offline-invariants.md`](docs/offline-invariants.md), [`docs/sync-and-networking.md`](docs/sync-and-networking.md) |
+| Feed (offline JSON + cache + bookmark outbox) | `superDemoApp/Features/Feed/`, [`docs/offline-first.md`](docs/offline-first.md), [`docs/offline-invariants.md`](docs/offline-invariants.md), [`docs/architecture/offline-first-behavior.md`](docs/architecture/offline-first-behavior.md), [`docs/sync-and-networking.md`](docs/sync-and-networking.md) |
 | Items (SwiftData reference) | `superDemoApp/Features/Items/` |
 | Production readiness / UIKit | `superDemoApp/Features/ProductionReadiness/`, `…/UIKitShowcase/` |
 | DI composition roots | `superDemoApp/App/*Composition.swift`, [`docs/dependency-injection.md`](docs/dependency-injection.md) |

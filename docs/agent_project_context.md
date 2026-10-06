@@ -33,7 +33,7 @@ Machine-readable project facts for agents.
 
 - `superDemoApp/Features/Items/` — SwiftData reference slice; cancel-safe refresh lifecycle.
 - `superDemoApp/Features/Feed/` — JSONPlaceholder + read-through cache with explicit stale UI;
-  `RefreshFeedUseCase` only.
+  `RefreshFeedUseCase`; **bookmark outbox** (`OutboxSyncEngine`, OI-08).
 - `superDemoApp/Features/ProductionReadiness/` — dashboard, shared networking, UIKit showcase.
 - Deep links: `superdemo://dashboard|/risks|/feed|/items` via `AppNavigation`.
 - Diagnostics: `ReleaseDiagnostics` + `OSLogCrashMonitor`; ModelContainer
