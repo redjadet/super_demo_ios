@@ -35,12 +35,18 @@ xcode_build_number() {
   printf '%s' "$build" | tr -d '[:space:]'
 }
 
+path_looks_beta() {
+  local base
+  base="$(basename "$1")"
+  [[ "$base" == *[Bb]eta* || "$base" == *[Pp]review* ]]
+}
+
+# Seed/beta by ProductBuildVersion (letter suffix) or metadata — not by path alone.
+# GHA may keep `_beta` in the app *name* after GM; build number is authoritative for
+# released-vs-seed ranking. Path labels only affect path preference + log honesty.
 is_beta_xcode() {
   local app="$1"
-  local base info short build
-  # Apple seed/beta ProductBuildVersion ends with a letter (e.g. 27A266a);
-  # GM/release builds end in digits (e.g. 17F113, 27A9269). Trust the build
-  # number over path labels — GHA may keep `_beta` in the app name after GM.
+  local info short build
   build="$(xcode_build_number "$app")"
   if [[ -n "$build" ]]; then
     if [[ "$build" =~ [A-Za-z]$ ]]; then
@@ -48,8 +54,7 @@ is_beta_xcode() {
     fi
     return 1
   fi
-  base="$(basename "$app")"
-  if [[ "$base" == *[Bb]eta* || "$base" == *[Pp]review* ]]; then
+  if path_looks_beta "$app"; then
     return 0
   fi
   info="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleGetInfoString' "$app/Contents/Info.plist" 2>/dev/null || true)"
@@ -79,7 +84,10 @@ resolve_app() {
   fi
 }
 
-# Ranked rows: channel(0=released,1=beta) \t version \t path_penalty(0=clean,1=_beta/_preview label) \t realpath
+# Ranked rows:
+#   channel(0=released,1=beta) \t version \t path_penalty(0=clean,1=_beta/_preview) \t path
+# Keep every /Applications alias (e.g. Xcode_27.1.app → Xcode_27.1_beta.app) so CI can
+# prefer the clean non-beta path label when several names share one install.
 rank_file="$(mktemp)"
 trap 'rm -f "$rank_file"' EXIT
 
@@ -87,34 +95,31 @@ shopt -s nullglob
 apps=(/Applications/Xcode*.app /Applications/Xcode.app)
 shopt -u nullglob
 
-seen=$'\n'
+seen_paths=$'\n'
 for app in "${apps[@]}"; do
   [[ -d "$app" ]] || continue
   [[ -x "$app/Contents/Developer/usr/bin/xcodebuild" ]] || continue
 
-  real="$(resolve_app "$app")"
-  if [[ "$seen" == *$'\n'"$real"$'\n'* ]]; then
+  # Deduplicate identical path strings only (keep distinct aliases).
+  if [[ "$seen_paths" == *$'\n'"$app"$'\n'* ]]; then
     continue
   fi
-  seen="${seen}${real}"$'\n'
+  seen_paths="${seen_paths}${app}"$'\n'
 
-  ver="$(xcode_short_version "$real")"
+  ver="$(xcode_short_version "$app")"
   if [[ -z "$ver" ]] || ! version_meets_min "$ver"; then
     continue
   fi
 
   channel=0
-  if is_beta_xcode "$real"; then
+  if is_beta_xcode "$app"; then
     channel=1
   fi
-  # When ProductBuildVersion says GM but the app path still contains `_beta`
-  # (common on GHA images), prefer a sibling without that label if versions tie.
   path_penalty=0
-  base="$(basename "$real")"
-  if [[ "$base" == *[Bb]eta* || "$base" == *[Pp]review* ]]; then
+  if path_looks_beta "$app"; then
     path_penalty=1
   fi
-  printf '%s\t%s\t%s\t%s\n' "$channel" "$ver" "$path_penalty" "$real" >>"$rank_file"
+  printf '%s\t%s\t%s\t%s\n' "$channel" "$ver" "$path_penalty" "$app" >>"$rank_file"
 done
 
 if [[ ! -s "$rank_file" ]]; then
@@ -132,12 +137,15 @@ else
   xcode_app="$(sort -t $'\t' -k2,2Vr -k3,3n "$rank_file" | head -n1 | cut -f4)"
 fi
 
+# Prefer a resolved path for DEVELOPER_DIR stability, but keep the chosen
+# (often clean-alias) path for logging.
+xcode_real="$(resolve_app "$xcode_app")"
 developer_dir="${xcode_app}/Contents/Developer"
 developer_bin="${developer_dir}/usr/bin"
 export DEVELOPER_DIR="$developer_dir"
 export PATH="${developer_bin}:${PATH}"
 current_dir="$(xcode-select -p 2>/dev/null || true)"
-if [[ "$current_dir" != "$developer_dir" ]]; then
+if [[ "$current_dir" != "$developer_dir" && "$current_dir" != "${xcode_real}/Contents/Developer" ]]; then
   if [[ "${CI:-}" == "true" ]]; then
     sudo xcode-select -s "$developer_dir"
   elif ! xcode-select -s "$developer_dir" 2>/dev/null; then
@@ -154,16 +162,37 @@ fi
 
 xcodebuild="${developer_bin}/xcodebuild"
 version_line="$("$xcodebuild" -version 2>/dev/null | sed -n '1p')"
-channel_label="released"
+build_line="$("$xcodebuild" -version 2>/dev/null | sed -n '2p')"
+build_is_beta=0
 if is_beta_xcode "$xcode_app"; then
+  build_is_beta=1
+fi
+path_is_beta=0
+if path_looks_beta "$xcode_app"; then
+  path_is_beta=1
+fi
+
+if [[ "$build_is_beta" -eq 1 ]]; then
   if [[ "${CI:-}" == "true" ]]; then
-    channel_label="beta/preview (no newer released install)"
+    channel_label="beta/preview (no released install qualifies)"
   else
     channel_label="local newest (seed/beta allowed)"
   fi
+elif [[ "$path_is_beta" -eq 1 ]]; then
+  # GM/release build still living under a _beta/_preview path label (no clean alias).
+  channel_label="released (GM build; path still labelled beta/preview)"
+else
+  channel_label="released"
 fi
+
 echo "Using ${xcode_app} [${channel_label}]"
+if [[ "$xcode_app" != "$xcode_real" ]]; then
+  echo "realpath=${xcode_real}"
+fi
 echo "${version_line}"
+if [[ -n "$build_line" ]]; then
+  echo "${build_line}"
+fi
 echo "xcodebuild=$(command -v xcodebuild)"
 
 picked_ver="$(echo "$version_line" | sed -E 's/^Xcode[[:space:]]+//' | sed -E 's/[^0-9.].*$//' | tr -d '[:space:]')"
