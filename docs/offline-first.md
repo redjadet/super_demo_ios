@@ -2,6 +2,11 @@
 
 Default product posture: local data first, sync opportunistically.
 
+**Reviewer deep-dives (code-cited):**
+[`architecture/offline-first-behavior.md`](architecture/offline-first-behavior.md),
+[`architecture/cache-behavior.md`](architecture/cache-behavior.md),
+[`architecture/native-cancellation.md`](architecture/native-cancellation.md).
+
 **Named invariants (Feed / Items / store recovery):** see
 [`offline-invariants.md`](offline-invariants.md) — OI-01…OI-07 mapped to
 `CachingFeedRepository`, Items local writes, and tests.

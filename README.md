@@ -83,6 +83,7 @@ From the repository root:
 | --- | --- |
 | Task → path router | [`CODEMAP.md`](CODEMAP.md) |
 | ≤15 min architecture tour | [`docs/architecture-tour.md`](docs/architecture-tour.md) |
+| Reviewer architecture deep-dives | [`docs/architecture/`](docs/architecture/README.md) — [cancellation](docs/architecture/native-cancellation.md) · [cache](docs/architecture/cache-behavior.md) · [offline-first](docs/architecture/offline-first-behavior.md) · [Flutter](docs/architecture/flutter-add-to-app.md) |
 | Reviewer map / talk tracks | [`docs/portfolio.md`](docs/portfolio.md) |
 | Design system | [`DESIGN.md`](DESIGN.md) |
 | Layers / modularity | [`docs/layers.md`](docs/layers.md) |

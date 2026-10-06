@@ -56,6 +56,11 @@ Source-of-truth docs for `superDemoApp`.
 ## iOS Engineering
 
 - Architecture: [`architecture.md`](architecture.md)
+- Reviewer architecture deep-dives: [`architecture/README.md`](architecture/README.md)
+  ([cancellation](architecture/native-cancellation.md),
+  [cache](architecture/cache-behavior.md),
+  [offline-first](architecture/offline-first-behavior.md),
+  [Flutter](architecture/flutter-add-to-app.md))
 - Architecture decisions (ADR): [`adr/README.md`](adr/README.md)
 - Apple development practices: [`apple-development-practices.md`](apple-development-practices.md)
 - Layers: [`layers.md`](layers.md)
