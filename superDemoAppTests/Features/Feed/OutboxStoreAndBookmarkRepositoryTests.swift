@@ -119,7 +119,7 @@ private final class KeyFactory: @unchecked Sendable {
     }
 }
 
-@MainActor
+/// Mutable clock for FIFO tests. Not MainActor — `FixedOutboxClock` needs a Sendable `now`.
 private final class ClockBox: @unchecked Sendable {
     var date = Date()
 }

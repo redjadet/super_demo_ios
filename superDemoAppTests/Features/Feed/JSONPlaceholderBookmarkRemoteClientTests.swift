@@ -30,8 +30,8 @@ struct JSONPlaceholderBookmarkRemoteClientTests {
     }
 
     @Test
-    func setBookmarkMaps409ToConflict() async throws {
-        try await StubURLProtocolGate.shared.withSession(
+    func setBookmarkMaps409ToConflict() async {
+        await StubURLProtocolGate.shared.withSession(
             stubs: [.response(statusCode: 409)]
         ) { session, _ in
             let api = URLSessionAPIClient(

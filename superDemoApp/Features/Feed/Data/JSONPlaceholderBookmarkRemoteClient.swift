@@ -11,7 +11,7 @@ import Foundation
 /// with a titled payload; clear → `DELETE /posts/{id}`. Responses succeed but
 /// are not durably stored server-side. Idempotency-Key is sent on every POST
 /// so client retries stay safe against the SPM retry policy.
-struct JSONPlaceholderBookmarkRemoteClient: BookmarkRemoteClient {
+nonisolated struct JSONPlaceholderBookmarkRemoteClient: BookmarkRemoteClient {
     private let client: APIClient
     private let postsURL: URL
 
@@ -99,14 +99,14 @@ struct JSONPlaceholderBookmarkRemoteClient: BookmarkRemoteClient {
             BookmarkRemoteError.decodingFailed
         }
     }
-}
 
-private struct BookmarkCreateDTO: Encodable {
-    let title: String
-    let body: String
-    let userId: Int
-}
+    private struct BookmarkCreateDTO: Encodable {
+        let title: String
+        let body: String
+        let userId: Int
+    }
 
-private struct BookmarkCreateResponseDTO: Decodable {
-    let id: Int
+    private struct BookmarkCreateResponseDTO: Decodable {
+        let id: Int
+    }
 }

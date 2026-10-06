@@ -8,7 +8,6 @@ import SwiftData
 import Testing
 @testable import superDemoApp
 
-@MainActor
 private final class RecordingBookmarkRemote: BookmarkRemoteClient, @unchecked Sendable {
     struct Call: Equatable, Sendable {
         let kind: String
@@ -16,33 +15,79 @@ private final class RecordingBookmarkRemote: BookmarkRemoteClient, @unchecked Se
         let idempotencyKey: String
     }
 
-    private(set) var calls: [Call] = []
-    var errorForCallIndex: [Int: Error] = [:]
-    var hangUntilCancelled = false
+    private let lock = NSLock()
+    private var _calls: [Call] = []
+    private var _errorForCallIndex: [Int: Error] = [:]
+    private var _hangUntilCancelled = false
+
+    var calls: [Call] {
+        self.lock.lock()
+        defer { self.lock.unlock() }
+        return self._calls
+    }
+
+    var errorForCallIndex: [Int: Error] {
+        get {
+            self.lock.lock()
+            defer { self.lock.unlock() }
+            return self._errorForCallIndex
+        }
+        set {
+            self.lock.lock()
+            self._errorForCallIndex = newValue
+            self.lock.unlock()
+        }
+    }
+
+    var hangUntilCancelled: Bool {
+        get {
+            self.lock.lock()
+            defer { self.lock.unlock() }
+            return self._hangUntilCancelled
+        }
+        set {
+            self.lock.lock()
+            self._hangUntilCancelled = newValue
+            self.lock.unlock()
+        }
+    }
 
     func setBookmark(postID: Int, idempotencyKey: String) async throws -> Int? {
-        self.calls.append(Call(kind: "set", postID: postID, idempotencyKey: idempotencyKey))
-        if self.hangUntilCancelled {
+        let callIndex: Int
+        let shouldHang: Bool
+        self.lock.lock()
+        self._calls.append(Call(kind: "set", postID: postID, idempotencyKey: idempotencyKey))
+        callIndex = self._calls.count - 1
+        shouldHang = self._hangUntilCancelled
+        let error = self._errorForCallIndex[callIndex]
+        self.lock.unlock()
+
+        if shouldHang {
             try await Task.sleep(nanoseconds: 60_000_000_000)
         } else {
             await Task.yield()
         }
-        if let error = self.errorForCallIndex[self.calls.count - 1] {
+        if let error {
             throw error
         }
         return postID + 100
     }
 
     func clearBookmark(postID: Int, remoteBookmarkID _: Int?, idempotencyKey: String) async throws {
-        self.calls.append(Call(kind: "clear", postID: postID, idempotencyKey: idempotencyKey))
-        if let error = self.errorForCallIndex[self.calls.count - 1] {
+        let error: Error?
+        self.lock.lock()
+        self._calls.append(Call(kind: "clear", postID: postID, idempotencyKey: idempotencyKey))
+        let callIndex = self._calls.count - 1
+        error = self._errorForCallIndex[callIndex]
+        self.lock.unlock()
+        if let error {
             throw error
         }
         await Task.yield()
     }
 }
 
-@MainActor
+/// Mutable clock for sync tests. Not MainActor — `FixedOutboxClock` needs a Sendable `now`.
 private final class ClockBox: @unchecked Sendable {
     var date = Date()
 }

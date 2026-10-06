@@ -10,7 +10,10 @@ import Foundation
 /// Live implementation maps to JSONPlaceholder `POST/DELETE /posts` — that API
 /// fakes persistence (no real bookmarks resource). The protocol stays mockable
 /// for tests; do not invent a `/bookmarks` path.
-protocol BookmarkRemoteClient: Sendable {
+///
+/// `nonisolated` so `OutboxSyncEngine` (and Sendable test closures) can call
+/// under `SWIFT_DEFAULT_ACTOR_ISOLATION=MainActor`.
+nonisolated protocol BookmarkRemoteClient: Sendable {
     /// Sets a bookmark remotely. Returns a remote id when the server assigns one.
     func setBookmark(
         postID: Int,
@@ -25,7 +28,7 @@ protocol BookmarkRemoteClient: Sendable {
     ) async throws
 }
 
-enum BookmarkRemoteError: Error, Equatable, Sendable {
+nonisolated enum BookmarkRemoteError: Error, Equatable, Sendable {
     case conflict
     case httpStatus(Int)
     case transport
