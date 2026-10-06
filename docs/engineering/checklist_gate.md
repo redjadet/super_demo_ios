@@ -8,13 +8,15 @@ merge — not a second parallel theater.
 
 | Lane | Local | Hosted CI (`.github/workflows/ci.yml`) |
 | --- | --- | --- |
-| Markdown lint | `./bin/lint-markdown.sh` | job `lint` → Fastlane `ci_lint` |
+| Change scope | `./bin/checklist --print-scope` | job `changes` (docs-only routing) |
+| Markdown lint | `./bin/lint-markdown.sh` | job `lint` → Fastlane `ci_lint` (or docs-only route) |
 | DESIGN.md (DesignMD) | `./tool/check_design_md.sh` | job `lint` → `ci_lint` (includes DesignMD) |
 | Swift lint + modularity + evidence map | `./bin/lint.sh` | job `lint` |
-| Common issues | `./tool/check_common_issues.sh` (sim runtime compat + AASA parity/live-host DNS honesty + Markdown relative links) | job `lint` |
-| iPhone build/test | `./bin/ci-iphone-test.sh` | job `iphone-test` |
+| Common issues | `./tool/check_common_issues.sh` (scope contract + sim runtime compat + AASA parity/live-host DNS honesty + Markdown relative links) | job `lint` |
+| iPhone build-for-testing | `./bin/ci-iphone-build-for-testing.sh` | job `iphone-build` |
+| iPhone test shards | `./bin/ci-iphone-test.sh` (unsharded locally) | matrix job `iphone-test` (`test-without-building` shards) |
 | iPad + Mac + watchOS builds | `./bin/ci-platform-builds.sh` (watch: `./bin/ci-watch-build.sh`) | job `platform-builds` |
-| Aggregate gate | `./bin/checklist` (single command) | job **`checklist`** (needs the three macos jobs) |
+| Aggregate gate | `./bin/checklist` (single command) | job **`checklist`** / **Delivery checklist** (needs scope + lint + iPhone build/test + platform) |
 
 **Xcode warnings are errors** on checklist / CI xcodebuild lanes via project
 build settings (`SWIFT_TREAT_WARNINGS_AS_ERRORS=YES`,
@@ -40,14 +42,17 @@ checklist gate.
 
 - Any step exits non-zero → stop; fix that lane; re-run.
 - Xcode warning under treat-as-error → build fails like an error.
-- GHA: any of `lint` / `iphone-test` / `platform-builds` red → aggregate
-  `checklist` fails → **do not merge**.
+- GHA: any required lane red → aggregate `checklist` fails → **do not merge**.
+- Docs-only PR diffs (narrow markdown/adoc/`llms.txt` allowlist): Xcode lanes
+  bypass but still report through **Delivery checklist** (flutter_bloc_app
+  parity). Code, workflow, script, or mixed diffs take the full route.
 
 ## Honesty (PR vs local)
 
-Hosted `iphone-test` defaults to concrete newest-runtime iPhone + `xcodebuild
-test` (`CI_IPHONE_GENERIC_BUILD=0`). The generic build-only path is an escape
-hatch only. Local `./bin/checklist` uses the same script. See
+Hosted iPhone proof uses `build-for-testing` once, then matrix
+`test-without-building` shards on the newest-runtime iPhone
+(`CI_IPHONE_GENERIC_BUILD=0`). The generic build-only path is an escape hatch
+only. Local `./bin/checklist` runs the unsharded `./bin/ci-iphone-test.sh`. See
 [`../adr/0005-ci-pr-vs-local-honesty.md`](../adr/0005-ci-pr-vs-local-honesty.md)
 and [`../ci-cd-map.md`](../ci-cd-map.md). Name the exact proof command in finish
 reports.

@@ -6,9 +6,10 @@ on:
   pull_request:
     branches: [main]
 
+# Cancel superseded PR pushes only — never cancel in-progress main runs.
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
@@ -17,12 +18,49 @@ env:
   SUPER_DEMO_XCODE_MIN_VERSION: "27"
 
 jobs:
-  # Delivery checklist (Flutter ./bin/checklist role), parallelized for macos runners.
+  # Scope / preflight (flutter_bloc_app `changes` job parity).
+  # Unknown/empty diffs → full CI. Docs-only PR diffs skip Xcode work inside
+  # lane jobs that still report success so branch protection stays green.
+  changes:
+    name: Checklist · changes
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      docs_only: ${{ steps.scope.outputs.docs_only }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Determine change scope
+        id: scope
+        shell: bash
+        run: |
+          set -euo pipefail
+          docs_only="$(./bin/checklist --print-scope)"
+          case "$docs_only" in
+            docs_only=true|docs_only=false) ;;
+            *) echo "Invalid checklist scope: $docs_only" >&2; exit 1 ;;
+          esac
+          docs_only="${docs_only#docs_only=}"
+          echo "docs_only=$docs_only" >> "$GITHUB_OUTPUT"
+          {
+            echo "## Change scope"
+            echo ""
+            echo "- event: \`${{ github.event_name }}\`"
+            echo "- docs_only: \`$docs_only\`"
+            echo "- rule: \`tool/checklist_scope.sh\` (markdown/mdx/rst/adoc + llms.txt)"
+            echo "- unknown/empty/mixed/code/workflow diffs take the full route"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  # Delivery checklist lanes (Flutter ./bin/checklist role), parallelized.
   # Local single-command equivalent: ./bin/checklist
   # Docs: docs/engineering/checklist_gate.md
   lint:
     name: Checklist · lint
-    runs-on: xcode-27
+    needs: changes
+    runs-on: ${{ needs.changes.outputs.docs_only == 'true' && 'ubuntu-latest' || 'xcode-27' }}
     timeout-minutes: 15
     defaults:
       run:
@@ -31,71 +69,67 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v5
-
-      - name: Select latest released Xcode
-        env:
-          CI: true
-        run: source ./tool/select_xcode.sh
-
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
         with:
-          ruby-version: "3.3"
-          bundler-cache: true
+          fetch-depth: 0
 
-      - name: Install lint tools
-        run: brew bundle check --file Brewfile || brew bundle --file Brewfile
+      - name: Docs-only lint (no Brewfile / SwiftLint / Xcode)
+        if: needs.changes.outputs.docs_only == 'true'
+        run: |
+          set -euo pipefail
+          if ! command -v npm >/dev/null 2>&1 && ! command -v npx >/dev/null 2>&1; then
+            echo "error: npx required for DesignMD on docs-only lint" >&2
+            exit 1
+          fi
+          ./bin/lint-markdown.sh
+          ./tool/check_design_md.sh
+          ./tool/check_checklist_scope.sh
+          echo "Docs-only lint route passed."
+
+      - name: Setup iOS CI (Ruby + Brewfile)
+        if: needs.changes.outputs.docs_only != 'true'
+        uses: ./.github/actions/setup-ios-ci
+        with:
+          ruby: "true"
+          brewfile: "true"
+          cache-key-suffix: lint
 
       - name: Lint (Swift + markdown + DesignMD + common)
+        if: needs.changes.outputs.docs_only != 'true'
         env:
           CI: true
         run: bundle exec fastlane ci_lint
 
-  iphone-test:
-    name: Checklist · iPhone test
-    runs-on: xcode-27
-    # Normal green runs ~30–50m; fail hung runners before the old ~90m burn.
-    timeout-minutes: 70
+  # Build once — shards download products and run test-without-building.
+  iphone-build:
+    name: Checklist · iPhone build
+    needs: changes
+    runs-on: ${{ needs.changes.outputs.docs_only == 'true' && 'ubuntu-latest' || 'xcode-27' }}
+    timeout-minutes: 45
     defaults:
       run:
         working-directory: .
-
     steps:
       - name: Checkout
         uses: actions/checkout@v5
 
-      - name: Select latest released Xcode
-        env:
-          CI: true
-        run: source ./tool/select_xcode.sh
+      - name: Docs-only iPhone build bypass
+        if: needs.changes.outputs.docs_only == 'true'
+        run: |
+          echo "Documentation-only diff; iPhone build-for-testing has no code to compile."
 
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
+      - name: Setup iOS CI (Flutter + Brewfile + caches)
+        if: needs.changes.outputs.docs_only != 'true'
+        uses: ./.github/actions/setup-ios-ci
         with:
-          ruby-version: "3.3"
-          bundler-cache: true
-
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          channel: stable
-          cache: true
-
-      - name: Cache Xcode + SwiftPM + Flutter frameworks
-        uses: actions/cache@v6
-        with:
-          path: |
-            ~/Library/Caches/org.swift.swiftpm
-            ~/Library/Developer/Xcode/DerivedData
-            ${{ runner.temp }}/DerivedData-iPhone
-            Flutter
-          key: >-
-            xcode27-${{ runner.os }}-${{ runner.arch }}-iphone-flutter-${{ hashFiles('**/Package.resolved', '**/*.xcodeproj/project.pbxproj', 'flutter_module/pubspec.lock', 'flutter_module/lib/**') }}
-
-      - name: Install lint tools (for build phases)
-        run: brew bundle check --file Brewfile || brew bundle --file Brewfile
+          flutter: "true"
+          ruby: "true"
+          brewfile: "true"
+          cache-flutter-embed: "true"
+          cache-key-suffix: iphone-build
+          derived-data-paths: ${{ runner.temp }}/DerivedData-iPhone
 
       - name: Prepare Flutter add-to-app frameworks
+        if: needs.changes.outputs.docs_only != 'true'
         run: |
           if [[ -d Flutter/Debug/Flutter.xcframework ]]; then
             ./tool/prepare_flutter_embed.sh --skip-build
@@ -104,21 +138,87 @@ jobs:
           fi
           (cd flutter_module && flutter test)
 
-      - name: iPhone tests (warnings as errors)
+      - name: Pre-boot iPhone simulator (parallel with later build)
+        if: needs.changes.outputs.docs_only != 'true'
         env:
           CI: true
           CI_PREPARE_IPAD: "0"
-          # Concrete newest-runtime iPhone simulator + xcodebuild test (not generic build-only).
-          CI_IPHONE_GENERIC_BUILD: "0"
-          # Single attempt (no hard-timeout full-suite retry). Leave headroom under job 70m.
-          CI_IPHONE_XCODEBUILD_TIMEOUT_SECONDS: "3300"
+        run: source ./tool/ensure_ci_simulator.sh
+
+      - name: iPhone build-for-testing
+        if: needs.changes.outputs.docs_only != 'true'
+        env:
+          CI: true
+          CI_PREPARE_IPAD: "0"
+          CI_IPHONE_XCODEBUILD_TIMEOUT_SECONDS: "1800"
           IPHONE_DERIVED_DATA_PATH: ${{ runner.temp }}/DerivedData-iPhone
+          SUPERDEMO_REQUIRE_FLUTTER_EMBED: "1"
+        run: ./bin/ci-iphone-build-for-testing.sh
+
+      - name: Upload iPhone test products
+        if: needs.changes.outputs.docs_only != 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          name: iphone-test-products
+          path: ${{ runner.temp }}/DerivedData-iPhone/Build/Products
+          if-no-files-found: error
+          retention-days: 1
+
+  # Matrix shards are skipped on docs-only (aggregator accepts skipped).
+  # Job display names become "Checklist · iPhone test (<shard>)".
+  iphone-test:
+    name: Checklist · iPhone test
+    needs: [changes, iphone-build]
+    if: >-
+      always() &&
+      needs.changes.outputs.docs_only != 'true' &&
+      needs.iphone-build.result == 'success'
+    runs-on: xcode-27
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [unit-and-app-ui, engineering-a, engineering-b]
+    defaults:
+      run:
+        working-directory: .
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup iOS CI (Xcode select)
+        uses: ./.github/actions/setup-ios-ci
+        with:
+          cache-key-suffix: iphone-test-${{ matrix.shard }}
+
+      - name: Download iPhone test products
+        uses: actions/download-artifact@v7
+        with:
+          name: iphone-test-products
+          path: ${{ runner.temp }}/iphone-test-products
+
+      - name: Pre-boot iPhone simulator
+        env:
+          CI: true
+          CI_PREPARE_IPAD: "0"
+        run: source ./tool/ensure_ci_simulator.sh
+
+      - name: iPhone tests (test-without-building shard)
+        env:
+          CI: true
+          CI_PREPARE_IPAD: "0"
+          CI_IPHONE_GENERIC_BUILD: "0"
+          CI_IPHONE_TEST_MODE: test-without-building
+          CI_IPHONE_TEST_SHARD: ${{ matrix.shard }}
+          CI_IPHONE_PRODUCTS_DIR: ${{ runner.temp }}/iphone-test-products
+          CI_IPHONE_XCODEBUILD_TIMEOUT_SECONDS: "2100"
           SUPERDEMO_REQUIRE_FLUTTER_EMBED: "1"
         run: ./bin/ci-iphone-test.sh
 
   platform-builds:
     name: Checklist · platform builds
-    runs-on: xcode-27
+    needs: changes
+    runs-on: ${{ needs.changes.outputs.docs_only == 'true' && 'ubuntu-latest' || 'xcode-27' }}
     timeout-minutes: 75
     defaults:
       run:
@@ -128,39 +228,25 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
 
-      - name: Select latest released Xcode
-        env:
-          CI: true
-        run: source ./tool/select_xcode.sh
+      - name: Docs-only platform builds bypass
+        if: needs.changes.outputs.docs_only == 'true'
+        run: echo "Documentation-only diff; iPad/Mac/watchOS builds have no code to compile."
 
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
+      - name: Setup iOS CI (Flutter + Brewfile + caches)
+        if: needs.changes.outputs.docs_only != 'true'
+        uses: ./.github/actions/setup-ios-ci
         with:
-          ruby-version: "3.3"
-          bundler-cache: true
-
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          channel: stable
-          cache: true
-
-      - name: Cache Xcode + SwiftPM + Flutter frameworks
-        uses: actions/cache@v6
-        with:
-          path: |
-            ~/Library/Caches/org.swift.swiftpm
-            ~/Library/Developer/Xcode/DerivedData
+          flutter: "true"
+          ruby: "true"
+          brewfile: "true"
+          cache-flutter-embed: "true"
+          cache-key-suffix: platform
+          derived-data-paths: |
             ${{ runner.temp }}/DerivedData-iPad
             ${{ runner.temp }}/DerivedData-Mac
-            Flutter
-          key: >-
-            xcode27-${{ runner.os }}-${{ runner.arch }}-platform-flutter-${{ hashFiles('**/Package.resolved', '**/*.xcodeproj/project.pbxproj', 'flutter_module/pubspec.lock', 'flutter_module/lib/**') }}
-
-      - name: Install lint tools (for build phases)
-        run: brew bundle check --file Brewfile || brew bundle --file Brewfile
 
       - name: Prepare Flutter add-to-app frameworks (iPad; Mac skips link)
+        if: needs.changes.outputs.docs_only != 'true'
         run: |
           if [[ -d Flutter/Debug/Flutter.xcframework ]]; then
             ./tool/prepare_flutter_embed.sh --skip-build
@@ -169,6 +255,7 @@ jobs:
           fi
 
       - name: iPad and Mac builds (warnings as errors)
+        if: needs.changes.outputs.docs_only != 'true'
         env:
           CI: true
           CI_PREPARE_IPHONE: "0"
@@ -182,22 +269,33 @@ jobs:
     name: Delivery checklist
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    needs: [lint, iphone-test, platform-builds]
+    needs: [changes, lint, iphone-build, iphone-test, platform-builds]
     if: ${{ always() }}
     steps:
       - name: Check checklist lanes
         run: |
-          if [[ "${{ needs.lint.result }}" != "success" ]]; then
-            echo "checklist lane failed: lint"
+          set -euo pipefail
+          docs_only="${{ needs.changes.outputs.docs_only }}"
+          echo "docs_only=$docs_only"
+
+          fail_lane() {
+            echo "checklist lane failed: $1 (result=$2)" >&2
             exit 1
+          }
+
+          [[ "${{ needs.changes.result }}" == "success" ]] || fail_lane changes "${{ needs.changes.result }}"
+          [[ "${{ needs.lint.result }}" == "success" ]] || fail_lane lint "${{ needs.lint.result }}"
+          [[ "${{ needs['iphone-build'].result }}" == "success" ]] || fail_lane iphone-build "${{ needs['iphone-build'].result }}"
+          [[ "${{ needs['platform-builds'].result }}" == "success" ]] || fail_lane platform-builds "${{ needs['platform-builds'].result }}"
+
+          iphone_test_result="${{ needs['iphone-test'].result }}"
+          if [[ "$docs_only" == "true" ]]; then
+            # Matrix shards are skipped on docs-only; required gate still reports.
+            [[ "$iphone_test_result" == "success" || "$iphone_test_result" == "skipped" ]] \
+              || fail_lane iphone-test "$iphone_test_result"
+          else
+            [[ "$iphone_test_result" == "success" ]] || fail_lane iphone-test "$iphone_test_result"
           fi
-          if [[ "${{ needs['iphone-test'].result }}" != "success" ]]; then
-            echo "checklist lane failed: iphone-test"
-            exit 1
-          fi
-          if [[ "${{ needs['platform-builds'].result }}" != "success" ]]; then
-            echo "checklist lane failed: platform-builds"
-            exit 1
-          fi
-          echo "Delivery checklist gate passed (lint + iphone-test + platform-builds)."
+
+          echo "Delivery checklist gate passed (changes + lint + iphone-build + iphone-test shards + platform-builds)."
           echo "Local equivalent: ./bin/checklist — see docs/engineering/checklist_gate.md"

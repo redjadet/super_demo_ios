@@ -39,10 +39,14 @@ Human judgment of process vs final diff:
 
 ## UI smoke (CI)
 
-The iPhone test lane (`bin/ci-iphone-test.sh`, GitHub Actions `iphone-test`)
-boots the **newest available iOS Simulator runtime** iPhone (via
-`tool/ensure_ci_simulator.sh` + `tool/ios_simulator_runtime.sh`) and runs
-`xcodebuild test` (unit + UI) with warnings-as-errors. Destination preference:
+The iPhone test lane (`bin/ci-iphone-test.sh`, GitHub Actions `iphone-build` +
+matrix `iphone-test`) boots the **newest available iOS Simulator runtime**
+iPhone (via `tool/ensure_ci_simulator.sh` + `tool/ios_simulator_runtime.sh`).
+Hosted CI runs `xcodebuild build-for-testing` once, uploads Products /
+`.xctestrun`, then shards `test-without-building` (`unit-and-app-ui`,
+`engineering-a`, `engineering-b` — see `tool/ci_iphone_test_shards.sh`) so the
+total test set stays identical. Local checklist runs unsharded `xcodebuild test`
+(unit + UI) with warnings-as-errors. Destination preference:
 iPhone 18 **Pro** → Pro Max → Plus → base (skip Duo/Fold/Air), then
 generation-ranked fallback. UDID hex is normalized uppercase for destination
 matching. Local Mac prefers a booted iPhone 18 Pro when present.

@@ -278,10 +278,15 @@ cursor_template_files=(
   Gemfile.lock
   fastlane/Fastfile
   bin/ci-platform-builds.sh
+  bin/ci-iphone-build-for-testing.sh
   bin/fastlane-run
   bin/verify-swift.sh
   tool/bootstrap_fastlane.sh
   tool/check_agent_swift_patterns.sh
+  tool/checklist_scope.sh
+  tool/checklist_changed_files.sh
+  tool/check_checklist_scope.sh
+  tool/ci_iphone_test_shards.sh
   tool/install-git-hooks.sh
   tool/git-hooks/pre-commit
   tool/cursor-template/hooks/hooks.json
@@ -304,6 +309,13 @@ if [[ -f "$mcp_config" ]]; then
     || fail "XcodeBuildMCP config exists but scheme is not superDemoApp"
 else
   echo "info: XcodeBuildMCP config not found at $mcp_config; skipping host-local MCP check."
+fi
+
+section "Checklist docs-only scope contract"
+if [[ -x tool/check_checklist_scope.sh ]]; then
+  ./tool/check_checklist_scope.sh || fail "checklist scope contract failed"
+else
+  fail "tool/check_checklist_scope.sh must be executable"
 fi
 
 section "Simulator runtime ↔ device-type compat"

@@ -52,7 +52,7 @@ Without step 2, the iOS app still builds; the demo shows an honest
 
 ## CI
 
-- **iphone-test** / **platform-builds (iPad):** install Flutter →
+- **iphone-build** (+ `iphone-test` shards) / **platform-builds (iPad):** install Flutter →
   `./tool/prepare_flutter_embed.sh` (default **`--no-codesign`** — hosted runners
   have no Apple Development certs) → `SUPERDEMO_REQUIRE_FLUTTER_EMBED=1`.
 - **Mac lane:** same prepare is fine; embed script and sdk-filtered linker flags

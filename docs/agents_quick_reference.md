@@ -27,7 +27,7 @@ Detailed routing: [`engineering/validation_routing_fast_vs_full.md`](engineering
 | Fastlane lanes (lint, test, builds, CI, beta) | `./bin/fastlane-run <lane>` — see `fastlane/Fastfile` |
 
 `CI_SKIP_PLATFORM_BUILDS=1` skips iPad/Mac in `./bin/ci.sh` only when intentionally narrow.
-UI smoke (CI `iphone-test` / `bin/ci-iphone-test.sh`): Items launch, Dashboard →
+UI smoke (CI `iphone-build` + `iphone-test` shards / `bin/ci-iphone-test.sh`): Items launch, Dashboard →
 Production Risks, UIKit showcase, Feed tab, Feed/Items deep links, Engineering
 demos (incl. watch companion) — see [`testing.md`](testing.md#ui-smoke-ci).
 Launch via `UiTestSupport.launchApplication(from:)` (`-UITesting`, terminate +

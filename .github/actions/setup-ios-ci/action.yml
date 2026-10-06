@@ -1,0 +1,95 @@
+# yaml-language-server: $schema=https://json.schemastore.org/github-action.json
+name: Setup iOS CI workspace
+description: >-
+  Select released Xcode, optionally install Flutter/Ruby/Brewfile tools, and
+  restore SPM / DerivedData / Flutter embed caches (flutter_bloc_app composite
+  action pattern adapted for Xcode).
+
+inputs:
+  flutter:
+    description: Install Flutter stable via subosito/flutter-action
+    required: false
+    default: "false"
+  ruby:
+    description: Set up Ruby 3.3 with bundler-cache
+    required: false
+    default: "false"
+  brewfile:
+    description: Install Brewfile lint/build-phase tools
+    required: false
+    default: "false"
+  cache-key-suffix:
+    description: Distinguishes cache namespaces (iphone-build, platform, lint)
+    required: false
+    default: "default"
+  derived-data-paths:
+    description: Extra DerivedData paths to include in the Xcode cache
+    required: false
+    default: ""
+  cache-flutter-embed:
+    description: Include ./Flutter embed frameworks in the cache
+    required: false
+    default: "false"
+
+runs:
+  using: composite
+  steps:
+    - name: Select latest released Xcode
+      shell: bash
+      env:
+        CI: true
+      run: source ./tool/select_xcode.sh
+
+    - name: Set up Ruby
+      if: ${{ inputs.ruby == 'true' }}
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: "3.3"
+        bundler-cache: true
+
+    - name: Set up Flutter
+      if: ${{ inputs.flutter == 'true' }}
+      uses: subosito/flutter-action@v2
+      with:
+        channel: stable
+        cache: true
+
+    - name: Cache Homebrew downloads
+      if: ${{ inputs.brewfile == 'true' }}
+      uses: actions/cache@v6
+      with:
+        path: |
+          ~/Library/Caches/Homebrew
+          ~/Library/Caches/Homebrew/downloads
+        key: >-
+          brew-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('Brewfile') }}
+        restore-keys: |
+          brew-${{ runner.os }}-${{ runner.arch }}-
+
+    - name: Cache Xcode + SwiftPM (+ Flutter embed)
+      if: ${{ inputs.cache-flutter-embed == 'true' }}
+      uses: actions/cache@v6
+      with:
+        path: |
+          ~/Library/Caches/org.swift.swiftpm
+          ~/Library/Developer/Xcode/DerivedData
+          ${{ inputs.derived-data-paths }}
+          Flutter
+        key: >-
+          xcode27-${{ runner.os }}-${{ runner.arch }}-${{ inputs.cache-key-suffix }}-flutter-${{ hashFiles('**/Package.resolved', '**/*.xcodeproj/project.pbxproj', 'flutter_module/pubspec.lock', 'flutter_module/lib/**') }}
+
+    - name: Cache Xcode + SwiftPM
+      if: ${{ inputs.cache-flutter-embed != 'true' }}
+      uses: actions/cache@v6
+      with:
+        path: |
+          ~/Library/Caches/org.swift.swiftpm
+          ~/Library/Developer/Xcode/DerivedData
+          ${{ inputs.derived-data-paths }}
+        key: >-
+          xcode27-${{ runner.os }}-${{ runner.arch }}-${{ inputs.cache-key-suffix }}-${{ hashFiles('**/Package.resolved', '**/*.xcodeproj/project.pbxproj') }}
+
+    - name: Install Brewfile tools
+      if: ${{ inputs.brewfile == 'true' }}
+      shell: bash
+      run: brew bundle check --file Brewfile || brew bundle --file Brewfile
