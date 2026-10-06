@@ -78,9 +78,10 @@ echo "IPHONE_PRODUCTS_DIR=$products_dir"
 echo "XCTESTRUN=$xctestrun"
 
 # Persist destination metadata for shard jobs (test-without-building).
+# Quote values — destinations contain spaces/commas and must survive `source`.
 metadata="$products_dir/ci-iphone-build-metadata.env"
 {
-  echo "CI_SIMULATOR_DEST=$SIMULATOR_DEST"
-  echo "XCTESTRUN_BASENAME=$(basename "$xctestrun")"
+  printf "CI_SIMULATOR_DEST=%q\n" "$SIMULATOR_DEST"
+  printf "XCTESTRUN_BASENAME=%q\n" "$(basename "$xctestrun")"
 } >"$metadata"
 echo "Wrote $metadata"

@@ -48,8 +48,9 @@ jobs:
             *) echo "Invalid checklist scope: $docs_only" >&2; exit 1 ;;
           esac
           docs_only="${docs_only#docs_only=}"
-          # Flip to "sharded" here to A/B the units-in-build + ui-a/ui-b layout.
-          iphone_layout="single"
+          # Flip to "single" to A/B one-runner build+parallel-UI (measured slower /
+          # timed out on clone overhead). Default: units-in-build + 4 UI shards.
+          iphone_layout="sharded"
           echo "docs_only=$docs_only" >> "$GITHUB_OUTPUT"
           echo "iphone_layout=$iphone_layout" >> "$GITHUB_OUTPUT"
           {
@@ -103,10 +104,9 @@ jobs:
           CI: true
         run: bundle exec fastlane ci_lint
 
-  # --- Layout: single (default) — build + test on one runner ---------------
-  # Boots the simulator in the background during setup/Flutter/build so boot
-  # is off the critical path, then runs the full suite with parallel workers
-  # (simulator clones) — no cross-job artifact round-trip.
+  # --- Layout: single (compare / fallback) — one runner, no artifact handoff --
+  # Measured: parallel UI workers timed out (~25–35m) after clone overhead;
+  # kept for A/B via changes.outputs.iphone_layout=single.
   iphone:
     name: Checklist · iPhone
     needs: changes
@@ -213,7 +213,9 @@ jobs:
           SUPERDEMO_REQUIRE_FLUTTER_EMBED: "1"
         run: ./bin/ci-iphone-test.sh
 
-  # --- Layout: sharded (compare / fallback) — units in build + 2 UI shards --
+  # --- Layout: sharded (default) — units in build + 4 UI shards -------------
+  # Early background sim boot on every job. Flutter SDK install skipped when
+  # Flutter/ embed cache hits. No xcodebuild parallel workers (clone overhead).
   iphone-build:
     name: Checklist · iPhone build
     needs: changes
@@ -241,24 +243,43 @@ jobs:
           source ./tool/ci_simulator_pick_existing.sh
           ./tool/ci_simulator_boot_bg.sh
 
-      - name: Setup iOS CI (Flutter + Brewfile + SPM/Flutter caches; Xcode already selected)
+      - name: Setup iOS CI (Brewfile + SPM/Flutter caches; no Flutter SDK yet)
         uses: ./.github/actions/setup-ios-ci
         with:
           select-xcode: "false"
-          flutter: "true"
+          flutter: "false"
           ruby: "false"
           brewfile: "true"
           cache-flutter-embed: "true"
           cache-key-suffix: iphone-build
 
-      - name: Prepare Flutter add-to-app frameworks (cached hash skips rebuild)
+      - name: Prepare Flutter embed (skip rebuild + SDK when cache hits)
+        id: flutter_embed
         run: |
           set -euo pipefail
           if [[ -d Flutter/Debug/Flutter.xcframework ]]; then
+            echo "==> Flutter embed cache hit — skip ios-framework rebuild and Flutter SDK"
             ./tool/prepare_flutter_embed.sh --skip-build
+            echo "cache_hit=true" >> "$GITHUB_OUTPUT"
           else
-            ./tool/prepare_flutter_embed.sh
+            echo "cache_hit=false" >> "$GITHUB_OUTPUT"
           fi
+
+      - name: Install Flutter SDK (cache miss only)
+        if: steps.flutter_embed.outputs.cache_hit != 'true'
+        uses: ./.github/actions/setup-ios-ci
+        with:
+          select-xcode: "false"
+          flutter: "true"
+          brewfile: "false"
+          cache-flutter-embed: "false"
+          cache-key-suffix: iphone-build-flutter-sdk
+
+      - name: Build Flutter embed + module tests (cache miss only)
+        if: steps.flutter_embed.outputs.cache_hit != 'true'
+        run: |
+          set -euo pipefail
+          ./tool/prepare_flutter_embed.sh
           (cd flutter_module && flutter test)
 
       - name: iPhone build-for-testing
@@ -307,11 +328,11 @@ jobs:
       needs.iphone-build.result == 'success' &&
       needs.changes.outputs.iphone_layout == 'sharded'
     runs-on: xcode-27
-    timeout-minutes: 40
+    timeout-minutes: 35
     strategy:
       fail-fast: false
       matrix:
-        shard: [ui-a, ui-b]
+        shard: [ui-1, ui-2, ui-3, ui-4]
     defaults:
       run:
         working-directory: .
@@ -329,13 +350,6 @@ jobs:
           source ./tool/ci_simulator_pick_existing.sh
           ./tool/ci_simulator_boot_bg.sh
 
-      - name: Setup iOS CI (lean — no Brewfile; Xcode already selected)
-        uses: ./.github/actions/setup-ios-ci
-        with:
-          select-xcode: "false"
-          brewfile: "false"
-          cache-key-suffix: iphone-test-${{ matrix.shard }}
-
       - name: Download iPhone test products
         uses: actions/download-artifact@v7
         with:
@@ -347,7 +361,7 @@ jobs:
           CI: true
         run: ./tool/ci_simulator_await.sh
 
-      - name: iPhone UI tests (test-without-building shard, parallel workers)
+      - name: iPhone UI tests (test-without-building shard, serial)
         env:
           CI: true
           CI_PREPARE_IPAD: "0"
@@ -355,9 +369,8 @@ jobs:
           CI_IPHONE_TEST_MODE: test-without-building
           CI_IPHONE_TEST_SHARD: ${{ matrix.shard }}
           CI_IPHONE_PRODUCTS_DIR: ${{ runner.temp }}/iphone-test-products
-          CI_IPHONE_XCODEBUILD_TIMEOUT_SECONDS: "2100"
-          CI_ALLOW_PARALLEL_TESTS: "1"
-          CI_PARALLEL_TESTING_WORKER_COUNT: "2"
+          CI_IPHONE_XCODEBUILD_TIMEOUT_SECONDS: "1500"
+          CI_ALLOW_PARALLEL_TESTS: "0"
           CI_SIMULATOR_REUSE_ONLY: "1"
           SUPERDEMO_REQUIRE_FLUTTER_EMBED: "1"
         run: ./bin/ci-iphone-test.sh

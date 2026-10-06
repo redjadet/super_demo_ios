@@ -2,16 +2,14 @@
 # iPhone CI test shard definitions. Total coverage must stay identical to the
 # unsharded lane (minus the existing CI skip of testLaunchPerformance).
 #
-# Layout (speed-split):
-#   unit   — superDemoAppTests only (Swift Testing + XCTest unit; no UI)
-#   ui-a   — balanced half of UI XCTest (~12 cases)
-#   ui-b   — balanced half of UI XCTest (~12 cases)
+# Layout (speed-split toward ≤20m wall):
+#   unit  — superDemoAppTests only (Swift Testing + XCTest unit; no UI)
+#   ui-1…ui-4 — balanced quarters of the 24 UI XCTest cases
 #
-# Legacy aliases kept for docs/local escapes:
-#   unit-and-app-ui / engineering-a / engineering-b
+# Also: ui (all UI), ui-a/ui-b (halves), legacy engineering / unit-and-app-ui.
 
 ci_iphone_shard_ids() {
-  printf '%s\n' unit ui ui-a ui-b
+  printf '%s\n' unit ui-1 ui-2 ui-3 ui-4
 }
 
 ci_iphone_shard_only_testing_args() {
@@ -22,12 +20,47 @@ ci_iphone_shard_only_testing_args() {
         "-only-testing:superDemoAppTests"
       ;;
     ui)
-      # All UI XCTest (24 cases); caller still skips testLaunchPerformance on CI.
       printf '%s\n' \
         "-only-testing:superDemoAppUITests"
       ;;
+    ui-1)
+      # ~6 cases — heavy app UI + one engineering
+      printf '%s\n' \
+        "-only-testing:superDemoAppUITests/superDemoAppUITests/testDashboardShowsProductionRisks" \
+        "-only-testing:superDemoAppUITests/superDemoAppUITests/testDeepLinkOpensFeedPostDetail" \
+        "-only-testing:superDemoAppUITests/superDemoAppUITests/testFeedTabIsReachable" \
+        "-only-testing:superDemoAppUITests/superDemoAppUITests/testLaunchShowsAddItemControl" \
+        "-only-testing:superDemoAppUITests/superDemoAppUITestsLaunchTests/testLaunch" \
+        "-only-testing:superDemoAppUITests/EngineeringDemosUITests/testOnDeviceVisionDemoRecognizesOrReportsHonestState"
+      ;;
+    ui-2)
+      printf '%s\n' \
+        "-only-testing:superDemoAppUITests/EngineeringDemosUITests/testStoreKitProductQueryDemoIsReachable" \
+        "-only-testing:superDemoAppUITests/EngineeringDemosUITests/testLocalNotificationDemoIsReachable" \
+        "-only-testing:superDemoAppUITests/EngineeringDemosUITests/testIdempotentPostDemoIsReachable" \
+        "-only-testing:superDemoAppUITests/EngineeringDemosUITests/testFlutterAddToAppDemoIsReachable" \
+        "-only-testing:superDemoAppUITests/superDemoAppUITests/testDeepLinkOpensItemsTab" \
+        "-only-testing:superDemoAppUITests/superDemoAppUITests/testFeedPostRowOpensDetail"
+      ;;
+    ui-3)
+      printf '%s\n' \
+        "-only-testing:superDemoAppUITests/EngineeringDemosUITests/testWatchCompanionDemoIsReachable" \
+        "-only-testing:superDemoAppUITests/EngineeringDemosUITests/testShareInboxDemoIsReachable" \
+        "-only-testing:superDemoAppUITests/EngineeringDemosUITests/testDiagnosticsDemoIsReachable" \
+        "-only-testing:superDemoAppUITests/EngineeringDemosUITests/testHostBridgePingDemoReturnsResponse" \
+        "-only-testing:superDemoAppUITests/EngineeringDemosUITests/testSignInWithAppleDemoIsReachable" \
+        "-only-testing:superDemoAppUITests/superDemoAppUITests/testItemRowOpensDetail"
+      ;;
+    ui-4)
+      printf '%s\n' \
+        "-only-testing:superDemoAppUITests/EngineeringDemosUITests/testFeedWidgetSnapshotDemoIsReachable" \
+        "-only-testing:superDemoAppUITests/superDemoAppUITests/testUIKitShowcaseCollectionIsReachable" \
+        "-only-testing:superDemoAppUITests/superDemoAppUITests/testStaleFeedEngineeringDemoShowsBanner" \
+        "-only-testing:superDemoAppUITests/superDemoAppUITests/testDeepLinkOpensFeedTab" \
+        "-only-testing:superDemoAppUITests/superDemoAppUITests/testFeedAccessibilityChromeRowsAndRetry" \
+        "-only-testing:superDemoAppUITests/superDemoAppUITests/testStaleFeedFixtureShowsBannerOnFeedTab"
+      ;;
     ui-a)
-      # ~12 UI cases — heavier demos + a few app UI (balanced vs ui-b by prior timings)
       printf '%s\n' \
         "-only-testing:superDemoAppUITests/superDemoAppUITests/testDashboardShowsProductionRisks" \
         "-only-testing:superDemoAppUITests/superDemoAppUITests/testDeepLinkOpensFeedPostDetail" \
@@ -57,7 +90,6 @@ ci_iphone_shard_only_testing_args() {
         "-only-testing:superDemoAppUITests/EngineeringDemosUITests/testWatchCompanionDemoIsReachable" \
         "-only-testing:superDemoAppUITests/EngineeringDemosUITests/testDiagnosticsDemoIsReachable"
       ;;
-    # Legacy 3-way split (kept for local comparison / rollback).
     unit-and-app-ui)
       printf '%s\n' \
         "-only-testing:superDemoAppTests" \
@@ -82,7 +114,6 @@ ci_iphone_shard_only_testing_args() {
         "-only-testing:superDemoAppUITests/EngineeringDemosUITests/testDiagnosticsDemoIsReachable"
       ;;
     "")
-      # Full suite (no -only-testing). Caller still applies CI LaunchPerformance skip.
       return 0
       ;;
     *)
