@@ -29,12 +29,26 @@ Local-only scratch plans under `docs/plans/` stay gitignored. **Shared** feature
 artifacts for multi-agent / PR review live under
 [`features/<slug>/`](features/README.md) (this kit).
 
+## Progressive prompting (implement loop)
+
+Do not ask an agent to deliver a full feature in one message. Break `plan.md`
+into ordered steps where each step starts from **working** code and adds **one**
+observable behavior, with named proof before the next step (**land → expand**).
+
+| Anti-pattern | Preferred |
+| --- | --- |
+| “Build offline bookmark outbox end-to-end” | Step 1: queue write + unit test; Step 2: UI pending state; … |
+| Skip proof between steps | `./bin/verify-swift.sh` (or a scoped test) after each step |
+
+Rules and a Feed bookmark example: [`skills/progressive-prompting.md`](skills/progressive-prompting.md).
+
 ## Concept map (industry idea → this repo)
 
 | Idea | Repo form | Path |
 | --- | --- | --- |
 | Agent instruction file | Lean always-loaded map | [`../../AGENTS.md`](../../AGENTS.md) |
 | Progressive context | Ladder + conditional owners | [`../ai/context_loading.md`](../ai/context_loading.md) |
+| Progressive prompting | One behavior / step; gates between steps | [`skills/progressive-prompting.md`](skills/progressive-prompting.md) |
 | Intent / spec / plan / review | Feature artifact kit | `templates/`, `features/<slug>/` |
 | Institutional skills | Short policy skills (any agent) | [`skills/`](skills/README.md) |
 | Deterministic hooks | Documented gates (scripts/CI) | [`gates.md`](gates.md) |

@@ -15,11 +15,17 @@ Paths the agent may edit (declare; do not expand silently):
 
 - …
 
-## Steps
+## Steps (land → expand)
 
-1. …
-2. …
-3. Run proof: `./bin/…`
+Each step = **one** observable behavior + **named proof** before the next step.
+Do not batch unrelated behaviors in one agent turn. Pattern:
+[`../skills/progressive-prompting.md`](../skills/progressive-prompting.md).
+
+| Step | Behavior (one) | Proof (command or UI) |
+| --- | --- | --- |
+| 1 | … | e.g. `./bin/verify-swift.sh` + focused test |
+| 2 | … | … |
+| N | Ready for review | `./bin/checklist` (or `./bin/checklist-fast` if docs-only) |
 
 ## Architecture notes
 

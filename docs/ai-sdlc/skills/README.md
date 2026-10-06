@@ -13,6 +13,7 @@ remain host-installed under gitignored `.agents/skills/` — see
 | [`security.md`](security.md) | Auth, Keychain, logs, privacy, secrets, ATS |
 | [`swift-concurrency.md`](swift-concurrency.md) | `async`/`await`, MainActor, cancellation, Tasks |
 | [`offline-outbox.md`](offline-outbox.md) | Offline writes, queues, Feed cache, sync rules |
+| [`progressive-prompting.md`](progressive-prompting.md) | One behavior per agent step; verify between steps |
 | [`flutter-add-to-app.md`](flutter-add-to-app.md) | `flutter_module/`, MethodChannel, embed scripts |
 
 Cursor always-apply rules (installed from `tool/cursor-template/`) stay thin maps
