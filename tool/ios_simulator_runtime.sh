@@ -371,8 +371,11 @@ for _, ident in standard:
 " "$runtime_id" 2>/dev/null || true
 }
 
-# Ensures an iOS simulator runtime exists. On CI, uses the newest installed runtime only
-# (no platform download — GHA images often have SDK 26.5 with runtime 26.4; download hangs).
+# Ensures an iOS simulator runtime exists. On CI, pin to the newest *already
+# installed* runtime by default (GHA images often ship SDK N with runtime N-ε;
+# -downloadPlatform can be multi-GB and leave a newest runtime with empty or
+# incompatible supportedDeviceTypes). Opt into download with
+# CI_DOWNLOAD_IOS_PLATFORM=1.
 ensure_ios_runtime_matches_sdk() {
   local sdk runtime_id runtime_version
   sdk="$(ios_simulator_sdk_version)"
@@ -404,19 +407,23 @@ print('yes' if vt(sdk) > vt(runtime) else 'no')
 " "$sdk" "$runtime_version"
     )"
     if [[ "$needs_download" == "yes" ]]; then
-      echo "==> CI SDK ${sdk} > simulator runtime ${runtime_version}; downloading iOS platform (timeout 900s)" >&2
-      if command -v timeout >/dev/null 2>&1; then
-        refresh_xcodebuild_from_developer_dir
-        timeout 900 "$XCODEBUILD" -downloadPlatform iOS \
-          || echo "warning: -downloadPlatform iOS failed or timed out; continuing with runtime ${runtime_version}" >&2
-      elif [[ -f "$ROOT/tool/run_with_timeout.py" ]]; then
-        refresh_xcodebuild_from_developer_dir
-        python3 "$ROOT/tool/run_with_timeout.py" --timeout 900 -- "$XCODEBUILD" -downloadPlatform iOS \
-          || echo "warning: -downloadPlatform iOS failed or timed out; continuing with runtime ${runtime_version}" >&2
+      if [[ "${CI_DOWNLOAD_IOS_PLATFORM:-0}" == "1" ]]; then
+        echo "==> CI SDK ${sdk} > simulator runtime ${runtime_version}; downloading iOS platform (CI_DOWNLOAD_IOS_PLATFORM=1, timeout 900s)" >&2
+        if command -v timeout >/dev/null 2>&1; then
+          refresh_xcodebuild_from_developer_dir
+          timeout 900 "$XCODEBUILD" -downloadPlatform iOS \
+            || echo "warning: -downloadPlatform iOS failed or timed out; continuing with runtime ${runtime_version}" >&2
+        elif [[ -f "$ROOT/tool/run_with_timeout.py" ]]; then
+          refresh_xcodebuild_from_developer_dir
+          python3 "$ROOT/tool/run_with_timeout.py" --timeout 900 -- "$XCODEBUILD" -downloadPlatform iOS \
+            || echo "warning: -downloadPlatform iOS failed or timed out; continuing with runtime ${runtime_version}" >&2
+        else
+          refresh_xcodebuild_from_developer_dir
+          "$XCODEBUILD" -downloadPlatform iOS \
+            || echo "warning: -downloadPlatform iOS failed; continuing with runtime ${runtime_version}" >&2
+        fi
       else
-        refresh_xcodebuild_from_developer_dir
-        "$XCODEBUILD" -downloadPlatform iOS \
-          || echo "warning: -downloadPlatform iOS failed; continuing with runtime ${runtime_version}" >&2
+        echo "==> CI SDK ${sdk} > simulator runtime ${runtime_version}; pinning installed runtime (set CI_DOWNLOAD_IOS_PLATFORM=1 to download)" >&2
       fi
     fi
     return 0

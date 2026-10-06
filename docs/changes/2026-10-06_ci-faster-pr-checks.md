@@ -29,3 +29,12 @@ Adopted `redjadet/flutter_bloc_app` PR CI patterns, adapted for Xcode:
 - Did not rename the required **`Delivery checklist`** check.
 - Did not add failure-hiding retries (kept single Accessibility / launch-progress
   reboot retry already in `bin/ci-iphone-test.sh`).
+
+## Follow-ups during CI iteration
+
+- Sourced `ensure_ci_simulator.sh` from GHA must use `BASH_SOURCE` for ROOT.
+- iPhone test shards need Brewfile (`rg`) for runtime-compat guards.
+- CI pins the newest *installed* simulator runtime by default (no multi-GB
+  `-downloadPlatform`); set `CI_DOWNLOAD_IOS_PLATFORM=1` to opt in. Compat
+  check allows older-runtime fallback when newest has incompatible
+  `supportedDeviceTypes`.
