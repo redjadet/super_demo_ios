@@ -46,7 +46,7 @@ nonisolated enum OutboxCoalescer {
             entry.status == .pending || entry.status == .failed
         }
 
-        let newestInFlight = inFlight.max(by: { lhs, rhs in lhs.createdAt < rhs.createdAt })
+        let newestInFlight = inFlight.max { lhs, rhs in lhs.createdAt < rhs.createdAt }
         let baseline: Bool
         if let payload = newestInFlight?.bookmarkPayload {
             baseline = payload.desiredBookmarked
