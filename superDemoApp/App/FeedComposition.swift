@@ -133,13 +133,21 @@ enum FeedComposition {
         }
 
         let engineHolder = SyncEngineHolder()
-        let repository = SwiftDataBookmarkRepository(context: context, outbox: outbox) {
+        // Local binding (not trailing closure): Swift 6 TrailingClosureMatching
+        // rejects unlabeled trailing match of optional `onEnqueued`, while
+        // SwiftLint trailing_closure rejects a labeled trailing-form call.
+        let onEnqueued: @Sendable () -> Void = {
             Task {
                 if let engine = await engineHolder.engine {
                     await engine.requestFlush()
                 }
             }
         }
+        let repository = SwiftDataBookmarkRepository(
+            context: context,
+            outbox: outbox,
+            onEnqueued: onEnqueued
+        )
         let engine = OutboxSyncEngine(
             outbox: OutboxStoreBox(outbox),
             remote: remote,

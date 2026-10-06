@@ -6,7 +6,9 @@
 import Foundation
 import Network
 
-protocol ConnectivityMonitoring: Sendable {
+/// Reachability for the outbox sync engine. Declared `nonisolated` so the
+/// sync actor can read it under `SWIFT_DEFAULT_ACTOR_ISOLATION=MainActor`.
+nonisolated protocol ConnectivityMonitoring: Sendable {
     func start(onChange: @escaping @Sendable (Bool) -> Void)
     func stop()
     var isConnected: Bool { get }
@@ -25,13 +27,13 @@ final class NWPathConnectivityMonitor: ConnectivityMonitoring, @unchecked Sendab
         self.queue = DispatchQueue(label: "com.ilkersevim.superDemoApp.connectivity")
     }
 
-    var isConnected: Bool {
+    nonisolated var isConnected: Bool {
         self.lock.lock()
         defer { self.lock.unlock() }
         return self._isConnected
     }
 
-    func start(onChange: @escaping @Sendable (Bool) -> Void) {
+    nonisolated func start(onChange: @escaping @Sendable (Bool) -> Void) {
         self.lock.lock()
         self.onChange = onChange
         self.lock.unlock()
@@ -54,7 +56,7 @@ final class NWPathConnectivityMonitor: ConnectivityMonitoring, @unchecked Sendab
         self.monitor.start(queue: self.queue)
     }
 
-    func stop() {
+    nonisolated func stop() {
         self.monitor.cancel()
         self.lock.lock()
         self.onChange = nil
@@ -72,13 +74,13 @@ final class ManualConnectivityMonitor: ConnectivityMonitoring, @unchecked Sendab
         self._isConnected = isConnected
     }
 
-    var isConnected: Bool {
+    nonisolated var isConnected: Bool {
         self.lock.lock()
         defer { self.lock.unlock() }
         return self._isConnected
     }
 
-    func start(onChange: @escaping @Sendable (Bool) -> Void) {
+    nonisolated func start(onChange: @escaping @Sendable (Bool) -> Void) {
         self.lock.lock()
         self.onChange = onChange
         let connected = self._isConnected
@@ -86,13 +88,13 @@ final class ManualConnectivityMonitor: ConnectivityMonitoring, @unchecked Sendab
         onChange(connected)
     }
 
-    func stop() {
+    nonisolated func stop() {
         self.lock.lock()
         self.onChange = nil
         self.lock.unlock()
     }
 
-    func setConnected(_ connected: Bool) {
+    nonisolated func setConnected(_ connected: Bool) {
         self.lock.lock()
         let previous = self._isConnected
         self._isConnected = connected
