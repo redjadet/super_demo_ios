@@ -20,8 +20,15 @@ source "$ROOT/tool/xcode_env.sh"
 echo "==> Simulator runtime ↔ device-type compat (before build-for-testing)"
 ./tool/check_simulator_runtime_compat.sh
 
+CI_SIMULATOR_REUSE_ONLY="${CI_SIMULATOR_REUSE_ONLY:-1}"
 if [[ "${CI:-}" == "true" && -z "${CI_SIMULATOR_DEST:-}" ]]; then
-  CI_PREPARE_IPAD="${CI_PREPARE_IPAD:-0}" source "$ROOT/tool/ensure_ci_simulator.sh" || exit $?
+  if [[ "${CI_SIMULATOR_REUSE_ONLY}" == "1" ]]; then
+    # Prefer an already-installed device; build-for-testing does not need boot.
+    # shellcheck source=../tool/ci_simulator_pick_existing.sh
+    source "$ROOT/tool/ci_simulator_pick_existing.sh" || exit $?
+  else
+    CI_PREPARE_IPAD="${CI_PREPARE_IPAD:-0}" source "$ROOT/tool/ensure_ci_simulator.sh" || exit $?
+  fi
 fi
 
 # shellcheck source=../tool/resolve_platform_destination.sh
@@ -31,7 +38,11 @@ source "$ROOT/tool/xcodebuild_sandbox_flags.sh"
 # shellcheck source=../tool/xcode_warnings_as_errors_flags.sh
 source "$ROOT/tool/xcode_warnings_as_errors_flags.sh"
 
-SIMULATOR_DEST="$(resolve_iphone_destination)"
+if [[ -n "${CI_SIMULATOR_DEST:-}" ]]; then
+  SIMULATOR_DEST="$CI_SIMULATOR_DEST"
+else
+  SIMULATOR_DEST="$(resolve_iphone_destination)"
+fi
 echo "==> iPhone destination: $SIMULATOR_DEST"
 
 if [[ -z "${IPHONE_DERIVED_DATA_PATH:-}" ]]; then

@@ -112,13 +112,14 @@ run_static_script_guards() {
   [[ -f "$ensure" ]] || fail "missing $ensure"
   [[ -f "$runtime" ]] || fail "missing $runtime"
 
-  if ! rg -q 'list_preferred_iphone_device_type_ids_for_runtime' "$ensure"; then
+  # Prefer grep so UI shards / lean CI jobs do not need Brewfile ripgrep.
+  if ! grep -q 'list_preferred_iphone_device_type_ids_for_runtime' "$ensure"; then
     fail "ensure_ci_simulator.sh must create via list_preferred_iphone_device_type_ids_for_runtime (runtime supportedDeviceTypes)"
   fi
-  if ! rg -q 'select_preferred_iphone_device_type_id_for_runtime' "$runtime"; then
+  if ! grep -q 'select_preferred_iphone_device_type_id_for_runtime' "$runtime"; then
     fail "ios_simulator_runtime.sh must define select_preferred_iphone_device_type_id_for_runtime"
   fi
-  if ! rg -q 'supportedDeviceTypes' "$runtime"; then
+  if ! grep -q 'supportedDeviceTypes' "$runtime"; then
     fail "ios_simulator_runtime.sh must consult runtime supportedDeviceTypes"
   fi
 }

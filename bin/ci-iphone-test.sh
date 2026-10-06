@@ -6,7 +6,9 @@
 # Hosted shards may set:
 #   CI_IPHONE_TEST_MODE=test-without-building
 #   CI_IPHONE_PRODUCTS_DIR=.../Build/Products
-#   CI_IPHONE_TEST_SHARD=unit-and-app-ui|engineering-a|engineering-b
+#   CI_IPHONE_TEST_SHARD=unit|ui-a|ui-b (legacy: unit-and-app-ui|engineering-a|engineering-b)
+#   CI_ALLOW_PARALLEL_TESTS=1 + CI_PARALLEL_TESTING_WORKER_COUNT=2|3
+#   CI_SIMULATOR_REUSE_ONLY=1 — never create/erase simulators
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -30,12 +32,18 @@ source "$ROOT/tool/ci_iphone_test_shards.sh"
 CI_IPHONE_GENERIC_BUILD="${CI_IPHONE_GENERIC_BUILD:-0}"
 CI_IPHONE_TEST_MODE="${CI_IPHONE_TEST_MODE:-test}"
 CI_IPHONE_TEST_SHARD="${CI_IPHONE_TEST_SHARD:-}"
+CI_SIMULATOR_REUSE_ONLY="${CI_SIMULATOR_REUSE_ONLY:-1}"
 
 echo "==> Simulator runtime ↔ device-type compat (before xcodebuild)"
 ./tool/check_simulator_runtime_compat.sh
 
 if [[ "${CI:-}" == "true" && "${CI_IPHONE_GENERIC_BUILD}" != "1" && -z "${CI_SIMULATOR_DEST:-}" ]]; then
-  CI_PREPARE_IPAD="${CI_PREPARE_IPAD:-0}" source "$ROOT/tool/ensure_ci_simulator.sh" || exit $?
+  if [[ "${CI_SIMULATOR_REUSE_ONLY}" == "1" ]]; then
+    # shellcheck source=../tool/ci_simulator_pick_existing.sh
+    source "$ROOT/tool/ci_simulator_pick_existing.sh" || exit $?
+  else
+    CI_PREPARE_IPAD="${CI_PREPARE_IPAD:-0}" source "$ROOT/tool/ensure_ci_simulator.sh" || exit $?
+  fi
 fi
 
 # shellcheck source=../tool/resolve_platform_destination.sh
@@ -47,6 +55,8 @@ source "$ROOT/tool/xcode_warnings_as_errors_flags.sh"
 
 if [[ "${CI:-}" == "true" && "${CI_IPHONE_GENERIC_BUILD}" == "1" ]]; then
   SIMULATOR_DEST="${CI_IPHONE_BUILD_DEST:-generic/platform=iOS Simulator}"
+elif [[ -n "${CI_SIMULATOR_DEST:-}" ]]; then
+  SIMULATOR_DEST="$CI_SIMULATOR_DEST"
 else
   SIMULATOR_DEST="$(resolve_iphone_destination)"
 fi
@@ -56,7 +66,16 @@ if [[ -n "$CI_IPHONE_TEST_SHARD" ]]; then
 fi
 echo "==> iPhone test mode: $CI_IPHONE_TEST_MODE"
 
-if [[ "${CI_ALLOW_PARALLEL_TESTS:-0}" != "1" ]]; then
+TEST_SERIAL_FLAGS=()
+if [[ "${CI_ALLOW_PARALLEL_TESTS:-0}" == "1" ]]; then
+  workers="${CI_PARALLEL_TESTING_WORKER_COUNT:-2}"
+  echo "==> Parallel testing enabled (workers=${workers})"
+  TEST_SERIAL_FLAGS=(
+    -parallel-testing-enabled YES
+    -parallel-testing-worker-count "$workers"
+    -maximum-parallel-testing-workers "$workers"
+  )
+else
   TEST_SERIAL_FLAGS=(
     -parallel-testing-enabled NO
     -parallel-testing-worker-count 1

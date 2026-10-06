@@ -16,11 +16,14 @@ env:
   # Newest released Xcode on the xcode-27 image (GM build preferred over seed/beta).
   # Escape: runs-on macos-26 + SUPER_DEMO_XCODE_MIN_VERSION=26.5 (see docs/ci-cd-map.md).
   SUPER_DEMO_XCODE_MIN_VERSION: "27"
+  # single = one job (build-for-testing + parallel tests; no artifact handoff).
+  # sharded = units in build job + ui-a/ui-b shards (compare / fallback).
+  CI_IPHONE_LAYOUT: single
+  CI_SIMULATOR_REUSE_ONLY: "1"
+  HOMEBREW_NO_AUTO_UPDATE: "1"
 
 jobs:
   # Scope / preflight (flutter_bloc_app `changes` job parity).
-  # Unknown/empty diffs → full CI. Docs-only PR diffs skip Xcode work inside
-  # lane jobs that still report success so branch protection stays green.
   changes:
     name: Checklist · changes
     runs-on: ubuntu-latest
@@ -50,13 +53,11 @@ jobs:
             echo ""
             echo "- event: \`${{ github.event_name }}\`"
             echo "- docs_only: \`$docs_only\`"
+            echo "- iphone_layout: \`${{ env.CI_IPHONE_LAYOUT }}\`"
             echo "- rule: \`tool/checklist_scope.sh\` (markdown/mdx/rst/adoc + llms.txt)"
             echo "- unknown/empty/mixed/code/workflow diffs take the full route"
           } >> "$GITHUB_STEP_SUMMARY"
 
-  # Delivery checklist lanes (Flutter ./bin/checklist role), parallelized.
-  # Local single-command equivalent: ./bin/checklist
-  # Docs: docs/engineering/checklist_gate.md
   lint:
     name: Checklist · lint
     needs: changes
@@ -65,7 +66,6 @@ jobs:
     defaults:
       run:
         working-directory: .
-
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -99,11 +99,102 @@ jobs:
           CI: true
         run: bundle exec fastlane ci_lint
 
-  # Build once — shards download products and run test-without-building.
+  # --- Layout: single (default) — build + test on one runner ---------------
+  # Boots the simulator in the background during setup/Flutter/build so boot
+  # is off the critical path, then runs the full suite with parallel workers
+  # (simulator clones) — no cross-job artifact round-trip.
+  iphone:
+    name: Checklist · iPhone
+    needs: changes
+    if: ${{ always() && needs.changes.result == 'success' && (needs.changes.outputs.docs_only == 'true' || env.CI_IPHONE_LAYOUT == 'single') }}
+    runs-on: ${{ needs.changes.outputs.docs_only == 'true' && 'ubuntu-latest' || 'xcode-27' }}
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: .
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Docs-only iPhone bypass
+        if: needs.changes.outputs.docs_only == 'true'
+        run: echo "Documentation-only diff; iPhone build/test has no code to prove."
+
+      - name: Select Xcode + pick existing simulator + start background boot
+        if: needs.changes.outputs.docs_only != 'true'
+        env:
+          CI: true
+          CI_SIMULATOR_REUSE_ONLY: "1"
+        run: |
+          set -euo pipefail
+          source ./tool/select_xcode.sh
+          source ./tool/ci_simulator_pick_existing.sh
+          ./tool/ci_simulator_boot_bg.sh
+
+      - name: Setup iOS CI (Flutter + Brewfile + caches; Xcode already selected)
+        if: needs.changes.outputs.docs_only != 'true'
+        uses: ./.github/actions/setup-ios-ci
+        with:
+          select-xcode: "false"
+          flutter: "true"
+          ruby: "true"
+          brewfile: "true"
+          cache-flutter-embed: "true"
+          cache-key-suffix: iphone-single
+          derived-data-paths: ${{ runner.temp }}/DerivedData-iPhone
+
+      - name: Prepare Flutter add-to-app frameworks (cached hash skips rebuild)
+        if: needs.changes.outputs.docs_only != 'true'
+        run: |
+          set -euo pipefail
+          if [[ -d Flutter/Debug/Flutter.xcframework ]]; then
+            echo "==> Flutter embed cache hit — skip ios-framework rebuild"
+            ./tool/prepare_flutter_embed.sh --skip-build
+          else
+            echo "==> Flutter embed cache miss — building ios-framework"
+            ./tool/prepare_flutter_embed.sh
+          fi
+          # Module unit tests are cheap; keep them off xcodebuild critical path.
+          (cd flutter_module && flutter test)
+
+      - name: iPhone build-for-testing
+        if: needs.changes.outputs.docs_only != 'true'
+        env:
+          CI: true
+          CI_PREPARE_IPAD: "0"
+          CI_SIMULATOR_REUSE_ONLY: "1"
+          CI_IPHONE_XCODEBUILD_TIMEOUT_SECONDS: "1800"
+          IPHONE_DERIVED_DATA_PATH: ${{ runner.temp }}/DerivedData-iPhone
+          SUPERDEMO_REQUIRE_FLUTTER_EMBED: "1"
+        run: ./bin/ci-iphone-build-for-testing.sh
+
+      - name: Await simulator boot
+        if: needs.changes.outputs.docs_only != 'true'
+        env:
+          CI: true
+        run: ./tool/ci_simulator_await.sh
+
+      - name: iPhone tests (units + UI, parallel workers)
+        if: needs.changes.outputs.docs_only != 'true'
+        env:
+          CI: true
+          CI_PREPARE_IPAD: "0"
+          CI_IPHONE_GENERIC_BUILD: "0"
+          CI_IPHONE_TEST_MODE: test-without-building
+          CI_IPHONE_PRODUCTS_DIR: ${{ runner.temp }}/DerivedData-iPhone/Build/Products
+          CI_IPHONE_XCODEBUILD_TIMEOUT_SECONDS: "2100"
+          CI_ALLOW_PARALLEL_TESTS: "1"
+          CI_PARALLEL_TESTING_WORKER_COUNT: "3"
+          CI_SIMULATOR_REUSE_ONLY: "1"
+          SUPERDEMO_REQUIRE_FLUTTER_EMBED: "1"
+        run: ./bin/ci-iphone-test.sh
+
+  # --- Layout: sharded (compare / fallback) — units in build + 2 UI shards --
   iphone-build:
     name: Checklist · iPhone build
     needs: changes
-    runs-on: ${{ needs.changes.outputs.docs_only == 'true' && 'ubuntu-latest' || 'xcode-27' }}
+    if: ${{ always() && needs.changes.result == 'success' && needs.changes.outputs.docs_only != 'true' && env.CI_IPHONE_LAYOUT == 'sharded' }}
+    runs-on: xcode-27
     timeout-minutes: 45
     defaults:
       run:
@@ -112,15 +203,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
 
-      - name: Docs-only iPhone build bypass
-        if: needs.changes.outputs.docs_only == 'true'
+      - name: Select Xcode + pick existing simulator + start background boot
+        env:
+          CI: true
+          CI_SIMULATOR_REUSE_ONLY: "1"
         run: |
-          echo "Documentation-only diff; iPhone build-for-testing has no code to compile."
+          set -euo pipefail
+          source ./tool/select_xcode.sh
+          source ./tool/ci_simulator_pick_existing.sh
+          ./tool/ci_simulator_boot_bg.sh
 
-      - name: Setup iOS CI (Flutter + Brewfile + caches)
-        if: needs.changes.outputs.docs_only != 'true'
+      - name: Setup iOS CI (Flutter + Brewfile + caches; Xcode already selected)
         uses: ./.github/actions/setup-ios-ci
         with:
+          select-xcode: "false"
           flutter: "true"
           ruby: "true"
           brewfile: "true"
@@ -128,9 +224,9 @@ jobs:
           cache-key-suffix: iphone-build
           derived-data-paths: ${{ runner.temp }}/DerivedData-iPhone
 
-      - name: Prepare Flutter add-to-app frameworks
-        if: needs.changes.outputs.docs_only != 'true'
+      - name: Prepare Flutter add-to-app frameworks (cached hash skips rebuild)
         run: |
+          set -euo pipefail
           if [[ -d Flutter/Debug/Flutter.xcframework ]]; then
             ./tool/prepare_flutter_embed.sh --skip-build
           else
@@ -139,17 +235,34 @@ jobs:
           (cd flutter_module && flutter test)
 
       - name: iPhone build-for-testing
-        if: needs.changes.outputs.docs_only != 'true'
         env:
           CI: true
           CI_PREPARE_IPAD: "0"
+          CI_SIMULATOR_REUSE_ONLY: "1"
           CI_IPHONE_XCODEBUILD_TIMEOUT_SECONDS: "1800"
           IPHONE_DERIVED_DATA_PATH: ${{ runner.temp }}/DerivedData-iPhone
           SUPERDEMO_REQUIRE_FLUTTER_EMBED: "1"
         run: ./bin/ci-iphone-build-for-testing.sh
 
+      - name: Await simulator boot
+        env:
+          CI: true
+        run: ./tool/ci_simulator_await.sh
+
+      - name: iPhone unit tests (Swift Testing + XCTest; same job as build)
+        env:
+          CI: true
+          CI_PREPARE_IPAD: "0"
+          CI_IPHONE_GENERIC_BUILD: "0"
+          CI_IPHONE_TEST_MODE: test-without-building
+          CI_IPHONE_TEST_SHARD: unit
+          CI_IPHONE_PRODUCTS_DIR: ${{ runner.temp }}/DerivedData-iPhone/Build/Products
+          CI_IPHONE_XCODEBUILD_TIMEOUT_SECONDS: "900"
+          CI_SIMULATOR_REUSE_ONLY: "1"
+          SUPERDEMO_REQUIRE_FLUTTER_EMBED: "1"
+        run: ./bin/ci-iphone-test.sh
+
       - name: Upload iPhone test products
-        if: needs.changes.outputs.docs_only != 'true'
         uses: actions/upload-artifact@v7
         with:
           name: iphone-test-products
@@ -157,21 +270,20 @@ jobs:
           if-no-files-found: error
           retention-days: 1
 
-  # Matrix shards are skipped on docs-only (aggregator accepts skipped).
-  # Job display names become "Checklist · iPhone test (<shard>)".
   iphone-test:
     name: Checklist · iPhone test
     needs: [changes, iphone-build]
     if: >-
       always() &&
       needs.changes.outputs.docs_only != 'true' &&
-      needs.iphone-build.result == 'success'
+      needs.iphone-build.result == 'success' &&
+      env.CI_IPHONE_LAYOUT == 'sharded'
     runs-on: xcode-27
     timeout-minutes: 40
     strategy:
       fail-fast: false
       matrix:
-        shard: [unit-and-app-ui, engineering-a, engineering-b]
+        shard: [ui-a, ui-b]
     defaults:
       run:
         working-directory: .
@@ -179,10 +291,21 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
 
-      - name: Setup iOS CI (Xcode select + Brewfile for rg / build-phase tools)
+      - name: Select Xcode + pick existing simulator + start background boot
+        env:
+          CI: true
+          CI_SIMULATOR_REUSE_ONLY: "1"
+        run: |
+          set -euo pipefail
+          source ./tool/select_xcode.sh
+          source ./tool/ci_simulator_pick_existing.sh
+          ./tool/ci_simulator_boot_bg.sh
+
+      - name: Setup iOS CI (lean — no Brewfile; Xcode already selected)
         uses: ./.github/actions/setup-ios-ci
         with:
-          brewfile: "true"
+          select-xcode: "false"
+          brewfile: "false"
           cache-key-suffix: iphone-test-${{ matrix.shard }}
 
       - name: Download iPhone test products
@@ -191,17 +314,12 @@ jobs:
           name: iphone-test-products
           path: ${{ runner.temp }}/iphone-test-products
 
-      # Boot while products are already on disk; script also ensures destination.
-      - name: Pre-boot iPhone simulator
+      - name: Await simulator boot
         env:
           CI: true
-          CI_PREPARE_IPAD: "0"
-        run: |
-          set -euo pipefail
-          # Use BASH_SOURCE-safe source from repo path (not runner temp $0).
-          source "${GITHUB_WORKSPACE}/tool/ensure_ci_simulator.sh"
+        run: ./tool/ci_simulator_await.sh
 
-      - name: iPhone tests (test-without-building shard)
+      - name: iPhone UI tests (test-without-building shard, parallel workers)
         env:
           CI: true
           CI_PREPARE_IPAD: "0"
@@ -210,6 +328,9 @@ jobs:
           CI_IPHONE_TEST_SHARD: ${{ matrix.shard }}
           CI_IPHONE_PRODUCTS_DIR: ${{ runner.temp }}/iphone-test-products
           CI_IPHONE_XCODEBUILD_TIMEOUT_SECONDS: "2100"
+          CI_ALLOW_PARALLEL_TESTS: "1"
+          CI_PARALLEL_TESTING_WORKER_COUNT: "2"
+          CI_SIMULATOR_REUSE_ONLY: "1"
           SUPERDEMO_REQUIRE_FLUTTER_EMBED: "1"
         run: ./bin/ci-iphone-test.sh
 
@@ -221,7 +342,6 @@ jobs:
     defaults:
       run:
         working-directory: .
-
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -267,33 +387,46 @@ jobs:
     name: Delivery checklist
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    needs: [changes, lint, iphone-build, iphone-test, platform-builds]
+    needs: [changes, lint, iphone, iphone-build, iphone-test, platform-builds]
     if: ${{ always() }}
     steps:
       - name: Check checklist lanes
+        env:
+          LAYOUT: ${{ env.CI_IPHONE_LAYOUT }}
+          DOCS_ONLY: ${{ needs.changes.outputs.docs_only }}
+          CHANGES: ${{ needs.changes.result }}
+          LINT: ${{ needs.lint.result }}
+          IPHONE: ${{ needs.iphone.result }}
+          IPHONE_BUILD: ${{ needs['iphone-build'].result }}
+          IPHONE_TEST: ${{ needs['iphone-test'].result }}
+          PLATFORM: ${{ needs['platform-builds'].result }}
         run: |
           set -euo pipefail
-          docs_only="${{ needs.changes.outputs.docs_only }}"
-          echo "docs_only=$docs_only"
+          echo "docs_only=$DOCS_ONLY layout=$LAYOUT"
 
           fail_lane() {
             echo "checklist lane failed: $1 (result=$2)" >&2
             exit 1
           }
 
-          [[ "${{ needs.changes.result }}" == "success" ]] || fail_lane changes "${{ needs.changes.result }}"
-          [[ "${{ needs.lint.result }}" == "success" ]] || fail_lane lint "${{ needs.lint.result }}"
-          [[ "${{ needs['iphone-build'].result }}" == "success" ]] || fail_lane iphone-build "${{ needs['iphone-build'].result }}"
-          [[ "${{ needs['platform-builds'].result }}" == "success" ]] || fail_lane platform-builds "${{ needs['platform-builds'].result }}"
+          [[ "$CHANGES" == "success" ]] || fail_lane changes "$CHANGES"
+          [[ "$LINT" == "success" ]] || fail_lane lint "$LINT"
+          [[ "$PLATFORM" == "success" ]] || fail_lane platform-builds "$PLATFORM"
 
-          iphone_test_result="${{ needs['iphone-test'].result }}"
-          if [[ "$docs_only" == "true" ]]; then
-            # Matrix shards are skipped on docs-only; required gate still reports.
-            [[ "$iphone_test_result" == "success" || "$iphone_test_result" == "skipped" ]] \
-              || fail_lane iphone-test "$iphone_test_result"
+          if [[ "$DOCS_ONLY" == "true" ]]; then
+            # Docs-only: single layout reports via iphone bypass; sharded jobs skipped.
+            [[ "$IPHONE" == "success" || "$IPHONE" == "skipped" ]] || fail_lane iphone "$IPHONE"
+            [[ "$IPHONE_BUILD" == "success" || "$IPHONE_BUILD" == "skipped" ]] || fail_lane iphone-build "$IPHONE_BUILD"
+            [[ "$IPHONE_TEST" == "success" || "$IPHONE_TEST" == "skipped" ]] || fail_lane iphone-test "$IPHONE_TEST"
+          elif [[ "$LAYOUT" == "single" ]]; then
+            [[ "$IPHONE" == "success" ]] || fail_lane iphone "$IPHONE"
+            [[ "$IPHONE_BUILD" == "skipped" ]] || fail_lane iphone-build "$IPHONE_BUILD"
+            [[ "$IPHONE_TEST" == "skipped" ]] || fail_lane iphone-test "$IPHONE_TEST"
           else
-            [[ "$iphone_test_result" == "success" ]] || fail_lane iphone-test "$iphone_test_result"
+            [[ "$IPHONE" == "skipped" ]] || fail_lane iphone "$IPHONE"
+            [[ "$IPHONE_BUILD" == "success" ]] || fail_lane iphone-build "$IPHONE_BUILD"
+            [[ "$IPHONE_TEST" == "success" ]] || fail_lane iphone-test "$IPHONE_TEST"
           fi
 
-          echo "Delivery checklist gate passed (changes + lint + iphone-build + iphone-test shards + platform-builds)."
+          echo "Delivery checklist gate passed (layout=$LAYOUT)."
           echo "Local equivalent: ./bin/checklist — see docs/engineering/checklist_gate.md"

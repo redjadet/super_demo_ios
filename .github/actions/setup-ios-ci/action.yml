@@ -18,6 +18,12 @@ inputs:
     description: Install Brewfile lint/build-phase tools
     required: false
     default: "false"
+  brew-packages:
+    description: >-
+      Comma-separated Homebrew packages to install instead of the full Brewfile
+      (e.g. ripgrep). Ignored when brewfile=true.
+    required: false
+    default: ""
   cache-key-suffix:
     description: Distinguishes cache namespaces (iphone-build, platform, lint)
     required: false
@@ -30,11 +36,16 @@ inputs:
     description: Include ./Flutter embed frameworks in the cache
     required: false
     default: "false"
+  select-xcode:
+    description: Run tool/select_xcode.sh (set false when caller already selected)
+    required: false
+    default: "true"
 
 runs:
   using: composite
   steps:
     - name: Select latest released Xcode
+      if: ${{ inputs.select-xcode == 'true' }}
       shell: bash
       env:
         CI: true
@@ -55,14 +66,14 @@ runs:
         cache: true
 
     - name: Cache Homebrew downloads
-      if: ${{ inputs.brewfile == 'true' }}
+      if: ${{ inputs.brewfile == 'true' || inputs.brew-packages != '' }}
       uses: actions/cache@v6
       with:
         path: |
           ~/Library/Caches/Homebrew
           ~/Library/Caches/Homebrew/downloads
         key: >-
-          brew-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('Brewfile') }}
+          brew-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('Brewfile') }}-${{ inputs.brew-packages }}
         restore-keys: |
           brew-${{ runner.os }}-${{ runner.arch }}-
 
@@ -73,10 +84,13 @@ runs:
         path: |
           ~/Library/Caches/org.swift.swiftpm
           ~/Library/Developer/Xcode/DerivedData
+          ~/Library/Developer/Xcode/DerivedData/**/SourcePackages
           ${{ inputs.derived-data-paths }}
           Flutter
         key: >-
           xcode27-${{ runner.os }}-${{ runner.arch }}-${{ inputs.cache-key-suffix }}-flutter-${{ hashFiles('**/Package.resolved', '**/*.xcodeproj/project.pbxproj', 'flutter_module/pubspec.lock', 'flutter_module/lib/**') }}
+        restore-keys: |
+          xcode27-${{ runner.os }}-${{ runner.arch }}-${{ inputs.cache-key-suffix }}-flutter-
 
     - name: Cache Xcode + SwiftPM
       if: ${{ inputs.cache-flutter-embed != 'true' }}
@@ -85,11 +99,40 @@ runs:
         path: |
           ~/Library/Caches/org.swift.swiftpm
           ~/Library/Developer/Xcode/DerivedData
+          ~/Library/Developer/Xcode/DerivedData/**/SourcePackages
           ${{ inputs.derived-data-paths }}
         key: >-
           xcode27-${{ runner.os }}-${{ runner.arch }}-${{ inputs.cache-key-suffix }}-${{ hashFiles('**/Package.resolved', '**/*.xcodeproj/project.pbxproj') }}
+        restore-keys: |
+          xcode27-${{ runner.os }}-${{ runner.arch }}-${{ inputs.cache-key-suffix }}-
 
     - name: Install Brewfile tools
       if: ${{ inputs.brewfile == 'true' }}
       shell: bash
+      env:
+        HOMEBREW_NO_AUTO_UPDATE: "1"
+        HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK: "1"
+        HOMEBREW_NO_INSTALL_CLEANUP: "1"
       run: brew bundle check --file Brewfile || brew bundle --file Brewfile
+
+    - name: Install lean Homebrew packages
+      if: ${{ inputs.brewfile != 'true' && inputs.brew-packages != '' }}
+      shell: bash
+      env:
+        HOMEBREW_NO_AUTO_UPDATE: "1"
+        HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK: "1"
+        HOMEBREW_NO_INSTALL_CLEANUP: "1"
+        BREW_PACKAGES: ${{ inputs.brew-packages }}
+      run: |
+        set -euo pipefail
+        IFS=',' read -r -a pkgs <<<"$BREW_PACKAGES"
+        for pkg in "${pkgs[@]}"; do
+          pkg="$(echo "$pkg" | tr -d '[:space:]')"
+          [[ -n "$pkg" ]] || continue
+          if brew list --versions "$pkg" >/dev/null 2>&1; then
+            echo "==> brew package present: $pkg"
+          else
+            echo "==> brew install $pkg"
+            brew install "$pkg"
+          fi
+        done

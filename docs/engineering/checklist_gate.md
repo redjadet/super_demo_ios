@@ -13,10 +13,9 @@ merge — not a second parallel theater.
 | DESIGN.md (DesignMD) | `./tool/check_design_md.sh` | job `lint` → `ci_lint` (includes DesignMD) |
 | Swift lint + modularity + evidence map | `./bin/lint.sh` | job `lint` |
 | Common issues | `./tool/check_common_issues.sh` (scope contract + sim runtime compat + AASA parity/live-host DNS honesty + Markdown relative links) | job `lint` |
-| iPhone build-for-testing | `./bin/ci-iphone-build-for-testing.sh` | job `iphone-build` |
-| iPhone test shards | `./bin/ci-iphone-test.sh` (unsharded locally) | matrix job `iphone-test` (`test-without-building` shards) |
+| iPhone build + test | `./bin/ci-iphone-test.sh` (unsharded locally) | Default job `iphone` (single-runner build + parallel tests); sharded fallback: `iphone-build` (units) + matrix `iphone-test` (`ui-a`/`ui-b`) |
 | iPad + Mac + watchOS builds | `./bin/ci-platform-builds.sh` (watch: `./bin/ci-watch-build.sh`) | job `platform-builds` |
-| Aggregate gate | `./bin/checklist` (single command) | job **`checklist`** / **Delivery checklist** (needs scope + lint + iPhone build/test + platform) |
+| Aggregate gate | `./bin/checklist` (single command) | job **`checklist`** / **Delivery checklist** (needs scope + lint + active iPhone layout + platform) |
 
 **Xcode warnings are errors** on checklist / CI xcodebuild lanes via project
 build settings (`SWIFT_TREAT_WARNINGS_AS_ERRORS=YES`,
@@ -49,10 +48,12 @@ checklist gate.
 
 ## Honesty (PR vs local)
 
-Hosted iPhone proof uses `build-for-testing` once, then matrix
-`test-without-building` shards on the newest-runtime iPhone
-(`CI_IPHONE_GENERIC_BUILD=0`). The generic build-only path is an escape hatch
-only. Local `./bin/checklist` runs the unsharded `./bin/ci-iphone-test.sh`. See
+Hosted iPhone proof defaults to one job: background simulator boot during
+setup/build, then `test-without-building` with parallel workers on an
+already-installed newest-runtime iPhone (`CI_IPHONE_GENERIC_BUILD=0`,
+`CI_SIMULATOR_REUSE_ONLY=1`). Sharded layout is an opt-in compare/fallback
+(`CI_IPHONE_LAYOUT=sharded`). Local `./bin/checklist` runs the unsharded
+`./bin/ci-iphone-test.sh`. See
 [`../adr/0005-ci-pr-vs-local-honesty.md`](../adr/0005-ci-pr-vs-local-honesty.md)
 and [`../ci-cd-map.md`](../ci-cd-map.md). Name the exact proof command in finish
 reports.
