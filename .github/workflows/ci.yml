@@ -16,20 +16,21 @@ env:
   # Newest released Xcode on the xcode-27 image (GM build preferred over seed/beta).
   # Escape: runs-on macos-26 + SUPER_DEMO_XCODE_MIN_VERSION=26.5 (see docs/ci-cd-map.md).
   SUPER_DEMO_XCODE_MIN_VERSION: "27"
-  # single = one job (build-for-testing + parallel tests; no artifact handoff).
-  # sharded = units in build job + ui-a/ui-b shards (compare / fallback).
-  CI_IPHONE_LAYOUT: single
   CI_SIMULATOR_REUSE_ONLY: "1"
   HOMEBREW_NO_AUTO_UPDATE: "1"
 
 jobs:
   # Scope / preflight (flutter_bloc_app `changes` job parity).
+  # iphone_layout is an output (not job-level env.if — GHA forbids env in job if).
+  # single = one job (build-for-testing + parallel tests; no artifact handoff).
+  # sharded = units in build job + ui-a/ui-b shards (compare / fallback).
   changes:
     name: Checklist · changes
     runs-on: ubuntu-latest
     timeout-minutes: 5
     outputs:
       docs_only: ${{ steps.scope.outputs.docs_only }}
+      iphone_layout: ${{ steps.scope.outputs.iphone_layout }}
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -47,13 +48,16 @@ jobs:
             *) echo "Invalid checklist scope: $docs_only" >&2; exit 1 ;;
           esac
           docs_only="${docs_only#docs_only=}"
+          # Flip to "sharded" here to A/B the units-in-build + ui-a/ui-b layout.
+          iphone_layout="single"
           echo "docs_only=$docs_only" >> "$GITHUB_OUTPUT"
+          echo "iphone_layout=$iphone_layout" >> "$GITHUB_OUTPUT"
           {
             echo "## Change scope"
             echo ""
             echo "- event: \`${{ github.event_name }}\`"
             echo "- docs_only: \`$docs_only\`"
-            echo "- iphone_layout: \`${{ env.CI_IPHONE_LAYOUT }}\`"
+            echo "- iphone_layout: \`$iphone_layout\`"
             echo "- rule: \`tool/checklist_scope.sh\` (markdown/mdx/rst/adoc + llms.txt)"
             echo "- unknown/empty/mixed/code/workflow diffs take the full route"
           } >> "$GITHUB_STEP_SUMMARY"
@@ -106,7 +110,10 @@ jobs:
   iphone:
     name: Checklist · iPhone
     needs: changes
-    if: ${{ always() && needs.changes.result == 'success' && (needs.changes.outputs.docs_only == 'true' || env.CI_IPHONE_LAYOUT == 'single') }}
+    if: >-
+      always() &&
+      needs.changes.result == 'success' &&
+      (needs.changes.outputs.docs_only == 'true' || needs.changes.outputs.iphone_layout == 'single')
     runs-on: ${{ needs.changes.outputs.docs_only == 'true' && 'ubuntu-latest' || 'xcode-27' }}
     timeout-minutes: 60
     defaults:
@@ -193,7 +200,11 @@ jobs:
   iphone-build:
     name: Checklist · iPhone build
     needs: changes
-    if: ${{ always() && needs.changes.result == 'success' && needs.changes.outputs.docs_only != 'true' && env.CI_IPHONE_LAYOUT == 'sharded' }}
+    if: >-
+      always() &&
+      needs.changes.result == 'success' &&
+      needs.changes.outputs.docs_only != 'true' &&
+      needs.changes.outputs.iphone_layout == 'sharded'
     runs-on: xcode-27
     timeout-minutes: 45
     defaults:
@@ -277,7 +288,7 @@ jobs:
       always() &&
       needs.changes.outputs.docs_only != 'true' &&
       needs.iphone-build.result == 'success' &&
-      env.CI_IPHONE_LAYOUT == 'sharded'
+      needs.changes.outputs.iphone_layout == 'sharded'
     runs-on: xcode-27
     timeout-minutes: 40
     strategy:
@@ -392,7 +403,7 @@ jobs:
     steps:
       - name: Check checklist lanes
         env:
-          LAYOUT: ${{ env.CI_IPHONE_LAYOUT }}
+          LAYOUT: ${{ needs.changes.outputs.iphone_layout }}
           DOCS_ONLY: ${{ needs.changes.outputs.docs_only }}
           CHANGES: ${{ needs.changes.result }}
           LINT: ${{ needs.lint.result }}
