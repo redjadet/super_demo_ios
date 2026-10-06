@@ -10,6 +10,8 @@ Source-of-truth docs for `superDemoApp`.
 - **Humans directing agents** (stakes, harness, judgment):
   [`using-agents-here.md`](using-agents-here.md)
 - Agent map (lean links only; detail in `docs/`): [`../AGENTS.md`](../AGENTS.md)
+- AI-native SDLC kit (intent→spec→plan→REVIEW, skills, gates):
+  [`ai-sdlc/README.md`](ai-sdlc/README.md)
 - AI routing (`docs/ai/`): [`ai/README.md`](ai/README.md) —
   [`ai/context_loading.md`](ai/context_loading.md),
   [`ai/ai_failure_risks.md`](ai/ai_failure_risks.md)

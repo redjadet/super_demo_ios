@@ -12,6 +12,7 @@ Target **≤ 70 lines**. Prefs/facts:
    [`docs/agent_kb/agent_safety_contracts.md`](docs/agent_kb/agent_safety_contracts.md).
 3. Workflow: [`docs/agent_knowledge_base.md`](docs/agent_knowledge_base.md).
    Humans directing agents: [`docs/using-agents-here.md`](docs/using-agents-here.md).
+   Feature SDLC kit: [`docs/ai-sdlc/README.md`](docs/ai-sdlc/README.md).
 
 Authority: `AGENTS.md` → `docs/` → source comments. Done = plan, execute, verify,
 report proof.
@@ -36,6 +37,7 @@ Host / MCP / skills: [`docs/agent_host_notes.md`](docs/agent_host_notes.md),
 | ≤15 min architecture tour | [`docs/architecture-tour.md`](docs/architecture-tour.md) |
 | Any Swift | [`docs/agent_swift_guards.md`](docs/agent_swift_guards.md); `./bin/verify-swift.sh` |
 | Feature / layers | [`docs/feature-template.md`](docs/feature-template.md), [`docs/layers.md`](docs/layers.md), [`docs/modularity.md`](docs/modularity.md) |
+| AI-native SDLC artifacts | [`docs/ai-sdlc/README.md`](docs/ai-sdlc/README.md); skills [`docs/ai-sdlc/skills/`](docs/ai-sdlc/skills/); gates [`docs/ai-sdlc/gates.md`](docs/ai-sdlc/gates.md) |
 | SwiftUI / light–dark | [`DESIGN.md`](DESIGN.md), [`docs/design_system.md`](docs/design_system.md) |
 | Domain / Data | [`docs/offline-first.md`](docs/offline-first.md), [`docs/dependency-injection.md`](docs/dependency-injection.md) |
 | Tests | [`docs/testing.md`](docs/testing.md) |
@@ -51,5 +53,6 @@ Baseline: [`docs/agent_baseline.md`](docs/agent_baseline.md). Portfolio:
 ## Finish
 
 1. Validation chooser in [`docs/agents_quick_reference.md`](docs/agents_quick_reference.md).
-2. Review: [`docs/ai_code_review_protocol.md`](docs/ai_code_review_protocol.md).
-3. Report via finish gate in knowledge base / safety contracts.
+2. Run matching gates in [`docs/ai-sdlc/gates.md`](docs/ai-sdlc/gates.md) before claiming done.
+3. Review: [`docs/ai_code_review_protocol.md`](docs/ai_code_review_protocol.md) (diff vs `plan.md` when present).
+4. Report via finish gate in knowledge base / safety contracts.
