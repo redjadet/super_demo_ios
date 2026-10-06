@@ -29,14 +29,16 @@ skill text when they conflict.
 
 | Trigger | Load |
 | --- | --- |
-| Features layers / new feature | [`../architecture.md`](../architecture.md), [`../layers.md`](../layers.md), [`../feature-template.md`](../feature-template.md) |
+| Features layers / new feature | [`../architecture.md`](../architecture.md), [`../layers.md`](../layers.md), [`../feature-template.md`](../feature-template.md), [`../ai-sdlc/README.md`](../ai-sdlc/README.md) |
 | SwiftUI / design / light–dark | [`../../DESIGN.md`](../../DESIGN.md), [`../design_system.md`](../design_system.md), [`../universal-apple-platforms.md`](../universal-apple-platforms.md) |
-| Swift indent / MainActor / lint | [`../agent_swift_guards.md`](../agent_swift_guards.md); `./bin/verify-swift.sh` |
-| SwiftData / offline | [`../offline-first.md`](../offline-first.md) |
+| Swift indent / MainActor / lint | [`../agent_swift_guards.md`](../agent_swift_guards.md); `./bin/verify-swift.sh`; skill [`../ai-sdlc/skills/swift-concurrency.md`](../ai-sdlc/skills/swift-concurrency.md) |
+| SwiftData / offline | [`../offline-first.md`](../offline-first.md); skill [`../ai-sdlc/skills/offline-outbox.md`](../ai-sdlc/skills/offline-outbox.md) |
 | Networking / sync | [`../sync-and-networking.md`](../sync-and-networking.md) |
 | App Intents / deep links | [`../navigation.md`](../navigation.md); `App/AppIntents/` |
-| Commands / validation choice | [`../agents_quick_reference.md`](../agents_quick_reference.md), [`../engineering/validation_routing_fast_vs_full.md`](../engineering/validation_routing_fast_vs_full.md) |
-| Code review | [`../ai_code_review_protocol.md`](../ai_code_review_protocol.md) |
+| Commands / validation choice | [`../agents_quick_reference.md`](../agents_quick_reference.md), [`../engineering/validation_routing_fast_vs_full.md`](../engineering/validation_routing_fast_vs_full.md), [`../ai-sdlc/gates.md`](../ai-sdlc/gates.md) |
+| Code review | [`../ai_code_review_protocol.md`](../ai_code_review_protocol.md) (diff vs `plan.md` when present) |
+| Security / secrets | [`../security-checklist.md`](../security-checklist.md); skill [`../ai-sdlc/skills/security.md`](../ai-sdlc/skills/security.md) |
+| Flutter add-to-app | [`../flutter-add-to-app.md`](../flutter-add-to-app.md); skill [`../ai-sdlc/skills/flutter-add-to-app.md`](../ai-sdlc/skills/flutter-add-to-app.md) |
 | Host / Cursor / Xcode MCP | [`../agent_host_notes.md`](../agent_host_notes.md), [`../agent_kb/tool_orchestration.md`](../agent_kb/tool_orchestration.md) |
 | Harness doctrine | [`../agent_knowledge_base.md`](../agent_knowledge_base.md) |
 | Topic unknown | [`../README.md`](../README.md) |

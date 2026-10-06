@@ -61,3 +61,14 @@ concurrency, platform honesty). Review the **path**, not only the patch:
 Spot confident wrongness: plausible APIs, silent `try?`, false-green UI waits,
 docs that overclaim CI proof. Human guide:
 [`using-agents-here.md`](using-agents-here.md).
+
+## Diff vs plan (when present)
+
+If the PR links or includes `docs/ai-sdlc/features/<slug>/plan.md` (or an
+example under `docs/ai-sdlc/examples/`), compare the diff to that plan:
+
+1. Write-set respected?
+2. Acceptance / proof commands from `spec.md` addressed?
+3. `REVIEW.md` filled honestly?
+
+Kit: [`ai-sdlc/README.md`](ai-sdlc/README.md). Gates: [`ai-sdlc/gates.md`](ai-sdlc/gates.md).

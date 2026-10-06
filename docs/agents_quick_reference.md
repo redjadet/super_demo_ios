@@ -57,6 +57,7 @@ Router doc path honesty (CODEMAP / portfolio / architecture-tour):
 | Flutter → iOS script map | [`tooling_map.md`](tooling_map.md) |
 | Isolated agent worktree | `./bin/agent-worktree --name <slug> [--apply]` → `.worktrees/<slug>`, branch `cursor/<slug>` |
 | Harness scorecard (agent) | [`ai/harness-scorecard.md`](ai/harness-scorecard.md) |
+| Agent done-gate reminder | `./bin/agent-verify-done` → [`ai-sdlc/gates.md`](ai-sdlc/gates.md) |
 | SAFETY-REPORT template | [`agent_kb/safety-report-template.md`](agent_kb/safety-report-template.md) |
 | Markdown lint gate | `./bin/lint-markdown.sh` |
 | DESIGN.md DesignMD lint (needs Node; in checklists + CI lint) | `./tool/check_design_md.sh` |
@@ -101,6 +102,8 @@ Router doc path honesty (CODEMAP / portfolio / architecture-tour):
 ## Reminders
 
 - Humans directing agents: [`using-agents-here.md`](using-agents-here.md).
+- AI-native SDLC kit / gates: [`ai-sdlc/README.md`](ai-sdlc/README.md),
+  [`ai-sdlc/gates.md`](ai-sdlc/gates.md).
 - Pre-Flight (non-trivial): [`ai/ai_failure_risks.md`](ai/ai_failure_risks.md) +
   [`agent_kb/agent_safety_contracts.md`](agent_kb/agent_safety_contracts.md).
 - Context ladder: [`ai/context_loading.md`](ai/context_loading.md).

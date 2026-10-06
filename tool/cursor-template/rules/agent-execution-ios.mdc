@@ -14,4 +14,6 @@ alwaysApply: true
   read `superDemoApp/docs/agent_swift_guards.md` when lint/concurrency fails;
   `./superDemoApp/bin/ci.sh` before merge/PR; SwiftUI layout/navigation/universal
   UI/light-dark → `./superDemoApp/bin/checklist` (iPhone test + iPad/Mac builds).
+  Gate map: `superDemoApp/docs/ai-sdlc/gates.md`. Non-trivial features: follow
+  `superDemoApp/docs/ai-sdlc/README.md` (intent→spec→plan→REVIEW).
 - **Stuck:** Same failure twice → add script, test, or doc — not a longer prompt.

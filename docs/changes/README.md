@@ -6,6 +6,8 @@ Record durable implementation notes after meaningful changes.
 
 - [`2026-10-06_ui-trends-low-risk-polish.md`](2026-10-06_ui-trends-low-risk-polish.md)
   — Views/a11y polish mapped to Apr 2026 UI trends; Feed/CI left alone.
+- [`2026-10-06_ai-native-sdlc-kit.md`](2026-10-06_ai-native-sdlc-kit.md)
+  — Tool-agnostic AI-native SDLC kit (intent/spec/plan/REVIEW, skills, gates).
 - [`2026-10-06_using-agents-here-sdlc.md`](2026-10-06_using-agents-here-sdlc.md)
   — Human agent entry (New SDLC / Gite themes); cross-links; no product claims.
 - [`2026-10-05_reviewer-facing-polish.md`](2026-10-05_reviewer-facing-polish.md)

@@ -22,6 +22,9 @@ change notes when the two disagree.
 | Host-bridge JSON contract | [`../native-host-boundary.md`](../native-host-boundary.md) |
 | ADR offline posture | [`../adr/0002-offline-first-posture.md`](../adr/0002-offline-first-posture.md) |
 | Evidence map | [`../engineering/engineering-evidence-map.md`](../engineering/engineering-evidence-map.md) |
+| AI-native SDLC kit | [`../ai-sdlc/README.md`](../ai-sdlc/README.md) |
+| Offline / outbox skill | [`../ai-sdlc/skills/offline-outbox.md`](../ai-sdlc/skills/offline-outbox.md) |
+| Flutter boundary skill | [`../ai-sdlc/skills/flutter-add-to-app.md`](../ai-sdlc/skills/flutter-add-to-app.md) |
 
 ## Scope honesty
 

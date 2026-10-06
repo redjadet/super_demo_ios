@@ -16,6 +16,10 @@ List the feature in [`../tool/config/layered_features.txt`](../tool/config/layer
 Do not import other features — compose in `App/` (see [`modularity.md`](modularity.md)).
 Read [`architecture.md`](architecture.md) and [`layers.md`](layers.md) first.
 
+For multi-file agentic work, also open the AI-native artifact kit
+[`ai-sdlc/README.md`](ai-sdlc/README.md) and keep live files under
+`docs/ai-sdlc/features/<slug>/` (intent → spec → plan → REVIEW).
+
 ## Goal
 
 What user outcome does this feature provide?

@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+# Print the tool-agnostic "done" gate reminder for coding agents (Cursor, Codex, …).
+# Does not replace checklist/CI — use after edits, before claiming done.
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+cd "$ROOT"
+
+cat <<'EOF'
+==> agent-verify-done (reminder only)
+
+Docs / Markdown:
+  ./bin/lint-markdown.sh
+  ./bin/checklist-fast
+
+Any Swift edit:
+  ./bin/verify-swift.sh
+
+Before merge / PR:
+  ./bin/checklist
+  (hosted) GHA job checklist green
+
+Closeout:
+  ./bin/agent-maintain closeout
+
+Full gate map:
+  docs/ai-sdlc/gates.md
+
+Feature artifacts (when used):
+  docs/ai-sdlc/features/<slug>/{intent,spec,plan,REVIEW}.md
+  → reviewers check diff against plan.md
+EOF
