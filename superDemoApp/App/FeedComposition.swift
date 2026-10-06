@@ -121,9 +121,7 @@ enum FeedComposition {
         }
 
         let remote: BookmarkRemoteClient
-        if AppLaunchConfiguration.usesSeededSampleState
-            || AppLaunchConfiguration.usesOfflineBookmarkFixture
-        {
+        if AppLaunchConfiguration.usesSeededSampleState || AppLaunchConfiguration.usesOfflineBookmarkFixture {
             remote = ImmediateSuccessBookmarkRemoteClient()
         } else {
             let apiClient = URLSessionAPIClient(
