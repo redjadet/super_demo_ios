@@ -134,17 +134,13 @@ enum FeedComposition {
         }
 
         let engineHolder = SyncEngineHolder()
-        let repository = SwiftDataBookmarkRepository(
-            context: context,
-            outbox: outbox,
-            onEnqueued: {
-                Task {
-                    if let engine = await engineHolder.engine {
-                        await engine.requestFlush()
-                    }
+        let repository = SwiftDataBookmarkRepository(context: context, outbox: outbox) {
+            Task {
+                if let engine = await engineHolder.engine {
+                    await engine.requestFlush()
                 }
             }
-        )
+        }
         let engine = OutboxSyncEngine(
             outbox: OutboxStoreBox(outbox),
             remote: remote,

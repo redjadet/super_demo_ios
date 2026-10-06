@@ -20,8 +20,8 @@ final class SwiftDataBookmarkRepository: BookmarkRepository, BookmarkLocalMutati
         outbox: OutboxStoring,
         clock: OutboxClock = SystemOutboxClock(),
         saveContext: @escaping (ModelContext) throws -> Void = { try $0.save() },
-        onEnqueued: (@Sendable () -> Void)? = nil,
-        makeIdempotencyKey: @escaping () -> String = { UUID().uuidString }
+        makeIdempotencyKey: @escaping () -> String = { UUID().uuidString },
+        onEnqueued: (@Sendable () -> Void)? = nil
     ) {
         self.context = context
         self.outbox = outbox

@@ -98,8 +98,10 @@ struct OutboxStoreAndBookmarkRepositoryTests {
         let repository = SwiftDataBookmarkRepository(
             context: context,
             outbox: outbox,
-            clock: FixedOutboxClock(now)
-        ) { keys.next() }
+            clock: FixedOutboxClock(now),
+            makeIdempotencyKey: { keys.next() },
+            onEnqueued: nil
+        )
         return (repository, outbox)
     }
 }

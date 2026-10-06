@@ -75,8 +75,10 @@ private final class SyncEngineHarness {
         let bookmarkRepo = SwiftDataBookmarkRepository(
             context: context,
             outbox: store,
-            clock: clock
-        ) { "stable-key" }
+            clock: clock,
+            makeIdempotencyKey: { "stable-key" },
+            onEnqueued: nil
+        )
         let syncEngine = OutboxSyncEngine(
             outbox: OutboxStoreBox(store),
             remote: remoteClient,
