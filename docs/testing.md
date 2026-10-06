@@ -7,6 +7,20 @@ Testing should shorten the native iOS feedback loop. When a developer would
 otherwise need to rebuild, relaunch, navigate, and recreate state by hand, prefer
 adding a deterministic test, mock fixture, preview state, or script.
 
+## Tests as the contract with AI
+
+When agents implement features, **tests and checklist gates** are how “correct”
+is communicated—not only prose in the prompt. Prefer:
+
+1. Spec / acceptance bullets in the ask (or [`feature-template.md`](feature-template.md)).
+2. Failing or extended tests that encode the contract.
+3. Implementation against that contract.
+4. Named verification ([`agents_quick_reference.md`](agents_quick_reference.md)).
+
+Human judgment of process vs final diff:
+[`using-agents-here.md`](using-agents-here.md),
+[`ai_code_review_protocol.md`](ai_code_review_protocol.md).
+
 ## Defaults
 
 - **Minimum OS floors:** `IPHONEOS_DEPLOYMENT_TARGET`,

@@ -17,6 +17,7 @@ details.
 | Enforce invariants, not taste. | Automate boundaries; keep local implementation freedom. |
 | Fast feedback is a product constraint. | Use previews, mocks, tests, and platform proof to shorten manual loops. |
 | Boundaries + evidence beat prompt scaffolding. | Keep approval gates and reconstructable logs; slim long prompts/maps only after they prove redundant. |
+| Generation is cheap; verification is the craft. | Match proof to stakes; humans own judgment — [`using-agents-here.md`](using-agents-here.md). |
 
 ## AI Productivity Traps
 

@@ -3,6 +3,17 @@
 **Canonical** progressive load order. Other agent docs link here; do not
 duplicate this list.
 
+## Always-loaded vs on-demand
+
+| Kind | Load | Examples |
+| --- | --- | --- |
+| **Always-loaded** | Every non-trivial session (keep thin) | [`../../AGENTS.md`](../../AGENTS.md) map; prefs/facts links |
+| **On-demand** | Only when a trigger matches | Feature/DESIGN/testing owners in the table below |
+
+Always-loaded context that repeats essays **dilutes** signal and wastes tokens.
+Prefer this ladder + conditional owners. Humans:
+[`../using-agents-here.md`](../using-agents-here.md).
+
 ## Ladder
 
 1. [`../../AGENTS.md`](../../AGENTS.md) — repository entry map.
