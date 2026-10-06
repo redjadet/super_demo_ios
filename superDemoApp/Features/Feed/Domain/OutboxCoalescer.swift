@@ -41,15 +41,14 @@ nonisolated enum OutboxCoalescer {
         desiredBookmarked: Bool,
         makeIdempotencyKey: () -> String = { UUID().uuidString }
     ) -> Plan {
-        let inFlight = existing.filter { $0.status == .inFlight }
-        let replaceable = existing.filter {
-            $0.status == .pending || $0.status == .failed
+        let inFlight = existing.filter { entry in entry.status == .inFlight }
+        let replaceable = existing.filter { entry in
+            entry.status == .pending || entry.status == .failed
         }
 
         let baseline: Bool
-        if let inFlightOp = inFlight.sorted(by: { $0.createdAt < $1.createdAt }).last,
-           let payload = inFlightOp.bookmarkPayload
-        {
+        if let inFlightOp = inFlight.max(by: { lhs, rhs in lhs.createdAt < rhs.createdAt }),
+           let payload = inFlightOp.bookmarkPayload {
             baseline = payload.desiredBookmarked
         } else {
             baseline = syncedOrInFlightBaseline

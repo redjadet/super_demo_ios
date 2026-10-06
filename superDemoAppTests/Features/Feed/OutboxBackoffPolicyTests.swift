@@ -15,9 +15,8 @@ struct OutboxBackoffPolicyTests {
             maxAttempts: 5,
             baseDelay: 1,
             maxDelay: 100,
-            jitterRatio: 0.5,
-            randomUnitInterval: { 0 } // no jitter
-        )
+            jitterRatio: 0.5
+        ) { 0 } // no jitter
         #expect(policy.delay(afterAttemptCount: 1) == 1)
         #expect(policy.delay(afterAttemptCount: 2) == 2)
         #expect(policy.delay(afterAttemptCount: 3) == 4)
@@ -29,9 +28,8 @@ struct OutboxBackoffPolicyTests {
             maxAttempts: 10,
             baseDelay: 10,
             maxDelay: 15,
-            jitterRatio: 0,
-            randomUnitInterval: { 0 }
-        )
+            jitterRatio: 0
+        ) { 0 }
         #expect(policy.delay(afterAttemptCount: 5) == 15)
     }
 

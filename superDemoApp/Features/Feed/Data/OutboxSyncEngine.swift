@@ -25,9 +25,9 @@ actor OutboxSyncEngine: OutboxSyncing {
         outbox: OutboxStoreBox,
         remote: BookmarkRemoteClient,
         bookmarkMutator: BookmarkLocalMutatorBox,
+        connectivity: ConnectivityMonitoring,
         backoff: OutboxBackoffPolicy = OutboxBackoffPolicy(),
-        clock: OutboxClock = SystemOutboxClock(),
-        connectivity: ConnectivityMonitoring
+        clock: OutboxClock = SystemOutboxClock()
     ) {
         self.outbox = outbox
         self.remote = remote

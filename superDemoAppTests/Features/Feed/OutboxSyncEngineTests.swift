@@ -24,6 +24,8 @@ private final class RecordingBookmarkRemote: BookmarkRemoteClient, @unchecked Se
         self.calls.append(Call(kind: "set", postID: postID, idempotencyKey: idempotencyKey))
         if self.hangUntilCancelled {
             try await Task.sleep(nanoseconds: 60_000_000_000)
+        } else {
+            await Task.yield()
         }
         if let error = self.errorForCallIndex[self.calls.count - 1] {
             throw error
@@ -36,6 +38,7 @@ private final class RecordingBookmarkRemote: BookmarkRemoteClient, @unchecked Se
         if let error = self.errorForCallIndex[self.calls.count - 1] {
             throw error
         }
+        await Task.yield()
     }
 }
 
@@ -63,38 +66,36 @@ private final class SyncEngineHarness {
         let configuration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
         let container = try ModelContainer(for: schema, configurations: [configuration])
         let context = ModelContext(container)
-        let outbox = SwiftDataOutboxStore(context: context)
-        let remote = RecordingBookmarkRemote()
-        let connectivity = ManualConnectivityMonitor(isConnected: true)
-        let clockBox = ClockBox()
-        clockBox.date = Date(timeIntervalSince1970: 2_000_000_000)
-        let clock = FixedOutboxClock { clockBox.date }
-        let repository = SwiftDataBookmarkRepository(
+        let store = SwiftDataOutboxStore(context: context)
+        let remoteClient = RecordingBookmarkRemote()
+        let pathMonitor = ManualConnectivityMonitor(isConnected: true)
+        let box = ClockBox()
+        box.date = Date(timeIntervalSince1970: 2_000_000_000)
+        let clock = FixedOutboxClock { box.date }
+        let bookmarkRepo = SwiftDataBookmarkRepository(
             context: context,
-            outbox: outbox,
-            clock: clock,
-            makeIdempotencyKey: { "stable-key" }
-        )
-        let engine = OutboxSyncEngine(
-            outbox: OutboxStoreBox(outbox),
-            remote: remote,
-            bookmarkMutator: BookmarkLocalMutatorBox(repository),
+            outbox: store,
+            clock: clock
+        ) { "stable-key" }
+        let syncEngine = OutboxSyncEngine(
+            outbox: OutboxStoreBox(store),
+            remote: remoteClient,
+            bookmarkMutator: BookmarkLocalMutatorBox(bookmarkRepo),
+            connectivity: pathMonitor,
             backoff: OutboxBackoffPolicy(
                 maxAttempts: maxAttempts,
                 baseDelay: 1,
                 maxDelay: 60,
-                jitterRatio: 0,
-                randomUnitInterval: { 0 }
-            ),
-            clock: clock,
-            connectivity: connectivity
+                jitterRatio: 0
+            ) { 0 },
+            clock: clock
         )
-        self.repository = repository
-        self.outbox = outbox
-        self.remote = remote
-        self.connectivity = connectivity
-        self.engine = engine
-        self.clockBox = clockBox
+        self.repository = bookmarkRepo
+        self.outbox = store
+        self.remote = remoteClient
+        self.connectivity = pathMonitor
+        self.engine = syncEngine
+        self.clockBox = box
     }
 }
 
@@ -216,7 +217,8 @@ struct OutboxSyncEngineTests {
     func inFlightRecoveredAsPendingOnStart() async throws {
         let harness = try SyncEngineHarness()
         _ = try harness.repository.setBookmarked(true, postID: 30)
-        let id = try harness.outbox.snapshots(forEntityKey: "feedPost:30").first!.id
+        let snapshots = try harness.outbox.snapshots(forEntityKey: "feedPost:30")
+        let id = try #require(snapshots.first?.id)
         try harness.outbox.markInFlight(id: id)
         await harness.engine.start()
         let entries = try harness.outbox.snapshots(forEntityKey: "feedPost:30")

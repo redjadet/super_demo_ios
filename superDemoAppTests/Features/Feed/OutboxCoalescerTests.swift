@@ -10,44 +10,41 @@ import Testing
 @Suite("Outbox coalescer")
 struct OutboxCoalescerTests {
     @Test
-    func setThenClearCancelsOutFromUnbookmarkedBaseline() {
-        let set = Self.pending(kind: .bookmarkSet, postID: 1, key: "a")
+    func setThenClearCancelsOutFromUnbookmarkedBaseline() throws {
+        let set = try Self.pending(kind: .bookmarkSet, postID: 1, key: "a")
         let plan = OutboxCoalescer.plan(
             postID: 1,
             existing: [set],
             syncedOrInFlightBaseline: false,
-            desiredBookmarked: false,
-            makeIdempotencyKey: { "b" }
-        )
+            desiredBookmarked: false
+        ) { "b" }
         #expect(plan.removeIDs == [set.id])
         #expect(plan.enqueue == nil)
     }
 
     @Test
-    func repeatedTogglesCollapseToFinalSet() {
-        let clear = Self.pending(kind: .bookmarkClear, postID: 2, key: "c1")
+    func repeatedTogglesCollapseToFinalSet() throws {
+        let clear = try Self.pending(kind: .bookmarkClear, postID: 2, key: "c1")
         let plan = OutboxCoalescer.plan(
             postID: 2,
             existing: [clear],
             syncedOrInFlightBaseline: true,
-            desiredBookmarked: true,
-            makeIdempotencyKey: { "final" }
-        )
+            desiredBookmarked: true
+        ) { "final" }
         #expect(plan.removeIDs == [clear.id])
         #expect(plan.enqueue?.kind == .bookmarkSet)
         #expect(plan.enqueue?.idempotencyKey == "final")
     }
 
     @Test
-    func inFlightIsPreservedWhenQueuingOpposite() {
-        let inFlight = Self.entry(kind: .bookmarkSet, postID: 3, key: "inf", status: .inFlight)
+    func inFlightIsPreservedWhenQueuingOpposite() throws {
+        let inFlight = try Self.entry(kind: .bookmarkSet, postID: 3, key: "inf", status: .inFlight)
         let plan = OutboxCoalescer.plan(
             postID: 3,
             existing: [inFlight],
             syncedOrInFlightBaseline: false,
-            desiredBookmarked: false,
-            makeIdempotencyKey: { "after" }
-        )
+            desiredBookmarked: false
+        ) { "after" }
         #expect(plan.removeIDs.isEmpty)
         #expect(plan.enqueue?.kind == .bookmarkClear)
     }
@@ -56,8 +53,8 @@ struct OutboxCoalescerTests {
         kind: OutboxOperationKind,
         postID: Int,
         key: String
-    ) -> OutboxEntrySnapshot {
-        self.entry(kind: kind, postID: postID, key: key, status: .pending)
+    ) throws -> OutboxEntrySnapshot {
+        try self.entry(kind: kind, postID: postID, key: key, status: .pending)
     }
 
     private static func entry(
@@ -65,9 +62,9 @@ struct OutboxCoalescerTests {
         postID: Int,
         key: String,
         status: OutboxEntryStatus
-    ) -> OutboxEntrySnapshot {
+    ) throws -> OutboxEntrySnapshot {
         let payload = BookmarkOutboxPayload(postID: postID, desiredBookmarked: kind.desiredBookmarked)
-        let data = try! JSONEncoder().encode(payload)
+        let data = try JSONEncoder().encode(payload)
         return OutboxEntrySnapshot(
             id: UUID(),
             idempotencyKey: key,

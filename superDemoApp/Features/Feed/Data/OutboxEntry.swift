@@ -21,14 +21,14 @@ final class OutboxEntry {
     var lastError: String?
 
     init(
-        id: UUID = UUID(),
         idempotencyKey: String,
         operationType: String,
         entityKey: String,
         payload: Data,
         createdAt: Date,
-        attemptCount: Int = 0,
         nextAttemptAt: Date,
+        id: UUID = UUID(),
+        attemptCount: Int = 0,
         status: OutboxEntryStatus = .pending,
         lastError: String? = nil
     ) {

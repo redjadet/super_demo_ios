@@ -32,15 +32,16 @@ struct FeedView: View {
                     preferredCompactColumn: self.$preferredCompactColumn,
                     detail: { post in
                         FeedPostDetailView(post: post, model: self.model)
+                    },
+                    sidebar: {
+                        self.content
+                            .navigationTitle("Feed")
+                            .iosInlineNavigationBarTitle()
+                            .toolbar {
+                                self.feedToolbar
+                            }
                     }
-                ) {
-                    self.content
-                        .navigationTitle("Feed")
-                        .iosInlineNavigationBarTitle()
-                        .toolbar {
-                            self.feedToolbar
-                        }
-                }
+                )
             } else {
                 self.content
                     .toolbar {
@@ -202,16 +203,18 @@ struct FeedView: View {
 
         if self.model.failedOutboxCount > 0 {
             Section {
-                Label(
-                    "\(self.model.failedOutboxCount) bookmark sync failed. Tap to retry.",
-                    systemImage: "exclamationmark.triangle"
-                )
-                .font(.footnote)
-                .foregroundStyle(.secondary)
-                .accessibilityIdentifier("feedOutboxFailedBanner")
-                .onTapGesture {
+                Button {
                     self.model.retryFailedBookmarks()
+                } label: {
+                    Label(
+                        "\(self.model.failedOutboxCount) bookmark sync failed. Tap to retry.",
+                        systemImage: "exclamationmark.triangle"
+                    )
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
                 }
+                .buttonStyle(.plain)
+                .accessibilityIdentifier("feedOutboxFailedBanner")
             }
         }
 

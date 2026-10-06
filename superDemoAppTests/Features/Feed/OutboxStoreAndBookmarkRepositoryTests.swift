@@ -72,12 +72,13 @@ struct OutboxStoreAndBookmarkRepositoryTests {
     @Test
     @MainActor
     func fifoOrderingPreservedForDistinctEntities() throws {
-        var clock = Date(timeIntervalSince1970: 1_900_000_000)
-        let env = try Self.makeEnv(now: { clock })
+        let clockBox = ClockBox()
+        clockBox.date = Date(timeIntervalSince1970: 1_900_000_000)
+        let env = try Self.makeEnv { clockBox.date }
         _ = try env.repository.setBookmarked(true, postID: 1)
-        clock = clock.addingTimeInterval(1)
+        clockBox.date = clockBox.date.addingTimeInterval(1)
         _ = try env.repository.setBookmarked(true, postID: 2)
-        let ready = try env.outbox.readyPending(now: clock.addingTimeInterval(10))
+        let ready = try env.outbox.readyPending(now: clockBox.date.addingTimeInterval(10))
         #expect(ready.map(\.entityKey) == ["feedPost:1", "feedPost:2"])
     }
 
@@ -97,9 +98,8 @@ struct OutboxStoreAndBookmarkRepositoryTests {
         let repository = SwiftDataBookmarkRepository(
             context: context,
             outbox: outbox,
-            clock: FixedOutboxClock(now),
-            makeIdempotencyKey: { keys.next() }
-        )
+            clock: FixedOutboxClock(now)
+        ) { keys.next() }
         return (repository, outbox)
     }
 }
@@ -115,4 +115,9 @@ private final class KeyFactory: @unchecked Sendable {
         self.index += 1
         return "key-\(self.index)"
     }
+}
+
+@MainActor
+private final class ClockBox: @unchecked Sendable {
+    var date = Date()
 }

@@ -47,8 +47,6 @@ nonisolated protocol OutboxClock: Sendable {
 }
 
 nonisolated struct SystemOutboxClock: OutboxClock {
-    init() {}
-
     func now() -> Date {
         Date()
     }

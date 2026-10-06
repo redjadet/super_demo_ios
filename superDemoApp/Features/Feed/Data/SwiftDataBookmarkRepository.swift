@@ -19,9 +19,9 @@ final class SwiftDataBookmarkRepository: BookmarkRepository, BookmarkLocalMutati
         context: ModelContext,
         outbox: OutboxStoring,
         clock: OutboxClock = SystemOutboxClock(),
-        makeIdempotencyKey: @escaping () -> String = { UUID().uuidString },
         saveContext: @escaping (ModelContext) throws -> Void = { try $0.save() },
-        onEnqueued: (@Sendable () -> Void)? = nil
+        onEnqueued: (@Sendable () -> Void)? = nil,
+        makeIdempotencyKey: @escaping () -> String = { UUID().uuidString }
     ) {
         self.context = context
         self.outbox = outbox
@@ -109,8 +109,7 @@ final class SwiftDataBookmarkRepository: BookmarkRepository, BookmarkLocalMutati
                 lastError: entry.lastError
             )
             if let payload = entry.bookmarkPayload,
-               let record = try self.record(postID: payload.postID)
-            {
+               let record = try self.record(postID: payload.postID) {
                 record.syncStatus = .pending
                 record.lastError = nil
             }

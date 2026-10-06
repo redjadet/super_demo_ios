@@ -98,11 +98,14 @@ private final class FailingOnceBookmarkRemote: BookmarkRemoteClient, @unchecked 
     var shouldFail = true
 
     func setBookmark(postID: Int, idempotencyKey _: String) async throws -> Int? {
+        await Task.yield()
         if self.shouldFail {
             throw BookmarkRemoteError.httpStatus(400)
         }
         return postID
     }
 
-    func clearBookmark(postID _: Int, remoteBookmarkID _: Int?, idempotencyKey _: String) async throws {}
+    func clearBookmark(postID _: Int, remoteBookmarkID _: Int?, idempotencyKey _: String) async throws {
+        await Task.yield()
+    }
 }
