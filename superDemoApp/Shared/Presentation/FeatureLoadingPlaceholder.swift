@@ -12,7 +12,8 @@ struct FeatureLoadingPlaceholder: View {
     private let accessibilityLabel: String
     private let rowCount: Int
 
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.accessibilityReduceMotion)
+    private var reduceMotion
 
     init(
         accessibilityIdentifier: String,

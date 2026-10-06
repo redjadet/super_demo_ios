@@ -10,7 +10,8 @@ struct ItemDetailView: View {
     @Bindable private var model: ItemsFeatureModel
     private let draftStore: ItemDraftStoreBinding?
 
-    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @Environment(\.dynamicTypeSize)
+    private var dynamicTypeSize
 
     @State private var title: String
     @State private var note: String
