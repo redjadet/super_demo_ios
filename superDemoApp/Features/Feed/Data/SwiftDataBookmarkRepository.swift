@@ -109,7 +109,8 @@ final class SwiftDataBookmarkRepository: BookmarkRepository, BookmarkLocalMutati
                 lastError: entry.lastError
             )
             if let payload = entry.bookmarkPayload,
-               let record = try self.record(postID: payload.postID) {
+               let record = try self.record(postID: payload.postID)
+            {
                 record.syncStatus = .pending
                 record.lastError = nil
             }

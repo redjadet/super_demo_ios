@@ -7,7 +7,9 @@ import Foundation
 
 /// Optimistic bookmark state for a Feed post (local SwiftData + outbox).
 nonisolated struct PostBookmark: Equatable, Identifiable, Sendable {
-    var id: Int { self.postID }
+    var id: Int {
+        self.postID
+    }
 
     let postID: Int
     let isBookmarked: Bool

@@ -9,7 +9,7 @@ import Foundation
 struct ImmediateSuccessBookmarkRemoteClient: BookmarkRemoteClient {
     func setBookmark(postID: Int, idempotencyKey _: String) async throws -> Int? {
         await Task.yield()
-        return postID + 10_000
+        return postID + 10000
     }
 
     func clearBookmark(postID _: Int, remoteBookmarkID _: Int?, idempotencyKey _: String) async throws {

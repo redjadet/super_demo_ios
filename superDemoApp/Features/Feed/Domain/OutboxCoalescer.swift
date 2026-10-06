@@ -48,7 +48,8 @@ nonisolated enum OutboxCoalescer {
 
         let baseline: Bool
         if let inFlightOp = inFlight.max(by: { lhs, rhs in lhs.createdAt < rhs.createdAt }),
-           let payload = inFlightOp.bookmarkPayload {
+           let payload = inFlightOp.bookmarkPayload
+        {
             baseline = payload.desiredBookmarked
         } else {
             baseline = syncedOrInFlightBaseline
