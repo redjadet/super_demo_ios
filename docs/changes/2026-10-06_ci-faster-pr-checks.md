@@ -15,16 +15,16 @@ Adopted `redjadet/flutter_bloc_app` PR CI patterns, adapted for Xcode:
 - **`changes` scope job** + `./bin/checklist --print-scope` /
   `tool/checklist_scope.sh` (docs-only allowlist; unknown → full CI)
 - **Parallel lanes** with required **`Delivery checklist`** aggregator
-- **Default layout (`CI_IPHONE_LAYOUT=single`):** one `Checklist · iPhone` job
-  boots the sim in the background during setup/Flutter/`build-for-testing`,
-  then runs all 187 tests via `test-without-building` with
-  `-parallel-testing-enabled YES` (3 workers / simulator clones) — no
-  cross-job artifact round-trip
-- **Compare/fallback (`CI_IPHONE_LAYOUT=sharded`):** units in the build job;
-  UI on `ui-a` / `ui-b` shards with early background boot + 2 parallel workers
+- **Default layout (`iphone_layout=sharded`):** units in `iphone-build`; UI on
+  matrix shards `ui-1`…`ui-4` (6 cases each = 24). Artifact handoff strips
+  `*.dSYM` before upload. Shard jobs boot the sim **after** product download
+  via `tool/ci_simulator_boot_ready.sh` (retry once) — overlapping boot with
+  download starved `bootstatus` (ui-4 fail on run `37490468148`).
+- **Optional single layout (`iphone_layout=single`):** one `Checklist · iPhone`
+  job with background boot during setup/build (no artifact round-trip).
 - **Reuse-only simulators:** `tool/ci_simulator_pick_existing.sh` (never
   create/erase by default); `tool/ci_simulator_boot_bg.sh` /
-  `tool/ci_simulator_await.sh`
+  `tool/ci_simulator_await.sh` / `tool/ci_simulator_boot_ready.sh`
 - **Composite setup** `.github/actions/setup-ios-ci` — `HOMEBREW_NO_AUTO_UPDATE`,
   optional lean brew packages, SPM/DerivedData/SourcePackages/Flutter-embed
   caches; Flutter rebuild skipped on embed cache hit
