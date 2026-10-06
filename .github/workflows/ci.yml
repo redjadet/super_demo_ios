@@ -138,13 +138,6 @@ jobs:
           fi
           (cd flutter_module && flutter test)
 
-      - name: Pre-boot iPhone simulator (parallel with later build)
-        if: needs.changes.outputs.docs_only != 'true'
-        env:
-          CI: true
-          CI_PREPARE_IPAD: "0"
-        run: source ./tool/ensure_ci_simulator.sh
-
       - name: iPhone build-for-testing
         if: needs.changes.outputs.docs_only != 'true'
         env:
@@ -197,11 +190,15 @@ jobs:
           name: iphone-test-products
           path: ${{ runner.temp }}/iphone-test-products
 
+      # Boot while products are already on disk; script also ensures destination.
       - name: Pre-boot iPhone simulator
         env:
           CI: true
           CI_PREPARE_IPAD: "0"
-        run: source ./tool/ensure_ci_simulator.sh
+        run: |
+          set -euo pipefail
+          # Use BASH_SOURCE-safe source from repo path (not runner temp $0).
+          source "${GITHUB_WORKSPACE}/tool/ensure_ci_simulator.sh"
 
       - name: iPhone tests (test-without-building shard)
         env:
