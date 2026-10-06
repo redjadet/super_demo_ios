@@ -57,6 +57,7 @@ struct ItemsView: View {
         ToolbarItem {
             Button {
                 Task {
+                    guard !self.isLoading else { return }
                     await self.model.addItemNow()
                     if case .failed = self.model.state {
                         return
@@ -67,7 +68,7 @@ struct ItemsView: View {
                 Label("Add Item", systemImage: "plus")
             }
             .chromeGlassButtonStyle()
-            .disabled(self.isLoading)
+            .allowsHitTesting(!self.isLoading)
             .accessibilityIdentifier("addItem")
             .accessibilityHint("Adds a new item to the list")
         }

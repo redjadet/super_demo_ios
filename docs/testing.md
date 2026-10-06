@@ -104,9 +104,11 @@ Helpers live in `superDemoAppUITests/UiTestSupport.swift`:
   control is tappable (no silent `tapFirstHittable` no-op).
 - **`waitForFeedChrome` / `waitForItemsChrome`** — require feature-scoped
   identifiers (`feedList` / `feedPostRow-*` / `feedPostDetail-*` / refresh /
-  retry / empty / error; `itemsList` / `itemRow-*` / `addItem*`). Do **not**
-  accept bare `app.cells.firstMatch` (Dashboard/Items also have cells → false
-  green).
+  retry / empty / error; `itemsList` / `itemRow-*` / `addItem*` /
+  `itemsLoading` / `itemsEmpty` / `itemsFailed`). Do **not** accept bare
+  `app.cells.firstMatch` (Dashboard/Items also have cells → false green).
+  Keep toolbar Add visible to UI tests during first-load (avoid
+  `.disabled` on `addItem` — use `allowsHitTesting` + in-action guard).
 - **`tearDown`** in `superDemoAppUITests` — `@MainActor`, calls
   `terminateApplication` so the next test does not inherit a stuck process
   (SwiftLint: balanced `setUp` / `tearDown`; required for Swift 6 on CI).
