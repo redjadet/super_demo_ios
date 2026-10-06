@@ -77,6 +77,10 @@ For non-trivial work, order the contract before generation:
 4. **Verification** — named command from the validation chooser; empty output ≠
    pass ([`engineering/validation_routing_fast_vs_full.md`](engineering/validation_routing_fast_vs_full.md)).
 
+Tracked **intent → spec → plan → REVIEW** templates for multi-file features:
+[`ai-sdlc/README.md`](ai-sdlc/README.md). Deterministic gates (scripts/CI, not
+vendor hook JSON): [`ai-sdlc/gates.md`](ai-sdlc/gates.md).
+
 Generation is cheap. **Verification, judgment, and direction** are the craft.
 
 ## Judgment: the verification bottleneck
@@ -113,6 +117,7 @@ allow vibe only for disposable spikes you will not ship.
 ## Related
 
 - Agent map: [`../AGENTS.md`](../AGENTS.md)
+- AI-native SDLC kit: [`ai-sdlc/README.md`](ai-sdlc/README.md)
 - Commands: [`agents_quick_reference.md`](agents_quick_reference.md)
 - Feedback loop: [`development-feedback-loop.md`](development-feedback-loop.md)
 - Index: [`README.md`](README.md)

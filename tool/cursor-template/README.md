@@ -60,6 +60,8 @@ Details and skill list: [`docs/agent_host_notes.md`](../../docs/agent_host_notes
 
 Canonical policy: lean [`AGENTS.md`](../../AGENTS.md) (map) + `docs/` (detail). Edit the
 template here, run install, and update owning docs if behavior changes.
+Feature SDLC kit (any agent): [`docs/ai-sdlc/README.md`](../../docs/ai-sdlc/README.md);
+gates: [`docs/ai-sdlc/gates.md`](../../docs/ai-sdlc/gates.md).
 
 ## MCP priority (Cursor)
 

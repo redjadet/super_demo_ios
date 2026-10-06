@@ -80,6 +80,13 @@ does not claim one architecture is always best. Simple screens can stay simple; 
 flows need predictable ownership, controlled dependencies, and explicit failure paths.
 Composition lives in `superDemoApp/App/`.
 
+## AI-native feature artifacts
+
+For multi-file or architecture-sensitive work, use the tool-agnostic kit
+[`ai-sdlc/README.md`](ai-sdlc/README.md) (`intent` → `spec` → `plan` → `REVIEW`
+under `docs/ai-sdlc/features/<slug>/`). Pair with [`feature-template.md`](feature-template.md)
+for layer scaffolding. PR review should check the diff against `plan.md` when present.
+
 ## Feature-model lifecycle (Feed / Items / Dashboard)
 
 - Prefer a single refresh use case per feature when load and refresh are identical

@@ -20,6 +20,7 @@ full demo script. Companion to [`portfolio.md`](portfolio.md) (theme table) and
 | Follow-up | Point here |
 | --- | --- |
 | “Where do agents start?” | [`../AGENTS.md`](../AGENTS.md), [`../CODEMAP.md`](../CODEMAP.md) |
+| “AI-native feature loop?” | [`ai-sdlc/README.md`](ai-sdlc/README.md) |
 | “Full reviewer talk tracks?” | [`portfolio.md`](portfolio.md) |
 | “Items as SwiftData reference?” | `superDemoApp/Features/Items/` |
 | “UIKit interop?” | `superDemoApp/Features/ProductionReadiness/UIKitShowcase/` |

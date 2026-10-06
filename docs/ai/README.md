@@ -9,6 +9,7 @@ Thin routing for agents. Behavior canon stays in parent [`docs/`](../README.md).
 | [`harness-scorecard.md`](harness-scorecard.md) | Agent harness maturity; separate from the app evidence map |
 | [`../agent_kb/agent_safety_contracts.md`](../agent_kb/agent_safety_contracts.md) | SAFETY contracts (boundaries + approvals) |
 | [`../using-agents-here.md`](../using-agents-here.md) | Human entry: stakes spectrum, harness, conductor/orchestrator |
+| [`../ai-sdlc/README.md`](../ai-sdlc/README.md) | Intent→spec→plan→REVIEW kit; skills; deterministic gates |
 
 Workflow / finish / evidence: [`../agent_knowledge_base.md`](../agent_knowledge_base.md),
 [`../agent_kb/legibility_and_finish_gate.md`](../agent_kb/legibility_and_finish_gate.md),

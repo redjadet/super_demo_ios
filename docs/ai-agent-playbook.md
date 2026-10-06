@@ -37,6 +37,8 @@ Thin router. Ladder: [`ai/context_loading.md`](ai/context_loading.md). Pre-Fligh
 ## Report
 
 Changed files; exact proof command + result; blocker; residual risk if partial.
+When `docs/ai-sdlc/features/<slug>/` exists, fill `REVIEW.md` and ensure the
+diff matches `plan.md`.
 
 ## Rule retention
 
