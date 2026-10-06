@@ -471,3 +471,4 @@ jobs:
 
           echo "Delivery checklist gate passed (layout=$LAYOUT)."
           echo "Local equivalent: ./bin/checklist — see docs/engineering/checklist_gate.md"
+
