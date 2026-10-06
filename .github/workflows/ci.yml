@@ -179,9 +179,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
 
-      - name: Setup iOS CI (Xcode select)
+      - name: Setup iOS CI (Xcode select + Brewfile for rg / build-phase tools)
         uses: ./.github/actions/setup-ios-ci
         with:
+          brewfile: "true"
           cache-key-suffix: iphone-test-${{ matrix.shard }}
 
       - name: Download iPhone test products
