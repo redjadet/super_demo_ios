@@ -48,3 +48,16 @@ Accept only when:
 - proof command passed or blocker is explicit,
 - edge/failure paths were considered,
 - future agent can reproduce validation from docs/commands.
+
+## Process judgment (not only the final diff)
+
+Agents often ship a polished first pass that still misses seams (layers,
+concurrency, platform honesty). Review the **path**, not only the patch:
+
+1. Right owners loaded (context ladder) and write-set respected?
+2. Proof matched to change type (fast vs full / SAFETY-05)?
+3. Claims reconstructable (~10 min) — or residual risk named?
+
+Spot confident wrongness: plausible APIs, silent `try?`, false-green UI waits,
+docs that overclaim CI proof. Human guide:
+[`using-agents-here.md`](using-agents-here.md).

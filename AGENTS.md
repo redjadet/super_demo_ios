@@ -11,6 +11,7 @@ Target **≤ 70 lines**. Prefs/facts:
 2. Non-trivial: [`docs/ai/ai_failure_risks.md`](docs/ai/ai_failure_risks.md) +
    [`docs/agent_kb/agent_safety_contracts.md`](docs/agent_kb/agent_safety_contracts.md).
 3. Workflow: [`docs/agent_knowledge_base.md`](docs/agent_knowledge_base.md).
+   Humans directing agents: [`docs/using-agents-here.md`](docs/using-agents-here.md).
 
 Authority: `AGENTS.md` → `docs/` → source comments. Done = plan, execute, verify,
 report proof.

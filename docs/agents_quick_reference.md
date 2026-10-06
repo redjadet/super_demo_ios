@@ -100,6 +100,7 @@ Router doc path honesty (CODEMAP / portfolio / architecture-tour):
 
 ## Reminders
 
+- Humans directing agents: [`using-agents-here.md`](using-agents-here.md).
 - Pre-Flight (non-trivial): [`ai/ai_failure_risks.md`](ai/ai_failure_risks.md) +
   [`agent_kb/agent_safety_contracts.md`](agent_kb/agent_safety_contracts.md).
 - Context ladder: [`ai/context_loading.md`](ai/context_loading.md).

@@ -10,6 +10,7 @@
 
 - AGENTS.md
 - CODEMAP.md
+- docs/using-agents-here.md (humans directing agents)
 - docs/architecture-tour.md (≤15 min tour)
 - docs/portfolio.md
 - docs/agents_quick_reference.md

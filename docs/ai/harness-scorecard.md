@@ -54,6 +54,8 @@ Claim Harness 10/10 only when:
 
 ## Related
 
+- Human guide (agent = model + harness; stakes spectrum):
+  [`../using-agents-here.md`](../using-agents-here.md)
 - Host maintenance: [`../agent_kb/host-maintenance.md`](../agent_kb/host-maintenance.md)
 - Engineering evidence map: [`../engineering/engineering-evidence-map.md`](../engineering/engineering-evidence-map.md)
 - Task router: [`../../CODEMAP.md`](../../CODEMAP.md)
