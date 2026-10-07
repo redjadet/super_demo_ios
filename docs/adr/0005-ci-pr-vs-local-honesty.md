@@ -20,10 +20,10 @@ Treat **PR / GHA lanes and local merge proof as related but not identical**:
 
 | Lane | Role |
 | --- | --- |
-| GHA `lint` / `iphone-test` / `platform-builds` → aggregate **`checklist`** | Hosted PR / merge gate (Flutter checklist role). `iphone-test` defaults to newest iPhone Simulator + `xcodebuild test`; `CI_IPHONE_GENERIC_BUILD=1` is build-only escape hatch |
-| Local `./bin/checklist` | Authoritative **single-command delivery** gate (same scripts) |
-| Local `./bin/ci.sh` | Fastlane-orchestrated equivalent of the three lanes |
-| Docs / tooling-only | `./bin/checklist-fast` (validation routing) |
+| GHA `changes` / `lint` / `iphone-build` / matrix `iphone-test` / `platform-builds` → aggregate **`checklist`** (`Delivery checklist`) | Hosted PR / merge gate (Flutter checklist role). iPhone: `build-for-testing` + `test-without-building` shards; `CI_IPHONE_GENERIC_BUILD=1` is build-only escape hatch |
+| Local `./bin/checklist` | Authoritative **single-command delivery** gate (same scripts; unsharded iPhone tests; docs-only route via `--print-scope`) |
+| Local `./bin/ci.sh` | Fastlane-orchestrated equivalent of the lint + iPhone + platform lanes |
+| Docs / tooling-only | `./bin/checklist-fast` (validation routing); hosted docs-only PR diffs use scope bypass |
 
 Record local test results separately from hosted CI when they diverge (for
 example after using the generic build escape hatch). See

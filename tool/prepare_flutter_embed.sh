@@ -40,14 +40,18 @@ if [[ "$(uname -s)" != "Darwin" ]]; then
   exit 1
 fi
 
-if ! command -v flutter >/dev/null 2>&1; then
-  echo "error: flutter not on PATH. Install Flutter stable and retry." >&2
-  exit 1
-fi
-
 MODULE_DIR="$ROOT/flutter_module"
 OUT_DIR="$ROOT/Flutter"
 XCCONFIG="$ROOT/Config/FlutterEmbed.local.xcconfig"
+
+# --skip-build with an existing embed does not need the Flutter SDK on PATH
+# (hosted CI can restore Flutter/ from cache and skip flutter-action).
+if [[ "$SKIP_BUILD" != "1" ]] || [[ ! -d "$OUT_DIR/Debug/Flutter.xcframework" ]]; then
+  if ! command -v flutter >/dev/null 2>&1; then
+    echo "error: flutter not on PATH. Install Flutter stable and retry." >&2
+    exit 1
+  fi
+fi
 
 # Copy the .framework from an XCFramework platform slice into dest_dir.
 # platform: iphoneos | iphonesimulator
@@ -129,10 +133,14 @@ flatten_all_configs() {
 }
 
 echo "==> flutter pub get (module)"
-(
-  cd "$MODULE_DIR"
-  flutter pub get
-)
+if [[ "$SKIP_BUILD" == "1" && -d "$OUT_DIR/Debug/Flutter.xcframework" ]]; then
+  echo "note: --skip-build with cached embed — skipping flutter pub get"
+else
+  (
+    cd "$MODULE_DIR"
+    flutter pub get
+  )
+fi
 
 if [[ "$SKIP_BUILD" != "1" ]]; then
   echo "==> flutter build ios-framework → $OUT_DIR ${CODESIGN_ARGS[*]:-(codesign)}"

@@ -145,22 +145,57 @@ final class superDemoAppUITests: XCTestCase {
     /// Hosted iPad/Mac lanes are **build-only** — see `docs/testing.md` (adaptive shell note).
     @MainActor
     func testItemRowOpensDetail() {
-        let app = UiTestSupport.launchApplication(from: self, extraArguments: ["-ReviewerDemoMode"])
+        // One soft relaunch — shard runners can leave Accessibility snapshots wedged
+        // after several Engineering demos (CI: Timed out while evaluating UI query).
+        for attempt in 1 ... 2 {
+            let app = UiTestSupport.launchApplication(from: self, extraArguments: ["-ReviewerDemoMode"])
 
-        UiTestSupport.openItemsTab(in: app)
-        XCTAssertTrue(UiTestSupport.waitForItemsChrome(in: app))
+            UiTestSupport.openItemsTab(in: app)
+            guard UiTestSupport.waitForItemsChrome(in: app, timeout: 20) else {
+                app.terminate()
+                if attempt == 2 {
+                    XCTFail("Items chrome missing after reviewer seed")
+                }
+                continue
+            }
+            guard UiTestSupport.waitForItemsLoadSettled(in: app, timeout: 20) else {
+                app.terminate()
+                if attempt == 2 {
+                    XCTFail("Items load did not settle after reviewer seed")
+                }
+                continue
+            }
 
-        let list = app.descendants(matching: .any).matching(identifier: "itemsList").firstMatch
-        XCTAssertTrue(list.waitForExistence(timeout: 15), "Items list missing after reviewer seed")
+            let list = app.descendants(matching: .any).matching(identifier: "itemsList").firstMatch
+            guard list.waitForExistence(timeout: 12) else {
+                app.terminate()
+                if attempt == 2 {
+                    XCTFail("Items list missing after reviewer seed")
+                }
+                continue
+            }
 
-        let row = app.descendants(matching: .any)
-            .matching(NSPredicate(format: "identifier BEGINSWITH %@", "itemRow-"))
-            .firstMatch
-        XCTAssertTrue(row.waitForExistence(timeout: 10), "Seeded item row missing")
-        row.tap()
+            let row = app.descendants(matching: .any)
+                .matching(NSPredicate(format: "identifier BEGINSWITH %@", "itemRow-"))
+                .firstMatch
+            guard row.waitForExistence(timeout: 10) else {
+                app.terminate()
+                if attempt == 2 {
+                    XCTFail("Seeded item row missing")
+                }
+                continue
+            }
+            row.tap()
 
-        let detail = app.descendants(matching: .any).matching(identifier: "itemDetail").firstMatch
-        XCTAssertTrue(detail.waitForExistence(timeout: 10), "Item detail did not open from list selection")
+            let detail = app.descendants(matching: .any).matching(identifier: "itemDetail").firstMatch
+            if detail.waitForExistence(timeout: 10) {
+                return
+            }
+            app.terminate()
+            if attempt == 2 {
+                XCTFail("Item detail did not open from list selection")
+            }
+        }
     }
 
     @MainActor

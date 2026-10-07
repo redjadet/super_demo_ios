@@ -6,161 +6,418 @@ on:
   pull_request:
     branches: [main]
 
+# Cancel superseded PR pushes only — never cancel in-progress main runs.
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
   # Newest released Xcode on the xcode-27 image (GM build preferred over seed/beta).
   # Escape: runs-on macos-26 + SUPER_DEMO_XCODE_MIN_VERSION=26.5 (see docs/ci-cd-map.md).
   SUPER_DEMO_XCODE_MIN_VERSION: "27"
+  CI_SIMULATOR_REUSE_ONLY: "1"
+  HOMEBREW_NO_AUTO_UPDATE: "1"
 
 jobs:
-  # Delivery checklist (Flutter ./bin/checklist role), parallelized for macos runners.
-  # Local single-command equivalent: ./bin/checklist
-  # Docs: docs/engineering/checklist_gate.md
+  # Scope / preflight (flutter_bloc_app `changes` job parity).
+  # iphone_layout is an output (not job-level env.if — GHA forbids env in job if).
+  # single = one job (build-for-testing + parallel tests; no artifact handoff).
+  # sharded = units in build job + ui-a/ui-b shards (compare / fallback).
+  changes:
+    name: Checklist · changes
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      docs_only: ${{ steps.scope.outputs.docs_only }}
+      iphone_layout: ${{ steps.scope.outputs.iphone_layout }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Determine change scope
+        id: scope
+        shell: bash
+        run: |
+          set -euo pipefail
+          docs_only="$(./bin/checklist --print-scope)"
+          case "$docs_only" in
+            docs_only=true|docs_only=false) ;;
+            *) echo "Invalid checklist scope: $docs_only" >&2; exit 1 ;;
+          esac
+          docs_only="${docs_only#docs_only=}"
+          # Flip to "single" to A/B one-runner build+parallel-UI (measured slower /
+          # timed out on clone overhead). Default: units-in-build + 4 UI shards.
+          iphone_layout="sharded"
+          echo "docs_only=$docs_only" >> "$GITHUB_OUTPUT"
+          echo "iphone_layout=$iphone_layout" >> "$GITHUB_OUTPUT"
+          {
+            echo "## Change scope"
+            echo ""
+            echo "- event: \`${{ github.event_name }}\`"
+            echo "- docs_only: \`$docs_only\`"
+            echo "- iphone_layout: \`$iphone_layout\`"
+            echo "- rule: \`tool/checklist_scope.sh\` (markdown/mdx/rst/adoc + llms.txt)"
+            echo "- unknown/empty/mixed/code/workflow diffs take the full route"
+          } >> "$GITHUB_STEP_SUMMARY"
+
   lint:
     name: Checklist · lint
-    runs-on: xcode-27
+    needs: changes
+    runs-on: ${{ needs.changes.outputs.docs_only == 'true' && 'ubuntu-latest' || 'xcode-27' }}
     timeout-minutes: 15
     defaults:
       run:
         working-directory: .
-
     steps:
       - name: Checkout
         uses: actions/checkout@v5
-
-      - name: Select latest released Xcode
-        env:
-          CI: true
-        run: source ./tool/select_xcode.sh
-
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
         with:
-          ruby-version: "3.3"
-          bundler-cache: true
+          fetch-depth: 0
 
-      - name: Install lint tools
-        run: brew bundle check --file Brewfile || brew bundle --file Brewfile
+      - name: Docs-only lint (no Brewfile / SwiftLint / Xcode)
+        if: needs.changes.outputs.docs_only == 'true'
+        run: |
+          set -euo pipefail
+          if ! command -v npm >/dev/null 2>&1 && ! command -v npx >/dev/null 2>&1; then
+            echo "error: npx required for DesignMD on docs-only lint" >&2
+            exit 1
+          fi
+          ./bin/lint-markdown.sh
+          ./tool/check_design_md.sh
+          ./tool/check_checklist_scope.sh
+          echo "Docs-only lint route passed."
+
+      - name: Setup iOS CI (Ruby + Brewfile)
+        if: needs.changes.outputs.docs_only != 'true'
+        uses: ./.github/actions/setup-ios-ci
+        with:
+          ruby: "true"
+          brewfile: "true"
+          cache-key-suffix: lint
 
       - name: Lint (Swift + markdown + DesignMD + common)
+        if: needs.changes.outputs.docs_only != 'true'
         env:
           CI: true
         run: bundle exec fastlane ci_lint
 
-  iphone-test:
-    name: Checklist · iPhone test
-    runs-on: xcode-27
-    # Normal green runs ~30–50m; fail hung runners before the old ~90m burn.
-    timeout-minutes: 70
+  # --- Layout: single (compare / fallback) — one runner, no artifact handoff --
+  # Measured: parallel UI workers timed out (~25–35m) after clone overhead;
+  # kept for A/B via changes.outputs.iphone_layout=single.
+  iphone:
+    name: Checklist · iPhone
+    needs: changes
+    if: >-
+      always() &&
+      needs.changes.result == 'success' &&
+      (needs.changes.outputs.docs_only == 'true' || needs.changes.outputs.iphone_layout == 'single')
+    runs-on: ${{ needs.changes.outputs.docs_only == 'true' && 'ubuntu-latest' || 'xcode-27' }}
+    timeout-minutes: 60
     defaults:
       run:
         working-directory: .
-
     steps:
       - name: Checkout
         uses: actions/checkout@v5
 
-      - name: Select latest released Xcode
+      - name: Docs-only iPhone bypass
+        if: needs.changes.outputs.docs_only == 'true'
+        run: echo "Documentation-only diff; iPhone build/test has no code to prove."
+
+      - name: Select Xcode + pick existing simulator + start background boot
+        if: needs.changes.outputs.docs_only != 'true'
         env:
           CI: true
-        run: source ./tool/select_xcode.sh
-
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: "3.3"
-          bundler-cache: true
-
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          channel: stable
-          cache: true
-
-      - name: Cache Xcode + SwiftPM + Flutter frameworks
-        uses: actions/cache@v6
-        with:
-          path: |
-            ~/Library/Caches/org.swift.swiftpm
-            ~/Library/Developer/Xcode/DerivedData
-            ${{ runner.temp }}/DerivedData-iPhone
-            Flutter
-          key: >-
-            xcode27-${{ runner.os }}-${{ runner.arch }}-iphone-flutter-${{ hashFiles('**/Package.resolved', '**/*.xcodeproj/project.pbxproj', 'flutter_module/pubspec.lock', 'flutter_module/lib/**') }}
-
-      - name: Install lint tools (for build phases)
-        run: brew bundle check --file Brewfile || brew bundle --file Brewfile
-
-      - name: Prepare Flutter add-to-app frameworks
+          CI_SIMULATOR_REUSE_ONLY: "1"
         run: |
+          set -euo pipefail
+          source ./tool/select_xcode.sh
+          source ./tool/ci_simulator_pick_existing.sh
+          ./tool/ci_simulator_boot_bg.sh
+
+      - name: Setup iOS CI (Flutter + Brewfile + SPM/Flutter caches; Xcode already selected)
+        if: needs.changes.outputs.docs_only != 'true'
+        uses: ./.github/actions/setup-ios-ci
+        with:
+          select-xcode: "false"
+          flutter: "true"
+          ruby: "false"
+          brewfile: "true"
+          cache-flutter-embed: "true"
+          cache-key-suffix: iphone-single
+
+      - name: Prepare Flutter add-to-app frameworks (cached hash skips rebuild)
+        if: needs.changes.outputs.docs_only != 'true'
+        run: |
+          set -euo pipefail
           if [[ -d Flutter/Debug/Flutter.xcframework ]]; then
+            echo "==> Flutter embed cache hit — skip ios-framework rebuild"
             ./tool/prepare_flutter_embed.sh --skip-build
           else
+            echo "==> Flutter embed cache miss — building ios-framework"
             ./tool/prepare_flutter_embed.sh
           fi
+          # Module unit tests are cheap; keep them off xcodebuild critical path.
           (cd flutter_module && flutter test)
 
-      - name: iPhone tests (warnings as errors)
+      - name: iPhone build-for-testing
+        if: needs.changes.outputs.docs_only != 'true'
         env:
           CI: true
           CI_PREPARE_IPAD: "0"
-          # Concrete newest-runtime iPhone simulator + xcodebuild test (not generic build-only).
-          CI_IPHONE_GENERIC_BUILD: "0"
-          # Single attempt (no hard-timeout full-suite retry). Leave headroom under job 70m.
-          CI_IPHONE_XCODEBUILD_TIMEOUT_SECONDS: "3300"
+          CI_SIMULATOR_REUSE_ONLY: "1"
+          CI_IPHONE_XCODEBUILD_TIMEOUT_SECONDS: "1800"
           IPHONE_DERIVED_DATA_PATH: ${{ runner.temp }}/DerivedData-iPhone
+          SUPERDEMO_REQUIRE_FLUTTER_EMBED: "1"
+        run: ./bin/ci-iphone-build-for-testing.sh
+
+      - name: Await simulator boot
+        if: needs.changes.outputs.docs_only != 'true'
+        env:
+          CI: true
+        run: ./tool/ci_simulator_await.sh
+
+      # Units first (serial): parallel workers previously spent ~27m cloning for
+      # unit suites and barely reached UI before the 35m timeout.
+      - name: iPhone unit tests (serial)
+        if: needs.changes.outputs.docs_only != 'true'
+        env:
+          CI: true
+          CI_PREPARE_IPAD: "0"
+          CI_IPHONE_GENERIC_BUILD: "0"
+          CI_IPHONE_TEST_MODE: test-without-building
+          CI_IPHONE_TEST_SHARD: unit
+          CI_IPHONE_PRODUCTS_DIR: ${{ runner.temp }}/DerivedData-iPhone/Build/Products
+          CI_IPHONE_XCODEBUILD_TIMEOUT_SECONDS: "600"
+          CI_ALLOW_PARALLEL_TESTS: "0"
+          CI_SIMULATOR_REUSE_ONLY: "1"
+          SUPERDEMO_REQUIRE_FLUTTER_EMBED: "1"
+        run: ./bin/ci-iphone-test.sh
+
+      - name: iPhone UI tests (parallel workers, UI only)
+        if: needs.changes.outputs.docs_only != 'true'
+        env:
+          CI: true
+          CI_PREPARE_IPAD: "0"
+          CI_IPHONE_GENERIC_BUILD: "0"
+          CI_IPHONE_TEST_MODE: test-without-building
+          CI_IPHONE_TEST_SHARD: ui
+          CI_IPHONE_PRODUCTS_DIR: ${{ runner.temp }}/DerivedData-iPhone/Build/Products
+          CI_IPHONE_XCODEBUILD_TIMEOUT_SECONDS: "1500"
+          CI_ALLOW_PARALLEL_TESTS: "1"
+          CI_PARALLEL_TESTING_WORKER_COUNT: "3"
+          CI_SIMULATOR_REUSE_ONLY: "1"
+          SUPERDEMO_REQUIRE_FLUTTER_EMBED: "1"
+        run: ./bin/ci-iphone-test.sh
+
+  # --- Layout: sharded (default) — units in build + 4 UI shards -------------
+  # Early background sim boot on every job. Flutter SDK install skipped when
+  # Flutter/ embed cache hits. No xcodebuild parallel workers (clone overhead).
+  iphone-build:
+    name: Checklist · iPhone build
+    needs: changes
+    if: >-
+      always() &&
+      needs.changes.result == 'success' &&
+      needs.changes.outputs.docs_only != 'true' &&
+      needs.changes.outputs.iphone_layout == 'sharded'
+    runs-on: xcode-27
+    timeout-minutes: 45
+    defaults:
+      run:
+        working-directory: .
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Select Xcode + pick existing simulator + start background boot
+        env:
+          CI: true
+          CI_SIMULATOR_REUSE_ONLY: "1"
+        run: |
+          set -euo pipefail
+          source ./tool/select_xcode.sh
+          source ./tool/ci_simulator_pick_existing.sh
+          ./tool/ci_simulator_boot_bg.sh
+
+      - name: Setup iOS CI (Brewfile + SPM/Flutter caches; no Flutter SDK yet)
+        uses: ./.github/actions/setup-ios-ci
+        with:
+          select-xcode: "false"
+          flutter: "false"
+          ruby: "false"
+          brewfile: "true"
+          cache-flutter-embed: "true"
+          cache-key-suffix: iphone-build
+
+      - name: Prepare Flutter embed (skip rebuild + SDK when cache hits)
+        id: flutter_embed
+        run: |
+          set -euo pipefail
+          if [[ -d Flutter/Debug/Flutter.xcframework ]]; then
+            echo "==> Flutter embed cache hit — skip ios-framework rebuild and Flutter SDK"
+            ./tool/prepare_flutter_embed.sh --skip-build
+            echo "cache_hit=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "cache_hit=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Install Flutter SDK (cache miss only)
+        if: steps.flutter_embed.outputs.cache_hit != 'true'
+        uses: ./.github/actions/setup-ios-ci
+        with:
+          select-xcode: "false"
+          flutter: "true"
+          brewfile: "false"
+          cache-flutter-embed: "false"
+          cache-key-suffix: iphone-build-flutter-sdk
+
+      - name: Build Flutter embed + module tests (cache miss only)
+        if: steps.flutter_embed.outputs.cache_hit != 'true'
+        run: |
+          set -euo pipefail
+          ./tool/prepare_flutter_embed.sh
+          (cd flutter_module && flutter test)
+
+      - name: iPhone build-for-testing
+        env:
+          CI: true
+          CI_PREPARE_IPAD: "0"
+          CI_SIMULATOR_REUSE_ONLY: "1"
+          CI_IPHONE_XCODEBUILD_TIMEOUT_SECONDS: "1800"
+          IPHONE_DERIVED_DATA_PATH: ${{ runner.temp }}/DerivedData-iPhone
+          SUPERDEMO_REQUIRE_FLUTTER_EMBED: "1"
+        run: ./bin/ci-iphone-build-for-testing.sh
+
+      - name: Await simulator boot
+        env:
+          CI: true
+        run: ./tool/ci_simulator_await.sh
+
+      - name: iPhone unit tests (Swift Testing + XCTest; same job as build)
+        env:
+          CI: true
+          CI_PREPARE_IPAD: "0"
+          CI_IPHONE_GENERIC_BUILD: "0"
+          CI_IPHONE_TEST_MODE: test-without-building
+          CI_IPHONE_TEST_SHARD: unit
+          CI_IPHONE_PRODUCTS_DIR: ${{ runner.temp }}/DerivedData-iPhone/Build/Products
+          CI_IPHONE_XCODEBUILD_TIMEOUT_SECONDS: "600"
+          CI_ALLOW_PARALLEL_TESTS: "0"
+          CI_SIMULATOR_REUSE_ONLY: "1"
+          SUPERDEMO_REQUIRE_FLUTTER_EMBED: "1"
+        run: ./bin/ci-iphone-test.sh
+
+      - name: Strip dSYMs from test products (shrink shard downloads)
+        run: |
+          set -euo pipefail
+          products="${{ runner.temp }}/DerivedData-iPhone/Build/Products"
+          find "$products" -type d -name '*.dSYM' -prune -print -exec rm -rf {} + 2>/dev/null || true
+          du -sh "$products" || true
+
+      - name: Upload iPhone test products
+        uses: actions/upload-artifact@v7
+        with:
+          name: iphone-test-products
+          path: ${{ runner.temp }}/DerivedData-iPhone/Build/Products
+          if-no-files-found: error
+          retention-days: 1
+          compression-level: 6
+
+  iphone-test:
+    name: Checklist · iPhone test
+    needs: [changes, iphone-build]
+    if: >-
+      always() &&
+      needs.changes.outputs.docs_only != 'true' &&
+      needs.iphone-build.result == 'success' &&
+      needs.changes.outputs.iphone_layout == 'sharded'
+    runs-on: xcode-27
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [ui-1, ui-2, ui-3, ui-4]
+    defaults:
+      run:
+        working-directory: .
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Select Xcode + pick existing simulator
+        env:
+          CI: true
+          CI_SIMULATOR_REUSE_ONLY: "1"
+        run: |
+          set -euo pipefail
+          source ./tool/select_xcode.sh
+          source ./tool/ci_simulator_pick_existing.sh
+
+      - name: Download iPhone test products
+        uses: actions/download-artifact@v7
+        with:
+          name: iphone-test-products
+          path: ${{ runner.temp }}/iphone-test-products
+
+      # Boot after artifact download — concurrent product I/O starved bootstatus (240s)
+      # when boot overlapped the ~5–7m shard downloads (ui-4 failure on run 37490468148).
+      - name: Boot simulator (ready, with retry)
+        env:
+          CI: true
+          CI_SIM_BOOT_AWAIT_SECONDS: "420"
+          CI_SIM_BOOTSTATUS_TIMEOUT_SECONDS: "360"
+          CI_SIM_BOOT_MAX_ATTEMPTS: "2"
+        run: ./tool/ci_simulator_boot_ready.sh
+
+      - name: iPhone UI tests (test-without-building shard, serial)
+        env:
+          CI: true
+          CI_PREPARE_IPAD: "0"
+          CI_IPHONE_GENERIC_BUILD: "0"
+          CI_IPHONE_TEST_MODE: test-without-building
+          CI_IPHONE_TEST_SHARD: ${{ matrix.shard }}
+          CI_IPHONE_PRODUCTS_DIR: ${{ runner.temp }}/iphone-test-products
+          CI_IPHONE_XCODEBUILD_TIMEOUT_SECONDS: "1500"
+          CI_ALLOW_PARALLEL_TESTS: "0"
+          CI_SIMULATOR_REUSE_ONLY: "1"
           SUPERDEMO_REQUIRE_FLUTTER_EMBED: "1"
         run: ./bin/ci-iphone-test.sh
 
   platform-builds:
     name: Checklist · platform builds
-    runs-on: xcode-27
+    needs: changes
+    runs-on: ${{ needs.changes.outputs.docs_only == 'true' && 'ubuntu-latest' || 'xcode-27' }}
     timeout-minutes: 75
     defaults:
       run:
         working-directory: .
-
     steps:
       - name: Checkout
         uses: actions/checkout@v5
 
-      - name: Select latest released Xcode
-        env:
-          CI: true
-        run: source ./tool/select_xcode.sh
+      - name: Docs-only platform builds bypass
+        if: needs.changes.outputs.docs_only == 'true'
+        run: echo "Documentation-only diff; iPad/Mac/watchOS builds have no code to compile."
 
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
+      - name: Setup iOS CI (Flutter + Brewfile + caches)
+        if: needs.changes.outputs.docs_only != 'true'
+        uses: ./.github/actions/setup-ios-ci
         with:
-          ruby-version: "3.3"
-          bundler-cache: true
-
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          channel: stable
-          cache: true
-
-      - name: Cache Xcode + SwiftPM + Flutter frameworks
-        uses: actions/cache@v6
-        with:
-          path: |
-            ~/Library/Caches/org.swift.swiftpm
-            ~/Library/Developer/Xcode/DerivedData
+          flutter: "true"
+          ruby: "true"
+          brewfile: "true"
+          cache-flutter-embed: "true"
+          cache-key-suffix: platform
+          derived-data-paths: |
             ${{ runner.temp }}/DerivedData-iPad
             ${{ runner.temp }}/DerivedData-Mac
-            Flutter
-          key: >-
-            xcode27-${{ runner.os }}-${{ runner.arch }}-platform-flutter-${{ hashFiles('**/Package.resolved', '**/*.xcodeproj/project.pbxproj', 'flutter_module/pubspec.lock', 'flutter_module/lib/**') }}
-
-      - name: Install lint tools (for build phases)
-        run: brew bundle check --file Brewfile || brew bundle --file Brewfile
 
       - name: Prepare Flutter add-to-app frameworks (iPad; Mac skips link)
+        if: needs.changes.outputs.docs_only != 'true'
         run: |
           if [[ -d Flutter/Debug/Flutter.xcframework ]]; then
             ./tool/prepare_flutter_embed.sh --skip-build
@@ -169,6 +426,7 @@ jobs:
           fi
 
       - name: iPad and Mac builds (warnings as errors)
+        if: needs.changes.outputs.docs_only != 'true'
         env:
           CI: true
           CI_PREPARE_IPHONE: "0"
@@ -182,22 +440,47 @@ jobs:
     name: Delivery checklist
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    needs: [lint, iphone-test, platform-builds]
+    needs: [changes, lint, iphone, iphone-build, iphone-test, platform-builds]
     if: ${{ always() }}
     steps:
       - name: Check checklist lanes
+        env:
+          LAYOUT: ${{ needs.changes.outputs.iphone_layout }}
+          DOCS_ONLY: ${{ needs.changes.outputs.docs_only }}
+          CHANGES: ${{ needs.changes.result }}
+          LINT: ${{ needs.lint.result }}
+          IPHONE: ${{ needs.iphone.result }}
+          IPHONE_BUILD: ${{ needs['iphone-build'].result }}
+          IPHONE_TEST: ${{ needs['iphone-test'].result }}
+          PLATFORM: ${{ needs['platform-builds'].result }}
         run: |
-          if [[ "${{ needs.lint.result }}" != "success" ]]; then
-            echo "checklist lane failed: lint"
+          set -euo pipefail
+          echo "docs_only=$DOCS_ONLY layout=$LAYOUT"
+
+          fail_lane() {
+            echo "checklist lane failed: $1 (result=$2)" >&2
             exit 1
+          }
+
+          [[ "$CHANGES" == "success" ]] || fail_lane changes "$CHANGES"
+          [[ "$LINT" == "success" ]] || fail_lane lint "$LINT"
+          [[ "$PLATFORM" == "success" ]] || fail_lane platform-builds "$PLATFORM"
+
+          if [[ "$DOCS_ONLY" == "true" ]]; then
+            # Docs-only: single layout reports via iphone bypass; sharded jobs skipped.
+            [[ "$IPHONE" == "success" || "$IPHONE" == "skipped" ]] || fail_lane iphone "$IPHONE"
+            [[ "$IPHONE_BUILD" == "success" || "$IPHONE_BUILD" == "skipped" ]] || fail_lane iphone-build "$IPHONE_BUILD"
+            [[ "$IPHONE_TEST" == "success" || "$IPHONE_TEST" == "skipped" ]] || fail_lane iphone-test "$IPHONE_TEST"
+          elif [[ "$LAYOUT" == "single" ]]; then
+            [[ "$IPHONE" == "success" ]] || fail_lane iphone "$IPHONE"
+            [[ "$IPHONE_BUILD" == "skipped" ]] || fail_lane iphone-build "$IPHONE_BUILD"
+            [[ "$IPHONE_TEST" == "skipped" ]] || fail_lane iphone-test "$IPHONE_TEST"
+          else
+            [[ "$IPHONE" == "skipped" ]] || fail_lane iphone "$IPHONE"
+            [[ "$IPHONE_BUILD" == "success" ]] || fail_lane iphone-build "$IPHONE_BUILD"
+            [[ "$IPHONE_TEST" == "success" ]] || fail_lane iphone-test "$IPHONE_TEST"
           fi
-          if [[ "${{ needs['iphone-test'].result }}" != "success" ]]; then
-            echo "checklist lane failed: iphone-test"
-            exit 1
-          fi
-          if [[ "${{ needs['platform-builds'].result }}" != "success" ]]; then
-            echo "checklist lane failed: platform-builds"
-            exit 1
-          fi
-          echo "Delivery checklist gate passed (lint + iphone-test + platform-builds)."
+
+          echo "Delivery checklist gate passed (layout=$LAYOUT)."
           echo "Local equivalent: ./bin/checklist — see docs/engineering/checklist_gate.md"
+

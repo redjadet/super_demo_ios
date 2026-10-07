@@ -27,7 +27,9 @@ if [[ "${CI:-}" != "true" ]]; then
   _ensure_done 0
 fi
 
-ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+# Prefer BASH_SOURCE so `source tool/ensure_ci_simulator.sh` from a GHA step
+# (where $0 is the runner temp script) still resolves the repo root.
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 
 if [[ "${CI:-}" == "true" ]]; then

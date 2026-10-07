@@ -13,7 +13,7 @@
 # Xcode warnings are errors by default (tool/xcode_warnings_as_errors_flags.sh).
 # Escape: XCODEBUILD_ALLOW_WARNINGS=1 or CHECKLIST_SKIP_PLATFORM_BUILDS=1
 #
-# Usage: ./bin/checklist [--help]
+# Usage: ./bin/checklist [--help] [--print-scope]
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -21,9 +21,12 @@ cd "$ROOT"
 
 export PATH="/opt/homebrew/bin:/usr/local/bin:${PATH}"
 
+# shellcheck source=../tool/checklist_changed_files.sh
+source "$ROOT/tool/checklist_changed_files.sh"
+
 show_help() {
   cat <<'EOF'
-Usage: ./bin/checklist [--help]
+Usage: ./bin/checklist [--help] [--print-scope]
 
 Full local delivery checklist (merge gate):
   - Markdown lint
@@ -34,20 +37,27 @@ Full local delivery checklist (merge gate):
   - iPhone unit/UI tests (./bin/ci-iphone-test.sh) — warnings as errors
   - iPad + Mac + watchOS builds (./bin/ci-platform-builds.sh) — unless skipped
 
+On documentation-only PR diffs (and local docs-only worktrees), skips Xcode
+lanes after docs/static checks — same rule as GHA `changes` / flutter_bloc_app.
+
 Env:
   CHECKLIST_SKIP_PLATFORM_BUILDS=1  Skip iPad/Mac/watchOS builds
   XCODEBUILD_ALLOW_WARNINGS=1       Do not treat Xcode warnings as errors
 
 Narrow docs/tooling: ./bin/checklist-fast
-Hosted PR gate:      GHA job `checklist` (parallel lint + iphone-test + platform-builds)
+Hosted PR gate:      GHA job `checklist` (parallel lint + iPhone shards + platform-builds)
 Docs:                docs/engineering/checklist_gate.md
 EOF
 }
 
+PRINT_SCOPE=0
 case "${1:-}" in
   -h|--help|help)
     show_help
     exit 0
+    ;;
+  --print-scope)
+    PRINT_SCOPE=1
     ;;
   "")
     ;;
@@ -57,6 +67,31 @@ case "${1:-}" in
     exit 2
     ;;
 esac
+
+checklist_collect_changed_files
+
+if ((PRINT_SCOPE == 1)); then
+  if checklist_is_docs_only_change_set; then
+    echo "docs_only=true"
+  else
+    echo "docs_only=false"
+  fi
+  exit 0
+fi
+
+if checklist_is_docs_only_change_set; then
+  echo "==> Docs-only change set detected (skipping Xcode lanes)"
+  echo "==> Markdown lint"
+  ./bin/lint-markdown.sh
+  echo "==> DESIGN.md lint (DesignMD)"
+  ./tool/check_design_md.sh
+  echo "==> Checklist scope contract"
+  ./tool/check_checklist_scope.sh
+  echo "Checklist passed (docs-only route)."
+  echo "Hosted: GHA Delivery checklist still reports required lanes (bypass on docs-only)."
+  echo "See: docs/engineering/checklist_gate.md"
+  exit 0
+fi
 
 echo "==> Markdown lint"
 ./bin/lint-markdown.sh

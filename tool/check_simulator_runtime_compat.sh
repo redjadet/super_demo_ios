@@ -112,13 +112,14 @@ run_static_script_guards() {
   [[ -f "$ensure" ]] || fail "missing $ensure"
   [[ -f "$runtime" ]] || fail "missing $runtime"
 
-  if ! rg -q 'list_preferred_iphone_device_type_ids_for_runtime' "$ensure"; then
+  # Prefer grep so UI shards / lean CI jobs do not need Brewfile ripgrep.
+  if ! grep -q 'list_preferred_iphone_device_type_ids_for_runtime' "$ensure"; then
     fail "ensure_ci_simulator.sh must create via list_preferred_iphone_device_type_ids_for_runtime (runtime supportedDeviceTypes)"
   fi
-  if ! rg -q 'select_preferred_iphone_device_type_id_for_runtime' "$runtime"; then
+  if ! grep -q 'select_preferred_iphone_device_type_id_for_runtime' "$runtime"; then
     fail "ios_simulator_runtime.sh must define select_preferred_iphone_device_type_id_for_runtime"
   fi
-  if ! rg -q 'supportedDeviceTypes' "$runtime"; then
+  if ! grep -q 'supportedDeviceTypes' "$runtime"; then
     fail "ios_simulator_runtime.sh must consult runtime supportedDeviceTypes"
   fi
 }
@@ -204,37 +205,50 @@ print('no')
 " "$newest_id" "${global_id:-}" 2>/dev/null || echo no
   )"
 
-  # The original footgun: blind create of global preferred on newest runtime.
-  if [[ -n "$global_id" && "$supported_count" != "0" && "$global_supported" != "yes" ]]; then
-    fail "global preferred ${global_name:-$global_id} is NOT in iOS ${newest_ver} supportedDeviceTypes — simctl create would 403 Incompatible device. Provision via list_preferred_iphone_device_type_ids_for_runtime (runtime prefers ${runtime_preferred:-none})"
+  # When newest runtime cannot host the global preferred (or any standard
+  # preferred) iPhone, allow older-runtime fallback the same way we do for
+  # empty supportedDeviceTypes — ensure_ci_simulator walks newest→older.
+  newest_unusable=0
+  if [[ -n "$global_id" && "$supported_count" != "0" && "$global_supported" != "yes" && -z "$runtime_preferred" ]]; then
+    newest_unusable=1
+    warn "global preferred ${global_name:-$global_id} is NOT in iOS ${newest_ver} supportedDeviceTypes (and no runtime-preferred iPhone)"
+  elif [[ -n "$global_id" && "$supported_count" != "0" && "$global_supported" != "yes" ]]; then
+    warn "global preferred ${global_name:-$global_id} is NOT in iOS ${newest_ver} supportedDeviceTypes — ensure will use runtime-preferred ${runtime_preferred}"
   fi
 
   if [[ -z "$runtime_preferred" && "$supported_count" != "0" ]]; then
-    fail "newest runtime iOS ${newest_ver} has supportedDeviceTypes but no standard preferred iPhone — update preferred list in ios_simulator_runtime.sh"
+    newest_unusable=1
+    warn "newest runtime iOS ${newest_ver} has supportedDeviceTypes but no standard preferred iPhone"
   fi
 
-  if [[ "$supported_count" == "0" ]]; then
-    # Dead/partial runtime (seen on some GHA images). Allow older-runtime
-    # fallback only when another runtime can provision; still fail hard if none can.
+  if [[ "$supported_count" == "0" || "$newest_unusable" == "1" ]]; then
+    # Dead/partial/incompatible newest runtime (seen on some GHA images after
+    # optional platform download). Allow older-runtime fallback only when
+    # another runtime can provision; still fail hard if none can.
     local any_usable=0
     local rid ver pref udid
     while IFS= read -r rid; do
       [[ -n "$rid" ]] || continue
+      [[ "$rid" == "$newest_id" ]] && continue
       pref="$(select_preferred_iphone_device_type_id_for_runtime "$rid" || true)"
       udid="$(find_iphone_udid_on_runtime "$rid" || true)"
       if [[ -n "$pref" || -n "$udid" ]]; then
         any_usable=1
         ver="$(ios_runtime_version "$rid")"
-        warn "newest runtime iOS ${newest_ver} has empty supportedDeviceTypes; will fall back to iOS ${ver} for provisioning (SDK mismatch risk)"
+        warn "newest runtime iOS ${newest_ver} is not provisionable for a standard iPhone; will fall back to iOS ${ver} (SDK mismatch risk)"
         break
       fi
     done < <(select_ios_runtime_ids_newest_first)
     if ((any_usable == 0)); then
-      fail "no iOS Simulator runtime can provision a standard iPhone (empty supportedDeviceTypes / no devices)"
+      if [[ "$supported_count" == "0" ]]; then
+        fail "no iOS Simulator runtime can provision a standard iPhone (empty supportedDeviceTypes / no devices)"
+      else
+        fail "newest runtime iOS ${newest_ver} cannot provision a standard iPhone and no older runtime can either — update preferred list in ios_simulator_runtime.sh"
+      fi
     fi
   fi
 
-  if [[ -z "$runtime_preferred" && -z "$existing" && "$supported_count" != "0" ]]; then
+  if [[ -z "$runtime_preferred" && -z "$existing" && "$supported_count" != "0" && "$newest_unusable" != "1" ]]; then
     fail "newest runtime iOS ${newest_ver} has no creatable standard iPhone and no existing device"
   fi
 

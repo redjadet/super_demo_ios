@@ -1,0 +1,134 @@
+# yaml-language-server: $schema=https://json.schemastore.org/github-action.json
+name: Setup iOS CI workspace
+description: >-
+  Select released Xcode, optionally install Flutter/Ruby/Brewfile tools, and
+  restore SPM / DerivedData / Flutter embed caches (flutter_bloc_app composite
+  action pattern adapted for Xcode).
+
+inputs:
+  flutter:
+    description: Install Flutter stable via subosito/flutter-action
+    required: false
+    default: "false"
+  ruby:
+    description: Set up Ruby 3.3 with bundler-cache
+    required: false
+    default: "false"
+  brewfile:
+    description: Install Brewfile lint/build-phase tools
+    required: false
+    default: "false"
+  brew-packages:
+    description: >-
+      Comma-separated Homebrew packages to install instead of the full Brewfile
+      (e.g. ripgrep). Ignored when brewfile=true.
+    required: false
+    default: ""
+  cache-key-suffix:
+    description: Distinguishes cache namespaces (iphone-build, platform, lint)
+    required: false
+    default: "default"
+  derived-data-paths:
+    description: Extra DerivedData paths to include in the Xcode cache
+    required: false
+    default: ""
+  cache-flutter-embed:
+    description: Include ./Flutter embed frameworks in the cache
+    required: false
+    default: "false"
+  select-xcode:
+    description: Run tool/select_xcode.sh (set false when caller already selected)
+    required: false
+    default: "true"
+
+runs:
+  using: composite
+  steps:
+    - name: Select latest released Xcode
+      if: ${{ inputs.select-xcode == 'true' }}
+      shell: bash
+      env:
+        CI: true
+      run: source ./tool/select_xcode.sh
+
+    - name: Set up Ruby
+      if: ${{ inputs.ruby == 'true' }}
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: "3.3"
+        bundler-cache: true
+
+    - name: Set up Flutter
+      if: ${{ inputs.flutter == 'true' }}
+      uses: subosito/flutter-action@v2
+      with:
+        channel: stable
+        cache: true
+
+    - name: Cache Homebrew downloads
+      if: ${{ inputs.brewfile == 'true' || inputs.brew-packages != '' }}
+      uses: actions/cache@v6
+      with:
+        path: |
+          ~/Library/Caches/Homebrew
+          ~/Library/Caches/Homebrew/downloads
+        key: >-
+          brew-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('Brewfile') }}-${{ inputs.brew-packages }}
+        restore-keys: |
+          brew-${{ runner.os }}-${{ runner.arch }}-
+
+    # Cache SPM + Flutter embed only — full DerivedData restores were multi‑minute
+    # and dominated setup (observed ~7m) without enough compile payoff on critical path.
+    - name: Cache SwiftPM + Flutter embed
+      if: ${{ inputs.cache-flutter-embed == 'true' }}
+      uses: actions/cache@v6
+      with:
+        path: |
+          ~/Library/Caches/org.swift.swiftpm
+          Flutter
+        key: >-
+          xcode27-spm-flutter-${{ runner.os }}-${{ runner.arch }}-${{ inputs.cache-key-suffix }}-${{ hashFiles('**/Package.resolved', 'flutter_module/pubspec.lock', 'flutter_module/lib/**') }}
+        restore-keys: |
+          xcode27-spm-flutter-${{ runner.os }}-${{ runner.arch }}-${{ inputs.cache-key-suffix }}-
+
+    - name: Cache SwiftPM
+      if: ${{ inputs.cache-flutter-embed != 'true' }}
+      uses: actions/cache@v6
+      with:
+        path: |
+          ~/Library/Caches/org.swift.swiftpm
+        key: >-
+          xcode27-spm-${{ runner.os }}-${{ runner.arch }}-${{ inputs.cache-key-suffix }}-${{ hashFiles('**/Package.resolved') }}
+        restore-keys: |
+          xcode27-spm-${{ runner.os }}-${{ runner.arch }}-${{ inputs.cache-key-suffix }}-
+
+    - name: Install Brewfile tools
+      if: ${{ inputs.brewfile == 'true' }}
+      shell: bash
+      env:
+        HOMEBREW_NO_AUTO_UPDATE: "1"
+        HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK: "1"
+        HOMEBREW_NO_INSTALL_CLEANUP: "1"
+      run: brew bundle check --file Brewfile || brew bundle --file Brewfile
+
+    - name: Install lean Homebrew packages
+      if: ${{ inputs.brewfile != 'true' && inputs.brew-packages != '' }}
+      shell: bash
+      env:
+        HOMEBREW_NO_AUTO_UPDATE: "1"
+        HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK: "1"
+        HOMEBREW_NO_INSTALL_CLEANUP: "1"
+        BREW_PACKAGES: ${{ inputs.brew-packages }}
+      run: |
+        set -euo pipefail
+        IFS=',' read -r -a pkgs <<<"$BREW_PACKAGES"
+        for pkg in "${pkgs[@]}"; do
+          pkg="$(echo "$pkg" | tr -d '[:space:]')"
+          [[ -n "$pkg" ]] || continue
+          if brew list --versions "$pkg" >/dev/null 2>&1; then
+            echo "==> brew package present: $pkg"
+          else
+            echo "==> brew install $pkg"
+            brew install "$pkg"
+          fi
+        done
