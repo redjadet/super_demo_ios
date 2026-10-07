@@ -274,6 +274,13 @@ private struct ProductionReadinessContent: View {
                     Label("watchOS Feed companion (demo)", systemImage: "applewatch")
                 }
                 .accessibilityIdentifier("watchCompanionDemoLink")
+
+                NavigationLink {
+                    TVCompanionDemoView()
+                } label: {
+                    Label("tvOS Feed companion (demo)", systemImage: "appletv")
+                }
+                .accessibilityIdentifier("tvCompanionDemoLink")
             }
         }
         .accessibilityIdentifier("productionReadinessDashboard")

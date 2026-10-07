@@ -15,9 +15,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "A1WATCH010000000000000004"
-               BuildableName = "superDemoAppWatch.app"
-               BlueprintName = "superDemoAppWatch"
+               BlueprintIdentifier = "A1TVOS010000000000000004"
+               BuildableName = "superDemoAppTV.app"
+               BlueprintName = "superDemoAppTV"
                ReferencedContainer = "container:superDemoApp.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -35,9 +35,9 @@
             parallelizable = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "A1WATCHTEST0000000000004"
-               BuildableName = "superDemoAppWatchTests.xctest"
-               BlueprintName = "superDemoAppWatchTests"
+               BlueprintIdentifier = "A1TVOSTEST00000000000004"
+               BuildableName = "superDemoAppTVTests.xctest"
+               BlueprintName = "superDemoAppTVTests"
                ReferencedContainer = "container:superDemoApp.xcodeproj">
             </BuildableReference>
          </TestableReference>
@@ -59,9 +59,9 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "A1WATCH010000000000000004"
-            BuildableName = "superDemoAppWatch.app"
-            BlueprintName = "superDemoAppWatch"
+            BlueprintIdentifier = "A1TVOS010000000000000004"
+            BuildableName = "superDemoAppTV.app"
+            BlueprintName = "superDemoAppTV"
             ReferencedContainer = "container:superDemoApp.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -76,9 +76,9 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "A1WATCH010000000000000004"
-            BuildableName = "superDemoAppWatch.app"
-            BlueprintName = "superDemoAppWatch"
+            BlueprintIdentifier = "A1TVOS010000000000000004"
+            BuildableName = "superDemoAppTV.app"
+            BlueprintName = "superDemoAppTV"
             ReferencedContainer = "container:superDemoApp.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>

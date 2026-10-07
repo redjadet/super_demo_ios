@@ -22,7 +22,8 @@ Timed walk: [`docs/architecture-tour.md`](docs/architecture-tour.md).
 | Tabs / deep links / App Intents | `superDemoApp/App/AppRootView.swift`, `superDemoApp/App/AppNavigation.swift`, `superDemoApp/App/AppIntents/` (Refresh Feed + Open Feed Post) |
 | Universal links / sample AASA | `Config/associated-domains/`; gate `./tool/check_aasa_deep_links.sh` (paths + host parity + live-host DNS honesty; `/feed/*` for post entity) |
 | Feed Home Screen widget | `FeedWidgetShared/`, `superDemoAppWidget/`, App Group snapshot; demo in ProductionReadiness |
-| watchOS Feed companion | `superDemoAppWatch/`, `FeedWidgetShared/` (same snapshot DTO); Engineering demos → watchOS Feed companion; visionOS deferred |
+| watchOS Feed companion | `superDemoAppWatch/`, `superDemoAppWatchTests/`, `FeedWidgetShared/` (same snapshot DTO); Engineering demos → watchOS Feed companion; visionOS deferred |
+| tvOS Feed companion | `superDemoAppTV/`, `superDemoAppTVTests/`, `FeedWidgetShared/` (same snapshot DTO); Engineering demos → tvOS Feed companion; standalone (not iPhone-embedded) |
 | Share → Items inbox | `ShareInboxShared/`, `superDemoAppShare/`, App Group file name `share-inbox.json` (runtime; not a repo path); Engineering demos → Share inbox (not SwiftData) |
 | Feed refresh Live Activity | `FeedWidgetShared/FeedRefreshActivityAttributes.swift`, `superDemoApp/App/ActivityKitFeedRefreshLiveActivityController.swift`, `superDemoAppWidget/FeedRefreshLiveActivity.swift` |
 | Local notifications (demo) | `superDemoApp/Shared/Notifications/`, Engineering demos → Local stale-Feed reminder (not APNs) |
@@ -59,6 +60,9 @@ Timed walk: [`docs/architecture-tour.md`](docs/architecture-tour.md).
 | `FeedWidgetShared/`, `superDemoAppWidget/` | Feed App Group snapshot + Home Screen / Live Activity UI |
 | `ShareInboxShared/`, `superDemoAppShare/` | Share → App Group inbox (not SwiftData) |
 | `superDemoAppWatch/` | watchOS Feed snapshot companion |
+| `superDemoAppWatchTests/` | watchOS XCTest: Feed snapshot honesty + seed demo |
+| `superDemoAppTV/` | tvOS Feed snapshot companion |
+| `superDemoAppTVTests/` | tvOS XCTest: Feed snapshot honesty + seed demo |
 | `docs/` | Behavior canon and agent routing |
 | `bin/`, `tool/` | Proof / lint / CI wrappers |
 

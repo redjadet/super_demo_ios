@@ -1,14 +1,15 @@
 //
-//  FeedWatchSnapshotView.swift
-//  superDemoAppWatch
+//  FeedTVSnapshotView.swift
+//  superDemoAppTV
 //
-//  Read-only Feed widget snapshot UI on watchOS. Same DTO / states as iOS
-//  widget; App Group container is watch-local (not phone↔watch sync).
+//  Read-only Feed widget snapshot UI on tvOS. Same DTO / states as iOS
+//  widget and watchOS companion; App Group container is tv-local (not
+//  phone↔TV sync).
 //
 
 import SwiftUI
 
-struct FeedWatchSnapshotView: View {
+struct FeedTVSnapshotView: View {
     @State private var state: FeedWidgetSnapshotState = .absent
     @State private var seededNote: String?
 
@@ -17,30 +18,30 @@ struct FeedWatchSnapshotView: View {
             List {
                 Section {
                     Text(self.statusTitle)
-                        .font(.headline)
-                        .accessibilityIdentifier("watchFeedSnapshotStatus")
+                        .font(.title2)
+                        .accessibilityIdentifier("tvFeedSnapshotStatus")
                     Text(self.statusDetail)
-                        .font(.caption2)
+                        .font(.body)
                         .foregroundStyle(.secondary)
                 } header: {
                     Text("Feed snapshot")
                 } footer: {
                     Text(
-                        "Same App Group ID + JSON as the iPhone widget. "
-                            + "Watch container is local — not live phone sync."
+                        "Same App Group ID + JSON as the iPhone widget and watch "
+                            + "companion. TV container is local — not live phone sync."
                     )
                 }
 
                 if case let .ok(snapshot) = self.state {
                     Section("Titles") {
-                        ForEach(snapshot.titles.prefix(5), id: \.id) { row in
+                        ForEach(snapshot.titles.prefix(8), id: \.id) { row in
                             Text(row.title)
                                 .lineLimit(2)
                         }
                     }
                 } else if case let .expired(snapshot) = self.state {
                     Section("Expired titles") {
-                        ForEach(snapshot.titles.prefix(5), id: \.id) { row in
+                        ForEach(snapshot.titles.prefix(8), id: \.id) { row in
                             Text(row.title)
                                 .lineLimit(2)
                         }
@@ -51,19 +52,19 @@ struct FeedWatchSnapshotView: View {
                     Button("Reload") {
                         self.reload()
                     }
-                    .accessibilityIdentifier("watchFeedSnapshotReload")
+                    .accessibilityIdentifier("tvFeedSnapshotReload")
 
                     Button("Seed demo snapshot") {
                         self.seedDemo()
                     }
-                    .accessibilityIdentifier("watchFeedSnapshotSeed")
+                    .accessibilityIdentifier("tvFeedSnapshotSeed")
                 } footer: {
                     if let seededNote {
                         Text(seededNote)
-                            .font(.caption2)
+                            .font(.caption)
                     } else {
                         Text(
-                            "Seed writes a sample snapshot into the watch App Group "
+                            "Seed writes a sample snapshot into the tvOS App Group "
                                 + "for Simulator review when the phone file is absent."
                         )
                     }
@@ -89,7 +90,7 @@ struct FeedWatchSnapshotView: View {
         case .unavailable:
             return "App Group missing (unsigned / entitlement)."
         case .absent:
-            return "No \(FeedWidgetAppGroup.fileName) on this watch yet."
+            return "No \(FeedWidgetAppGroup.fileName) on this Apple TV yet."
         case .corrupt:
             return "JSON decode failed or version mismatch."
         case let .expired(snapshot):
@@ -106,11 +107,11 @@ struct FeedWatchSnapshotView: View {
     }
 
     private func seedDemo() {
-        let snapshot = FeedCompanionDemoSnapshot.watchSeed()
+        let snapshot = FeedCompanionDemoSnapshot.tvSeed()
         do {
             try FeedWidgetSnapshotStore.write(snapshot)
             self.state = FeedWidgetSnapshotStore.loadState()
-            self.seededNote = "Seeded watch-local demo snapshot."
+            self.seededNote = "Seeded tv-local demo snapshot."
         } catch {
             self.state = FeedWidgetSnapshotStore.loadState()
             self.seededNote = "Seed failed (App Group unavailable)."
@@ -119,5 +120,10 @@ struct FeedWatchSnapshotView: View {
 }
 
 #Preview("Absent") {
-    FeedWatchSnapshotView()
+    FeedTVSnapshotView()
+}
+
+#Preview("Absent dark") {
+    FeedTVSnapshotView()
+        .preferredColorScheme(.dark)
 }
