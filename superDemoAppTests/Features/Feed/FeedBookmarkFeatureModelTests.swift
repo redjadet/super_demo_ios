@@ -95,11 +95,33 @@ struct FeedBookmarkFeatureModelTests {
 }
 
 private final class FailingOnceBookmarkRemote: BookmarkRemoteClient, @unchecked Sendable {
-    var shouldFail = true
+    private let lock = NSLock()
+    private var _shouldFail = true
+
+    var shouldFail: Bool {
+        get {
+            self.lock.lock()
+            defer { self.lock.unlock() }
+            return self._shouldFail
+        }
+        set {
+            self.lock.lock()
+            self._shouldFail = newValue
+            self.lock.unlock()
+        }
+    }
+
+    /// Sync so `NSLock` stays out of async contexts (Swift 6).
+    private func consumeShouldFail() -> Bool {
+        self.lock.lock()
+        defer { self.lock.unlock() }
+        return self._shouldFail
+    }
 
     func setBookmark(postID: Int, idempotencyKey _: String) async throws -> Int? {
+        let fail = self.consumeShouldFail()
         await Task.yield()
-        if self.shouldFail {
+        if fail {
             throw BookmarkRemoteError.httpStatus(400)
         }
         return postID

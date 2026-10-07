@@ -23,12 +23,27 @@ struct OutboxCoalescerTests {
     }
 
     @Test
-    func repeatedTogglesCollapseToFinalSet() throws {
+    func toggleBackToSyncedBaselineCancelsPendingOpposite() throws {
+        // Synced bookmarked + pending clear + user bookmarks again → drop clear.
         let clear = try Self.pending(kind: .bookmarkClear, postID: 2, key: "c1")
         let plan = OutboxCoalescer.plan(
             postID: 2,
             existing: [clear],
             syncedOrInFlightBaseline: true,
+            desiredBookmarked: true
+        ) { "unused" }
+        #expect(plan.removeIDs == [clear.id])
+        #expect(plan.enqueue == nil)
+    }
+
+    @Test
+    func repeatedTogglesCollapseToFinalSet() throws {
+        // Synced unbookmarked + pending clear (noop-ish) replaced by final set.
+        let clear = try Self.pending(kind: .bookmarkClear, postID: 2, key: "c1")
+        let plan = OutboxCoalescer.plan(
+            postID: 2,
+            existing: [clear],
+            syncedOrInFlightBaseline: false,
             desiredBookmarked: true
         ) { "final" }
         #expect(plan.removeIDs == [clear.id])
