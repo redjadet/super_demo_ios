@@ -10,6 +10,9 @@ struct ItemDetailView: View {
     @Bindable private var model: ItemsFeatureModel
     private let draftStore: ItemDraftStoreBinding?
 
+    @Environment(\.dynamicTypeSize)
+    private var dynamicTypeSize
+
     @State private var title: String
     @State private var note: String
     @State private var savedTitle: String
@@ -17,6 +20,7 @@ struct ItemDetailView: View {
     @State private var draftRevision: UInt = 0
     @State private var saveGeneration: UInt = 0
     @State private var isSaving = false
+    @State private var saveFeedbackTick = 0
 
     init(
         item: ItemEntity,
@@ -40,25 +44,59 @@ struct ItemDetailView: View {
         self.title != self.savedTitle || self.note != self.savedNote
     }
 
+    private var noteEditorMinHeight: CGFloat {
+        let base = DesignSpacing.noteEditorMinHeight
+        if self.dynamicTypeSize.isAccessibilitySize {
+            return base * 1.5
+        }
+        if self.dynamicTypeSize >= .xxLarge {
+            return base * 1.25
+        }
+        return base
+    }
+
     var body: some View {
         Form {
-            Section("Title") {
+            // Field labels carry the role; skip redundant section titles (functional minimalism).
+            Section {
                 TextField("Title", text: self.$title)
+                    .accessibilityIdentifier("itemDetailTitle")
             }
-            Section("Note") {
+            Section {
                 TextEditor(text: self.$note)
-                    .frame(minHeight: 120)
+                    .frame(minHeight: self.noteEditorMinHeight)
+                    .accessibilityLabel("Note")
+                    .accessibilityIdentifier("itemDetailNote")
+            }
+            if self.isDirty {
+                Section {
+                    Text("Unsaved changes")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                        .accessibilityIdentifier("itemDetailUnsaved")
+                }
             }
         }
         .navigationTitle("Item")
         .iosInlineNavigationBarTitle()
         .accessibilityIdentifier("itemDetail")
+        .sensoryFeedback(.success, trigger: self.saveFeedbackTick)
         .toolbar {
             ToolbarItem(placement: .confirmationAction) {
-                Button("Save") {
+                Button {
                     Task { await self.saveChanges() }
+                } label: {
+                    if self.isSaving {
+                        ProgressView()
+                            .controlSize(.small)
+                    } else {
+                        Text("Save")
+                    }
                 }
                 .disabled(self.isSaving || !self.isDirty)
+                .accessibilityIdentifier("itemDetailSave")
+                .accessibilityLabel(self.isSaving ? "Saving" : "Save")
+                .accessibilityHint(self.isDirty ? "Saves title and note changes" : "No changes to save")
             }
         }
         .onChange(of: self.title) { _, _ in
@@ -103,6 +141,7 @@ struct ItemDetailView: View {
                 self.savedNote = updated.note
                 self.persistDraftSnapshot()
             }
+            self.saveFeedbackTick &+= 1
             return true
         }
 

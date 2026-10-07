@@ -10,9 +10,17 @@ struct ItemsView: View {
 
     @State private var selectedItem: ItemEntity?
     @State private var preferredCompactColumn = NavigationSplitViewColumn.sidebar
+    @State private var addFeedbackTick = 0
 
     init(model: ItemsFeatureModel) {
         self.model = model
+    }
+
+    private var isLoading: Bool {
+        if case .loading = self.model.state {
+            return true
+        }
+        return false
     }
 
     var body: some View {
@@ -28,6 +36,7 @@ struct ItemsView: View {
         .toolbar {
             self.itemsToolbar
         }
+        .sensoryFeedback(.success, trigger: self.addFeedbackTick)
         .task {
             await self.model.refreshAndWait()
         }
@@ -47,20 +56,31 @@ struct ItemsView: View {
         #endif
         ToolbarItem {
             Button {
-                Task { await self.model.addItemNow() }
+                Task {
+                    guard !self.isLoading else { return }
+                    await self.model.addItemNow()
+                    if case .failed = self.model.state {
+                        return
+                    }
+                    self.addFeedbackTick &+= 1
+                }
             } label: {
                 Label("Add Item", systemImage: "plus")
             }
             .chromeGlassButtonStyle()
+            .allowsHitTesting(!self.isLoading)
             .accessibilityIdentifier("addItem")
+            .accessibilityHint("Adds a new item to the list")
         }
     }
 
     @ViewBuilder private var content: some View {
         switch self.model.state {
         case .loading:
-            ProgressView()
-                .featureScreenFrame()
+            FeatureLoadingPlaceholder(
+                accessibilityIdentifier: "itemsLoading",
+                accessibilityLabel: "Loading items"
+            )
         case let .failed(error):
             ContentUnavailableView {
                 Label("Could Not Load Items", systemImage: "exclamationmark.triangle")
@@ -71,19 +91,33 @@ struct ItemsView: View {
                     self.model.refresh()
                 }
                 .chromeGlassButtonStyle()
+                .accessibilityIdentifier("itemsRetry")
             }
             .featureScreenFrame()
+            .accessibilityElement(children: .contain)
+            .accessibilityIdentifier("itemsFailed")
+            .accessibilityLabel("Could not load items")
         case .empty:
             ContentUnavailableView {
                 Label("No Items", systemImage: "tray")
+            } description: {
+                Text("Add a note to get started.")
             } actions: {
                 Button("Add Item") {
-                    Task { await self.model.addItemNow() }
+                    Task {
+                        await self.model.addItemNow()
+                        if case .failed = self.model.state {
+                            return
+                        }
+                        self.addFeedbackTick &+= 1
+                    }
                 }
                 .chromeGlassButtonStyle()
                 .accessibilityIdentifier("addItemEmpty")
             }
             .featureScreenFrame()
+            .accessibilityIdentifier("itemsEmpty")
+            .accessibilityLabel("No items")
         case let .content(items):
             self.itemsList(items)
         }
@@ -93,13 +127,15 @@ struct ItemsView: View {
         List(selection: self.$selectedItem) {
             ForEach(items) { item in
                 NavigationLink(value: item) {
-                    VStack(alignment: .leading, spacing: 4) {
+                    VStack(alignment: .leading, spacing: DesignSpacing.xs) {
                         Text(item.title)
                             .font(.headline)
                         Text(item.timestamp, format: .dateTime.month().day().hour().minute())
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
                     }
+                    .accessibilityElement(children: .combine)
+                    .accessibilityLabel(self.itemRowAccessibilityLabel(for: item))
                 }
                 .accessibilityIdentifier("itemRow-\(item.id.uuidString)")
                 .tag(item)
@@ -113,6 +149,11 @@ struct ItemsView: View {
         }
         .featureSidebarColumnWidth()
         .accessibilityIdentifier("itemsList")
+    }
+
+    private func itemRowAccessibilityLabel(for item: ItemEntity) -> String {
+        let when = item.timestamp.formatted(.dateTime.month().day().hour().minute())
+        return "\(item.title), \(when)"
     }
 
     private func clearSelectionIfDeleted(from items: [ItemEntity], at offsets: IndexSet) {

@@ -14,6 +14,7 @@ struct HostBridgePingDemoView: View {
     """
     @State private var responseText: String = "Response appears here after you run Ping."
     @State private var isBusy = false
+    @State private var pingFeedbackTick = 0
 
     /// Prefer App-injected facade in production; default uses the same
     /// `SnapshotFeedCacheStatusProvider` wiring as `HostBridgeComposition.makeFacade()`
@@ -37,7 +38,7 @@ struct HostBridgePingDemoView: View {
             Section("Request JSON") {
                 TextEditor(text: self.$requestJSON)
                     .font(.system(.body, design: .monospaced))
-                    .frame(minHeight: 88)
+                    .frame(minHeight: DesignSpacing.noteEditorMinHeight * 0.75)
                     .accessibilityIdentifier("hostBridgeRequestEditor")
             }
 
@@ -54,16 +55,19 @@ struct HostBridgePingDemoView: View {
                 } label: {
                     if self.isBusy {
                         ProgressView()
+                            .accessibilityLabel("Pinging")
                     } else {
                         Text("Ping feed.cacheStatus")
                     }
                 }
                 .disabled(self.isBusy)
                 .accessibilityIdentifier("hostBridgePingButton")
+                .accessibilityHint("Sends the request JSON to the native host bridge")
             }
         }
         .navigationTitle("Host bridge")
         .accessibilityIdentifier("hostBridgePingDemoScreen")
+        .sensoryFeedback(.success, trigger: self.pingFeedbackTick)
     }
 
     @MainActor
@@ -77,6 +81,7 @@ struct HostBridgePingDemoView: View {
         do {
             let response = try self.facade.handle(data)
             self.responseText = String(data: response, encoding: .utf8) ?? "<binary>"
+            self.pingFeedbackTick &+= 1
         } catch is CancellationError {
             self.responseText = #"{"ok":false,"error":{"code":"cancelled"}}"#
         } catch {

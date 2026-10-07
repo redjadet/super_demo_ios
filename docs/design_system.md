@@ -26,7 +26,7 @@ literals.
 | App entry | `superDemoApp/superDemoAppApp.swift` | `@main struct SuperDemoApp`, `WindowGroup`, model container |
 | Composition | `superDemoApp/App/*Composition.swift` | Wire repositories, use cases, root views |
 | Feature UI | `superDemoApp/Features/<Name>/Presentation/` | Views, feature models, navigation shells |
-| Shared UI | `superDemoApp/Shared/Presentation/` | `AdaptiveNavigationShell`, `featureScreenFrame()` |
+| Shared UI | `superDemoApp/Shared/Presentation/` | `AdaptiveNavigationShell`, `featureScreenFrame()`, `DesignSpacing`, `FeatureLoadingPlaceholder` |
 | Reference UI | `superDemoApp/Features/Items/Presentation/` | `ItemsView`, state machine, toolbars |
 | Universal policy | [`universal-apple-platforms.md`](universal-apple-platforms.md) | iPhone / iPad / Mac matrix, proof commands |
 | Accent / assets | `superDemoApp/Assets.xcassets/` | `AccentColor`, app icon |
@@ -45,7 +45,7 @@ Every feature Presentation layer follows the same shape:
 | Feature wrapper | Thin `*NavigationShell` only if feature needs a custom detail placeholder | `ItemsNavigationShell` |
 | Screen body | `@Bindable` model + `@ViewBuilder` state switch | `ItemsView.content` |
 | Toolbar | On feature root view, not hidden inside list-only branches | `ItemsView.itemsToolbar` |
-| Loading / empty / error | `ProgressView` / `ContentUnavailableView` + `.featureScreenFrame()` | `ItemsView` |
+| Loading / empty / error | `FeatureLoadingPlaceholder` / `ProgressView` / `ContentUnavailableView` + `.featureScreenFrame()` | `ItemsView` |
 | Primary action | Toolbar `Label` + `accessibilityIdentifier`; duplicate in empty actions | `addItem` |
 | List data | `List` + `NavigationLink`; sidebar column width via `.featureSidebarColumnWidth()` | `ItemsView.itemsList` |
 | Previews | In-file `Preview*` repository; `#Preview` per screen | `ItemsView` |
@@ -114,7 +114,7 @@ Reuse shared Presentation helpers and previews to keep iPhone, iPad, and Mac ali
 | `typography.title-medium` | `.font(.headline)` / section titles |
 | `typography.label-large` | toolbar `Label` text |
 | `rounded.sm` / `rounded.md` | 8 px / 12 px custom containers (use `px` in YAML only) |
-| `spacing.sm` / `md` / `lg` | `.padding(8)`, `.padding(16)`, `.padding(24)` |
+| `spacing.sm` / `md` / `lg` | `DesignSpacing.sm` / `.md` / `.lg` (also `.padding(8/16/24)`) |
 | `spacing.row-min` | min 44 pt touch targets on iOS |
 | `components.button-filled` | `.buttonStyle(.borderedProminent)` / `.chromeGlassButtonStyle()` for chrome |
 | `components.button-outlined` | `.buttonStyle(.bordered)` |
@@ -294,6 +294,8 @@ Refresh: `.task { await model.refresh() }`; buttons use `Task { await model.... 
 - Visible or `accessibilityLabel` on every control; hints only when outcome is unclear.
 - `accessibilityElement(children: .combine)` for related groups.
 - `@Environment(\.accessibilityReduceMotion)` before decorative animation.
+- First-load lists: prefer `FeatureLoadingPlaceholder` (redacted rows; Reduce
+  Motion → `ProgressView`) over a bare spinner void when the screen is a list.
 
 ## Motion
 

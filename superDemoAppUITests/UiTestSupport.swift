@@ -319,8 +319,14 @@ enum UiTestSupport {
             let itemsList = app.descendants(matching: .any).matching(identifier: "itemsList").firstMatch
             let itemRow = app.descendants(matching: .any).matching(rowPredicate).firstMatch
             let itemDetail = app.descendants(matching: .any).matching(identifier: "itemDetail").firstMatch
+            let itemsEmpty = app.descendants(matching: .any).matching(identifier: "itemsEmpty").firstMatch
+            let itemsFailed = app.descendants(matching: .any).matching(identifier: "itemsFailed").firstMatch
+            let itemsLoading = app.descendants(matching: .any).matching(identifier: "itemsLoading").firstMatch
             let hasItemsUI =
-                app.staticTexts["No Items"].exists
+                itemsEmpty.exists
+                    || itemsFailed.exists
+                    || itemsLoading.exists
+                    || app.staticTexts["No Items"].exists
                     || app.staticTexts["Could Not Load Items"].exists
                     || itemsList.exists
                     || itemRow.exists

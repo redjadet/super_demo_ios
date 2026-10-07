@@ -195,11 +195,14 @@ Do not mix sharp and heavily rounded corners in the same component family.
 | `error-banner` | `ContentUnavailableView` + Retry with `.chromeGlassButtonStyle()` |
 | `status-error` / `status-success` | compact `Label` badges when inline status is needed |
 
-Also: toolbars with `Label` + SF Symbol + Liquid Glass chrome helpers; `ProgressView` for
-loading; `Form` for input; `AdaptiveNavigationShell` per
+Also: toolbars with `Label` + SF Symbol + Liquid Glass chrome helpers;
+`FeatureLoadingPlaceholder` (or `ProgressView` under Reduce Motion) for list
+first-load; `Form` for input; `AdaptiveNavigationShell` per
 [`docs/navigation.md`](docs/navigation.md) and
 [`docs/design_system.md`](docs/design_system.md#ui-consistency-contract-all-features).
-Root tabs use the `Tab` API (`AppRootView`) so the system tab bar gets Liquid Glass.
+Spacing/radius magic numbers in Presentation should use `DesignSpacing` when the
+YAML token already exists. Root tabs use the `Tab` API (`AppRootView`) so the
+system tab bar gets Liquid Glass.
 
 Extract shared wrappers to `Shared/` (or `Features/Shared/Presentation/`) only when **two
 or more** features need the same shell.
