@@ -43,4 +43,8 @@ existing **watchOS** companion. **visionOS** companion remains deferred.
 - Portfolio **Platform surfaces** (tvOS In repo; visionOS deferred)
 - `CODEMAP.md`, `ci-cd-map.md`, `universal-apple-platforms.md`,
   `architecture-tour.md`, checklist / Fastlane platform wording
+- Follow-up honesty: `testing.md`, `agent_environment_setup.md`,
+  `agent_project_context.md`, `code-style.md`, `agents_quick_reference.md`,
+  `tooling_map.md`; README title + Companions badge; Engineering demo UITest
+  `testTVCompanionDemoIsReachable`
 - Lean README platforms badge includes tvOS

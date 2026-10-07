@@ -29,7 +29,7 @@ Detailed routing: [`engineering/validation_routing_fast_vs_full.md`](engineering
 `CI_SKIP_PLATFORM_BUILDS=1` skips iPad/Mac in `./bin/ci.sh` only when intentionally narrow.
 UI smoke (CI `iphone-build` + `iphone-test` shards / `bin/ci-iphone-test.sh`): Items launch, Dashboard →
 Production Risks, UIKit showcase, Feed tab, Feed/Items deep links, Engineering
-demos (incl. watch companion) — see [`testing.md`](testing.md#ui-smoke-ci).
+demos (incl. watchOS / tvOS companions) — see [`testing.md`](testing.md#ui-smoke-ci).
 Launch via `UiTestSupport.launchApplication(from:)` (`-UITesting`, terminate +
 launch-progress retry between tests).
 Optional coverage (not a PR gate): `./bin/coverage-iphone.sh`.
@@ -123,8 +123,9 @@ Router doc path honesty (CODEMAP / portfolio / architecture-tour):
   set `CHECKLIST_ALLOW_PARALLEL_TESTS=1` or `CI_ALLOW_PARALLEL_TESTS=1` only when
   parallel proof is intentional.
 - `./bin/ci-platform-builds.sh` runs iPad and Mac builds in parallel by default,
-  then `./bin/ci-watch-build.sh`; set `CI_SERIAL_PLATFORM_BUILDS=1` if Xcode is
-  resource constrained; set `CI_SKIP_WATCH_BUILD=1` to skip watch only.
+  then `./bin/ci-watch-build.sh`, then `./bin/ci-tvos-build.sh`; set
+  `CI_SERIAL_PLATFORM_BUILDS=1` if Xcode is resource constrained; set
+  `CI_SKIP_WATCH_BUILD=1` / `CI_SKIP_TVOS_BUILD=1` to skip a companion lane.
 - Validate before final report.
 - Report exact proof command.
 - Add durable doc/test/script when the same failure pattern repeats.

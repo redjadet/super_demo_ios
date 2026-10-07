@@ -93,6 +93,7 @@ provides proof.
 | `testIdempotentPostDemoIsReachable` | Idempotent POST: first send Accepted, second send Simulated duplicate-safe (not Failed) |
 | `testDiagnosticsDemoIsReachable` | Diagnostics Engineering demo screen |
 | `testWatchCompanionDemoIsReachable` | watchOS companion Engineering demo chrome + a11y labels |
+| `testTVCompanionDemoIsReachable` | tvOS companion Engineering demo chrome + a11y labels |
 | `testDeepLinkOpensFeedPostDetail` | `superdemo://feed/1` opens `feedPostDetail-1` |
 | `testLaunch` | Local/full-lane launch duplicate for Items chrome |
 | `testLaunchPerformance` | Local launch performance under `-UITesting` |
@@ -216,8 +217,10 @@ README — see [`code-quality.md`](code-quality.md).
 
 The main scheme has unit and UI tests for iPhone, iPad, macOS, and visionOS.
 Run each destination explicitly; an iPhone pass does not prove iPad or Mac UI.
-The watch companion scheme currently has no test target, so its existing local
-lane (`./bin/ci-watch-build.sh`) proves compilation only.
+The watchOS and tvOS companion schemes currently have no test targets, so their
+local lanes (`./bin/ci-watch-build.sh`, `./bin/ci-tvos-build.sh`) prove
+compilation only. iPhone Engineering demos document both companions
+(`testWatchCompanionDemoIsReachable`, `testTVCompanionDemoIsReachable`).
 
 Check installed destinations with `xcodebuild -showdestinations -project
 superDemoApp.xcodeproj -scheme superDemoApp`. visionOS execution requires an

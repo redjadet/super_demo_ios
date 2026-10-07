@@ -1,4 +1,4 @@
-# superDemoApp — iOS and iPadOS engineering portfolio
+# superDemoApp — Apple multi-platform engineering portfolio
 
 [![3-minute path](https://img.shields.io/badge/3--minute-reviewer%20path-0066CC)](docs/portfolio.md)
 [![Architecture tour](https://img.shields.io/badge/Architecture-tour-0A7A3E)](docs/architecture-tour.md)
@@ -13,6 +13,7 @@
 ![Flutter](https://img.shields.io/badge/Flutter-add--to--app-02569B?logo=flutter&logoColor=white)
 
 ![Platforms](https://img.shields.io/badge/Platforms-iOS%20%7C%20iPadOS%20%7C%20macOS%20%7C%20watchOS%20%7C%20tvOS-000000?logo=apple&logoColor=white)
+![Companions](https://img.shields.io/badge/Companions-watchOS%20%7C%20tvOS%20Feed%20snapshot-6E6E73?logo=apple&logoColor=white)
 ![Minimum OS](https://img.shields.io/badge/Minimum%20OS-26.7-6E6E73?logo=apple&logoColor=white)
 ![Architecture](https://img.shields.io/badge/Architecture-Clean%20layers-0A7A3E)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
@@ -36,7 +37,7 @@ simulated flows and optional integrations are documented in the
 | Topic | What to expect |
 | --- | --- |
 | **Seeded demo data** | Launch with `-ReviewerDemoMode` (or `SUPERDEMO_REVIEWER_DEMO_MODE=1`) for deterministic Dashboard, Feed, and Items. Normal runs still use live JSONPlaceholder for Feed where configured. |
-| **Engineering demos** | Dashboard → **Engineering demos** — labeled simulations (StoreKit query-only, local notifications, Flutter when frameworks are prepared, and similar). Not production integrations. |
+| **Engineering demos** | Dashboard → **Engineering demos** — labeled simulations (StoreKit query-only, local notifications, Flutter when frameworks are prepared, watchOS/tvOS Feed companions, and similar). Not production integrations. |
 | **Assets** | Custom blue monogram app icon includes Light, Dark, Tinted, and Mac size variants in the [asset catalog](superDemoApp/Assets.xcassets/AppIcon.appiconset/Contents.json). App Store marketing screenshots are not included. |
 | **Universal links** | `https://superdemo.app/…` routes parse like the custom scheme; public DNS for the apex domain is **not** claimed — prefer `superdemo://` for demos. |
 
