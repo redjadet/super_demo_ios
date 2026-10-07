@@ -82,3 +82,4 @@ flutter_module/.packages
 flutter_module/.flutter-plugins
 flutter_module/.flutter-plugins-dependencies
 flutter_module/build/
+firebase-debug.log
