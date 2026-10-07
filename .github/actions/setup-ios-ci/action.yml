@@ -41,6 +41,11 @@ inputs:
     required: false
     default: "true"
 
+outputs:
+  flutter-embed-cache-hit:
+    description: True only when the exact Flutter embed input key was restored
+    value: ${{ steps.flutter-cache.outputs.cache-hit }}
+
 runs:
   using: composite
   steps:
@@ -101,10 +106,9 @@ runs:
 
         spm_flutter_hash="$(
           {
-            [[ -f flutter_module/pubspec.lock ]] && printf '%s\n' "flutter_module/pubspec.lock"
-            if [[ -d flutter_module/lib ]]; then
-              find flutter_module/lib -type f | LC_ALL=C sort
-            fi
+            # Include tests, assets, manifests and preparation logic, not just Dart lib.
+            git ls-files flutter_module | LC_ALL=C sort
+            printf '%s\n' "tool/prepare_flutter_embed.sh"
             find . -name Package.resolved -type f | LC_ALL=C sort
           } | digest_paths_from_stdin
         )"
@@ -125,6 +129,7 @@ runs:
     # Cache SPM + Flutter embed only — full DerivedData restores were multi‑minute
     # and dominated setup (observed ~7m) without enough compile payoff on critical path.
     - name: Cache SwiftPM + Flutter embed
+      id: flutter-cache
       if: ${{ inputs.cache-flutter-embed == 'true' }}
       uses: actions/cache@v6
       with:
@@ -132,9 +137,9 @@ runs:
           ~/Library/Caches/org.swift.swiftpm
           Flutter
         key: >-
-          xcode27-spm-flutter-${{ runner.os }}-${{ runner.arch }}-${{ inputs.cache-key-suffix }}-${{ steps.digests.outputs.spm_flutter }}
-        restore-keys: |
-          xcode27-spm-flutter-${{ runner.os }}-${{ runner.arch }}-${{ inputs.cache-key-suffix }}-
+          xcode27-spm-flutter-v2-${{ runner.os }}-${{ runner.arch }}-${{ inputs.cache-key-suffix }}-${{ steps.digests.outputs.spm_flutter }}
+        # Compiled Flutter/App frameworks require an exact source key. A partial
+        # restore must never silently skip rebuilding changed Dart or assets.
 
     - name: Cache SwiftPM
       if: ${{ inputs.cache-flutter-embed != 'true' }}

@@ -32,7 +32,7 @@ separately from hosted CI when they diverge. See
 
 | Piece | Where |
 | --- | --- |
-| Workflow | `.github/workflows/ci.yml` — jobs `changes`, `lint`, `iphone` (default) or `iphone-build` + matrix `iphone-test`, `platform-builds`, **`checklist`** |
+| Workflow | `.github/workflows/ci.yml` — jobs `changes`, `lint`, `iphone-build` + matrix `iphone-test` (default), optional `iphone`, `platform-builds`, **`checklist`** |
 | Runner / Xcode | Hosted Xcode jobs: `runs-on: xcode-27` via `.github/actions/setup-ios-ci` (`source ./tool/select_xcode.sh`). Workflow sets `SUPER_DEMO_XCODE_MIN_VERSION=27` (newest **released** Xcode by ProductBuildVersion; prefer clean non-`_beta` path aliases; today **27.1** / GM). Docs-only bypasses use `ubuntu-latest`. Destination: pick existing iPhone (`tool/ci_simulator_pick_existing.sh`, `CI_SIMULATOR_REUSE_ONLY=1`); shard boot after download via `tool/ci_simulator_boot_ready.sh`. Escape: `runs-on: macos-26` + `SUPER_DEMO_XCODE_MIN_VERSION=26.5` |
 | Concurrency | `cancel-in-progress` only when `github.event_name == 'pull_request'` (never on `main`) |
 | Release smoke | `.github/workflows/release-smoke.yml` — job `build-ipa` (same `xcode-27` + select step) |
@@ -41,6 +41,19 @@ separately from hosted CI when they diverge. See
 | Fastlane | `fastlane/Fastfile` — `ci_lint`, `ci`, `checklist`, `checklist_fast`, `ios beta`, `ios release` |
 | Agent chooser | [`agents_quick_reference.md`](agents_quick_reference.md) |
 | Gate doc | [`engineering/checklist_gate.md`](engineering/checklist_gate.md) |
+
+## PR latency and coverage
+
+The existing four UI shards use measured test durations, rather than equal case
+counts. `python3 tool/check_ci_contracts.py` enforces complete, unique UI coverage
+except `testLaunchPerformance`, the existing hosted exclusion.
+
+Flutter embed caches use exact input keys covering tracked module files and the
+preparation script. Prepared flattened slices are reused after required-directory
+checks and a script-digest match. Build-job boot begins after preparation to avoid
+competing binary copies. First runs with a new cache key still build Flutter.
+Timing evidence and proof commands:
+[`changes/2026-10-07_ci-pr-critical-path.md`](changes/2026-10-07_ci-pr-critical-path.md).
 
 ## Bitrise equivalents (not live)
 

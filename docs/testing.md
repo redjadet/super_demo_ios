@@ -42,14 +42,15 @@ Human judgment of process vs final diff:
 The iPhone lane (`bin/ci-iphone-build-for-testing.sh` + `bin/ci-iphone-test.sh`)
 uses an **already-installed** iPhone Simulator on the newest available runtime
 (`tool/ci_simulator_pick_existing.sh`; never create/erase by default). Hosted CI
-default layout (`CI_IPHONE_LAYOUT=single`): one `Checklist · iPhone` job starts
-simulator boot in the background during setup/Flutter/build, then runs
-`test-without-building` for the full suite with
-`-parallel-testing-enabled YES` (worker count 3, simulator clones) — same 187
-tests as before (still skips `testLaunchPerformance` on CI). Compare/fallback
-layout (`CI_IPHONE_LAYOUT=sharded`): units run in the build job; UI splits into
-`ui-a` / `ui-b` shards (`tool/ci_iphone_test_shards.sh`). Local checklist runs
-unsharded `xcodebuild test` with warnings-as-errors. Destination preference:
+defaults to `iphone-build` (unit tests) plus four duration-balanced UI shards
+(`ui-1`…`ui-4`, `tool/ci_iphone_test_shards.sh`). Each shard runs serially without
+simulator clones. `python3 tool/check_ci_contracts.py` enforces full UI case
+coverage exactly once, except the existing `testLaunchPerformance` CI exclusion.
+The build-job simulator boots after Flutter preparation, overlapping native
+compilation; shard simulators boot after product download. The optional single
+layout is selected via `changes.outputs.iphone_layout` in the workflow.
+Local checklist runs unsharded `xcodebuild test` with warnings-as-errors.
+Destination preference:
 iPhone 18 **Pro** → Pro Max → Plus → base (skip Duo/Fold/Air), then
 generation-ranked fallback. UDID hex is normalized uppercase for destination
 matching. Local Mac prefers a booted iPhone 18 Pro when present.

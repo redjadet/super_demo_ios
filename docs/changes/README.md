@@ -4,6 +4,9 @@ Record durable implementation notes after meaningful changes.
 
 ## Entries
 
+- [`2026-10-07_ci-pr-critical-path.md`](2026-10-07_ci-pr-critical-path.md)
+  — Prepared Flutter cache reuse, balanced complete UI shards, coverage guard.
+
 - [`2026-10-07_feed-bookmark-consistency.md`](2026-10-07_feed-bookmark-consistency.md)
   — Atomic optimistic writes, queue ordering, newer-intent protection, live sync
   state, and actionable bookmark controls.

@@ -23,7 +23,7 @@ jobs:
   # Scope / preflight (flutter_bloc_app `changes` job parity).
   # iphone_layout is an output (not job-level env.if — GHA forbids env in job if).
   # single = one job (build-for-testing + parallel tests; no artifact handoff).
-  # sharded = units in build job + ui-a/ui-b shards (compare / fallback).
+  # sharded = units in build job + four duration-balanced UI shards.
   changes:
     name: Checklist · changes
     runs-on: ubuntu-latest
@@ -254,6 +254,7 @@ jobs:
           source ./tool/ci_simulator_pick_existing.sh
 
       - name: Setup iOS CI (Brewfile + SPM/Flutter caches; no Flutter SDK yet)
+        id: build_setup
         uses: ./.github/actions/setup-ios-ci
         with:
           select-xcode: "false"
@@ -263,17 +264,14 @@ jobs:
           cache-flutter-embed: "true"
           cache-key-suffix: iphone-build
 
-      - name: Start background simulator boot
-        env:
-          CI: true
-        run: ./tool/ci_simulator_boot_bg.sh
-
       - name: Prepare Flutter embed (skip rebuild + SDK when cache hits)
         id: flutter_embed
+        env:
+          EMBED_CACHE_HIT: ${{ steps.build_setup.outputs.flutter-embed-cache-hit }}
         run: |
           set -euo pipefail
-          if [[ -d Flutter/Debug/Flutter.xcframework ]]; then
-            echo "==> Flutter embed cache hit — skip ios-framework rebuild and Flutter SDK"
+          if [[ "$EMBED_CACHE_HIT" == "true" && -d Flutter/Debug/Flutter.xcframework ]]; then
+            echo "==> Exact Flutter embed cache hit — skip rebuild and SDK"
             ./tool/prepare_flutter_embed.sh --skip-build
             echo "cache_hit=true" >> "$GITHUB_OUTPUT"
           else
@@ -296,6 +294,11 @@ jobs:
           set -euo pipefail
           ./tool/prepare_flutter_embed.sh
           (cd flutter_module && flutter test)
+
+      - name: Start background simulator boot (after Flutter preparation)
+        env:
+          CI: true
+        run: ./tool/ci_simulator_boot_bg.sh
 
       - name: iPhone build-for-testing
         env:
