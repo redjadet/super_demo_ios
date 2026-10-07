@@ -73,7 +73,8 @@ final class TVFeedCompanionIntegrationTests: XCTestCase {
         XCTAssertEqual(state, .corrupt)
     }
 
-    func testRealAppGroupSeedOrHonestUnavailable() {
+    func testRealAppGroupSeedOrHonestUnavailable() throws {
+        // Preserve any prior App Group snapshot (Codex P2) when the container exists.
         let before = FeedWidgetSnapshotStore.loadState()
         switch before {
         case .unavailable:
@@ -81,18 +82,35 @@ final class TVFeedCompanionIntegrationTests: XCTestCase {
                 XCTAssertEqual(error as? FeedWidgetSnapshotStoreError, .containerUnavailable)
             }
         case .absent, .corrupt, .expired, .ok:
-            do {
-                try FeedWidgetSnapshotStore.write(FeedCompanionDemoSnapshot.tvSeed())
-                let after = FeedWidgetSnapshotStore.loadState()
-                guard case let .ok(snapshot) = after else {
-                    XCTFail("expected ok after seed when container exists, got \(after)")
-                    return
-                }
-                XCTAssertEqual(snapshot.titles.first?.title, "tvOS demo: Feed snapshot")
-                try? FeedWidgetSnapshotStore.remove()
-            } catch {
-                XCTFail("seed should succeed when container exists: \(error)")
+            let priorData = Self.readPersistentSnapshotData()
+            defer { Self.restorePersistentSnapshot(priorData: priorData) }
+            try FeedWidgetSnapshotStore.write(FeedCompanionDemoSnapshot.tvSeed())
+            let after = FeedWidgetSnapshotStore.loadState()
+            guard case let .ok(snapshot) = after else {
+                XCTFail("expected ok after seed when container exists, got \(after)")
+                return
             }
+            XCTAssertEqual(snapshot.titles.first?.title, "tvOS demo: Feed snapshot")
+        }
+    }
+
+    private static func readPersistentSnapshotData() -> Data? {
+        guard let fileURL = FeedWidgetSnapshotStore.snapshotFileURL(),
+              FileManager.default.fileExists(atPath: fileURL.path)
+        else {
+            return nil
+        }
+        return try? Data(contentsOf: fileURL)
+    }
+
+    private static func restorePersistentSnapshot(priorData: Data?) {
+        guard let fileURL = FeedWidgetSnapshotStore.snapshotFileURL() else {
+            return
+        }
+        if let priorData {
+            try? priorData.write(to: fileURL, options: .atomic)
+        } else {
+            try? FeedWidgetSnapshotStore.remove()
         }
     }
 }
