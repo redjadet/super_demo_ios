@@ -100,16 +100,20 @@ final class superDemoAppUITests: XCTestCase {
     func testUIKitShowcaseCollectionIsReachable() {
         let app = UiTestSupport.launchApplication(from: self)
 
-        UiTestSupport.openDashboardTab(in: app)
-        _ = UiTestSupport.waitForListOrCollection(identifier: "productionReadinessDashboard", in: app)
+        // Same dashboard scroll path as Engineering demos — `app.buttons[...]` +
+        // unscrolled `scrollToElement` missed `uikitShowcaseLink` once the demos
+        // list grew (watch/tvOS companions) and SwiftUI stopped exposing the
+        // NavigationLink as a top-level Button.
+        UiTestSupport.openEngineeringDemo(
+            linkIdentifier: "uikitShowcaseLink",
+            screenIdentifier: "uikitShowcaseCollection",
+            in: app
+        )
 
-        let showcaseLink = app.buttons["uikitShowcaseLink"]
-        UiTestSupport.scrollToElement(showcaseLink, in: app)
-        XCTAssertTrue(showcaseLink.waitForExistence(timeout: 20))
-        showcaseLink.tap()
-        XCTAssertTrue(app.collectionViews["uikitShowcaseCollection"].waitForExistence(timeout: 10))
+        let collection = app.collectionViews["uikitShowcaseCollection"]
+        XCTAssertTrue(collection.waitForExistence(timeout: 10))
 
-        let firstCell = app.collectionViews["uikitShowcaseCollection"].cells.firstMatch
+        let firstCell = collection.cells.firstMatch
         XCTAssertTrue(firstCell.waitForExistence(timeout: 5))
         firstCell.tap()
         let detail = app.descendants(matching: .any)

@@ -198,7 +198,7 @@ platform :ios do
     )
   end
 
-  desc "iPad + Mac + watchOS compile proof (bin/ci-platform-builds.sh)"
+  desc "iPad + Mac + watchOS + tvOS compile proof (bin/ci-platform-builds.sh)"
   lane :platform_builds do
     run_repo_script(
       "bin/ci-platform-builds.sh",
@@ -216,7 +216,7 @@ platform :ios do
     common_checks
 
     if ENV["CI_SKIP_PLATFORM_BUILDS"] == "1"
-      UI.important("Skipping iPad/Mac/watchOS (CI_SKIP_PLATFORM_BUILDS=1)")
+      UI.important("Skipping iPad/Mac/watchOS/tvOS (CI_SKIP_PLATFORM_BUILDS=1)")
       iphone_test
     elsif ci?
       platform_builds

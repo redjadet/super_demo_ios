@@ -8,7 +8,7 @@
 # Lanes (same scripts CI uses):
 #   markdown → DesignMD → Swift lint/modularity → common checks → scheme list
 #   → iPhone tests (bin/ci-iphone-test.sh)
-#   → iPad + Mac + watchOS builds (bin/ci-platform-builds.sh)
+#   → iPad + Mac + watchOS + tvOS builds (bin/ci-platform-builds.sh)
 #
 # Xcode warnings are errors by default (tool/xcode_warnings_as_errors_flags.sh).
 # Escape: XCODEBUILD_ALLOW_WARNINGS=1 or CHECKLIST_SKIP_PLATFORM_BUILDS=1
@@ -35,13 +35,13 @@ Full local delivery checklist (merge gate):
   - Common issue checks (incl. simulator runtime ↔ device-type compat)
   - Xcode project/scheme listing
   - iPhone unit/UI tests (./bin/ci-iphone-test.sh) — warnings as errors
-  - iPad + Mac + watchOS builds (./bin/ci-platform-builds.sh) — unless skipped
+  - iPad + Mac + watchOS + tvOS builds (./bin/ci-platform-builds.sh) — unless skipped
 
 On documentation-only PR diffs (and local docs-only worktrees), skips Xcode
 lanes after docs/static checks — same rule as GHA `changes` / flutter_bloc_app.
 
 Env:
-  CHECKLIST_SKIP_PLATFORM_BUILDS=1  Skip iPad/Mac/watchOS builds
+  CHECKLIST_SKIP_PLATFORM_BUILDS=1  Skip iPad/Mac/watchOS/tvOS builds
   XCODEBUILD_ALLOW_WARNINGS=1       Do not treat Xcode warnings as errors
 
 Narrow docs/tooling: ./bin/checklist-fast
@@ -112,10 +112,10 @@ echo "==> iPhone tests (./bin/ci-iphone-test.sh; warnings as errors)"
 ./bin/ci-iphone-test.sh
 
 if [[ "${CHECKLIST_SKIP_PLATFORM_BUILDS:-0}" != "1" ]]; then
-  echo "==> iPad + Mac + watchOS builds (./bin/ci-platform-builds.sh; warnings as errors)"
+  echo "==> iPad + Mac + watchOS + tvOS builds (./bin/ci-platform-builds.sh; warnings as errors)"
   ./bin/ci-platform-builds.sh
 else
-  echo "info: skipping iPad/Mac/watchOS builds because CHECKLIST_SKIP_PLATFORM_BUILDS=1"
+  echo "info: skipping iPad/Mac/watchOS/tvOS builds because CHECKLIST_SKIP_PLATFORM_BUILDS=1"
 fi
 
 echo "Checklist passed."

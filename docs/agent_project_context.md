@@ -70,8 +70,9 @@ Machine-readable project facts for agents.
 - Persistence model: `superDemoApp/Features/Items/Data/Item.swift` (`@Model`).
 - Root UI: `superDemoApp/App/AppRootView.swift` (`TabView`: Dashboard / Items / Feed);
   composition in `superDemoApp/App/*Composition.swift`.
-- Current platform settings include iPhone, iPad, Mac, and a thin watchOS Feed
-  companion (`superDemoAppWatch`); visionOS companion demo remains deferred.
+- Current platform settings include iPhone, iPad, Mac, plus thin watchOS
+  (`superDemoAppWatch`) and tvOS (`superDemoAppTV`) Feed-snapshot companions;
+  visionOS companion demo remains deferred.
 
 ## Preferred Growth Direction
 

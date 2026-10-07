@@ -5,7 +5,7 @@
 | Tool        | Config / pin                                                         | Install                       |
 | ----------- | -------------------------------------------------------------------- | ----------------------------- |
 | SwiftLint   | `.swiftlint.yml` (`0.65.1`)                                          | `brew bundle --file Brewfile` |
-| SwiftFormat | `.swiftformat` + pin **`0.63.0`** (`tool/expected_tool_versions.sh`) | same                          |
+| SwiftFormat | `.swiftformat` + pin **`0.63.1`** (`tool/expected_tool_versions.sh`) | same                          |
 
 ## Commands (run from `superDemoApp/`)
 
@@ -25,7 +25,7 @@
 | **Xcode build** | Run Script phase **Lint (SwiftLint & SwiftFormat)** -> `Scripts/xcode-lint.sh` |
 | **Local parity** | `./bin/ci.sh` - Swift + Markdown lint, build, tests (`CI=true`) |
 | **Fast checklist** | `./bin/checklist-fast` - Markdown/Swift lint, common issue checks, project sanity |
-| **Full checklist** | `./bin/checklist` - lint, common issue checks, existing iPhone simulator build/test, iPad/Mac/watchOS builds |
+| **Full checklist** | `./bin/checklist` - lint, common issue checks, existing iPhone simulator build/test, iPad/Mac/watchOS/tvOS builds |
 | **Docs-only** | `./bin/lint-markdown.sh` |
 
 `ENABLE_USER_SCRIPT_SANDBOXING` is **NO** at project level so the lint script can read Swift sources (required for SwiftFormat directory walks).

@@ -93,6 +93,7 @@ provides proof.
 | `testIdempotentPostDemoIsReachable` | Idempotent POST: first send Accepted, second send Simulated duplicate-safe (not Failed) |
 | `testDiagnosticsDemoIsReachable` | Diagnostics Engineering demo screen |
 | `testWatchCompanionDemoIsReachable` | watchOS companion Engineering demo chrome + a11y labels |
+| `testTVCompanionDemoIsReachable` | tvOS companion Engineering demo chrome + a11y labels |
 | `testDeepLinkOpensFeedPostDetail` | `superdemo://feed/1` opens `feedPostDetail-1` |
 | `testLaunch` | Local/full-lane launch duplicate for Items chrome |
 | `testLaunchPerformance` | Local launch performance under `-UITesting` |
@@ -216,8 +217,23 @@ README — see [`code-quality.md`](code-quality.md).
 
 The main scheme has unit and UI tests for iPhone, iPad, macOS, and visionOS.
 Run each destination explicitly; an iPhone pass does not prove iPad or Mac UI.
-The watch companion scheme currently has no test target, so its existing local
-lane (`./bin/ci-watch-build.sh`) proves compilation only.
+
+watchOS / tvOS companion **integration** tests live in dedicated targets and run
+from the companion schemes:
+
+| Target | Scheme | What it proves |
+| --- | --- | --- |
+| `superDemoAppWatchTests` | `superDemoAppWatch` | Feed snapshot absent / ok / expired / corrupt honesty + watch seed DTO + real App Group or honest `.unavailable` |
+| `superDemoAppTVTests` | `superDemoAppTV` | Same honesty contract for tvOS seed DTO / App Group |
+
+Local + platform-builds lanes (`./bin/ci-watch-build.sh`, `./bin/ci-tvos-build.sh`)
+prefer `xcodebuild test` on a concrete Simulator UDID. If only
+`generic/platform=… Simulator` is available (common on GitHub-hosted runners),
+the scripts fall back to compile-only `build` and log a warning — Mac mini /
+self-hosted proof is the authoritative XCTest run for those platforms.
+
+iPhone Engineering demos still smoke-test companion chrome
+(`testWatchCompanionDemoIsReachable`, `testTVCompanionDemoIsReachable`).
 
 Check installed destinations with `xcodebuild -showdestinations -project
 superDemoApp.xcodeproj -scheme superDemoApp`. visionOS execution requires an

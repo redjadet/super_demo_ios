@@ -35,6 +35,7 @@ MAC_DEST="$(resolve_mac_destination)"
 echo "==> iPad destination: $IPAD_DEST"
 echo "==> Mac destination: $MAC_DEST"
 echo "==> watchOS: ./bin/ci-watch-build.sh (after iPad/Mac)"
+echo "==> tvOS: ./bin/ci-tvos-build.sh (after watchOS)"
 
 run_platform_xcodebuild() {
   assert_xcodebuild_matches_developer_dir || return 1
@@ -156,6 +157,16 @@ if [[ "${CI_SKIP_WATCH_BUILD:-0}" != "1" ]]; then
     export WATCH_DERIVED_DATA_PATH="$log_dir/DerivedData-Watch"
   fi
   ./bin/ci-watch-build.sh
+fi
+
+if [[ "${CI_SKIP_TVOS_BUILD:-0}" != "1" ]]; then
+  echo "==> tvOS build (./bin/ci-tvos-build.sh; warnings as errors)"
+  if [[ -n "${TVOS_DERIVED_DATA_PATH:-}" ]]; then
+    :
+  elif [[ -n "${log_dir:-}" ]]; then
+    export TVOS_DERIVED_DATA_PATH="$log_dir/DerivedData-TV"
+  fi
+  ./bin/ci-tvos-build.sh
 fi
 
 echo "Platform builds passed."

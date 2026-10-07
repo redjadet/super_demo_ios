@@ -346,6 +346,33 @@ final class EngineeringDemosUITests: XCTestCase {
     }
 
     @MainActor
+    func testTVCompanionDemoIsReachable() {
+        let app = UiTestSupport.launchApplication(from: self)
+        UiTestSupport.openEngineeringDemo(
+            linkIdentifier: "tvCompanionDemoLink",
+            screenIdentifier: "tvCompanionDemoScreen",
+            in: app
+        )
+
+        XCTAssertTrue(
+            UiTestSupport.waitForAnyIdentifier(
+                [
+                    "tvCompanionDemoTitle",
+                    "tvCompanionDemoSummary",
+                    "tvCompanionDemoHonesty",
+                ],
+                in: app
+            )
+        )
+
+        let title = app.descendants(matching: .any)
+            .matching(identifier: "tvCompanionDemoTitle")
+            .firstMatch
+        XCTAssertTrue(title.waitForExistence(timeout: 5))
+        XCTAssertFalse(title.label.isEmpty, "tvOS companion title should expose an accessibility label")
+    }
+
+    @MainActor
     func testDiagnosticsDemoIsReachable() {
         let app = UiTestSupport.launchApplication(from: self)
         UiTestSupport.openEngineeringDemo(

@@ -96,13 +96,13 @@ Add or bump skills:
 | 2 | **Repo scripts** | `./bin/lint.sh`, `./bin/ci.sh`, `./bin/checklist`, `xcodebuild` per [`agents_quick_reference.md`](agents_quick_reference.md) |
 | 3 | **XcodeBuildMCP** (optional) | If `../.xcodebuildmcp/config.yaml` exists and host exposes it — same profile `superDemoApp` as Codex |
 
-Shell `xcodebuild` is always valid fallback. For iPad/Mac/watchOS compile proof
+Shell `xcodebuild` is always valid fallback. For iPad/Mac/watchOS/tvOS compile proof
 use `./bin/ci-platform-builds.sh` or `./bin/checklist`.
 
 ### Validation habits
 
 - After Swift edits: `./bin/lint.sh`.
-- Before merge/PR: `./bin/ci.sh` (lint, iPhone tests, iPad + macOS + watchOS builds).
+- Before merge/PR: `./bin/ci.sh` (lint, iPhone tests, iPad + macOS + watchOS + tvOS builds).
 - SwiftUI layout/navigation/universal UI/light-dark: `./bin/checklist` (full matrix), not lint alone.
 
 ## Browser/UI Proof

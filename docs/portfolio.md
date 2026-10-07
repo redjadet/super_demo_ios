@@ -46,7 +46,7 @@ visionOS companion demo, and live public DNS for `superdemo.app` universal links
 | Observability / crash swap | `superDemoApp/Shared/Diagnostics/`, [`incident-playbook.md`](incident-playbook.md) | **In repo** |
 | Performance (Feed + UIKit) | `AppPerformanceSignposts`, [`performance-lab.md`](performance-lab.md) | **In repo** |
 | Performance (widget / concurrency lab) | [`performance-lab.md`](performance-lab.md) widget App Group + Live Activity Feed-refresh recipes + concurrency talk track | **In repo** |
-| Universal shell (iPhone / iPad / Mac) | Adaptive navigation; CI platform builds (iPad + Mac + watchOS; Mac unsigned compile proof); iOS / macOS deployment floors **26.7** | **In repo** |
+| Universal shell (iPhone / iPad / Mac) | Adaptive navigation; CI platform builds (iPad + Mac + watchOS + tvOS; Mac unsigned compile proof); iOS / macOS deployment floors **26.7** | **In repo** |
 | WidgetKit / Home Screen widget | `FeedWidgetShared/`, `superDemoAppWidget/`, App Group `group.com.ilkersevim.superDemoApp`; Engineering demos → Feed widget snapshot | **In repo** (iOS embed; Mac lane skips extension) |
 | Live Activities / Dynamic Island | `FeedRefreshActivityAttributes`, `ActivityKitFeedRefreshLiveActivityController`, `FeedRefreshLiveActivity` in widget bundle | **In repo** (compiles on hosted CI; device Dynamic Island behavior is not claimed there) |
 | Push / notification service extension | Engineering demos → Local stale-Feed reminder (local only); [`release-checklist.md`](release-checklist.md) mock TestFlight/APNs | **In repo** (local reminder and labeled mock/demo checklist; no production APNs claim) |
@@ -55,10 +55,10 @@ visionOS companion demo, and live public DNS for `superdemo.app` universal links
 | StoreKit 2 | `Config/Products.storekit`; `superDemoApp/Shared/StoreKit/`; Engineering demos → StoreKit 2 product query (demo) | **In repo** (product query only; no purchase path) |
 | Native↔Flutter host bridge | `superDemoApp/Shared/HostBridge/`, `superDemoApp/Shared/FlutterEmbed/`, `flutter_module/`, [`native-host-boundary.md`](native-host-boundary.md), [`flutter-add-to-app.md`](flutter-add-to-app.md); Engineering demos → Host bridge ping / Flutter add-to-app | **In repo** (typed contract and optional module embed; `postCount` = full cache size; Mac target excludes Flutter linkage; prepare script builds frameworks) |
 | Core ML / Vision / Speech / Apple Intelligence | `superDemoApp/Shared/OnDeviceAI/`, Engineering demos → On-device Vision OCR | **In repo** (Vision OCR only; no Speech, Core ML model, or Apple Intelligence claim) |
-| watchOS companion (Feed snapshot) | `superDemoAppWatch/`, `FeedWidgetShared/`, App Group `group.com.ilkersevim.superDemoApp`; Engineering demos → watchOS Feed companion; scheme `superDemoAppWatch`; `WATCHOS_DEPLOYMENT_TARGET` **26.7** | **In repo** (iOS embeds the extension; watch-local App Group; not phone sync) |
+| watchOS companion (Feed snapshot) | `superDemoAppWatch/`, `superDemoAppWatchTests/`, `FeedWidgetShared/`, App Group `group.com.ilkersevim.superDemoApp`; Engineering demos → watchOS Feed companion; scheme `superDemoAppWatch`; `WATCHOS_DEPLOYMENT_TARGET` **26.7**; `./bin/ci-watch-build.sh` | **In repo** (iOS embeds the extension; watch-local App Group; not phone sync; XCTest integration on Watch Simulator) |
 | visionOS shared SwiftUI API guards | `AdaptiveNavigationShell` / glass chrome availability; `OnDeviceVisionDemo` `nonisolated` init | **In repo** (availability guards only; no visionOS Simulator behavior is claimed) |
 | visionOS companion | Project settings may include visionOS entries; no companion app or reviewer demo | **Not in repo** |
-| tvOS companion | — | **Not in repo** |
+| tvOS companion (Feed snapshot) | `superDemoAppTV/`, `superDemoAppTVTests/`, `FeedWidgetShared/`, App Group `group.com.ilkersevim.superDemoApp`; Engineering demos → tvOS Feed companion; scheme `superDemoAppTV`; `TVOS_DEPLOYMENT_TARGET` **26.7**; `./bin/ci-tvos-build.sh` | **In repo** (standalone tvOS app; tv-local App Group; not phone sync; XCTest integration on tvOS Simulator) |
 | App Store–shipped product | README honesty | **Not claimed** |
 
 **Maps:** [`../CODEMAP.md`](../CODEMAP.md) · [`architecture-tour.md`](architecture-tour.md) ·
@@ -154,7 +154,7 @@ Both seed a fresh SwiftData cache and fail remote through existing
 
 - [x] Layer imports pass `./bin/lint.sh` (also in `./bin/ci.sh`)
 - [x] Feed tab reachable; list, Retry, toolbar refresh (`testFeedTabIsReachable` / `FeedView`)
-- [x] `./bin/ci.sh` passes on merge (lint + iPhone tests + iPad/Mac/watchOS builds)
+- [x] `./bin/ci.sh` passes on merge (lint + iPhone tests + iPad/Mac/watchOS/tvOS builds)
 - [x] Previews cover light/dark for `FeedView` (`#Preview` + `UniversalPreviewLayouts`)
 - [x] VoiceOver-relevant Feed chrome / rows / Retry proof (`testFeedAccessibilityChromeRowsAndRetry`)
 - [x] Deep links for Feed / Items / Feed post (`testDeepLinkOpensFeedTab` /
