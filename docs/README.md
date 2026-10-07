@@ -37,6 +37,8 @@ Source-of-truth docs for `superDemoApp`.
 - Engineering evidence map: [`engineering/engineering-evidence-map.md`](engineering/engineering-evidence-map.md)
 - Senior coding patterns map (Stackademic 7 → present/gap/N/A):
   [`engineering/senior-coding-patterns-map.md`](engineering/senior-coding-patterns-map.md)
+- Failure concepts map (eight → present/soft/gap):
+  [`engineering/failure-concepts-map.md`](engineering/failure-concepts-map.md)
 - Harness scorecard (agent): [`ai/harness-scorecard.md`](ai/harness-scorecard.md)
 - Agent worktrees / maintain: [`agent_kb/host-maintenance.md`](agent_kb/host-maintenance.md)
 - SAFETY-REPORT template: [`agent_kb/safety-report-template.md`](agent_kb/safety-report-template.md)

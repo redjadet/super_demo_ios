@@ -52,6 +52,8 @@ Keep article-shaped senior habits aligned with what this app actually ships:
 
 Full map (present / gap / N/A):
 [`engineering/senior-coding-patterns-map.md`](engineering/senior-coding-patterns-map.md).
+Failure concepts (eight → present / soft / gap):
+[`engineering/failure-concepts-map.md`](engineering/failure-concepts-map.md).
 
 ## Repaid debt example
 
