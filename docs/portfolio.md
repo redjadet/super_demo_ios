@@ -63,7 +63,8 @@ visionOS companion demo, and live public DNS for `superdemo.app` universal links
 
 **Maps:** [`../CODEMAP.md`](../CODEMAP.md) · [`architecture-tour.md`](architecture-tour.md) ·
 [`engineering/engineering-evidence-map.md`](engineering/engineering-evidence-map.md) ·
-[`engineering/senior-coding-patterns-map.md`](engineering/senior-coding-patterns-map.md).
+[`engineering/senior-coding-patterns-map.md`](engineering/senior-coding-patterns-map.md) ·
+[`engineering/failure-concepts-map.md`](engineering/failure-concepts-map.md).
 
 ## How to read this repo (cold reviewer)
 

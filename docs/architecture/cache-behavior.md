@@ -100,6 +100,13 @@ row `cachedAt` so App Group TTL expires with the oldest title still shown.
 `postCount` is the full post list size; widget titles are capped to five
 (`posts.prefix(5)`).
 
+**Atomicity limit (honesty):** `replaceCache` (SwiftData `context.save()`) and
+App Group snapshot publish (`FeedWidgetSnapshotStore` coordinated
+temp/`replaceItemAt`) are **two steps**, not one database transaction. A crash
+between them can leave cache and widget file briefly out of sync until the next
+successful fetch or clear. Cross-process races on the snapshot file are
+serialized via `NSFileCoordinator` (parity with `ShareInboxStore`).
+
 ## Decisions and trade-offs
 
 | Choice | Alternatives considered | Why |
@@ -110,6 +117,7 @@ row `cachedAt` so App Group TTL expires with the oldest title still shown.
 | Wholesale replace on success | Patch merge by version | JSONPlaceholder posts are a full list; avoids zombie rows |
 | No `URLCache` for Feed | System HTTP cache | Explicit app-owned TTL + stale banner beats opaque URLCache |
 | TTL filter without purge | Background GC of expired rows | Fewer moving parts; disk growth acceptable for portfolio scope |
+| Coordinated App Group snapshot | Bare `replaceItemAt` only | Matches Share inbox; app ↔ widget / companion serialize the file |
 
 ## How it's tested
 
