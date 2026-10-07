@@ -326,7 +326,9 @@ enum UiTestSupport {
             let slice = min(0.8, max(0.2, deadline.timeIntervalSinceNow))
             // Prefer feature-body IDs before toolbar add — fewer hanging snapshots.
             for identifier in identifiers {
-                let match = app.descendants(matching: .any).matching(identifier: identifier).firstMatch
+                let match = app.descendants(matching: .any)
+                    .matching(identifier: identifier)
+                    .firstMatch
                 if match.waitForExistence(timeout: slice) {
                     return true
                 }
@@ -334,13 +336,15 @@ enum UiTestSupport {
                     return false
                 }
             }
-            let itemRow = app.descendants(matching: .any).matching(rowPredicate).firstMatch
+            let itemRow = app.descendants(matching: .any)
+                .matching(rowPredicate)
+                .firstMatch
             if itemRow.waitForExistence(timeout: slice) {
                 return true
             }
-            if app.staticTexts["No Items"].waitForExistence(timeout: 0.2)
-                || app.staticTexts["Could Not Load Items"].waitForExistence(timeout: 0.2)
-            {
+            let noItems = app.staticTexts["No Items"].waitForExistence(timeout: 0.2)
+            let loadFailed = app.staticTexts["Could Not Load Items"].waitForExistence(timeout: 0.2)
+            if noItems || loadFailed {
                 return true
             }
         }
@@ -356,23 +360,27 @@ enum UiTestSupport {
             let slice = min(0.8, max(0.2, deadline.timeIntervalSinceNow))
             let settledIDs = ["itemsList", "itemsEmpty", "itemsFailed", "itemDetail", "addItemEmpty"]
             for identifier in settledIDs {
-                if app.descendants(matching: .any).matching(identifier: identifier).firstMatch
-                    .waitForExistence(timeout: slice)
-                {
+                let match = app.descendants(matching: .any)
+                    .matching(identifier: identifier)
+                    .firstMatch
+                if match.waitForExistence(timeout: slice) {
                     return true
                 }
                 if Date() >= deadline {
                     return false
                 }
             }
-            if app.descendants(matching: .any).matching(rowPredicate).firstMatch
-                .waitForExistence(timeout: slice)
-            {
+            let itemRow = app.descendants(matching: .any)
+                .matching(rowPredicate)
+                .firstMatch
+            if itemRow.waitForExistence(timeout: slice) {
                 return true
             }
             // Still on skeleton — keep polling until timeout.
-            _ = app.descendants(matching: .any).matching(identifier: "itemsLoading").firstMatch
-                .waitForExistence(timeout: 0.2)
+            let loading = app.descendants(matching: .any)
+                .matching(identifier: "itemsLoading")
+                .firstMatch
+            _ = loading.waitForExistence(timeout: 0.2)
         }
         return false
     }
