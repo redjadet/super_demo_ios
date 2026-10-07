@@ -65,6 +65,51 @@ runs:
         channel: stable
         cache: true
 
+    # Prefer shell digests over hashFiles(): GHA's hashFiles has a hard 120s
+    # template timeout and failed iPhone-build when background simctl boot
+    # contended disk I/O (run 37591436293: hashFiles('Brewfile') timeout).
+    # Keep bash 3.2-safe (macOS runner /bin/bash) — no mapfile.
+    - name: Compute cache key digests
+      id: digests
+      shell: bash
+      run: |
+        set -euo pipefail
+        digest_paths_from_stdin() {
+          # stdin: one relative path per line. Empty input → fixed sentinel.
+          local hashes
+          hashes="$(while IFS= read -r path || [[ -n "${path}" ]]; do
+            [[ -n "${path}" && -f "${path}" ]] || continue
+            shasum -a 256 "${path}"
+          done)"
+          if [[ -z "${hashes}" ]]; then
+            printf '%s\n' "empty"
+            return 0
+          fi
+          printf '%s\n' "${hashes}" | shasum -a 256 | awk '{print $1}'
+        }
+
+        brew_hash="none"
+        if [[ -f Brewfile ]]; then
+          brew_hash="$(shasum -a 256 Brewfile | awk '{print $1}')"
+        fi
+        echo "brew=${brew_hash}" >> "$GITHUB_OUTPUT"
+
+        spm_hash="$(
+          find . -name Package.resolved -type f | LC_ALL=C sort | digest_paths_from_stdin
+        )"
+        echo "spm=${spm_hash}" >> "$GITHUB_OUTPUT"
+
+        spm_flutter_hash="$(
+          {
+            [[ -f flutter_module/pubspec.lock ]] && printf '%s\n' "flutter_module/pubspec.lock"
+            if [[ -d flutter_module/lib ]]; then
+              find flutter_module/lib -type f | LC_ALL=C sort
+            fi
+            find . -name Package.resolved -type f | LC_ALL=C sort
+          } | digest_paths_from_stdin
+        )"
+        echo "spm_flutter=${spm_flutter_hash}" >> "$GITHUB_OUTPUT"
+
     - name: Cache Homebrew downloads
       if: ${{ inputs.brewfile == 'true' || inputs.brew-packages != '' }}
       uses: actions/cache@v6
@@ -73,7 +118,7 @@ runs:
           ~/Library/Caches/Homebrew
           ~/Library/Caches/Homebrew/downloads
         key: >-
-          brew-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('Brewfile') }}-${{ inputs.brew-packages }}
+          brew-${{ runner.os }}-${{ runner.arch }}-${{ steps.digests.outputs.brew }}-${{ inputs.brew-packages }}
         restore-keys: |
           brew-${{ runner.os }}-${{ runner.arch }}-
 
@@ -87,7 +132,7 @@ runs:
           ~/Library/Caches/org.swift.swiftpm
           Flutter
         key: >-
-          xcode27-spm-flutter-${{ runner.os }}-${{ runner.arch }}-${{ inputs.cache-key-suffix }}-${{ hashFiles('**/Package.resolved', 'flutter_module/pubspec.lock', 'flutter_module/lib/**') }}
+          xcode27-spm-flutter-${{ runner.os }}-${{ runner.arch }}-${{ inputs.cache-key-suffix }}-${{ steps.digests.outputs.spm_flutter }}
         restore-keys: |
           xcode27-spm-flutter-${{ runner.os }}-${{ runner.arch }}-${{ inputs.cache-key-suffix }}-
 
@@ -98,7 +143,7 @@ runs:
         path: |
           ~/Library/Caches/org.swift.swiftpm
         key: >-
-          xcode27-spm-${{ runner.os }}-${{ runner.arch }}-${{ inputs.cache-key-suffix }}-${{ hashFiles('**/Package.resolved') }}
+          xcode27-spm-${{ runner.os }}-${{ runner.arch }}-${{ inputs.cache-key-suffix }}-${{ steps.digests.outputs.spm }}
         restore-keys: |
           xcode27-spm-${{ runner.os }}-${{ runner.arch }}-${{ inputs.cache-key-suffix }}-
 
