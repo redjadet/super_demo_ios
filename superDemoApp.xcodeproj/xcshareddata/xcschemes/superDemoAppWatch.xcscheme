@@ -30,6 +30,17 @@
       shouldUseLaunchSchemeArgsEnv = "YES"
       shouldAutocreateTestPlan = "YES">
       <Testables>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "A1WATCHTEST0000000000004"
+               BuildableName = "superDemoAppWatchTests.xctest"
+               BlueprintName = "superDemoAppWatchTests"
+               ReferencedContainer = "container:superDemoApp.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction

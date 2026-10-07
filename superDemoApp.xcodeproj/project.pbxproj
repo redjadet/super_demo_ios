@@ -56,6 +56,20 @@
 			remoteGlobalIDString = A1WATCH010000000000000004;
 			remoteInfo = superDemoAppWatch;
 		};
+		A1WATCHTEST000000000000D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 56D79ACE2FB7787300B9E63E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A1WATCH010000000000000004;
+			remoteInfo = superDemoAppWatch;
+		};
+		A1TVOSTEST0000000000000D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 56D79ACE2FB7787300B9E63E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A1TVOS010000000000000004;
+			remoteInfo = superDemoAppTV;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -92,6 +106,8 @@
 		A1SHARE010000000000000001 /* superDemoAppShare.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = superDemoAppShare.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1WATCH010000000000000001 /* superDemoAppWatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = superDemoAppWatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1TVOS010000000000000001 /* superDemoAppTV.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = superDemoAppTV.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A1WATCHTEST0000000000001 /* superDemoAppWatchTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = superDemoAppWatchTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		A1TVOSTEST00000000000001 /* superDemoAppTVTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = superDemoAppTVTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1FEED01000000000000000F /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		A1FEED010000000000000011 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		A1FEED010000000000000013 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
@@ -157,6 +173,16 @@
 				A1TVOS010000000000000020 /* Exceptions for "superDemoAppTV" folder */,
 			);
 			path = superDemoAppTV;
+			sourceTree = "<group>";
+		};
+		A1WATCHTEST0000000000003 /* superDemoAppWatchTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = superDemoAppWatchTests;
+			sourceTree = "<group>";
+		};
+		A1TVOSTEST00000000000003 /* superDemoAppTVTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = superDemoAppTVTests;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -234,6 +260,20 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		A1WATCHTEST0000000000006 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A1TVOSTEST00000000000006 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		56D79AE22FB7787400B9E63E /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -263,6 +303,8 @@
 				A1SHARE010000000000000003 /* superDemoAppShare */,
 				A1WATCH010000000000000003 /* superDemoAppWatch */,
 				A1TVOS010000000000000003 /* superDemoAppTV */,
+				A1WATCHTEST0000000000003 /* superDemoAppWatchTests */,
+				A1TVOSTEST00000000000003 /* superDemoAppTVTests */,
 				56D79AE82FB7787400B9E63E /* superDemoAppTests */,
 				56D79AF22FB7787400B9E63E /* superDemoAppUITests */,
 				56D79AD72FB7787300B9E63E /* Products */,
@@ -277,6 +319,8 @@
 				A1SHARE010000000000000001 /* superDemoAppShare.appex */,
 				A1WATCH010000000000000001 /* superDemoAppWatch.app */,
 				A1TVOS010000000000000001 /* superDemoAppTV.app */,
+				A1WATCHTEST0000000000001 /* superDemoAppWatchTests.xctest */,
+				A1TVOSTEST00000000000001 /* superDemoAppTVTests.xctest */,
 				56D79AE52FB7787400B9E63E /* superDemoAppTests.xctest */,
 				56D79AEF2FB7787400B9E63E /* superDemoAppUITests.xctest */,
 			);
@@ -466,6 +510,52 @@
 			productReference = A1TVOS010000000000000001 /* superDemoAppTV.app */;
 			productType = "com.apple.product-type.application";
 		};
+		A1WATCHTEST0000000000004 /* superDemoAppWatchTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A1WATCHTEST0000000000008 /* Build configuration list for PBXNativeTarget "superDemoAppWatchTests" */;
+			buildPhases = (
+				A1WATCHTEST0000000000005 /* Sources */,
+				A1WATCHTEST0000000000006 /* Frameworks */,
+				A1WATCHTEST0000000000007 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A1WATCHTEST000000000000E /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				A1WATCHTEST0000000000003 /* superDemoAppWatchTests */,
+			);
+			name = superDemoAppWatchTests;
+			packageProductDependencies = (
+			);
+			productName = superDemoAppWatchTests;
+			productReference = A1WATCHTEST0000000000001 /* superDemoAppWatchTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		A1TVOSTEST00000000000004 /* superDemoAppTVTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A1TVOSTEST00000000000008 /* Build configuration list for PBXNativeTarget "superDemoAppTVTests" */;
+			buildPhases = (
+				A1TVOSTEST00000000000005 /* Sources */,
+				A1TVOSTEST00000000000006 /* Frameworks */,
+				A1TVOSTEST00000000000007 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A1TVOSTEST0000000000000E /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				A1TVOSTEST00000000000003 /* superDemoAppTVTests */,
+			);
+			name = superDemoAppTVTests;
+			packageProductDependencies = (
+			);
+			productName = superDemoAppTVTests;
+			productReference = A1TVOSTEST00000000000001 /* superDemoAppTVTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -499,6 +589,14 @@
 					A1TVOS010000000000000004 = {
 						CreatedOnToolsVersion = 26.5;
 					};
+					A1WATCHTEST0000000000004 = {
+						CreatedOnToolsVersion = 26.5;
+						TestTargetID = A1WATCH010000000000000004;
+					};
+					A1TVOSTEST00000000000004 = {
+						CreatedOnToolsVersion = 26.5;
+						TestTargetID = A1TVOS010000000000000004;
+					};
 				};
 			};
 			buildConfigurationList = 56D79AD12FB7787300B9E63E /* Build configuration list for PBXProject "superDemoApp" */;
@@ -524,6 +622,8 @@
 				A1SHARE010000000000000004 /* superDemoAppShare */,
 				A1WATCH010000000000000004 /* superDemoAppWatch */,
 				A1TVOS010000000000000004 /* superDemoAppTV */,
+				A1WATCHTEST0000000000004 /* superDemoAppWatchTests */,
+				A1TVOSTEST00000000000004 /* superDemoAppTVTests */,
 				56D79AE42FB7787400B9E63E /* superDemoAppTests */,
 				56D79AEE2FB7787400B9E63E /* superDemoAppUITests */,
 			);
@@ -574,6 +674,20 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		A1TVOS010000000000000007 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A1WATCHTEST0000000000007 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A1TVOSTEST00000000000007 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -691,6 +805,20 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		A1WATCHTEST0000000000005 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A1TVOSTEST00000000000005 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -721,6 +849,16 @@
 			platformFilter = ios;
 			target = A1WATCH010000000000000004 /* superDemoAppWatch */;
 			targetProxy = A1WATCH01000000000000000D /* PBXContainerItemProxy */;
+		};
+		A1WATCHTEST000000000000E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A1WATCH010000000000000004 /* superDemoAppWatch */;
+			targetProxy = A1WATCHTEST000000000000D /* PBXContainerItemProxy */;
+		};
+		A1TVOSTEST0000000000000E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A1TVOS010000000000000004 /* superDemoAppTV */;
+			targetProxy = A1TVOSTEST0000000000000D /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -1324,6 +1462,96 @@
 			};
 			name = Release;
 		};
+		A1WATCHTEST0000000000009 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = QPG8754DYH;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ilkersevim.superDemoApp.watchkitapp.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SUPPORTED_PLATFORMS = "watchos watchsimulator";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/superDemoAppWatch.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/superDemoAppWatch";
+				WATCHOS_DEPLOYMENT_TARGET = 26.7;
+			};
+			name = Debug;
+		};
+		A1WATCHTEST000000000000A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = QPG8754DYH;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ilkersevim.superDemoApp.watchkitapp.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SUPPORTED_PLATFORMS = "watchos watchsimulator";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/superDemoAppWatch.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/superDemoAppWatch";
+				VALIDATE_PRODUCT = YES;
+				WATCHOS_DEPLOYMENT_TARGET = 26.7;
+			};
+			name = Release;
+		};
+		A1TVOSTEST00000000000009 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = QPG8754DYH;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ilkersevim.superDemoApp.tvos.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = appletvos;
+				SUPPORTED_PLATFORMS = "appletvos appletvsimulator";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 3;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/superDemoAppTV.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/superDemoAppTV";
+				TVOS_DEPLOYMENT_TARGET = 26.7;
+			};
+			name = Debug;
+		};
+		A1TVOSTEST0000000000000A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = QPG8754DYH;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ilkersevim.superDemoApp.tvos.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = appletvos;
+				SUPPORTED_PLATFORMS = "appletvos appletvsimulator";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 3;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/superDemoAppTV.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/superDemoAppTV";
+				TVOS_DEPLOYMENT_TARGET = 26.7;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 
 /* End XCBuildConfiguration section */
 
@@ -1397,6 +1625,24 @@
 			buildConfigurations = (
 				A1TVOS010000000000000009 /* Debug */,
 				A1TVOS01000000000000000A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A1WATCHTEST0000000000008 /* Build configuration list for PBXNativeTarget "superDemoAppWatchTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A1WATCHTEST0000000000009 /* Debug */,
+				A1WATCHTEST000000000000A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A1TVOSTEST00000000000008 /* Build configuration list for PBXNativeTarget "superDemoAppTVTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A1TVOSTEST00000000000009 /* Debug */,
+				A1TVOSTEST0000000000000A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -104,8 +104,8 @@ xcodebuild -project superDemoApp.xcodeproj -scheme superDemoApp -destination 'pl
 xcodebuild -project superDemoApp.xcodeproj -scheme superDemoApp -destination 'platform=iOS Simulator,name=iPad Pro 13-inch (M5)' build
 # Unsigned Mac compile-proof (same default as ./bin/ci-platform-builds.sh / #69).
 xcodebuild -project superDemoApp.xcodeproj -scheme superDemoApp -destination 'platform=macOS' CODE_SIGNING_ALLOWED=NO CODE_SIGN_IDENTITY=- build
-./bin/ci-watch-build.sh   # or: xcodebuild … -scheme superDemoAppWatch -destination 'generic/platform=watchOS Simulator' build
-./bin/ci-tvos-build.sh    # or: xcodebuild … -scheme superDemoAppTV -destination 'generic/platform=tvOS Simulator' build
+./bin/ci-watch-build.sh   # prefers xcodebuild test on a concrete Watch Simulator; generic dest → build only
+./bin/ci-tvos-build.sh    # prefers xcodebuild test on a concrete tvOS Simulator; generic dest → build only
 ```
 
 If a destination is unavailable, choose an installed equivalent from:

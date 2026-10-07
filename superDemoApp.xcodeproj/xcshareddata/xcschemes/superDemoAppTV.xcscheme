@@ -30,6 +30,17 @@
       shouldUseLaunchSchemeArgsEnv = "YES"
       shouldAutocreateTestPlan = "YES">
       <Testables>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "A1TVOSTEST00000000000004"
+               BuildableName = "superDemoAppTVTests.xctest"
+               BlueprintName = "superDemoAppTVTests"
+               ReferencedContainer = "container:superDemoApp.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction

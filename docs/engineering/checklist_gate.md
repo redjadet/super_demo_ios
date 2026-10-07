@@ -14,7 +14,7 @@ merge — not a second parallel theater.
 | Swift lint + modularity + evidence map | `./bin/lint.sh` | job `lint` |
 | Common issues | `./tool/check_common_issues.sh` (scope contract + sim runtime compat + AASA parity/live-host DNS honesty + Markdown relative links) | job `lint` |
 | iPhone build + test | `./bin/ci-iphone-test.sh` (unsharded locally) | Default job `iphone` (single-runner build + parallel tests); sharded fallback: `iphone-build` (units) + matrix `iphone-test` (`ui-a`/`ui-b`) |
-| iPad + Mac + watchOS + tvOS builds | `./bin/ci-platform-builds.sh` (watch: `./bin/ci-watch-build.sh`; tvOS: `./bin/ci-tvos-build.sh`) | job `platform-builds` |
+| iPad + Mac + watchOS + tvOS builds/tests | `./bin/ci-platform-builds.sh` (watch: `./bin/ci-watch-build.sh` → `test` or build fallback; tvOS: `./bin/ci-tvos-build.sh` → `test` or build fallback) | job `platform-builds` |
 | Aggregate gate | `./bin/checklist` (single command) | job **`checklist`** / **Delivery checklist** (needs scope + lint + active iPhone layout + platform) |
 
 **Xcode warnings are errors** on checklist / CI xcodebuild lanes via project

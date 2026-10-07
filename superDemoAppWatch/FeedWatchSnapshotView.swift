@@ -106,16 +106,7 @@ struct FeedWatchSnapshotView: View {
     }
 
     private func seedDemo() {
-        let snapshot = FeedWidgetSnapshot(
-            writtenAt: Date(),
-            cacheTTLSeconds: 15 * 60,
-            isStale: false,
-            titles: [
-                .init(id: 1, title: "Watch demo: Feed snapshot"),
-                .init(id: 2, title: "Same DTO as Home Screen widget"),
-                .init(id: 3, title: "Local App Group — not phone sync"),
-            ]
-        )
+        let snapshot = FeedCompanionDemoSnapshot.watchSeed()
         do {
             try FeedWidgetSnapshotStore.write(snapshot)
             self.state = FeedWidgetSnapshotStore.loadState()

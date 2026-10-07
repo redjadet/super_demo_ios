@@ -37,7 +37,9 @@ if ! swiftformat \
   "$ROOT/ShareInboxShared" \
   "$ROOT/superDemoAppShare" \
   "$ROOT/superDemoAppWatch" \
+  "$ROOT/superDemoAppWatchTests" \
   "$ROOT/superDemoAppTV" \
+  "$ROOT/superDemoAppTVTests" \
   "$ROOT/superDemoAppTests" \
   "$ROOT/superDemoAppUITests"
 then
