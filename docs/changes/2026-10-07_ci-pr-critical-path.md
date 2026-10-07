@@ -2,7 +2,7 @@
 
 Baseline: successful PR run `37645448637` took 40m32s including runner queues.
 Flutter preparation recopied cached framework slices for ~2m53s while simulator
-boot competed for disk I/O. UI test bodies ranged from ~173s to ~482s per shard.
+boot competed for disk I/O. UI test bodies ranged from ~173s to ~452s per shard.
 These timings describe one run, not a fixed CI latency guarantee.
 
 ## Changes
