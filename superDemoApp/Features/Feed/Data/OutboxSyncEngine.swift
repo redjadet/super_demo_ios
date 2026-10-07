@@ -94,31 +94,33 @@ actor OutboxSyncEngine: OutboxSyncing {
     }
 
     private func flushReadyEntries() async throws {
-        let now = self.clock.now()
-        let ready = try await self.outbox.readyPending(now: now)
-
         var blockedEntities = Set<String>()
-
-        for entry in ready {
+        while self.connectivity.isConnected {
             try Task.checkCancellation()
-            if blockedEntities.contains(entry.entityKey) {
-                continue
+            let ready = try await self.outbox.readyPending(now: self.clock.now())
+                .filter { !blockedEntities.contains($0.entityKey) }
+            guard !ready.isEmpty else { return }
+            for snapshot in ready {
+                try Task.checkCancellation()
+                guard self.connectivity.isConnected else { return }
+                guard let entry = try await self.outbox.claimPending(id: snapshot.id, now: self.clock.now()) else {
+                    continue
+                }
+                let completed = await self.process(entry: entry)
+                if !completed {
+                    blockedEntities.insert(entry.entityKey)
+                }
             }
-            blockedEntities.insert(entry.entityKey)
-            await self.process(entry: entry)
         }
     }
 
-    private func process(entry: OutboxEntrySnapshot) async {
-        do {
-            try await self.outbox.markInFlight(id: entry.id)
-        } catch {
-            return
-        }
-
+    /// Success allows the next FIFO entry to drain in the same flush.
+    /// Failures block this entity until a later trigger/retry.
+    private func process(entry: OutboxEntrySnapshot) async -> Bool {
         do {
             try await self.send(entry: entry)
             try await self.outbox.markCompletedAndRemove(id: entry.id)
+            return true
         } catch is CancellationError {
             try? await self.outbox.markPendingAfterCancellation(id: entry.id)
         } catch let error as BookmarkRemoteError {
@@ -129,6 +131,7 @@ actor OutboxSyncEngine: OutboxSyncing {
                 message: String(describing: error)
             )
         }
+        return false
     }
 
     private func send(entry: OutboxEntrySnapshot) async throws {
@@ -165,16 +168,14 @@ actor OutboxSyncEngine: OutboxSyncing {
         switch error {
         case .conflict:
             let postID = entry.bookmarkPayload?.postID ?? 0
-            let serverBookmarked = !entry.operationKind.desiredBookmarked
-            try? await self.bookmarkMutator.applyServerWin(
-                postID: postID,
-                isBookmarked: serverBookmarked,
-                message: "Conflict (HTTP 409/412) — server wins"
-            )
             try? await self.outbox.markFailed(
                 id: entry.id,
                 attemptCount: entry.attemptCount,
-                lastError: "Conflict (HTTP 409/412) — server wins"
+                lastError: "Conflict (HTTP 409/412) — server state unavailable"
+            )
+            try? await self.bookmarkMutator.restoreSyncedStateAfterConflict(
+                postID: postID,
+                message: "Conflict (HTTP 409/412) — server state unavailable"
             )
         case let .httpStatus(code) where (400 ..< 500).contains(code) && code != 408 && code != 429:
             try? await self.outbox.markFailed(
@@ -223,7 +224,7 @@ protocol BookmarkLocalMutating: AnyObject {
     func markSynced(postID: Int, isBookmarked: Bool, remoteBookmarkID: Int?) throws
     func markFailed(postID: Int, message: String) throws
     func markPending(postID: Int, message: String?) throws
-    func applyServerWin(postID: Int, isBookmarked: Bool, message: String) throws
+    func restoreSyncedStateAfterConflict(postID: Int, message: String) throws
 }
 
 final class BookmarkLocalMutatorBox: @unchecked Sendable {
@@ -260,11 +261,10 @@ final class BookmarkLocalMutatorBox: @unchecked Sendable {
         }
     }
 
-    func applyServerWin(postID: Int, isBookmarked: Bool, message: String) async throws {
+    func restoreSyncedStateAfterConflict(postID: Int, message: String) async throws {
         try await MainActor.run {
-            try self.mutator.applyServerWin(
+            try self.mutator.restoreSyncedStateAfterConflict(
                 postID: postID,
-                isBookmarked: isBookmarked,
                 message: message
             )
         }

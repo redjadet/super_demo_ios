@@ -18,6 +18,8 @@ struct FeedBookmarkButton: View {
                 } icon: {
                     Image(systemName: self.bookmark.isBookmarked ? "star.fill" : "star")
                 }
+                .frame(minWidth: DesignSpacing.rowMin, minHeight: DesignSpacing.rowMin)
+                .contentShape(Rectangle())
             }
             .accessibilityIdentifier("feedBookmark-\(self.bookmark.postID)")
             .accessibilityValue(self.accessibilityValue)
@@ -32,6 +34,8 @@ struct FeedBookmarkButton: View {
                 } label: {
                     Image(systemName: "exclamationmark.circle")
                         .foregroundStyle(.red)
+                        .frame(minWidth: DesignSpacing.rowMin, minHeight: DesignSpacing.rowMin)
+                        .contentShape(Rectangle())
                 }
                 .accessibilityIdentifier("feedBookmarkFailed-\(self.bookmark.postID)")
                 .accessibilityLabel("Bookmark sync failed. Retry.")

@@ -8,6 +8,8 @@ import SwiftData
 
 @MainActor
 protocol OutboxStoring: AnyObject {
+    func performTransaction(_ changes: () throws -> Void) throws
+    func claimPending(id: UUID, now: Date) throws -> OutboxEntrySnapshot?
     func snapshots(forEntityKey entityKey: String?) throws -> [OutboxEntrySnapshot]
     func readyPending(now: Date) throws -> [OutboxEntrySnapshot]
     func insert(
@@ -35,6 +37,7 @@ protocol OutboxStoring: AnyObject {
 final class SwiftDataOutboxStore: OutboxStoring {
     private let context: ModelContext
     private let saveContext: (ModelContext) throws -> Void
+    private var isInTransaction = false
 
     init(
         context: ModelContext,
@@ -56,15 +59,41 @@ final class SwiftDataOutboxStore: OutboxStoring {
             .map { $0.toSnapshot() }
     }
 
+    /// Bookmark and queue changes share one context and one durable commit.
+    /// On failure, rollback also removes unsaved optimistic values.
+    func performTransaction(_ changes: () throws -> Void) throws {
+        if self.isInTransaction {
+            try changes()
+            return
+        }
+        self.isInTransaction = true
+        defer { self.isInTransaction = false }
+        do {
+            try changes()
+            try self.saveContext(self.context)
+        } catch {
+            self.context.rollback()
+            throw error
+        }
+    }
+
     func readyPending(now: Date) throws -> [OutboxEntrySnapshot] {
-        let descriptor = FetchDescriptor<OutboxEntry>(
-            sortBy: [SortDescriptor(\.createdAt, order: .forward)]
-        )
-        return try self.context.fetch(descriptor)
-            .filter { entry in
-                entry.status == .pending && entry.nextAttemptAt <= now
-            }
-            .map { $0.toSnapshot() }
+        var seenEntities = Set<String>()
+        return try self.snapshots(forEntityKey: nil).filter { entry in
+            // A failed, in-flight, or backing-off head blocks its successors.
+            guard seenEntities.insert(entry.entityKey).inserted else { return false }
+            return entry.status == .pending && entry.nextAttemptAt <= now
+        }
+    }
+
+    /// Atomically revalidate a snapshot before sending: a user may have
+    /// coalesced it away while the actor was suspended on a previous request.
+    func claimPending(id: UUID, now: Date) throws -> OutboxEntrySnapshot? {
+        guard let snapshot = try self.readyPending(now: now).first(where: { $0.id == id }) else {
+            return nil
+        }
+        try self.markInFlight(id: id)
+        return snapshot
     }
 
     func insert(
@@ -73,18 +102,23 @@ final class SwiftDataOutboxStore: OutboxStoring {
         idempotencyKey: String,
         createdAt: Date
     ) throws -> OutboxEntrySnapshot {
+        // Preserve enqueue order even when the clock repeats or moves backward.
+        let previousDate = try self.snapshots(forEntityKey: payload.entityKey).last?.createdAt
+        let orderedDate = previousDate.map { previousDate in
+            max(createdAt, previousDate.addingTimeInterval(0.000_001))
+        } ?? createdAt
         let data = try JSONEncoder().encode(payload)
         let entry = OutboxEntry(
             idempotencyKey: idempotencyKey,
             operationType: kind.rawValue,
             entityKey: payload.entityKey,
             payload: data,
-            createdAt: createdAt,
+            createdAt: orderedDate,
             nextAttemptAt: createdAt,
             status: .pending
         )
         self.context.insert(entry)
-        try self.saveContext(self.context)
+        try self.persistChanges()
         return entry.toSnapshot()
     }
 
@@ -95,20 +129,20 @@ final class SwiftDataOutboxStore: OutboxStoring {
         for entry in entries {
             self.context.delete(entry)
         }
-        try self.saveContext(self.context)
+        try self.persistChanges()
     }
 
     func markInFlight(id: UUID) throws {
         guard let entry = try self.entry(id: id) else { return }
         entry.status = .inFlight
         entry.lastError = nil
-        try self.saveContext(self.context)
+        try self.persistChanges()
     }
 
     func markPendingAfterCancellation(id: UUID) throws {
         guard let entry = try self.entry(id: id) else { return }
         entry.status = .pending
-        try self.saveContext(self.context)
+        try self.persistChanges()
     }
 
     func markPendingForRetry(
@@ -122,7 +156,7 @@ final class SwiftDataOutboxStore: OutboxStoring {
         entry.attemptCount = attemptCount
         entry.nextAttemptAt = nextAttemptAt
         entry.lastError = lastError
-        try self.saveContext(self.context)
+        try self.persistChanges()
     }
 
     func markFailed(id: UUID, attemptCount: Int, lastError: String) throws {
@@ -130,13 +164,13 @@ final class SwiftDataOutboxStore: OutboxStoring {
         entry.status = .failed
         entry.attemptCount = attemptCount
         entry.lastError = lastError
-        try self.saveContext(self.context)
+        try self.persistChanges()
     }
 
     func markCompletedAndRemove(id: UUID) throws {
         guard let entry = try self.entry(id: id) else { return }
         self.context.delete(entry)
-        try self.saveContext(self.context)
+        try self.persistChanges()
     }
 
     func recoverInFlightAsPending() throws {
@@ -146,13 +180,23 @@ final class SwiftDataOutboxStore: OutboxStoring {
             entry.status = .pending
         }
         if !entries.isEmpty {
-            try self.saveContext(self.context)
+            try self.persistChanges()
         }
     }
 
     func failedCount() throws -> Int {
         let descriptor = FetchDescriptor<OutboxEntry>()
         return try self.context.fetch(descriptor).filter { $0.status == .failed }.count
+    }
+
+    private func persistChanges() throws {
+        guard !self.isInTransaction else { return }
+        do {
+            try self.saveContext(self.context)
+        } catch {
+            self.context.rollback()
+            throw error
+        }
     }
 
     private func entry(id: UUID) throws -> OutboxEntry? {
@@ -178,8 +222,8 @@ final class OutboxStoreBox: @unchecked Sendable {
         try await MainActor.run { try self.store.readyPending(now: now) }
     }
 
-    func markInFlight(id: UUID) async throws {
-        try await MainActor.run { try self.store.markInFlight(id: id) }
+    func claimPending(id: UUID, now: Date) async throws -> OutboxEntrySnapshot? {
+        try await MainActor.run { try self.store.claimPending(id: id, now: now) }
     }
 
     func markPendingAfterCancellation(id: UUID) async throws {
