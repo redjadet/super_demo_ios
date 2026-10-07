@@ -20,6 +20,8 @@ actor OutboxSyncEngine: OutboxSyncing {
     private var isFlushing = false
     private var pendingFlush = false
     private var started = false
+    /// Waiters blocked in `requestFlush` while another flush owns the loop.
+    private var flushWaiters: [CheckedContinuation<Void, Never>] = []
 
     init(
         outbox: OutboxStoreBox,
@@ -53,29 +55,42 @@ actor OutboxSyncEngine: OutboxSyncing {
         self.started = false
     }
 
+    /// Drains ready outbox rows. Concurrent callers coalesce onto one loop and
+    /// **await until that loop finishes** (including passes requested mid-flight).
     func requestFlush() async {
         if self.isFlushing {
             self.pendingFlush = true
+            await withCheckedContinuation { continuation in
+                self.flushWaiters.append(continuation)
+            }
+            // Owner may have finished before noticing `pendingFlush`; drain once more.
+            await self.requestFlush()
             return
         }
+
         self.isFlushing = true
         defer {
             self.isFlushing = false
-            if self.pendingFlush {
-                self.pendingFlush = false
-                Task { await self.requestFlush() }
+            let waiters = self.flushWaiters
+            self.flushWaiters.removeAll(keepingCapacity: false)
+            for waiter in waiters {
+                waiter.resume()
             }
         }
 
-        guard self.connectivity.isConnected else { return }
+        repeat {
+            self.pendingFlush = false
+            guard self.connectivity.isConnected else { return }
 
-        do {
-            try await self.flushReadyEntries()
-        } catch is CancellationError {
-            // Cooperative cancel — leave entries pending without attempt bumps.
-        } catch {
-            // Unexpected store errors; next trigger retries.
-        }
+            do {
+                try await self.flushReadyEntries()
+            } catch is CancellationError {
+                // Cooperative cancel — leave entries pending without attempt bumps.
+                return
+            } catch {
+                // Unexpected store errors; next trigger retries.
+            }
+        } while self.pendingFlush
     }
 
     private func flushReadyEntries() async throws {

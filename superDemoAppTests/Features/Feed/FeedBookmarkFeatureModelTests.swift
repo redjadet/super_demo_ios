@@ -80,6 +80,7 @@ struct FeedBookmarkFeatureModelTests {
         )
 
         model.toggleBookmark(for: 1)
+        // Drain coalesced flushes from toggle's fire-and-forget Task.
         await engine.requestFlush()
         model.reloadBookmarks()
         #expect(model.bookmark(for: 1).syncStatus == .failed)
@@ -91,6 +92,7 @@ struct FeedBookmarkFeatureModelTests {
         model.reloadBookmarks()
         #expect(model.bookmark(for: 1).syncStatus == .synced)
         #expect(model.failedOutboxCount == 0)
+        #expect(try outbox.snapshots(forEntityKey: "feedPost:1").isEmpty)
     }
 }
 
