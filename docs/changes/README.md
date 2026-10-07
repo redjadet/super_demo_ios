@@ -13,6 +13,9 @@ Record durable implementation notes after meaningful changes.
   — Tool-agnostic AI-native SDLC kit (intent/spec/plan/REVIEW, skills, gates).
 - [`2026-10-06_using-agents-here-sdlc.md`](2026-10-06_using-agents-here-sdlc.md)
   — Human agent entry (New SDLC / Gite themes); cross-links; no product claims.
+- [`2026-10-06_feed-bookmark-outbox.md`](2026-10-06_feed-bookmark-outbox.md)
+  — Feed bookmark SwiftData outbox + sync engine (OI-08); removes “no mutation
+  queue” architecture claim.
 - [`2026-10-05_reviewer-facing-polish.md`](2026-10-05_reviewer-facing-polish.md)
   — Custom icon variants, reviewer copy cleanup, public proof map.
 - [`2026-10-05_portfolio-reviewer-polish.md`](2026-10-05_portfolio-reviewer-polish.md)

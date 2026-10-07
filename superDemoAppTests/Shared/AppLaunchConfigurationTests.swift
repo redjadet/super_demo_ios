@@ -79,4 +79,28 @@ struct AppLaunchConfigurationTests {
             environment: [:]
         ))
     }
+
+    @Test
+    func offlineBookmarkFixtureUsesLaunchArgument() {
+        #expect(AppLaunchConfiguration.usesOfflineBookmarkFixture(
+            arguments: ["-OfflineBookmarkDemo"],
+            environment: [:]
+        ))
+    }
+
+    @Test
+    func offlineBookmarkFixtureUsesEnvironmentValue() {
+        #expect(AppLaunchConfiguration.usesOfflineBookmarkFixture(
+            arguments: [],
+            environment: ["SUPERDEMO_OFFLINE_BOOKMARK_DEMO": "1"]
+        ))
+    }
+
+    @Test
+    func offlineBookmarkFixtureStaysOffForNormalLaunches() {
+        #expect(!AppLaunchConfiguration.usesOfflineBookmarkFixture(
+            arguments: [],
+            environment: [:]
+        ))
+    }
 }

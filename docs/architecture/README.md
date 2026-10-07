@@ -9,6 +9,7 @@ change notes when the two disagree.
 | Native cancellation | [`native-cancellation.md`](native-cancellation.md) |
 | Cache behavior | [`cache-behavior.md`](cache-behavior.md) |
 | Offline-first | [`offline-first-behavior.md`](offline-first-behavior.md) |
+| Feed bookmark outbox (OI-08) | same page — mutation queue, coalescing, conflicts |
 | Flutter add-to-app | [`flutter-add-to-app.md`](flutter-add-to-app.md) |
 
 ## Related canon

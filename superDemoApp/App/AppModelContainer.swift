@@ -25,6 +25,8 @@ enum AppModelContainer {
         let schema = Schema([
             Item.self,
             CachedFeedPost.self,
+            BookmarkedPost.self,
+            OutboxEntry.self,
         ])
 
         let preferred = self.configuration(

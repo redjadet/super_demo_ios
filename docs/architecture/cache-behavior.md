@@ -12,10 +12,11 @@ Feed path.
 | Feed SwiftData model | `CachedFeedPost` — `Features/Feed/Data/CachedFeedPost.swift` |
 | Feed domain result | `FeedLoadResult` (`posts`, `isStale`) — `Features/Feed/Domain/FeedRepository.swift` |
 | Items model / repo | `Item`, `SwiftDataItemRepository` |
-| Shared container | `AppModelContainer` — `App/AppModelContainer.swift` (`Schema([Item.self, CachedFeedPost.self])`) |
+| Feed bookmark / outbox | `BookmarkedPost`, `OutboxEntry`, `SwiftDataBookmarkRepository`, `OutboxSyncEngine` |
+| Shared container | `AppModelContainer` — `App/AppModelContainer.swift` (`Schema([Item.self, CachedFeedPost.self, BookmarkedPost.self, OutboxEntry.self])`) |
 | Widget / host snapshot | `FeedWidgetSnapshot`, `WidgetKitFeedSnapshotPublisher`, App Group `group.com.ilkersevim.superDemoApp` |
 
-Named rules: **OI-01…OI-07** in [`../offline-invariants.md`](../offline-invariants.md).
+Named rules: **OI-01…OI-08** in [`../offline-invariants.md`](../offline-invariants.md).
 
 ## Source of truth
 
@@ -23,6 +24,7 @@ Named rules: **OI-01…OI-07** in [`../offline-invariants.md`](../offline-invari
 | --- | --- | --- |
 | Feed after successful refresh | Remote JSON (`RemoteFeedRepository` / `LiveFeedAPIClient`) | SwiftData mirror updated wholesale |
 | Feed after remote failure + fresh rows | SwiftData `CachedFeedPost` (TTL-filtered) | Returned with `isStale: true` |
+| Feed bookmarks | Local `BookmarkedPost` + durable `OutboxEntry` queue | Optimistic UI; remote via JSONPlaceholder POST/DELETE (fake persistence) |
 | Items | SwiftData `Item` table | Only persistence; no remote |
 | Home Screen widget / host bridge | App Group file `feed-widget-snapshot.json` | Published by app; not SwiftData |
 

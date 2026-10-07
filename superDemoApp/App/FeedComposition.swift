@@ -42,8 +42,14 @@ enum FeedComposition {
             context: context,
             snapshotPublisher: WidgetKitFeedSnapshotPublisher()
         )
+
+        let bookmarkStack = self.makeBookmarkStack(context: context)
         return FeedFeatureModel(
             refreshFeed: RefreshFeedUseCase(repository: repository),
+            toggleBookmark: ToggleBookmarkUseCase(repository: bookmarkStack.repository),
+            retryBookmarkSync: RetryBookmarkSyncUseCase(repository: bookmarkStack.repository),
+            bookmarkRepository: bookmarkStack.repository,
+            syncEngine: bookmarkStack.engine,
             liveActivity: ActivityKitFeedRefreshLiveActivityController()
         )
     }
@@ -64,8 +70,13 @@ enum FeedComposition {
             context: context,
             snapshotPublisher: NoOpFeedWidgetSnapshotPublisher()
         )
+        let bookmarkStack = self.makeBookmarkStack(context: context, forceOffline: true)
         return FeedFeatureModel(
             refreshFeed: RefreshFeedUseCase(repository: repository),
+            toggleBookmark: ToggleBookmarkUseCase(repository: bookmarkStack.repository),
+            retryBookmarkSync: RetryBookmarkSyncUseCase(repository: bookmarkStack.repository),
+            bookmarkRepository: bookmarkStack.repository,
+            syncEngine: bookmarkStack.engine,
             liveActivity: NoOpFeedRefreshLiveActivityController()
         )
     }
@@ -73,7 +84,11 @@ enum FeedComposition {
     @MainActor
     static func makeStaleDemoSession() -> StaleDemoSession {
         do {
-            let schema = Schema([CachedFeedPost.self])
+            let schema = Schema([
+                CachedFeedPost.self,
+                BookmarkedPost.self,
+                OutboxEntry.self,
+            ])
             let configuration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
             let container = try ModelContainer(for: schema, configurations: [configuration])
             let context = ModelContext(container)
@@ -82,6 +97,75 @@ enum FeedComposition {
         } catch {
             preconditionFailure("Unable to create stale Feed demo session: \(error)")
         }
+    }
+
+    @MainActor
+    private struct BookmarkStack {
+        let repository: SwiftDataBookmarkRepository
+        let engine: OutboxSyncEngine
+    }
+
+    @MainActor
+    private static func makeBookmarkStack(
+        context: ModelContext,
+        forceOffline: Bool = false
+    ) -> BookmarkStack {
+        let outbox = SwiftDataOutboxStore(context: context)
+        let connectivity: ConnectivityMonitoring
+        if AppLaunchConfiguration.usesOfflineBookmarkFixture || forceOffline {
+            connectivity = ManualConnectivityMonitor(isConnected: false)
+        } else if AppLaunchConfiguration.usesSeededSampleState {
+            connectivity = ManualConnectivityMonitor(isConnected: true)
+        } else {
+            connectivity = NWPathConnectivityMonitor()
+        }
+
+        let remote: BookmarkRemoteClient
+        if AppLaunchConfiguration.usesSeededSampleState || AppLaunchConfiguration.usesOfflineBookmarkFixture {
+            remote = ImmediateSuccessBookmarkRemoteClient()
+        } else {
+            let apiClient = URLSessionAPIClient(
+                session: AppURLSession.makeDefault(),
+                retryPolicy: RetryPolicy(maxAttempts: 1),
+                tokenRefresher: TokenRefreshingFactory.makeDefault()
+            )
+            remote = JSONPlaceholderBookmarkRemoteClient(client: apiClient)
+        }
+
+        let engineHolder = SyncEngineHolder()
+        // Local binding (not trailing closure): Swift 6 TrailingClosureMatching
+        // rejects unlabeled trailing match of optional `onEnqueued`, while
+        // SwiftLint trailing_closure rejects a labeled trailing-form call.
+        let onEnqueued: @Sendable () -> Void = {
+            Task {
+                if let engine = await engineHolder.engine {
+                    await engine.requestFlush()
+                }
+            }
+        }
+        let repository = SwiftDataBookmarkRepository(
+            context: context,
+            outbox: outbox,
+            onEnqueued: onEnqueued
+        )
+        let engine = OutboxSyncEngine(
+            outbox: OutboxStoreBox(outbox),
+            remote: remote,
+            bookmarkMutator: BookmarkLocalMutatorBox(repository),
+            connectivity: connectivity
+        )
+        Task { await engineHolder.setEngine(engine) }
+
+        return BookmarkStack(repository: repository, engine: engine)
+    }
+}
+
+/// Tiny holder so enqueue can flush after the engine exists.
+private actor SyncEngineHolder {
+    var engine: OutboxSyncEngine?
+
+    func setEngine(_ engine: OutboxSyncEngine) {
+        self.engine = engine
     }
 }
 

@@ -43,6 +43,15 @@ enum AppLaunchConfiguration {
         )
     }
 
+    /// Forces bookmark outbox to stay offline (ManualConnectivityMonitor = false).
+    /// Launch with `-OfflineBookmarkDemo` or `SUPERDEMO_OFFLINE_BOOKMARK_DEMO=1`.
+    static var usesOfflineBookmarkFixture: Bool {
+        self.usesOfflineBookmarkFixture(
+            arguments: ProcessInfo.processInfo.arguments,
+            environment: ProcessInfo.processInfo.environment
+        )
+    }
+
     static func usesStaleFeedFixture(
         arguments: [String],
         environment: [String: String]
@@ -61,6 +70,16 @@ enum AppLaunchConfiguration {
             return true
         }
         return environment["SUPERDEMO_KEYCHAIN_TOKEN_DEMO"] == "1"
+    }
+
+    static func usesOfflineBookmarkFixture(
+        arguments: [String],
+        environment: [String: String]
+    ) -> Bool {
+        if arguments.contains("-OfflineBookmarkDemo") {
+            return true
+        }
+        return environment["SUPERDEMO_OFFLINE_BOOKMARK_DEMO"] == "1"
     }
 
     static func isReviewerDemoMode(
