@@ -45,7 +45,10 @@ jobs:
             xcode27-${{ runner.os }}-${{ runner.arch }}-release-smoke-${{ hashFiles('**/Package.resolved', '**/*.xcodeproj/project.pbxproj') }}
 
       - name: Install lint tools (for build phases)
-        run: brew bundle check --file Brewfile || brew bundle --file Brewfile
+        run: |
+          set -euo pipefail
+          brew bundle check --file Brewfile || brew bundle --file Brewfile
+          ./tool/ensure_lint_tool_pins.sh
 
       - name: Build IPA without upload
         env:

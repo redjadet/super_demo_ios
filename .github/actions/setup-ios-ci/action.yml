@@ -156,6 +156,16 @@ runs:
         HOMEBREW_NO_INSTALL_CLEANUP: "1"
       run: brew bundle check --file Brewfile || brew bundle --file Brewfile
 
+    # brew bundle check accepts any installed SwiftFormat; pin gate needs the
+    # exact EXPECTED_SWIFTFORMAT_VERSION (lint vs iPhone-build runner drift).
+    - name: Enforce SwiftFormat pin
+      if: ${{ inputs.brewfile == 'true' }}
+      shell: bash
+      env:
+        HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK: "1"
+        HOMEBREW_NO_INSTALL_CLEANUP: "1"
+      run: ./tool/ensure_lint_tool_pins.sh
+
     - name: Install lean Homebrew packages
       if: ${{ inputs.brewfile != 'true' && inputs.brew-packages != '' }}
       shell: bash
