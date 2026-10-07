@@ -27,6 +27,7 @@ final class FeedFeatureModel {
     private(set) var state: FeedState = .loading
     private(set) var bookmarksByPostID: [Int: PostBookmark] = [:]
     private(set) var failedOutboxCount = 0
+    private(set) var bookmarkErrorMessage: String?
     /// Completed refresh cycles (success or failure). UITests use this to prove
     /// Retry drove a new attempt — not a no-op tap that leaves prior chrome.
     private(set) var completedRefreshCount = 0
@@ -54,6 +55,9 @@ final class FeedFeatureModel {
         // Resolve NoOp inside MainActor init — default args are nonisolated under
         // SWIFT_DEFAULT_ACTOR_ISOLATION=MainActor.
         self.liveActivity = liveActivity ?? NoOpFeedRefreshLiveActivityController()
+        bookmarkRepository?.observeChanges { [weak self] in
+            self?.reloadBookmarks()
+        }
     }
 
     func startOutboxSync() {
@@ -96,11 +100,13 @@ final class FeedFeatureModel {
     func toggleBookmark(for postID: Int) {
         guard let toggleBookmark else { return }
         do {
+            self.bookmarkErrorMessage = nil
             let updated = try toggleBookmark(postID: postID)
             self.bookmarksByPostID[postID] = updated
             self.reloadFailedCount()
             self.flushOutbox()
         } catch {
+            self.bookmarkErrorMessage = String(localized: "Could not save bookmark changes. Please try again.")
             self.diagnostics.releaseCheckFailed(
                 ReleaseDiagnosticCheck(name: "feed-bookmark-toggle"),
                 reason: ErrorDiagnostics.reason(for: error)
@@ -111,15 +117,21 @@ final class FeedFeatureModel {
     func retryFailedBookmarks(postID: Int? = nil) {
         guard let retryBookmarkSync else { return }
         do {
+            self.bookmarkErrorMessage = nil
             try retryBookmarkSync(postID: postID)
             self.reloadBookmarks()
             self.flushOutbox()
         } catch {
+            self.bookmarkErrorMessage = String(localized: "Could not save bookmark changes. Please try again.")
             self.diagnostics.releaseCheckFailed(
                 ReleaseDiagnosticCheck(name: "feed-bookmark-retry"),
                 reason: ErrorDiagnostics.reason(for: error)
             )
         }
+    }
+
+    func dismissBookmarkError() {
+        self.bookmarkErrorMessage = nil
     }
 
     func reloadBookmarks() {

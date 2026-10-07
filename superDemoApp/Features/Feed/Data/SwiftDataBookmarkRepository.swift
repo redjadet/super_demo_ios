@@ -12,14 +12,13 @@ final class SwiftDataBookmarkRepository: BookmarkRepository, BookmarkLocalMutati
     private let outbox: OutboxStoring
     private let clock: OutboxClock
     private let makeIdempotencyKey: () -> String
-    private let saveContext: (ModelContext) throws -> Void
+    private var onChange: (@MainActor () -> Void)?
     private let onEnqueued: (@Sendable () -> Void)?
 
     init(
         context: ModelContext,
         outbox: OutboxStoring,
         clock: OutboxClock = SystemOutboxClock(),
-        saveContext: @escaping (ModelContext) throws -> Void = { try $0.save() },
         makeIdempotencyKey: @escaping () -> String = { UUID().uuidString },
         onEnqueued: (@Sendable () -> Void)? = nil
     ) {
@@ -27,8 +26,11 @@ final class SwiftDataBookmarkRepository: BookmarkRepository, BookmarkLocalMutati
         self.outbox = outbox
         self.clock = clock
         self.makeIdempotencyKey = makeIdempotencyKey
-        self.saveContext = saveContext
         self.onEnqueued = onEnqueued
+    }
+
+    func observeChanges(_ onChange: @escaping @MainActor () -> Void) {
+        self.onChange = onChange
     }
 
     func bookmark(forPostID postID: Int) throws -> PostBookmark {
@@ -46,75 +48,78 @@ final class SwiftDataBookmarkRepository: BookmarkRepository, BookmarkLocalMutati
     }
 
     func setBookmarked(_ isBookmarked: Bool, postID: Int) throws -> PostBookmark {
-        let existingRecord = try self.record(postID: postID)
-        let syncedBaseline = existingRecord?.lastSyncedIsBookmarked ?? false
+        try self.outbox.performTransaction {
+            let existingRecord = try self.record(postID: postID)
+            let syncedBaseline = existingRecord?.lastSyncedIsBookmarked ?? false
 
-        let record = existingRecord ?? BookmarkedPost(
-            postID: postID,
-            isBookmarked: isBookmarked,
-            lastSyncedIsBookmarked: false,
-            syncStatus: .pending,
-            updatedAt: self.clock.now()
-        )
-        if existingRecord == nil {
-            self.context.insert(record)
-        }
-        record.isBookmarked = isBookmarked
-        record.syncStatus = .pending
-        record.lastError = nil
-        record.updatedAt = self.clock.now()
-        try self.saveContext(self.context)
-
-        let entityKey = BookmarkOutboxPayload.entityKey(postID: postID)
-        let existing = try self.outbox.snapshots(forEntityKey: entityKey)
-        let plan = OutboxCoalescer.plan(
-            postID: postID,
-            existing: existing,
-            syncedOrInFlightBaseline: syncedBaseline,
-            desiredBookmarked: isBookmarked,
-            makeIdempotencyKey: self.makeIdempotencyKey
-        )
-        try self.outbox.remove(ids: plan.removeIDs)
-        if let enqueue = plan.enqueue {
-            _ = try self.outbox.insert(
-                kind: enqueue.kind,
-                payload: enqueue.payload,
-                idempotencyKey: enqueue.idempotencyKey,
-                createdAt: self.clock.now()
+            let record = existingRecord ?? BookmarkedPost(
+                postID: postID,
+                isBookmarked: isBookmarked,
+                lastSyncedIsBookmarked: false,
+                syncStatus: .pending,
+                updatedAt: self.clock.now()
             )
+            if existingRecord == nil {
+                self.context.insert(record)
+            }
+            record.isBookmarked = isBookmarked
             record.syncStatus = .pending
-        } else if existing.contains(where: { $0.status == .inFlight }) {
-            record.syncStatus = .pending
-        } else {
-            record.syncStatus = .synced
             record.lastError = nil
-            record.isBookmarked = syncedBaseline
-            record.lastSyncedIsBookmarked = syncedBaseline
+            record.updatedAt = self.clock.now()
+
+            let entityKey = BookmarkOutboxPayload.entityKey(postID: postID)
+            let existing = try self.outbox.snapshots(forEntityKey: entityKey)
+            let plan = OutboxCoalescer.plan(
+                postID: postID,
+                existing: existing,
+                syncedOrInFlightBaseline: syncedBaseline,
+                desiredBookmarked: isBookmarked,
+                makeIdempotencyKey: self.makeIdempotencyKey
+            )
+            try self.outbox.remove(ids: plan.removeIDs)
+            if let enqueue = plan.enqueue {
+                _ = try self.outbox.insert(
+                    kind: enqueue.kind,
+                    payload: enqueue.payload,
+                    idempotencyKey: enqueue.idempotencyKey,
+                    createdAt: self.clock.now()
+                )
+                record.syncStatus = .pending
+            } else if existing.contains(where: { $0.status == .inFlight }) {
+                record.syncStatus = .pending
+            } else {
+                record.syncStatus = .synced
+                record.lastError = nil
+                record.isBookmarked = syncedBaseline
+                record.lastSyncedIsBookmarked = syncedBaseline
+            }
         }
-        try self.saveContext(self.context)
+        self.onChange?()
         self.onEnqueued?()
-        return record.toEntity()
+        return try self.bookmark(forPostID: postID)
     }
 
     func retryFailedMutations(forPostID postID: Int?) throws {
-        let entityKey = postID.map { BookmarkOutboxPayload.entityKey(postID: $0) }
-        let snapshots = try self.outbox.snapshots(forEntityKey: entityKey)
-        let failed = snapshots.filter { $0.status == .failed }
-        let now = self.clock.now()
-        for entry in failed {
-            try self.outbox.markPendingForRetry(
-                id: entry.id,
-                attemptCount: entry.attemptCount,
-                nextAttemptAt: now,
-                lastError: entry.lastError
-            )
-            guard let payload = entry.bookmarkPayload else { continue }
-            if let record = try self.record(postID: payload.postID) {
-                record.syncStatus = .pending
-                record.lastError = nil
+        try self.outbox.performTransaction {
+            let entityKey = postID.map { BookmarkOutboxPayload.entityKey(postID: $0) }
+            let snapshots = try self.outbox.snapshots(forEntityKey: entityKey)
+            let failed = snapshots.filter { $0.status == .failed }
+            let now = self.clock.now()
+            for entry in failed {
+                try self.outbox.markPendingForRetry(
+                    id: entry.id,
+                    attemptCount: 0,
+                    nextAttemptAt: now,
+                    lastError: entry.lastError
+                )
+                guard let payload = entry.bookmarkPayload else { continue }
+                if let record = try self.record(postID: payload.postID) {
+                    record.syncStatus = .pending
+                    record.lastError = nil
+                }
             }
         }
-        try self.saveContext(self.context)
+        self.onChange?()
         self.onEnqueued?()
     }
 
@@ -129,58 +134,77 @@ final class SwiftDataBookmarkRepository: BookmarkRepository, BookmarkLocalMutati
     }
 
     func markSynced(postID: Int, isBookmarked: Bool, remoteBookmarkID: Int?) throws {
-        let existing = try self.record(postID: postID)
-        let record = existing ?? BookmarkedPost(
-            postID: postID,
-            isBookmarked: isBookmarked,
-            lastSyncedIsBookmarked: isBookmarked,
-            syncStatus: .synced
-        )
-        if existing == nil {
-            self.context.insert(record)
+        try self.outbox.performTransaction {
+            let existing = try self.record(postID: postID)
+            let record = existing ?? BookmarkedPost(
+                postID: postID,
+                isBookmarked: isBookmarked,
+                lastSyncedIsBookmarked: isBookmarked,
+                syncStatus: .synced
+            )
+            if existing == nil {
+                self.context.insert(record)
+            }
+            let hasSuccessor = try self.outbox.snapshots(
+                forEntityKey: BookmarkOutboxPayload.entityKey(postID: postID)
+            )
+            .contains { $0.status == .pending || $0.status == .failed }
+            if !hasSuccessor {
+                record.isBookmarked = isBookmarked
+            }
+            record.lastSyncedIsBookmarked = isBookmarked
+            record.syncStatus = hasSuccessor ? .pending : .synced
+            record.lastError = nil
+            record.remoteBookmarkID = isBookmarked ? remoteBookmarkID : nil
+            record.updatedAt = self.clock.now()
         }
-        record.isBookmarked = isBookmarked
-        record.lastSyncedIsBookmarked = isBookmarked
-        record.syncStatus = .synced
-        record.lastError = nil
-        record.remoteBookmarkID = isBookmarked ? remoteBookmarkID : nil
-        record.updatedAt = self.clock.now()
-        try self.saveContext(self.context)
+        self.onChange?()
     }
 
     func markFailed(postID: Int, message: String) throws {
-        guard let record = try self.record(postID: postID) else { return }
-        record.syncStatus = .failed
-        record.lastError = message
-        record.updatedAt = self.clock.now()
-        try self.saveContext(self.context)
+        try self.outbox.performTransaction {
+            guard let record = try self.record(postID: postID) else { return }
+            record.syncStatus = .failed
+            record.lastError = message
+            record.updatedAt = self.clock.now()
+        }
+        self.onChange?()
     }
 
     func markPending(postID: Int, message: String?) throws {
-        guard let record = try self.record(postID: postID) else { return }
-        record.syncStatus = .pending
-        record.lastError = message
-        record.updatedAt = self.clock.now()
-        try self.saveContext(self.context)
+        try self.outbox.performTransaction {
+            guard let record = try self.record(postID: postID) else { return }
+            record.syncStatus = .pending
+            record.lastError = message
+            record.updatedAt = self.clock.now()
+        }
+        self.onChange?()
     }
 
-    func applyServerWin(postID: Int, isBookmarked: Bool, message: String) throws {
-        let existing = try self.record(postID: postID)
-        let record = existing ?? BookmarkedPost(
-            postID: postID,
-            isBookmarked: isBookmarked,
-            lastSyncedIsBookmarked: isBookmarked,
-            syncStatus: .failed
-        )
-        if existing == nil {
-            self.context.insert(record)
+    func restoreSyncedStateAfterConflict(postID: Int, message: String) throws {
+        try self.outbox.performTransaction {
+            let existing = try self.record(postID: postID)
+            let record = existing ?? BookmarkedPost(
+                postID: postID,
+                isBookmarked: false,
+                lastSyncedIsBookmarked: false,
+                syncStatus: .failed
+            )
+            if existing == nil {
+                self.context.insert(record)
+            }
+            let hasSuccessor = try self.outbox.snapshots(
+                forEntityKey: BookmarkOutboxPayload.entityKey(postID: postID)
+            )
+            .contains { $0.status == .pending }
+            if !hasSuccessor {
+                record.isBookmarked = record.lastSyncedIsBookmarked
+            }
+            record.syncStatus = .failed
+            record.lastError = message
+            record.updatedAt = self.clock.now()
         }
-        record.isBookmarked = isBookmarked
-        record.lastSyncedIsBookmarked = isBookmarked
-        record.syncStatus = .failed
-        record.lastError = message
-        record.updatedAt = self.clock.now()
-        try self.saveContext(self.context)
+        self.onChange?()
     }
 
     private func record(postID: Int) throws -> BookmarkedPost? {

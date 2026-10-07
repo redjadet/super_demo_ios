@@ -19,7 +19,7 @@ Default product posture: local data first, sync opportunistically.
   [`architecture/offline-first-behavior.md`](architecture/offline-first-behavior.md)).
 - Sync must be idempotent and retryable.
 - Conflicts need explicit policy: local wins, remote wins, merge, or user choice
-  (bookmarks: last-writer-wins in queue; server-wins on 409/412).
+  (bookmarks: last-writer-wins in queue; unresolved failure on 409/412).
 - UI should distinguish offline, syncing, synced, and failed states when relevant.
 
 ## SwiftData Rules

@@ -162,7 +162,9 @@ enum FeedComposition {
 
 /// Tiny holder so enqueue can flush after the engine exists.
 private actor SyncEngineHolder {
-    var engine: OutboxSyncEngine?
+    /// The model owns the engine; retaining it here would cycle through the
+    /// repository enqueue callback back to this holder.
+    weak var engine: OutboxSyncEngine?
 
     func setEngine(_ engine: OutboxSyncEngine) {
         self.engine = engine

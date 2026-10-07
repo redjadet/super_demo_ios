@@ -16,8 +16,8 @@ invariants [`../offline-invariants.md`](../offline-invariants.md).
 | Remote read | JSONPlaceholder via `RemoteFeedRepository` | None |
 | Offline read after remote failure | TTL-valid cache + `isStale` | Always local |
 | Mutation queue / outbound sync | **Yes** — Feed bookmarks via SwiftData outbox + `OutboxSyncEngine` | **None** (local-only; OI-06) |
-| Conflict policy | Last-writer-wins locally; **server-wins** on HTTP 409/412 | N/A (local-only) |
-| Automatic retry on transport | Outbox exponential backoff (+ SPM client auth refresh) | N/A |
+| Conflict policy | Last-writer-wins locally; unresolved failure on HTTP 409/412 | N/A (local-only) |
+| Retry on transport | Trigger-based exponential backoff (+ SPM client auth refresh) | N/A |
 
 Items remain local-only. Feed **reads** stay cache-aside; Feed **bookmark writes**
 use the outbox described below.
@@ -64,11 +64,10 @@ sequenceDiagram
   participant Path as NWPathMonitor / ManualConnectivity
 
   UI->>Repo: setBookmarked (optimistic)
-  Repo->>SD: update BookmarkedPost (pending)
-  Repo->>SD: coalesce + enqueue OutboxEntry
+  Repo->>SD: commit bookmark + coalesced queue atomically
   Repo-->>UI: PostBookmark (pending)
   Path-->>Eng: connected / foreground / manual retry
-  Eng->>SD: markInFlight (persist before send)
+  Eng->>SD: claimPending (revalidate and persist before send)
   Eng->>Net: set/clear + Idempotency-Key
   alt 2xx
     Eng->>SD: markSynced + delete outbox row
@@ -79,7 +78,7 @@ sequenceDiagram
   else 4xx (non-retryable)
     Eng->>SD: failed + UI failed indicator
   else 409 / 412
-    Eng->>SD: server-wins revert + failed
+    Eng->>SD: restore acknowledged baseline + unresolved failure
   end
 ```
 
@@ -94,10 +93,10 @@ sequenceDiagram
 | Rule | Behavior |
 | --- | --- |
 | Triggers | `NWPathMonitor` regain, scene foreground, enqueue, manual retry |
-| Ordering | FIFO by `createdAt`; one in-flight op per `entityKey` per flush pass |
+| Ordering | FIFO by `createdAt`; blocked heads hold successors; successful heads drain successors in the same flush |
 | Coalescing | Pending/failed toggles collapse to final desired state; set→clear from unbookmarked baseline cancels out; in-flight rows are never deleted |
 | Crash safety | Persist `inFlight` before send; on launch `recoverInFlightAsPending` (same idempotency key) |
-| Backoff | Exponential + jitter (`OutboxBackoffPolicy`); injectable `OutboxClock` |
+| Backoff | Exponential + jitter (`OutboxBackoffPolicy`); checked on the next trigger, with no retry timer; injectable `OutboxClock` |
 | Max attempts | Cap then `failed` (surfaced in UI) |
 | Cancellation | Restores `pending`; **does not** increment `attemptCount` |
 | Auth | Live path uses `URLSessionAPIClient` + `TokenRefreshingFactory` (401 refresh once) |
@@ -105,13 +104,16 @@ sequenceDiagram
 
 ## Conflict handling
 
-**Policy: last-writer-wins in the local queue; server-wins on HTTP 409/412.**
+**Policy: last-writer-wins in the local queue; unresolved failure on HTTP 409/412.**
 
-- Why LWW locally: single-device outbox; coalescing already collapses toggles to
-  the user’s latest intent.
-- Why server-wins on 409/412: the server rejected our version — adopt the
-  opposite of the failed op, mark the bookmark `failed`, and keep the outbox
-  row failed for explicit Retry (no silent overwrite loop).
+- Local coalescing preserves the latest intent; completion of an older request
+  updates the acknowledged baseline without overwriting a newer queued toggle.
+- HTTP 409/412 supplies no server bookmark value. Restore the last acknowledged
+  local value when no newer intent exists, mark the operation failed, and retain
+  its idempotency key for explicit Retry. Never infer server state by reversing
+  the failed operation.
+- Failed, backing-off, and in-flight heads block successors for that post.
+  Explicit Retry resets the attempt budget; other posts can continue syncing.
 
 Items: still single-device local store with rollback on failed `updateItem`
 (OI-06). No remote merge.
@@ -121,7 +123,7 @@ Items: still single-device local store with rollback on failed `updateItem`
 | Layer | Behavior |
 | --- | --- |
 | Feed HTTP read | Single attempt in `LiveFeedAPIClient` |
-| Bookmark outbox | Engine-owned backoff; API client `maxAttempts: 1` so outbox owns attempt accounting |
+| Bookmark outbox | Engine-owned backoff checked on enqueue, reconnect, foreground, or explicit Retry; API client `maxAttempts: 1` so outbox owns attempt accounting |
 | Feed UI refresh | Retry button / refresh → new `refresh()` |
 | Cancel | Never counted as a transport failure / attempt |
 
@@ -149,7 +151,7 @@ git history / `FeedView` / `ItemsView`.
 | --- | --- | --- |
 | Bookmark via JSONPlaceholder POST/DELETE | Invent `/bookmarks`; Items remote sync | Real write verbs without fake endpoints; Items stay OI-06 honest |
 | Outbox owns retry (client maxAttempts 1) | Double retry (SPM + outbox) | Clear attempt accounting + injectable backoff tests |
-| Server-wins on 409/412 | Always local-wins; rebase | Portfolio honesty for conflict; no merge UI complexity |
+| Unresolved conflict on 409/412 | Guess a server value; fetch/rebase | Endpoint provides no authoritative conflict state |
 | ManualConnectivity in UITesting | Live NWPathMonitor in CI | Deterministic offline UITest without airplane mode |
 | Separate Feed cache-aside vs Items local-only | One sync engine for both | Different persistence shapes; bookmarks are the write demo |
 
@@ -167,13 +169,18 @@ git history / `FeedView` / `ItemsView`.
 | Idempotency key reuse | `idempotencyKeyReusedOnRetry` | same |
 | Cancel ≠ attempt | `cancellationDoesNotCountAsAttempt` | same |
 | 4xx vs 5xx | `http4xxMarksFailed…` / `http5xx…` | same |
-| Conflict server-wins | `conflictAppliesServerWins` | same |
+| Conflict preserves acknowledged baseline | `conflictRestoresAcknowledgedState` / `conflictKeepsAcknowledgedStateInsteadOfGuessingServerValue` | same |
 | UI / ViewModel pending+failed | `FeedBookmarkFeatureModelTests` | `FeedBookmarkFeatureModelTests.swift` |
 | Offline UITest | `testOfflineBookmarkToggleShowsPending` | `superDemoAppUITests.swift` |
 | OI-01…OI-05, OI-07 | unchanged | see [`cache-behavior.md`](cache-behavior.md) |
 | OI-06 Items local | unchanged | `SwiftDataItemRepositoryTests` |
 | OI-08 outbox | this page | Sync engine + store suites |
 
-**CI:** unit proof on **Checklist · iPhone test**; docs on **Checklist · lint**;
-merge aggregate **Delivery checklist**. Local: `./bin/checklist-fast` (docs) /
-`./bin/ci.sh` (full). This Linux/cloud agent cannot run Simulator — GHA does.
+Repository changes notify `FeedFeatureModel` after durable commits so pending,
+failed, and synced controls update after background sync. Failed local writes
+show a recoverable alert; bookmark and retry buttons use 44 pt touch targets.
+
+**Validation:** `./bin/checklist` runs local iPhone unit/UI tests and iPad,
+macOS, and watchOS builds. `./bin/checklist-fast` covers docs/static changes.
+Hosted PR checks report the required `checklist` aggregate; see
+[`../engineering/checklist_gate.md`](../engineering/checklist_gate.md).

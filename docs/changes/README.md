@@ -4,6 +4,9 @@ Record durable implementation notes after meaningful changes.
 
 ## Entries
 
+- [`2026-10-07_feed-bookmark-consistency.md`](2026-10-07_feed-bookmark-consistency.md)
+  — Atomic optimistic writes, queue ordering, newer-intent protection, live sync
+  state, and actionable bookmark controls.
 - [`2026-10-07_tvos-feed-companion.md`](2026-10-07_tvos-feed-companion.md)
   — tvOS Feed App Group snapshot companion + CI compile proof; watch maps updated.
 - [`2026-10-06_ui-trends-low-risk-polish.md`](2026-10-06_ui-trends-low-risk-polish.md)

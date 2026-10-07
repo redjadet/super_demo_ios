@@ -19,6 +19,20 @@ private final class RecordingBookmarkRemote: BookmarkRemoteClient, @unchecked Se
     private var _calls: [Call] = []
     private var _errorForCallIndex: [Int: Error] = [:]
     private var _hangUntilCancelled = false
+    private var _onSet: (@Sendable () async throws -> Void)?
+
+    var onSet: (@Sendable () async throws -> Void)? {
+        get {
+            self.lock.lock()
+            defer { self.lock.unlock() }
+            return self._onSet
+        }
+        set {
+            self.lock.lock()
+            self._onSet = newValue
+            self.lock.unlock()
+        }
+    }
 
     var calls: [Call] {
         self.lock.lock()
@@ -72,6 +86,7 @@ private final class RecordingBookmarkRemote: BookmarkRemoteClient, @unchecked Se
 
     func setBookmark(postID: Int, idempotencyKey: String) async throws -> Int? {
         let recorded = self.recordSet(postID: postID, idempotencyKey: idempotencyKey)
+        try await self.onSet?()
         if recorded.shouldHang {
             try await Task.sleep(nanoseconds: 60_000_000_000)
         } else {
@@ -152,6 +167,89 @@ private final class SyncEngineHarness {
 
 @Suite("Outbox sync engine")
 struct OutboxSyncEngineTests {
+    @Test
+    @MainActor
+    func singleFlushDrainsSuccessorsForSameEntity() async throws {
+        let harness = try SyncEngineHarness()
+        let now = harness.clockDate
+        _ = try harness.outbox.insert(
+            kind: .bookmarkSet,
+            payload: BookmarkOutboxPayload(postID: 9, desiredBookmarked: true),
+            idempotencyKey: "first",
+            createdAt: now
+        )
+        _ = try harness.outbox.insert(
+            kind: .bookmarkClear,
+            payload: BookmarkOutboxPayload(postID: 9, desiredBookmarked: false),
+            idempotencyKey: "second",
+            createdAt: now.addingTimeInterval(1)
+        )
+        harness.clockDate = now.addingTimeInterval(2)
+
+        await harness.engine.requestFlush()
+
+        #expect(harness.remote.calls.map(\.kind) == ["set", "clear"])
+        #expect(try harness.outbox.snapshots(forEntityKey: nil).isEmpty)
+        #expect(try !harness.repository.bookmark(forPostID: 9).isBookmarked)
+    }
+
+    @Test
+    @MainActor
+    func conflictKeepsAcknowledgedStateInsteadOfGuessingServerValue() async throws {
+        let harness = try SyncEngineHarness()
+        harness.remote.errorForCallIndex[0] = BookmarkRemoteError.conflict
+        _ = try harness.outbox.insert(
+            kind: .bookmarkClear,
+            payload: BookmarkOutboxPayload(postID: 9, desiredBookmarked: false),
+            idempotencyKey: "clear",
+            createdAt: harness.clockDate
+        )
+
+        await harness.engine.requestFlush()
+
+        #expect(try !harness.repository.bookmark(forPostID: 9).isBookmarked)
+        #expect(try harness.repository.bookmark(forPostID: 9).syncStatus == .failed)
+    }
+
+    @Test
+    @MainActor
+    func toggleDuringRemoteRequestDrainsLatestIntent() async throws {
+        let harness = try SyncEngineHarness()
+        _ = try harness.repository.setBookmarked(true, postID: 9)
+        harness.remote.onSet = {
+            try await MainActor.run {
+                _ = try harness.repository.setBookmarked(false, postID: 9)
+            }
+        }
+
+        await harness.engine.requestFlush()
+
+        #expect(harness.remote.calls.map(\.kind) == ["set", "clear"])
+        #expect(try !harness.repository.bookmark(forPostID: 9).isBookmarked)
+        #expect(try harness.repository.bookmark(forPostID: 9).syncStatus == .synced)
+        #expect(try harness.outbox.snapshots(forEntityKey: nil).isEmpty)
+    }
+
+    @Test
+    @MainActor
+    func coalescedSnapshotIsNotSentAfterEarlierRequestFinishes() async throws {
+        let harness = try SyncEngineHarness()
+        _ = try harness.repository.setBookmarked(true, postID: 1)
+        harness.clockDate = harness.clockDate.addingTimeInterval(1)
+        _ = try harness.repository.setBookmarked(true, postID: 2)
+        harness.remote.onSet = {
+            try await MainActor.run {
+                _ = try harness.repository.setBookmarked(false, postID: 2)
+            }
+        }
+
+        await harness.engine.requestFlush()
+
+        #expect(harness.remote.calls.map(\.postID) == [1])
+        #expect(try !harness.repository.bookmark(forPostID: 2).isBookmarked)
+        #expect(try harness.outbox.snapshots(forEntityKey: nil).isEmpty)
+    }
+
     @Test
     @MainActor
     func flushOnReconnectSendsPending() async throws {
@@ -252,7 +350,7 @@ struct OutboxSyncEngineTests {
 
     @Test
     @MainActor
-    func conflictAppliesServerWins() async throws {
+    func conflictRestoresAcknowledgedState() async throws {
         let harness = try SyncEngineHarness()
         harness.remote.errorForCallIndex[0] = BookmarkRemoteError.conflict
         _ = try harness.repository.setBookmarked(true, postID: 20)

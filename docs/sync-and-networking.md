@@ -84,7 +84,7 @@ Feature Data adapters map `APIError` into domain/UI-safe messages.
 - Queue pending operations with stable IDs (`OutboxEntry` + `idempotencyKey`).
 - Make retries idempotent (`Idempotency-Key` header).
 - Track sync state per record or operation (`BookmarkSyncStatus`).
-- Handle conflict policy explicitly (Feed bookmarks: LWW queue + server-wins on
+- Handle conflict policy explicitly (Feed bookmarks: LWW queue + unresolved failure on
   409/412 — see [`architecture/offline-first-behavior.md`](architecture/offline-first-behavior.md)).
 - Surface durable failure state to users when action cannot complete.
 

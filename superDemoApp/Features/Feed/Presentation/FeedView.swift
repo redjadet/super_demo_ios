@@ -49,6 +49,18 @@ struct FeedView: View {
                     }
             }
         }
+        .alert("Could Not Save Bookmark", isPresented: Binding(
+            get: { self.model.bookmarkErrorMessage != nil },
+            set: { isPresented in
+                if !isPresented {
+                    self.model.dismissBookmarkError()
+                }
+            }
+        )) {
+            Button("OK") { self.model.dismissBookmarkError() }
+        } message: {
+            Text(self.model.bookmarkErrorMessage ?? "")
+        }
         .task {
             // Engineering Stale Feed embeds `FeedView` with
             // `embedsOwnNavigation: false` — must not steal App Intent
