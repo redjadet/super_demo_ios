@@ -1,10 +1,10 @@
 # Universal Apple Platforms
 
 This app must behave as a universal Apple app across iOS, iPadOS, and macOS.
-A thin **watchOS** companion (`superDemoAppWatch`) reuses the Feed App Group
-snapshot DTO; it is not a full parity shell. Agents must design and verify
-features against window size, input method, and platform conventions, not just
-one iPhone simulator.
+Thin **watchOS** (`superDemoAppWatch`) and **tvOS** (`superDemoAppTV`) companions
+reuse the Feed App Group snapshot DTO; they are not full parity shells. Agents
+must design and verify features against window size, input method, and platform
+conventions, not just one iPhone simulator.
 
 ## Platform Contract
 
@@ -15,21 +15,26 @@ one iPhone simulator.
   expectations, titlebar/window behavior, and smaller control hit targets.
 - watchOS: companion Feed snapshot UI only (`superDemoAppWatch`); honest
   watch-local App Group; not adaptive-shell parity with phone/Mac.
+- tvOS: companion Feed snapshot UI only (`superDemoAppTV`); honest tv-local
+  App Group; focus-friendly List; not adaptive-shell parity with phone/Mac.
 
 Current project settings already target Apple multi-platform builds:
 
 - Main app: `SUPPORTED_PLATFORMS = iphoneos iphonesimulator macosx xros xrsimulator`
 - Main app: `TARGETED_DEVICE_FAMILY = 1,2,7`
 - Main app **iPhone / iOS floor:** `IPHONEOS_DEPLOYMENT_TARGET = 26.7` (not iOS 27-only)
-- Mac / watch companions: `MACOSX_DEPLOYMENT_TARGET` / `WATCHOS_DEPLOYMENT_TARGET` **26.7**
+- Mac / watch / tv companions: `MACOSX_DEPLOYMENT_TARGET` /
+  `WATCHOS_DEPLOYMENT_TARGET` / `TVOS_DEPLOYMENT_TARGET` **26.7**
 - Watch companion: `SUPPORTED_PLATFORMS = watchos watchsimulator`,
   `TARGETED_DEVICE_FAMILY = 4` (scheme `superDemoAppWatch`)
+- TV companion: `SUPPORTED_PLATFORMS = appletvos appletvsimulator`,
+  `TARGETED_DEVICE_FAMILY = 3` (scheme `superDemoAppTV`; standalone)
 
 Required product proof remains iOS, iPadOS, and macOS unless the task adds
-watchOS/visionOS. **watchOS** compile proof is part of
-`./bin/ci-platform-builds.sh` (`./bin/ci-watch-build.sh`). **visionOS** shared
-SwiftUI API compile guards landed in tip `fc2837a` (#57); a visionOS **companion**
-UI remains deferred.
+watchOS/tvOS/visionOS. **watchOS** and **tvOS** compile proof is part of
+`./bin/ci-platform-builds.sh` (`./bin/ci-watch-build.sh`,
+`./bin/ci-tvos-build.sh`). **visionOS** shared SwiftUI API compile guards
+landed in tip `fc2837a` (#57); a visionOS **companion** UI remains deferred.
 
 ## Layout Rules
 
@@ -100,6 +105,7 @@ xcodebuild -project superDemoApp.xcodeproj -scheme superDemoApp -destination 'pl
 # Unsigned Mac compile-proof (same default as ./bin/ci-platform-builds.sh / #69).
 xcodebuild -project superDemoApp.xcodeproj -scheme superDemoApp -destination 'platform=macOS' CODE_SIGNING_ALLOWED=NO CODE_SIGN_IDENTITY=- build
 ./bin/ci-watch-build.sh   # or: xcodebuild … -scheme superDemoAppWatch -destination 'generic/platform=watchOS Simulator' build
+./bin/ci-tvos-build.sh    # or: xcodebuild … -scheme superDemoAppTV -destination 'generic/platform=tvOS Simulator' build
 ```
 
 If a destination is unavailable, choose an installed equivalent from:
@@ -111,8 +117,9 @@ xcodebuild -showdestinations -project superDemoApp.xcodeproj -scheme superDemoAp
 
 For docs-only changes, `./bin/lint.sh` plus scheme/platform inspection is enough.
 
-CI and `./bin/ci.sh` run iPad simulator + macOS + watchOS builds via
-`./bin/ci-platform-builds.sh` (watch via `./bin/ci-watch-build.sh`).
+CI and `./bin/ci.sh` run iPad simulator + macOS + watchOS + tvOS builds via
+`./bin/ci-platform-builds.sh` (watch via `./bin/ci-watch-build.sh`; tvOS via
+`./bin/ci-tvos-build.sh`).
 
 after the iPhone test lane.
 

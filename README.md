@@ -12,13 +12,13 @@
 ![SwiftData](https://img.shields.io/badge/SwiftData-persistence-F05138?logo=swift&logoColor=white)
 ![Flutter](https://img.shields.io/badge/Flutter-add--to--app-02569B?logo=flutter&logoColor=white)
 
-![Platforms](https://img.shields.io/badge/Platforms-iOS%20%7C%20iPadOS%20%7C%20macOS%20%7C%20watchOS-000000?logo=apple&logoColor=white)
+![Platforms](https://img.shields.io/badge/Platforms-iOS%20%7C%20iPadOS%20%7C%20macOS%20%7C%20watchOS%20%7C%20tvOS-000000?logo=apple&logoColor=white)
 ![Minimum OS](https://img.shields.io/badge/Minimum%20OS-26.7-6E6E73?logo=apple&logoColor=white)
 ![Architecture](https://img.shields.io/badge/Architecture-Clean%20layers-0A7A3E)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 A **Swift / SwiftUI / SwiftData** reference app for iPhone, iPad and Mac,
-with a thin watchOS Feed-snapshot companion. It demonstrates layered
+with thin watchOS and tvOS Feed-snapshot companions. It demonstrates layered
 architecture, offline caching, async networking, UIKit interoperability and
 an optional Flutter add-to-app module.
 

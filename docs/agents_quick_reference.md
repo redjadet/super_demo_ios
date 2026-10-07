@@ -70,9 +70,9 @@ Router doc path honesty (CODEMAP / portfolio / architecture-tour):
 | match signing sync | `./bin/fastlane-run ios sync_signing` (needs `Matchfile` or `FASTLANE_USE_MATCH=1`) |
 | CI lint job only | `./bin/fastlane-run ci_lint` |
 | iPhone tests lane | `./bin/fastlane-run iphone_test` |
-| iPad + Mac + watchOS lane | `./bin/fastlane-run platform_builds` |
+| iPad + Mac + watchOS + tvOS lane | `./bin/fastlane-run platform_builds` |
 | iPhone build/test lane only | `./bin/ci-iphone-test.sh` |
-| iPad + Mac + watchOS builds | `./bin/ci-platform-builds.sh` (watch: `./bin/ci-watch-build.sh`; skip watch: `CI_SKIP_WATCH_BUILD=1`; Mac lane defaults to unsigned compile-proof — set `CI_MAC_REQUIRE_CODE_SIGN=1` only when Mac Development profiles exist) |
+| iPad + Mac + watchOS + tvOS builds | `./bin/ci-platform-builds.sh` (watch: `./bin/ci-watch-build.sh`; tvOS: `./bin/ci-tvos-build.sh`; skip: `CI_SKIP_WATCH_BUILD=1` / `CI_SKIP_TVOS_BUILD=1`; Mac lane defaults to unsigned compile-proof — set `CI_MAC_REQUIRE_CODE_SIGN=1` only when Mac Development profiles exist) |
 | Install Cursor rules + hooks (after clone) | `./tool/install-cursor-rules.sh` |
 | Install git pre-commit | `./bin/install-git-hooks` |
 | Restore team Apple skills from lockfile | `npx skills experimental_install -y` (from git root) |
@@ -116,7 +116,7 @@ Router doc path honesty (CODEMAP / portfolio / architecture-tour):
 - Use `./bin/checklist` for delivery proof before PR; merge only when GHA
   **checklist** is green — [`engineering/checklist_gate.md`](engineering/checklist_gate.md).
 - Script names vs Flutter: [`tooling_map.md`](tooling_map.md).
-- Use `./bin/ci.sh` before merge/PR (same lint, iPhone test, iPad/Mac/watchOS
+- Use `./bin/ci.sh` before merge/PR (same lint, iPhone test, iPad/Mac/watchOS/tvOS
   build proof as CI).
 - `./bin/checklist` resolves an available iPhone simulator automatically; set `CHECKLIST_IPHONE_DEST` only when a specific destination is required.
 - `./bin/checklist` and `./bin/ci.sh` disable parallel test workers by default;

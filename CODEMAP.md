@@ -23,6 +23,7 @@ Timed walk: [`docs/architecture-tour.md`](docs/architecture-tour.md).
 | Universal links / sample AASA | `Config/associated-domains/`; gate `./tool/check_aasa_deep_links.sh` (paths + host parity + live-host DNS honesty; `/feed/*` for post entity) |
 | Feed Home Screen widget | `FeedWidgetShared/`, `superDemoAppWidget/`, App Group snapshot; demo in ProductionReadiness |
 | watchOS Feed companion | `superDemoAppWatch/`, `FeedWidgetShared/` (same snapshot DTO); Engineering demos → watchOS Feed companion; visionOS deferred |
+| tvOS Feed companion | `superDemoAppTV/`, `FeedWidgetShared/` (same snapshot DTO); Engineering demos → tvOS Feed companion; standalone (not iPhone-embedded) |
 | Share → Items inbox | `ShareInboxShared/`, `superDemoAppShare/`, App Group file name `share-inbox.json` (runtime; not a repo path); Engineering demos → Share inbox (not SwiftData) |
 | Feed refresh Live Activity | `FeedWidgetShared/FeedRefreshActivityAttributes.swift`, `superDemoApp/App/ActivityKitFeedRefreshLiveActivityController.swift`, `superDemoAppWidget/FeedRefreshLiveActivity.swift` |
 | Local notifications (demo) | `superDemoApp/Shared/Notifications/`, Engineering demos → Local stale-Feed reminder (not APNs) |
@@ -59,6 +60,7 @@ Timed walk: [`docs/architecture-tour.md`](docs/architecture-tour.md).
 | `FeedWidgetShared/`, `superDemoAppWidget/` | Feed App Group snapshot + Home Screen / Live Activity UI |
 | `ShareInboxShared/`, `superDemoAppShare/` | Share → App Group inbox (not SwiftData) |
 | `superDemoAppWatch/` | watchOS Feed snapshot companion |
+| `superDemoAppTV/` | tvOS Feed snapshot companion |
 | `docs/` | Behavior canon and agent routing |
 | `bin/`, `tool/` | Proof / lint / CI wrappers |
 

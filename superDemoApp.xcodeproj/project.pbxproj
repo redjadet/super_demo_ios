@@ -91,6 +91,7 @@
 		A1FEED010000000000000001 /* superDemoAppWidget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = superDemoAppWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1SHARE010000000000000001 /* superDemoAppShare.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = superDemoAppShare.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1WATCH010000000000000001 /* superDemoAppWatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = superDemoAppWatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A1TVOS010000000000000001 /* superDemoAppTV.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = superDemoAppTV.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1FEED01000000000000000F /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		A1FEED010000000000000011 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		A1FEED010000000000000013 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
@@ -150,6 +151,14 @@
 			path = superDemoAppWatch;
 			sourceTree = "<group>";
 		};
+		A1TVOS010000000000000003 /* superDemoAppTV */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				A1TVOS010000000000000020 /* Exceptions for "superDemoAppTV" folder */,
+			);
+			path = superDemoAppTV;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -173,6 +182,13 @@
 				Info.plist,
 			);
 			target = A1WATCH010000000000000004 /* superDemoAppWatch */;
+		};
+		A1TVOS010000000000000020 /* Exceptions for "superDemoAppTV" folder */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = A1TVOS010000000000000004 /* superDemoAppTV */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
@@ -211,6 +227,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		A1TVOS010000000000000006 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		56D79AE22FB7787400B9E63E /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -239,6 +262,7 @@
 				A1SHARE010000000000000002 /* ShareInboxShared */,
 				A1SHARE010000000000000003 /* superDemoAppShare */,
 				A1WATCH010000000000000003 /* superDemoAppWatch */,
+				A1TVOS010000000000000003 /* superDemoAppTV */,
 				56D79AE82FB7787400B9E63E /* superDemoAppTests */,
 				56D79AF22FB7787400B9E63E /* superDemoAppUITests */,
 				56D79AD72FB7787300B9E63E /* Products */,
@@ -252,6 +276,7 @@
 				A1FEED010000000000000001 /* superDemoAppWidget.appex */,
 				A1SHARE010000000000000001 /* superDemoAppShare.appex */,
 				A1WATCH010000000000000001 /* superDemoAppWatch.app */,
+				A1TVOS010000000000000001 /* superDemoAppTV.app */,
 				56D79AE52FB7787400B9E63E /* superDemoAppTests.xctest */,
 				56D79AEF2FB7787400B9E63E /* superDemoAppUITests.xctest */,
 			);
@@ -418,6 +443,29 @@
 			productReference = A1WATCH010000000000000001 /* superDemoAppWatch.app */;
 			productType = "com.apple.product-type.application";
 		};
+		A1TVOS010000000000000004 /* superDemoAppTV */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A1TVOS010000000000000008 /* Build configuration list for PBXNativeTarget "superDemoAppTV" */;
+			buildPhases = (
+				A1TVOS010000000000000005 /* Sources */,
+				A1TVOS010000000000000006 /* Frameworks */,
+				A1TVOS010000000000000007 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				A1FEED010000000000000002 /* FeedWidgetShared */,
+				A1TVOS010000000000000003 /* superDemoAppTV */,
+			);
+			name = superDemoAppTV;
+			packageProductDependencies = (
+			);
+			productName = superDemoAppTV;
+			productReference = A1TVOS010000000000000001 /* superDemoAppTV.app */;
+			productType = "com.apple.product-type.application";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -448,6 +496,9 @@
 					A1WATCH010000000000000004 = {
 						CreatedOnToolsVersion = 26.5;
 					};
+					A1TVOS010000000000000004 = {
+						CreatedOnToolsVersion = 26.5;
+					};
 				};
 			};
 			buildConfigurationList = 56D79AD12FB7787300B9E63E /* Build configuration list for PBXProject "superDemoApp" */;
@@ -472,6 +523,7 @@
 				A1FEED010000000000000004 /* superDemoAppWidget */,
 				A1SHARE010000000000000004 /* superDemoAppShare */,
 				A1WATCH010000000000000004 /* superDemoAppWatch */,
+				A1TVOS010000000000000004 /* superDemoAppTV */,
 				56D79AE42FB7787400B9E63E /* superDemoAppTests */,
 				56D79AEE2FB7787400B9E63E /* superDemoAppUITests */,
 			);
@@ -521,6 +573,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		A1TVOS010000000000000007 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
@@ -543,6 +602,7 @@
 				"${SRCROOT}/ShareInboxShared",
 				"${SRCROOT}/superDemoAppShare",
 				"${SRCROOT}/superDemoAppWatch",
+				"${SRCROOT}/superDemoAppTV",
 				"${SRCROOT}/superDemoAppTests",
 				"${SRCROOT}/superDemoAppUITests",
 			);
@@ -618,6 +678,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		A1WATCH010000000000000005 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A1TVOS010000000000000005 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -1188,6 +1255,75 @@
 			};
 			name = Release;
 		};
+		A1TVOS010000000000000009 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = superDemoAppTV/superDemoAppTV.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = QPG8754DYH;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = superDemoAppTV/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = superDemo;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © superDemoApp";
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ilkersevim.superDemoApp.tvos;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				SDKROOT = appletvos;
+				SKIP_INSTALL = NO;
+				SUPPORTED_PLATFORMS = "appletvos appletvsimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 3;
+				TVOS_DEPLOYMENT_TARGET = 26.7;
+			};
+			name = Debug;
+		};
+		A1TVOS01000000000000000A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = superDemoAppTV/superDemoAppTV.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = QPG8754DYH;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = superDemoAppTV/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = superDemo;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © superDemoApp";
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ilkersevim.superDemoApp.tvos;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				SDKROOT = appletvos;
+				SKIP_INSTALL = NO;
+				SUPPORTED_PLATFORMS = "appletvos appletvsimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 3;
+				TVOS_DEPLOYMENT_TARGET = 26.7;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 
 /* End XCBuildConfiguration section */
 
@@ -1252,6 +1388,15 @@
 			buildConfigurations = (
 				A1WATCH010000000000000009 /* Debug */,
 				A1WATCH01000000000000000A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A1TVOS010000000000000008 /* Build configuration list for PBXNativeTarget "superDemoAppTV" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A1TVOS010000000000000009 /* Debug */,
+				A1TVOS01000000000000000A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

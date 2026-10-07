@@ -90,7 +90,7 @@ Source-of-truth docs for `superDemoApp`.
 
 - Fast local sanity: `./bin/checklist-fast`
 - Full delivery gate: `./bin/checklist`
-- CI parity (lint + iPhone test + iPad/Mac/watchOS builds): `./bin/ci.sh`
+- CI parity (lint + iPhone test + iPad/Mac/watchOS/tvOS builds): `./bin/ci.sh`
 - Fast vs full routing:
   [`engineering/validation_routing_fast_vs_full.md`](engineering/validation_routing_fast_vs_full.md)
 - Cursor rules install: `./tool/install-cursor-rules.sh`

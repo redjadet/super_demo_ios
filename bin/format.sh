@@ -27,6 +27,7 @@ swiftformat \
   "$ROOT/ShareInboxShared" \
   "$ROOT/superDemoAppShare" \
   "$ROOT/superDemoAppWatch" \
+  "$ROOT/superDemoAppTV" \
   "$ROOT/superDemoAppTests" \
   "$ROOT/superDemoAppUITests"
 
