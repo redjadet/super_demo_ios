@@ -24,14 +24,14 @@ ci_iphone_shard_only_testing_args() {
         "-only-testing:superDemoAppUITests"
       ;;
     ui-1)
-      # ~6 cases — heavy app UI + one engineering
+      # ~6 cases — app UI first (incl. Items selection); avoid after heavy eng demos
       printf '%s\n' \
-        "-only-testing:superDemoAppUITests/superDemoAppUITests/testDashboardShowsProductionRisks" \
-        "-only-testing:superDemoAppUITests/superDemoAppUITests/testDeepLinkOpensFeedPostDetail" \
-        "-only-testing:superDemoAppUITests/superDemoAppUITests/testFeedTabIsReachable" \
         "-only-testing:superDemoAppUITests/superDemoAppUITests/testLaunchShowsAddItemControl" \
-        "-only-testing:superDemoAppUITests/superDemoAppUITestsLaunchTests/testLaunch" \
-        "-only-testing:superDemoAppUITests/EngineeringDemosUITests/testOnDeviceVisionDemoRecognizesOrReportsHonestState"
+        "-only-testing:superDemoAppUITests/superDemoAppUITests/testItemRowOpensDetail" \
+        "-only-testing:superDemoAppUITests/superDemoAppUITests/testFeedTabIsReachable" \
+        "-only-testing:superDemoAppUITests/superDemoAppUITests/testDeepLinkOpensFeedPostDetail" \
+        "-only-testing:superDemoAppUITests/superDemoAppUITests/testDashboardShowsProductionRisks" \
+        "-only-testing:superDemoAppUITests/superDemoAppUITestsLaunchTests/testLaunch"
       ;;
     ui-2)
       printf '%s\n' \
@@ -49,7 +49,7 @@ ci_iphone_shard_only_testing_args() {
         "-only-testing:superDemoAppUITests/EngineeringDemosUITests/testDiagnosticsDemoIsReachable" \
         "-only-testing:superDemoAppUITests/EngineeringDemosUITests/testHostBridgePingDemoReturnsResponse" \
         "-only-testing:superDemoAppUITests/EngineeringDemosUITests/testSignInWithAppleDemoIsReachable" \
-        "-only-testing:superDemoAppUITests/superDemoAppUITests/testItemRowOpensDetail"
+        "-only-testing:superDemoAppUITests/EngineeringDemosUITests/testOnDeviceVisionDemoRecognizesOrReportsHonestState"
       ;;
     ui-4)
       printf '%s\n' \

@@ -35,8 +35,15 @@ Adopted `redjadet/flutter_bloc_app` PR CI patterns, adapted for Xcode:
 
 - Did not remove or skip any production test (same suite composition: 187).
 - Did not rename the required **`Delivery checklist`** check.
-- Did not add failure-hiding retries (kept single Accessibility / launch-progress
-  reboot retry already in `bin/ci-iphone-test.sh`).
+- Kept a **single** reboot+retry for Accessibility / launch-progress /
+  UI-query timeouts in `bin/ci-iphone-test.sh` (no unlimited retries).
+
+## Observed floor (honest)
+
+Sharded layout with Flutter cache hit still lands ~**28–33m** critical path
+(build ~10m + UI shard ~14–18m including artifact download/boot). The ≤20m
+stretch target is **not** met without thinning coverage or infra changes;
+this PR keeps the proven ~**6m** improvement vs ~34m baseline.
 
 ## Follow-ups during CI iteration
 
@@ -46,5 +53,5 @@ Adopted `redjadet/flutter_bloc_app` PR CI patterns, adapted for Xcode:
   `-downloadPlatform`); set `CI_DOWNLOAD_IOS_PLATFORM=1` to opt in. Compat
   check allows older-runtime fallback when newest has incompatible
   `supportedDeviceTypes`.
-- Target: median critical path ≤ ~20m for code-change PRs (measure ≥2 green
-  runs after this iteration).
+- Boot sim **after** shard artifact download (`ci_simulator_boot_ready.sh`).
+- Harden Items chrome waits + move `testItemRowOpensDetail` off heavy eng shards.

@@ -116,6 +116,9 @@ Helpers live in `superDemoAppUITests/UiTestSupport.swift`:
   `app.cells.firstMatch` (Dashboard/Items also have cells → false green).
   Keep toolbar Add visible to UI tests during first-load (avoid
   `.disabled` on `addItem` — use `allowsHitTesting` + in-action guard).
+  `waitForItemsChrome` / `waitForItemsLoadSettled` use short
+  `waitForExistence` slices (not bare `.exists`) to avoid CI Accessibility
+  snapshot hangs on toolbar queries.
 - **`tearDown`** in `superDemoAppUITests` — `@MainActor`, calls
   `terminateApplication` so the next test does not inherit a stuck process
   (SwiftLint: balanced `setUp` / `tearDown`; required for Swift 6 on CI).

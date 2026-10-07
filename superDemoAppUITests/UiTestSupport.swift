@@ -305,37 +305,74 @@ enum UiTestSupport {
 
     /// Waits for Items chrome (toolbar, empty-state action, list, row, or error).
     /// Does **not** accept bare `app.cells.firstMatch` — other tabs also have cells.
+    ///
+    /// Uses short `waitForExistence` slices instead of bare `.exists` — on CI,
+    /// unbounded accessibility snapshot evaluation of toolbar `addItem` has hung
+    /// for minutes (`Timed out while evaluating UI query` in `testItemRowOpensDetail`).
     @MainActor
     static func waitForItemsChrome(in app: XCUIApplication, timeout: TimeInterval = 25) -> Bool {
         let deadline = Date().addingTimeInterval(timeout)
         let rowPredicate = NSPredicate(format: "identifier BEGINSWITH %@", "itemRow-")
+        let identifiers = [
+            "itemsList",
+            "itemDetail",
+            "itemsEmpty",
+            "itemsFailed",
+            "itemsLoading",
+            "addItem",
+            "addItemEmpty",
+        ]
         while Date() < deadline {
-            let addItem = app.descendants(matching: .any).matching(identifier: "addItem").firstMatch
-            let addItemEmpty = app.descendants(matching: .any).matching(identifier: "addItemEmpty").firstMatch
-            if addItem.exists || addItemEmpty.exists {
-                return true
+            let slice = min(0.8, max(0.2, deadline.timeIntervalSinceNow))
+            // Prefer feature-body IDs before toolbar add — fewer hanging snapshots.
+            for identifier in identifiers {
+                let match = app.descendants(matching: .any).matching(identifier: identifier).firstMatch
+                if match.waitForExistence(timeout: slice) {
+                    return true
+                }
+                if Date() >= deadline {
+                    return false
+                }
             }
-
-            let itemsList = app.descendants(matching: .any).matching(identifier: "itemsList").firstMatch
             let itemRow = app.descendants(matching: .any).matching(rowPredicate).firstMatch
-            let itemDetail = app.descendants(matching: .any).matching(identifier: "itemDetail").firstMatch
-            let itemsEmpty = app.descendants(matching: .any).matching(identifier: "itemsEmpty").firstMatch
-            let itemsFailed = app.descendants(matching: .any).matching(identifier: "itemsFailed").firstMatch
-            let itemsLoading = app.descendants(matching: .any).matching(identifier: "itemsLoading").firstMatch
-            let hasItemsUI =
-                itemsEmpty.exists
-                    || itemsFailed.exists
-                    || itemsLoading.exists
-                    || app.staticTexts["No Items"].exists
-                    || app.staticTexts["Could Not Load Items"].exists
-                    || itemsList.exists
-                    || itemRow.exists
-                    || itemDetail.exists
-            if hasItemsUI {
+            if itemRow.waitForExistence(timeout: slice) {
                 return true
             }
+            if app.staticTexts["No Items"].waitForExistence(timeout: 0.2)
+                || app.staticTexts["Could Not Load Items"].waitForExistence(timeout: 0.2)
+            {
+                return true
+            }
+        }
+        return false
+    }
 
-            RunLoop.current.run(until: Date().addingTimeInterval(0.2))
+    /// Waits until Items leave the first-load placeholder (or show list/empty/failed).
+    @MainActor
+    static func waitForItemsLoadSettled(in app: XCUIApplication, timeout: TimeInterval = 20) -> Bool {
+        let deadline = Date().addingTimeInterval(timeout)
+        let rowPredicate = NSPredicate(format: "identifier BEGINSWITH %@", "itemRow-")
+        while Date() < deadline {
+            let slice = min(0.8, max(0.2, deadline.timeIntervalSinceNow))
+            let settledIDs = ["itemsList", "itemsEmpty", "itemsFailed", "itemDetail", "addItemEmpty"]
+            for identifier in settledIDs {
+                if app.descendants(matching: .any).matching(identifier: identifier).firstMatch
+                    .waitForExistence(timeout: slice)
+                {
+                    return true
+                }
+                if Date() >= deadline {
+                    return false
+                }
+            }
+            if app.descendants(matching: .any).matching(rowPredicate).firstMatch
+                .waitForExistence(timeout: slice)
+            {
+                return true
+            }
+            // Still on skeleton — keep polling until timeout.
+            _ = app.descendants(matching: .any).matching(identifier: "itemsLoading").firstMatch
+                .waitForExistence(timeout: 0.2)
         }
         return false
     }
