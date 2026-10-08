@@ -4,6 +4,8 @@ Record durable implementation notes after meaningful changes.
 
 ## Entries
 
+- [`2026-10-08_readme-iphone-screenshot-equal-width.md`](2026-10-08_readme-iphone-screenshot-equal-width.md)
+  — README iPhone gallery equal `width="220"`; MD033 allows `img`.
 - [`2026-10-08_ci-ui1-deeplink-launch-flake.md`](2026-10-08_ci-ui1-deeplink-launch-flake.md)
   — ui-1 deep-link cases first; process-ID flake retry; one soft relaunch.
 - [`2026-10-08_macos-portfolio-demo.md`](2026-10-08_macos-portfolio-demo.md)
