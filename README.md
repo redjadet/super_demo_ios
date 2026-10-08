@@ -100,3 +100,24 @@ From the repository root:
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
+
+## Screenshots
+
+Simulator captures of the watchOS and tvOS companions using illustrative sample
+Feed data. See the [Watch & TV walkthrough](docs/watch-tv-demo.md) for demo steps.
+
+### Apple Watch
+
+| Feed | Headline detail |
+| --- | --- |
+| ![Apple Watch sample Feed with freshness status](docs/screenshots/watch-tv/watch-feed-40mm.png) | ![Apple Watch full headline detail](docs/screenshots/watch-tv/watch-headline-40mm.png) |
+
+### Apple TV
+
+#### Light appearance
+
+![Apple TV sample Feed with focused headline in light appearance](docs/screenshots/watch-tv/tv-feed-light.png)
+
+#### Dark appearance
+
+![Apple TV sample Feed with focused headline in dark appearance](docs/screenshots/watch-tv/tv-feed-dark.png)
