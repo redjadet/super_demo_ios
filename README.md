@@ -112,7 +112,7 @@ data. See the [reviewer guide](docs/portfolio.md) and
 
 | Dashboard | Feed | Items |
 | --- | --- | --- |
-| ![iPhone Dashboard with sample release-health metrics](docs/screenshots/iphone/dashboard-light.png) | ![iPhone Feed with sample posts](docs/screenshots/iphone/feed-light.png) | ![iPhone Items with seeded sample entries](docs/screenshots/iphone/items-light.png) |
+| <img src="docs/screenshots/iphone/dashboard-light.png" width="220" alt="iPhone Dashboard with sample release-health metrics"> | <img src="docs/screenshots/iphone/feed-light.png" width="220" alt="iPhone Feed with sample posts"> | <img src="docs/screenshots/iphone/items-light.png" width="220" alt="iPhone Items with seeded sample entries"> |
 
 ### Apple Watch
 
