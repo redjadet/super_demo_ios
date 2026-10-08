@@ -69,6 +69,9 @@ visionOS companion demo, and live public DNS for `superdemo.app` universal links
 Companion demo: [Watch and Apple TV walkthrough](watch-tv-demo.md) — offline
 launch, native navigation, failure states, and source map.
 
+Mac desktop demo: [macOS portfolio walkthrough](macos-demo.md) — unsigned CI
+compile-proof, local Terminal / Xcode run path, honesty boundaries.
+
 ## How to read this repo (cold reviewer)
 
 1. [`../README.md`](../README.md) — what it proves + 3-minute path.
