@@ -69,6 +69,11 @@ done
 
 install_file "$TEMPLATE/mcp.json" "$CURSOR_DIR/mcp.json"
 
+if [[ -f "$TEMPLATE/.cursorignore" ]]; then
+  workspace_root="$(dirname "$CURSOR_DIR")"
+  install_file "$TEMPLATE/.cursorignore" "$workspace_root/.cursorignore"
+fi
+
 if [[ -d "$TEMPLATE/hooks" ]]; then
   install_file "$TEMPLATE/hooks/hooks.json" "$CURSOR_DIR/hooks.json"
   for hook in "$TEMPLATE"/hooks/*.sh; do

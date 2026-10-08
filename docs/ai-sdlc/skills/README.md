@@ -17,6 +17,8 @@ remain host-installed under gitignored `.agents/skills/` — see
 | [`offline-outbox.md`](offline-outbox.md) | Offline writes, queues, Feed cache, sync rules |
 | [`progressive-prompting.md`](progressive-prompting.md) | One behavior per agent step; verify between steps |
 | [`flutter-add-to-app.md`](flutter-add-to-app.md) | `flutter_module/`, MethodChannel, embed scripts |
+| [`ci-iphone-shards.md`](ci-iphone-shards.md) | UI test shard layout; `check_ci_contracts.py` |
+| [`docs-change-note.md`](docs-change-note.md) | Durable notes under `docs/changes/` |
 
 Cursor always-apply rules (installed from `tool/cursor-template/`) stay thin maps
 into `AGENTS.md` + verify commands — they do not replace these skills.

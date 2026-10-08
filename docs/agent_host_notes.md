@@ -87,6 +87,8 @@ Add or bump skills:
   template, run install, then update owning `docs/` if behavior changes.
 - Keep other `.cursor` rules thin; they point back to repo `docs/` and `AGENTS.md`.
 - Do not fork architecture guidance into host-only prompts.
+- Layer chooser (rules vs repo skills vs hooks vs git/CI):
+  [`ai/agent-customization-layers.md`](ai/agent-customization-layers.md).
 
 ### MCP priority (Cursor)
 

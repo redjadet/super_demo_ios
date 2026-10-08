@@ -40,6 +40,7 @@ skill text when they conflict.
 | Security / secrets | [`../security-checklist.md`](../security-checklist.md); skill [`../ai-sdlc/skills/security.md`](../ai-sdlc/skills/security.md) |
 | Flutter add-to-app | [`../flutter-add-to-app.md`](../flutter-add-to-app.md); skill [`../ai-sdlc/skills/flutter-add-to-app.md`](../ai-sdlc/skills/flutter-add-to-app.md) |
 | Host / Cursor / Xcode MCP | [`../agent_host_notes.md`](../agent_host_notes.md), [`../agent_kb/tool_orchestration.md`](../agent_kb/tool_orchestration.md) |
+| Customize agent (rules / skills / hooks) | [`agent-customization-layers.md`](agent-customization-layers.md) |
 | Harness doctrine | [`../agent_knowledge_base.md`](../agent_knowledge_base.md) |
 | Learn / reflect / memory after a run | [`self-improving-loop.md`](self-improving-loop.md) |
 | Topic unknown | [`../README.md`](../README.md) |

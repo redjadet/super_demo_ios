@@ -291,6 +291,7 @@ cursor_template_files=(
   tool/git-hooks/pre-commit
   tool/cursor-template/hooks/hooks.json
   tool/cursor-template/hooks/format-swift-after-edit.sh
+  tool/cursor-template/.cursorignore
   tool/select_xcode.sh
   tool/ios_simulator_runtime.sh
   tool/check_simulator_runtime_compat.sh

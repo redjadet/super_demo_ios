@@ -52,6 +52,7 @@ Rules and a Feed bookmark example: [`skills/progressive-prompting.md`](skills/pr
 | Intent / spec / plan / review | Feature artifact kit | `templates/`, `features/<slug>/` |
 | Institutional skills | Short policy skills (any agent) | [`skills/`](skills/README.md) |
 | Deterministic hooks | Documented gates (scripts/CI) | [`gates.md`](gates.md) |
+| Which customization layer? | Rules vs skills vs hooks vs CI | [`../ai/agent-customization-layers.md`](../ai/agent-customization-layers.md) |
 | Feedback loops | Proof before done + review vs plan | [`gates.md`](gates.md), [`../ai_code_review_protocol.md`](../ai_code_review_protocol.md) |
 | Self-improving loop | Reflect → file memory → skill library | [`../ai/self-improving-loop.md`](../ai/self-improving-loop.md) |
 
