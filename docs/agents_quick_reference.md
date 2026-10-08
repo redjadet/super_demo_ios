@@ -55,6 +55,10 @@ Router doc path honesty (CODEMAP / portfolio / architecture-tour):
 | Install git hooks | `./bin/install-git-hooks` |
 | Checklist re-run + optional format | `./bin/checklist_fix` |
 | Flutter → iOS script map | [`tooling_map.md`](tooling_map.md) |
+| Optional agent Mac tools (xcsift / SF Symbols / RocketTrace) | [`agent_dev_tools.md`](agent_dev_tools.md); `./bin/xcsift-run`, `./bin/sfsymbols`, `./bin/rockettrace`; smoke `./tool/smoke_agent_dev_tools.sh` |
+| Sift xcodebuild → agent JSON/TOON | `./bin/xcsift-run xcodebuild …` (`brew install xcsift`) |
+| SF Symbol search / exact verify | `./bin/sfsymbols search <q> --min-platform iOS26` (`brew install --cask sf-symbols`) |
+| RocketTrace status / record / results | `./bin/rockettrace status` (app running; [rockettrace.app](https://rockettrace.app/)) |
 | Isolated agent worktree | `./bin/agent-worktree --name <slug> [--apply]` → `.worktrees/<slug>`, branch `cursor/<slug>` |
 | Harness scorecard (agent) | [`ai/harness-scorecard.md`](ai/harness-scorecard.md) |
 | Agent done-gate reminder | `./bin/agent-verify-done` → [`ai-sdlc/gates.md`](ai-sdlc/gates.md) |

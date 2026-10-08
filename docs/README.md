@@ -30,6 +30,8 @@ Source-of-truth docs for `superDemoApp`.
 - Project context: [`agent_project_context.md`](agent_project_context.md)
 - Environment setup: [`agent_environment_setup.md`](agent_environment_setup.md)
 - Host notes: [`agent_host_notes.md`](agent_host_notes.md) (Cursor MCP, team skills lockfile)
+- Optional agent Mac tools (xcsift / SF Symbols 27 / RocketTrace):
+  [`agent_dev_tools.md`](agent_dev_tools.md)
 - Cursor setup: [`../tool/cursor-template/README.md`](../tool/cursor-template/README.md)
 - Team skills pin: [`../skills-lock.json`](../skills-lock.json)
 - Apple development practices: [`apple-development-practices.md`](apple-development-practices.md)

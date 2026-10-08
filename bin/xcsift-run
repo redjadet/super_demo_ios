@@ -1,0 +1,86 @@
+#!/usr/bin/env bash
+# Run a build/test command and sift stdout+stderr through xcsift for agents.
+# Optional host tool — not a merge gate. See docs/agent_dev_tools.md.
+set -euo pipefail
+
+export PATH="/opt/homebrew/bin:/usr/local/bin:${PATH}"
+
+show_help() {
+  cat <<'EOF'
+Usage: ./bin/xcsift-run [--toon] [--] <command> [args...]
+
+Runs <command> with stderr merged into stdout and pipes through xcsift
+(token-efficient JSON by default; --toon for TOON).
+
+Examples:
+  ./bin/xcsift-run xcodebuild -project superDemoApp.xcodeproj -scheme superDemoApp \
+    -destination 'platform=iOS Simulator,name=iPhone 18 Pro' build
+  ./bin/xcsift-run --toon ./bin/lint.sh
+  XCSIFT_EXTRA_ARGS='-w' ./bin/xcsift-run swift build
+
+Install: brew install xcsift
+Canon: docs/agent_dev_tools.md
+EOF
+}
+
+toon=0
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    -h|--help|help)
+      show_help
+      exit 0
+      ;;
+    --toon)
+      toon=1
+      shift
+      ;;
+    --)
+      shift
+      break
+      ;;
+    -*)
+      echo "error: unknown option: $1" >&2
+      show_help >&2
+      exit 2
+      ;;
+    *)
+      break
+      ;;
+  esac
+done
+
+if [[ $# -eq 0 ]]; then
+  echo "error: missing command" >&2
+  show_help >&2
+  exit 2
+fi
+
+if ! command -v xcsift >/dev/null 2>&1; then
+  echo "error: xcsift not found on PATH." >&2
+  echo "hint: brew install xcsift" >&2
+  echo "docs: docs/agent_dev_tools.md" >&2
+  exit 2
+fi
+
+xcsift_args=()
+if [[ "$toon" -eq 1 ]]; then
+  xcsift_args+=(-f toon)
+fi
+# shellcheck disable=SC2206
+if [[ -n "${XCSIFT_EXTRA_ARGS:-}" ]]; then
+  # Intentional word-split for optional extra flags from the environment.
+  xcsift_args+=(${XCSIFT_EXTRA_ARGS})
+fi
+
+set +e
+"$@" 2>&1 | xcsift "${xcsift_args[@]}"
+pipe_status=("${PIPESTATUS[@]}")
+set -e
+
+cmd_status="${pipe_status[0]:-1}"
+sift_status="${pipe_status[1]:-1}"
+
+if [[ "$sift_status" -ne 0 ]]; then
+  exit "$sift_status"
+fi
+exit "$cmd_status"

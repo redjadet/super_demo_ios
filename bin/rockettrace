@@ -1,0 +1,70 @@
+#!/usr/bin/env bash
+# Agent bridge to RocketTrace CLI. Requires RocketTrace.app running.
+# Optional host install — not on Homebrew. See docs/agent_dev_tools.md.
+set -euo pipefail
+
+export PATH="/opt/homebrew/bin:/usr/local/bin:${PATH}:/usr/bin"
+
+show_help() {
+  cat <<'EOF'
+Usage: ./bin/rockettrace [rockettrace-args...]
+
+Forwards to the rockettrace CLI installed from RocketTrace → Settings → CLI & Agent.
+Keep RocketTrace.app running; the CLI is not a standalone Instruments front end.
+
+Examples:
+  ./bin/rockettrace status
+  ./bin/rockettrace builds
+  ./bin/rockettrace record start --label "Checkout" --dry-run
+  ./bin/rockettrace results get --brief
+
+Install: https://rockettrace.app/ (macOS 26 + Xcode 27+), then Settings → CLI & Agent.
+Canon: docs/agent_dev_tools.md
+EOF
+}
+
+resolve_rockettrace() {
+  if [[ -n "${ROCKETTRACE_BIN:-}" && -x "${ROCKETTRACE_BIN}" ]]; then
+    printf '%s\n' "${ROCKETTRACE_BIN}"
+    return 0
+  fi
+  if command -v rockettrace >/dev/null 2>&1; then
+    command -v rockettrace
+    return 0
+  fi
+  local candidates=(
+    "$HOME/bin/rockettrace"
+    "/usr/local/bin/rockettrace"
+    "/opt/homebrew/bin/rockettrace"
+    "/Applications/RocketTrace.app/Contents/MacOS/rockettrace"
+    "/Applications/RocketTrace.app/Contents/Resources/rockettrace"
+  )
+  local c
+  for c in "${candidates[@]}"; do
+    if [[ -x "$c" ]]; then
+      printf '%s\n' "$c"
+      return 0
+    fi
+  done
+  return 1
+}
+
+case "${1:-}" in
+  -h|--help|help)
+    if bin="$(resolve_rockettrace 2>/dev/null)"; then
+      exec "$bin" --help
+    fi
+    show_help
+    exit 0
+    ;;
+esac
+
+if ! bin="$(resolve_rockettrace)"; then
+  echo "error: rockettrace CLI not found on PATH." >&2
+  echo "hint: Install RocketTrace from https://rockettrace.app/ then Settings → CLI & Agent." >&2
+  echo "note: Requires macOS 26 + Xcode 27+; keep RocketTrace.app running while using the CLI." >&2
+  echo "docs: docs/agent_dev_tools.md" >&2
+  exit 2
+fi
+
+exec "$bin" "$@"

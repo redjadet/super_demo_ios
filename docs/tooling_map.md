@@ -27,6 +27,9 @@ Canon gates: [`engineering/checklist_gate.md`](engineering/checklist_gate.md),
 | `integration_*` | `./bin/ci-iphone-test.sh` | UI smoke / tests — not Flutter Driver |
 | — | `./bin/ci-platform-builds.sh` | iPad + Mac (+ `ci-watch-build` / `ci-tvos-build`) compile proof |
 | — | `./bin/coverage-iphone.sh` | Optional local/nightly `-enableCodeCoverage` (not a PR gate / no badge) |
+| — | `./bin/xcsift-run` | Optional: pipe build/test through `xcsift` (agent JSON/TOON) |
+| — | `./bin/sfsymbols` | Optional: SF Symbols 27 CLI bridge |
+| — | `./bin/rockettrace` | Optional: RocketTrace CLI (app must be running) |
 | `router_feature_validate` | **N/A** | GoRouter-only |
 | `upgrade_validate_all` | **N/A day-one** | No Melos; use Xcode/SPM manually |
 
@@ -62,6 +65,10 @@ Canon gates: [`engineering/checklist_gate.md`](engineering/checklist_gate.md),
 | Stale worktrees/branches | `./bin/prune-git-stale` then `--apply` |
 | Agent session start | `./bin/agent-maintain preflight` |
 | Agent finish | `./bin/agent-maintain closeout` |
+| Sift xcodebuild for agents | `./bin/xcsift-run …` ([`agent_dev_tools.md`](agent_dev_tools.md)) |
+| Verify SF Symbol names | `./bin/sfsymbols search …` |
+| RocketTrace record/results | `./bin/rockettrace status` (host app running) |
+| Optional-tools smoke | `./tool/smoke_agent_dev_tools.sh` |
 
 ## Out of scope (do not fake)
 
@@ -71,3 +78,6 @@ Canon gates: [`engineering/checklist_gate.md`](engineering/checklist_gate.md),
 
 Prefer extending `tool/check_agent_swift_patterns.sh` + SwiftLint when a **real**
 in-repo smell shows up (`FP-P2-C` in the Flutter-parity plan).
+
+Optional agent Mac tools (xcsift / SF Symbols 27 / RocketTrace): see
+[`agent_dev_tools.md`](agent_dev_tools.md). Not Flutter-parity targets.

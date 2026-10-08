@@ -41,6 +41,7 @@ Timed walk: [`docs/architecture-tour.md`](docs/architecture-tour.md).
 | Validation / proof commands | [`docs/agents_quick_reference.md`](docs/agents_quick_reference.md); `./bin/checklist-fast`, `./bin/checklist`, `./bin/lint`, `./bin/ci` |
 | Delivery checklist gate | [`docs/engineering/checklist_gate.md`](docs/engineering/checklist_gate.md) — local `./bin/checklist`; GHA job `checklist` |
 | Flutter → iOS tooling map | [`docs/tooling_map.md`](docs/tooling_map.md) |
+| Optional agent Mac tools (xcsift / SF Symbols / RocketTrace) | [`docs/agent_dev_tools.md`](docs/agent_dev_tools.md); `./bin/xcsift-run`, `./bin/sfsymbols`, `./bin/rockettrace` |
 | Engineering evidence map | [`docs/engineering/engineering-evidence-map.md`](docs/engineering/engineering-evidence-map.md); `./tool/check_engineering_evidence_map.sh` |
 | Agent worktree / maintain | `./bin/agent-worktree`, `./bin/agent-maintain`; [`docs/agent_kb/host-maintenance.md`](docs/agent_kb/host-maintenance.md) |
 | Harness scorecard (agent) | [`docs/ai/harness-scorecard.md`](docs/ai/harness-scorecard.md) — separate from Engineering |

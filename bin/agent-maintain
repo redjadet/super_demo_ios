@@ -45,6 +45,8 @@ session|host|docs/agent_kb/host-maintenance.md
 session|harness|docs/ai/harness-scorecard.md
 session|worktree|./bin/agent-worktree --name <slug> [--apply]
 session|tooling|docs/tooling_map.md
+session|agent_dev_tools|docs/agent_dev_tools.md
+session|agent_dev_tools_smoke|./tool/smoke_agent_dev_tools.sh
 session|checklist_gate|docs/engineering/checklist_gate.md
 session|proof_fast|./bin/checklist-fast
 session|proof_lint|./bin/lint
