@@ -11,6 +11,7 @@
 - AGENTS.md
 - CODEMAP.md
 - docs/using-agents-here.md (humans directing agents)
+- docs/ai/self-improving-loop.md (learn/reflect/memory after runs)
 - docs/ai-sdlc/README.md (intent→spec→plan→REVIEW kit)
 - docs/architecture-tour.md (≤15 min tour)
 - docs/portfolio.md

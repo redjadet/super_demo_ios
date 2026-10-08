@@ -4,6 +4,8 @@ Record durable implementation notes after meaningful changes.
 
 ## Entries
 
+- [`2026-10-08_self-improving-agent-loop.md`](2026-10-08_self-improving-agent-loop.md)
+  — Post-run learn/reflect/memory/skill loop; file memory honesty; map links.
 - [`2026-10-08_agent-dev-tools.md`](2026-10-08_agent-dev-tools.md)
   — Optional agent wrappers for xcsift / SF Symbols 27 / RocketTrace + smoke.
 - [`2026-10-08_ci-watch-retry-ui2-launch-order.md`](2026-10-08_ci-watch-retry-ui2-launch-order.md)

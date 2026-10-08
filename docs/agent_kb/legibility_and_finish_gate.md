@@ -41,6 +41,8 @@ Closeout template: [`safety-report-template.md`](safety-report-template.md)
 `./bin/agent-maintain closeout`. Host ops:
 [`host-maintenance.md`](host-maintenance.md). Costly/credentialed actions:
 [`agent_safety_contracts.md`](agent_safety_contracts.md) SAFETY-02.
+Reflect before ship (critic ≥ ~8 or name residual risk); promote reusable
+lessons: [`../ai/self-improving-loop.md`](../ai/self-improving-loop.md).
 
 Before final report or commit, self-verify:
 
