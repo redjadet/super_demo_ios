@@ -11,10 +11,14 @@ swiftlint_version: 0.65.1
 included:
   - superDemoApp
   - FeedWidgetShared
+  - FeedCompanionTests
   - superDemoAppWidget
   - ShareInboxShared
   - superDemoAppShare
   - superDemoAppWatch
+  - superDemoAppTV
+  - superDemoAppWatchTests
+  - superDemoAppTVTests
   - superDemoAppTests
   - superDemoAppUITests
 

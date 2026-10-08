@@ -4,6 +4,9 @@ Record durable implementation notes after meaningful changes.
 
 ## Entries
 
+- [`2026-10-08_watch-tv-portfolio-demo.md`](2026-10-08_watch-tv-portfolio-demo.md)
+  — Native companion navigation, safe sample states, freshness/concurrency
+  fixes, app icons, hosted regression tests, and offline walkthrough.
 - [`2026-10-08_self-improving-agent-loop.md`](2026-10-08_self-improving-agent-loop.md)
   — Post-run learn/reflect/memory/skill loop; file memory honesty; map links.
 - [`2026-10-08_ci-watch-retry-ui2-launch-order.md`](2026-10-08_ci-watch-retry-ui2-launch-order.md)

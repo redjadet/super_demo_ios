@@ -33,6 +33,7 @@ if ! swiftformat \
   --config "$ROOT/.swiftformat" \
   "$ROOT/superDemoApp" \
   "$ROOT/FeedWidgetShared" \
+  "$ROOT/FeedCompanionTests" \
   "$ROOT/superDemoAppWidget" \
   "$ROOT/ShareInboxShared" \
   "$ROOT/superDemoAppShare" \

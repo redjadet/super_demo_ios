@@ -26,6 +26,7 @@ an optional Flutter add-to-app module.
 [3-minute reviewer path](#3-minute-path) ·
 [Architecture tour](docs/architecture-tour.md) ·
 [Detailed portfolio guide](docs/portfolio.md) ·
+[Watch & TV demo](docs/watch-tv-demo.md) ·
 [İlker Sevim's portfolio](https://redjadet.github.io/react-web-portfolio/)
 
 This is a portfolio sample, not a shipped App Store product. Platform support,
@@ -38,6 +39,7 @@ simulated flows and optional integrations are documented in the
 | --- | --- |
 | **Seeded demo data** | Launch with `-ReviewerDemoMode` (or `SUPERDEMO_REVIEWER_DEMO_MODE=1`) for deterministic Dashboard, Feed, and Items. Normal runs still use live JSONPlaceholder for Feed where configured. |
 | **Engineering demos** | Dashboard → **Engineering demos** — labeled simulations (StoreKit query-only, local notifications, Flutter when frameworks are prepared, watchOS/tvOS Feed companions, and similar). Not production integrations. |
+| **Watch & Apple TV** | Run `superDemoAppWatch` or `superDemoAppTV`, choose **Try sample Feed**, then open a headline or **Demo states**. Offline samples stay in memory; saved snapshots remain read-only. [Two-minute walkthrough](docs/watch-tv-demo.md). |
 | **Assets** | Custom blue monogram app icon includes Light, Dark, Tinted, and Mac size variants in the [asset catalog](superDemoApp/Assets.xcassets/AppIcon.appiconset/Contents.json). App Store marketing screenshots are not included. |
 | **Universal links** | `https://superdemo.app/…` routes parse like the custom scheme; public DNS for the apex domain is **not** claimed — prefer `superdemo://` for demos. |
 

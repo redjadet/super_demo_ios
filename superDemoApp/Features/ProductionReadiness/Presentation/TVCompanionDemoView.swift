@@ -16,14 +16,14 @@ struct TVCompanionDemoView: View {
                     .accessibilityIdentifier("tvCompanionDemoTitle")
                     .accessibilityLabel("tvOS Feed snapshot companion")
                 Text(
-                    "The Apple TV app reads the same Feed widget App Group snapshot "
-                        + "DTO (`feed-widget-snapshot.json`) and honest states "
-                        + "(unavailable / absent / corrupt / expired / ok)."
+                    "Browse a local Feed with clear freshness states and full headline details. "
+                        + "Try sample Feed to explore offline, then use Demo states to show "
+                        + "cached, expired, empty, or unavailable content."
                 )
                 .foregroundStyle(.secondary)
                 .accessibilityIdentifier("tvCompanionDemoSummary")
                 .accessibilityLabel(
-                    "tvOS companion reads the Feed widget App Group snapshot with honest states."
+                    "TV companion shows local Feed headlines and offline sample states."
                 )
             } header: {
                 Text("Surface")
@@ -57,8 +57,9 @@ struct TVCompanionDemoView: View {
                     "iPhone and Apple TV do not share one App Group disk. "
                         + "Each process has a local container with the same group ID. "
                         + "This demo does not claim phone→TV sync. "
-                        + "On tvOS Simulator, use Seed demo snapshot when absent. "
-                        + "The watchOS companion uses the same DTO and honesty contract."
+                        + "On tvOS Simulator, choose Try sample Feed. Samples stay in memory "
+                        + "and never replace a saved snapshot. Use remote focus to open "
+                        + "headlines and Demo states. The Watch uses the same snapshot format."
                 )
                 .font(.callout)
                 .accessibilityIdentifier("tvCompanionDemoHonesty")
@@ -66,7 +67,7 @@ struct TVCompanionDemoView: View {
                     "tvOS App Group is local only. No phone to TV sync is claimed."
                 )
             } header: {
-                Text("Honesty")
+                Text("Independent demo")
             } footer: {
                 Text("A visionOS companion app is not included in this sample.")
             }
