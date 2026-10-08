@@ -93,7 +93,9 @@ Unsigned local execution is development evidence, not distribution signing.
   unavailability. Mac App Store distribution, sandbox/App Group capabilities,
   and production service status are not established by this walkthrough.
 
-Run the focused desktop UI regressions on a Mac with a working test host:
+Run the focused desktop UI regressions on a Mac with a working test host and
+authenticated Automation Mode. This recipe ad-hoc signs only disposable local
+build products; it does not establish distribution signing:
 
 ```bash
 xcodebuild -project superDemoApp.xcodeproj -scheme superDemoApp \
@@ -101,8 +103,19 @@ xcodebuild -project superDemoApp.xcodeproj -scheme superDemoApp \
   -derivedDataPath build/macos-tests \
   -only-testing:superDemoAppUITests/MacPortfolioUITests \
   -parallel-testing-enabled NO \
+  CODE_SIGNING_ALLOWED=NO CODE_SIGN_IDENTITY=- build-for-testing
+
+codesign --force --deep --sign - \
+  build/macos-tests/Build/Products/Debug/superDemoApp.app
+codesign --force --deep --sign - \
+  build/macos-tests/Build/Products/Debug/superDemoAppUITests-Runner.app
+
+xcodebuild -project superDemoApp.xcodeproj -scheme superDemoApp \
+  -destination 'platform=macOS' -derivedDataPath build/macos-tests \
+  -only-testing:superDemoAppUITests/MacPortfolioUITests \
+  -parallel-testing-enabled NO \
   -resultBundlePath build/mac-portfolio-tests.xcresult \
-  CODE_SIGNING_ALLOWED=NO CODE_SIGN_IDENTITY=- test
+  CODE_SIGNING_ALLOWED=NO CODE_SIGN_IDENTITY=- test-without-building
 ```
 
 ## Source map

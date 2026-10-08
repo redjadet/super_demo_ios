@@ -37,14 +37,20 @@ struct FeedView: View {
                         self.content
                             .navigationTitle("Feed")
                             .iosInlineNavigationBarTitle()
+                            #if !os(macOS)
+                            .toolbar { self.feedToolbar }
+                            #endif
                     }
                 )
             } else {
                 self.content
+                    #if !os(macOS)
+                    .toolbar { self.feedToolbar }
+                    #endif
             }
         }
-        .toolbar { self.feedToolbar }
         #if os(macOS)
+        .toolbar { self.feedToolbar }
         .focusedSceneValue(\.macRefresh) { self.model.refresh() }
         #endif
         .alert("Could Not Save Bookmark", isPresented: Binding(
