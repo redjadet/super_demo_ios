@@ -46,6 +46,7 @@ Host / MCP / skills: [`docs/agent_host_notes.md`](docs/agent_host_notes.md),
 | Reviewer evidence map | [`docs/engineering/engineering-evidence-map.md`](docs/engineering/engineering-evidence-map.md) |
 | Agent worktree / maintain | `./bin/agent-worktree`; `./bin/agent-maintain`; [`docs/agent_kb/host-maintenance.md`](docs/agent_kb/host-maintenance.md) |
 | Code quality / coverage | [`docs/code-quality.md`](docs/code-quality.md) |
+| Learn / reflect after a run | [`docs/ai/self-improving-loop.md`](docs/ai/self-improving-loop.md) |
 
 ## Progressive prompting: rules for Cursor/Codex agents
 

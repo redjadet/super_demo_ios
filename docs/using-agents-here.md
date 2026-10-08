@@ -108,6 +108,19 @@ re-prompt loops after two near-misses—switch to evidence
 For this portfolio sample: invest agentic discipline on merge-bound paths;
 allow vibe only for disposable spikes you will not ship.
 
+## Teach the harness (self-improving loop)
+
+Agents get better when **you** require a closeout that compounds:
+
+1. Proof from real commands/CI, not chat confidence.
+2. A short critic pass before accept (revise if quality is weak).
+3. Durable write-back: preference, owning doc, change note, or skill — not a
+   fatter `AGENTS.md`.
+
+Purpose-typed memory (session / prefs / experiences / relationships) maps to
+files and the Cursor Agent Store — not invented databases. Owner:
+[`ai/self-improving-loop.md`](ai/self-improving-loop.md).
+
 ## What this page does not claim
 
 - New product features or tip-pin inventory.
