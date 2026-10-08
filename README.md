@@ -103,8 +103,16 @@ This project is licensed under the [MIT License](LICENSE).
 
 ## Screenshots
 
-Simulator captures of the watchOS and tvOS companions using illustrative sample
-Feed data. See the [Watch & TV walkthrough](docs/watch-tv-demo.md) for demo steps.
+Simulator captures using sample data: the iPhone app runs with
+`-ReviewerDemoMode`; the watchOS and tvOS companions use illustrative sample Feed
+data. See the [reviewer guide](docs/portfolio.md) and
+[Watch & TV walkthrough](docs/watch-tv-demo.md) for demo steps.
+
+### iPhone
+
+| Dashboard | Feed | Items |
+| --- | --- | --- |
+| ![iPhone Dashboard with sample release-health metrics](docs/screenshots/iphone/dashboard-light.png) | ![iPhone Feed with sample posts](docs/screenshots/iphone/feed-light.png) | ![iPhone Items with seeded sample entries](docs/screenshots/iphone/items-light.png) |
 
 ### Apple Watch
 
