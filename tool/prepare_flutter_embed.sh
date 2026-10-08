@@ -160,8 +160,38 @@ if [[ ! -d "$DEBUG_DIR/Flutter.xcframework" ]]; then
   exit 1
 fi
 
-echo "==> flatten XCFramework slices → Flutter/<Config>/{iphoneos,iphonesimulator}"
-flatten_all_configs
+# Cached embeds already contain flattened slices. Recopying Flutter binaries
+# during simulator boot took ~3 minutes on hosted runners. Only reuse slices
+# prepared by this version of the script, with every required framework present.
+prepared_marker="$OUT_DIR/.prepared-slices"
+prepared_version="$(shasum -a 256 "$ROOT/tool/prepare_flutter_embed.sh" | awk '{print $1}')"
+prepared_slices_valid() {
+  [[ -f "$prepared_marker" ]] || return 1
+  [[ "$(cat "$prepared_marker")" == "$prepared_version" ]] || return 1
+  local config_dir name sdk
+  for config_dir in "$OUT_DIR"/Debug "$OUT_DIR"/Release "$OUT_DIR"/Profile; do
+    [[ -d "$config_dir/Flutter.xcframework" ]] || continue
+    for name in Flutter App FlutterPluginRegistrant; do
+      if [[ "$name" == "FlutterPluginRegistrant" && ! -d "$config_dir/$name.xcframework" ]]; then
+        continue
+      fi
+      [[ -d "$config_dir/$name.xcframework" ]] || return 1
+      for sdk in iphoneos iphonesimulator; do
+        [[ -d "$config_dir/$sdk/$name.framework" ]] || return 1
+      done
+    done
+  done
+}
+
+if [[ "$SKIP_BUILD" == "1" ]] && prepared_slices_valid; then
+  echo "==> Prepared Flutter slices valid — skip binary copies"
+else
+  echo "==> flatten XCFramework slices → Flutter/<Config>/{iphoneos,iphonesimulator}"
+  # Never leave a valid marker after an interrupted or failed flatten.
+  rm -f "$prepared_marker"
+  flatten_all_configs
+  printf '%s\n' "$prepared_version" > "$prepared_marker"
+fi
 
 for required in \
   "$DEBUG_DIR/iphonesimulator/Flutter.framework" \

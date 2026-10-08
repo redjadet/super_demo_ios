@@ -13,7 +13,7 @@ merge — not a second parallel theater.
 | DESIGN.md (DesignMD) | `./tool/check_design_md.sh` | job `lint` → `ci_lint` (includes DesignMD) |
 | Swift lint + modularity + evidence map | `./bin/lint.sh` | job `lint` |
 | Common issues | `./tool/check_common_issues.sh` (scope contract + sim runtime compat + AASA parity/live-host DNS honesty + Markdown relative links) | job `lint` |
-| iPhone build + test | `./bin/ci-iphone-test.sh` (unsharded locally) | Default job `iphone` (single-runner build + parallel tests); sharded fallback: `iphone-build` (units) + matrix `iphone-test` (`ui-a`/`ui-b`) |
+| iPhone build + test | `./bin/ci-iphone-test.sh` (unsharded locally) | Default `iphone-build` (units) + four duration-balanced `iphone-test` shards (`ui-1`…`ui-4`); optional `iphone` single-runner comparison |
 | iPad + Mac + watchOS + tvOS builds/tests | `./bin/ci-platform-builds.sh` (watch: `./bin/ci-watch-build.sh` → `test` or build fallback; tvOS: `./bin/ci-tvos-build.sh` → `test` or build fallback) | job `platform-builds` |
 | Aggregate gate | `./bin/checklist` (single command) | job **`checklist`** / **Delivery checklist** (needs scope + lint + active iPhone layout + platform) |
 
@@ -48,12 +48,12 @@ checklist gate.
 
 ## Honesty (PR vs local)
 
-Hosted iPhone proof defaults to one job: background simulator boot during
-setup/build, then `test-without-building` with parallel workers on an
-already-installed newest-runtime iPhone (`CI_IPHONE_GENERIC_BUILD=0`,
-`CI_SIMULATOR_REUSE_ONLY=1`). Sharded layout is an opt-in compare/fallback
-(`CI_IPHONE_LAYOUT=sharded`). Local `./bin/checklist` runs the unsharded
-`./bin/ci-iphone-test.sh`. See
+Hosted iPhone proof defaults to `iphone-build` plus four UI shard jobs.
+Simulator boot starts after Flutter preparation in the build job, overlapping
+native compilation; shard simulators boot after product download. Tests run
+serially within each shard to avoid simulator clone overhead. The optional
+single layout is selected by `changes.outputs.iphone_layout` in the workflow.
+Local `./bin/checklist` runs the unsharded `./bin/ci-iphone-test.sh`. See
 [`../adr/0005-ci-pr-vs-local-honesty.md`](../adr/0005-ci-pr-vs-local-honesty.md)
 and [`../ci-cd-map.md`](../ci-cd-map.md). Name the exact proof command in finish
 reports.

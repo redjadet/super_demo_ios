@@ -4,6 +4,8 @@ Record durable implementation notes after meaningful changes.
 
 ## Entries
 
+- [`2026-10-07_ci-pr-critical-path.md`](2026-10-07_ci-pr-critical-path.md)
+  — Prepared Flutter cache reuse, balanced complete UI shards, coverage guard.
 - [`2026-10-07_failure-concepts-map.md`](2026-10-07_failure-concepts-map.md)
   — Eight failure concepts Present/Soft/Gap map; Feed widget
   `NSFileCoordinator` parity with Share inbox.

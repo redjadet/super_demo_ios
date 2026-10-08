@@ -318,6 +318,9 @@ else
   fail "tool/check_checklist_scope.sh must be executable"
 fi
 
+section "CI shard coverage and Flutter cache preparation"
+python3 ./tool/check_ci_contracts.py || fail "CI contracts failed"
+
 section "Simulator runtime ↔ device-type compat"
 if [[ -x tool/check_simulator_runtime_compat.sh ]]; then
   ./tool/check_simulator_runtime_compat.sh || fail "simulator runtime compat check failed"
