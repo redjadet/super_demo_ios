@@ -227,13 +227,13 @@ if ((test_status == 124)); then
   exit 124
 fi
 
-# Accessibility / launch-progress / UI-query flakes — reboot simulator once, then retry.
-# (Hard xcodebuild 124 timeouts still do not retry — see above.)
+# Accessibility / launch-progress / UI-query / process-ID flakes — reboot simulator
+# once, then retry. (Hard xcodebuild 124 timeouts still do not retry — see above.)
 if [[ "${CI:-}" == "true" ]] && grep -Eq \
-  "Timed out while loading Accessibility|Timed out while requesting launch progress|Timed out while evaluating UI query" \
+  "Timed out while loading Accessibility|Timed out while requesting launch progress|Timed out while evaluating UI query|does not have a process ID" \
   "$test_log"
 then
-  echo "warning: UI test Accessibility/launch-progress/UI-query timeout; retrying once after simulator reboot" >&2
+  echo "warning: UI test Accessibility/launch-progress/UI-query/process-ID flake; retrying once after simulator reboot" >&2
 
   udid="$(sed -n 's/.*id=\([0-9A-Fa-f-]\{36\}\).*/\1/p' <<<"$SIMULATOR_DEST" | tr '[:lower:]' '[:upper:]')"
   if [[ "$udid" =~ ^[0-9A-F-]{36}$ ]]; then
