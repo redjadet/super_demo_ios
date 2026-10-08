@@ -1,0 +1,18 @@
+# Installed next to .cursor/ (workspace root). Keeps local secrets out of Agent context.
+# See docs/ai/agent-customization-layers.md
+
+# Env / keys (also .gitignore)
+.env
+.env.*
+*.pem
+
+# Signing material (local only)
+*.p12
+*.mobileprovision
+*.cer
+
+# Large or machine-local Xcode output
+DerivedData/
+**/DerivedData/
+build/
+**/build/

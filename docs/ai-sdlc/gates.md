@@ -36,10 +36,11 @@ Chooser detail: [`../agents_quick_reference.md`](../agents_quick_reference.md),
 
 | Install | Behavior |
 | --- | --- |
-| `./tool/install-cursor-rules.sh` | Cursor rules + SwiftFormat-after-edit (fail open) |
+| `./tool/install-cursor-rules.sh` | Cursor rules + hooks + workspace `.cursorignore` (fail open) |
 | `./tool/install-git-hooks.sh` | `pre-commit` → `./bin/verify-swift.sh` on staged `.swift` |
 
-These reduce drift; they **do not** replace checklist / CI. Skip pre-commit only
+These reduce drift; they **do not** replace checklist / CI. Agent hook limits:
+[`../ai/agent-customization-layers.md`](../ai/agent-customization-layers.md). Skip pre-commit only
 with explicit `SKIP_SWIFT_VERIFY=1` or `--no-verify` when the human asked.
 
 ## Protected / sensitive paths (agent write discipline)

@@ -57,6 +57,8 @@ Details and skill list: [`docs/agent_host_notes.md`](../../docs/agent_host_notes
 - `mcp.json` — Xcode Intelligence MCP (`xcrun mcpbridge`)
 - `hooks.json` + `hooks/format-swift-after-edit.sh` — SwiftFormat after agent/Tab edits
   (one file, fail open)
+- `.cursorignore` — copied to workspace root (parent of `.cursor/`); keeps local
+  secrets and DerivedData out of Agent context ([`docs/ai/agent-customization-layers.md`](../../docs/ai/agent-customization-layers.md))
 
 Canonical policy: lean [`AGENTS.md`](../../AGENTS.md) (map) + `docs/` (detail). Edit the
 template here, run install, and update owning docs if behavior changes.
