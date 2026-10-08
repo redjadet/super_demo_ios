@@ -9,18 +9,16 @@ import XCTest
 @testable import superDemoAppWatch
 
 final class WatchFeedCompanionIntegrationTests: XCTestCase {
-    private var tempRoot: URL!
+    private let tempRoot = FileManager.default.temporaryDirectory
+        .appendingPathComponent("watch-feed-it-\(UUID().uuidString)", isDirectory: true)
 
     override func setUpWithError() throws {
         try super.setUpWithError()
-        self.tempRoot = FileManager.default.temporaryDirectory
-            .appendingPathComponent("watch-feed-it-\(UUID().uuidString)", isDirectory: true)
         try FileManager.default.createDirectory(at: self.tempRoot, withIntermediateDirectories: true)
     }
 
     override func tearDownWithError() throws {
         try? FileManager.default.removeItem(at: self.tempRoot)
-        self.tempRoot = nil
         try super.tearDownWithError()
     }
 
@@ -44,7 +42,7 @@ final class WatchFeedCompanionIntegrationTests: XCTestCase {
             return
         }
         XCTAssertEqual(loaded.titles.count, 3)
-        XCTAssertEqual(loaded.titles.first?.title, "Watch demo: Feed snapshot")
+        XCTAssertEqual(loaded.titles.first?.title, "A quiet morning on the Bosphorus")
         XCTAssertFalse(loaded.isStale)
     }
 
@@ -72,46 +70,17 @@ final class WatchFeedCompanionIntegrationTests: XCTestCase {
         XCTAssertEqual(state, .corrupt)
     }
 
-    func testRealAppGroupSeedOrHonestUnavailable() throws {
-        // Unsigned Simulator may lack the App Group container — that is an
-        // honest `.unavailable` / seed-failure path, not a silent empty OK.
-        // When the container exists, preserve any prior snapshot (Codex P2).
-        let before = FeedWidgetSnapshotStore.loadState()
-        switch before {
-        case .unavailable:
-            XCTAssertThrowsError(try FeedWidgetSnapshotStore.write(FeedCompanionDemoSnapshot.watchSeed())) { error in
-                XCTAssertEqual(error as? FeedWidgetSnapshotStoreError, .containerUnavailable)
-            }
-        case .absent, .corrupt, .expired, .ok:
-            let priorData = Self.readPersistentSnapshotData()
-            defer { Self.restorePersistentSnapshot(priorData: priorData) }
-            try FeedWidgetSnapshotStore.write(FeedCompanionDemoSnapshot.watchSeed())
-            let after = FeedWidgetSnapshotStore.loadState()
-            guard case let .ok(snapshot) = after else {
-                XCTFail("expected ok after seed when container exists, got \(after)")
-                return
-            }
-            XCTAssertEqual(snapshot.titles.first?.title, "Watch demo: Feed snapshot")
-        }
-    }
-
-    private static func readPersistentSnapshotData() -> Data? {
-        guard let fileURL = FeedWidgetSnapshotStore.snapshotFileURL(),
-              FileManager.default.fileExists(atPath: fileURL.path)
-        else {
-            return nil
-        }
-        return try? Data(contentsOf: fileURL)
-    }
-
-    private static func restorePersistentSnapshot(priorData: Data?) {
-        guard let fileURL = FeedWidgetSnapshotStore.snapshotFileURL() else {
-            return
-        }
-        if let priorData {
-            try? priorData.write(to: fileURL, options: .atomic)
-        } else {
-            try? FeedWidgetSnapshotStore.remove()
+    func testRealAppGroupReadIsStableAndNonMutating() {
+        // A real-container smoke check must never overwrite the reviewer's data.
+        let file = FeedWidgetSnapshotStore.snapshotFileURL()
+        let before = file.flatMap { try? Data(contentsOf: $0) }
+        let now = Date()
+        let first = FeedWidgetSnapshotStore.loadState(now: now)
+        let second = FeedWidgetSnapshotStore.loadState(now: now)
+        XCTAssertEqual(first, second)
+        XCTAssertEqual(file.flatMap { try? Data(contentsOf: $0) }, before)
+        if file == nil {
+            XCTAssertEqual(first, .unavailable)
         }
     }
 }

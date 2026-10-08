@@ -9,31 +9,31 @@
 import Foundation
 
 nonisolated enum FeedCompanionDemoSnapshot {
-    /// Matches `FeedWatchSnapshotView.seedDemo` titles / TTL.
+    /// Small-screen sample; shown in memory by the Watch companion.
     static func watchSeed(writtenAt: Date = Date()) -> FeedWidgetSnapshot {
         FeedWidgetSnapshot(
             writtenAt: writtenAt,
             cacheTTLSeconds: 15 * 60,
             isStale: false,
             titles: [
-                .init(id: 1, title: "Watch demo: Feed snapshot"),
-                .init(id: 2, title: "Same DTO as Home Screen widget"),
-                .init(id: 3, title: "Local App Group — not phone sync"),
+                .init(id: 1, title: "A quiet morning on the Bosphorus"),
+                .init(id: 2, title: "A new walking route along the waterfront"),
+                .init(id: 3, title: "Small habits that make room for creative work"),
             ]
         )
     }
 
-    /// Matches `FeedTVSnapshotView.seedDemo` titles / TTL.
+    /// Living-room sample; shown in memory by the Apple TV companion.
     static func tvSeed(writtenAt: Date = Date()) -> FeedWidgetSnapshot {
         FeedWidgetSnapshot(
             writtenAt: writtenAt,
             cacheTTLSeconds: 15 * 60,
             isStale: false,
             titles: [
-                .init(id: 1, title: "tvOS demo: Feed snapshot"),
-                .init(id: 2, title: "Same DTO as Home Screen widget"),
-                .init(id: 3, title: "Same honesty contract as watchOS"),
-                .init(id: 4, title: "Local App Group — not phone sync"),
+                .init(id: 1, title: "A quiet morning on the Bosphorus"),
+                .init(id: 2, title: "A new walking route along the waterfront"),
+                .init(id: 3, title: "Designing a calmer daily reading routine"),
+                .init(id: 4, title: "Small habits that make room for creative work"),
             ]
         )
     }

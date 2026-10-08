@@ -1,123 +1,140 @@
-//
-//  FeedWatchSnapshotView.swift
-//  superDemoAppWatch
-//
-//  Read-only Feed widget snapshot UI on watchOS. Same DTO / states as iOS
-//  widget; App Group container is watch-local (not phone↔watch sync).
-//
+// Native, glanceable Feed companion. Stored snapshots are read-only.
 
 import SwiftUI
 
 struct FeedWatchSnapshotView: View {
-    @State private var state: FeedWidgetSnapshotState = .absent
-    @State private var seededNote: String?
+    @Environment(\.scenePhase)
+    private var scenePhase
+    @State private var model: FeedCompanionModel
+
+    init(scenario: FeedCompanionScenario? = FeedCompanionScenario.launchSelection()) {
+        self._model = State(initialValue: FeedCompanionModel(
+            makeSeed: { FeedCompanionDemoSnapshot.watchSeed(writtenAt: $0) },
+            scenario: scenario
+        ))
+    }
 
     var body: some View {
         NavigationStack {
             List {
                 Section {
-                    Text(self.statusTitle)
-                        .font(.headline)
-                        .accessibilityIdentifier("watchFeedSnapshotStatus")
-                    Text(self.statusDetail)
-                        .font(.caption2)
-                        .foregroundStyle(.secondary)
-                } header: {
-                    Text("Feed snapshot")
-                } footer: {
-                    Text(
-                        "Same App Group ID + JSON as the iPhone widget. "
-                            + "Watch container is local — not live phone sync."
-                    )
-                }
-
-                if case let .ok(snapshot) = self.state {
-                    Section("Titles") {
-                        ForEach(snapshot.titles.prefix(5), id: \.id) { row in
-                            Text(row.title)
-                                .lineLimit(2)
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text(self.model.sourceTitle)
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                        Label(self.model.statusTitle, systemImage: self.model.statusSymbol)
+                            .font(.headline)
+                            .accessibilityIdentifier("watchFeedSnapshotStatus")
+                        if self.model.isLoading, self.model.snapshot == nil {
+                            ProgressView("Loading Feed")
+                        } else if self.model.snapshot == nil || self.model.snapshot?.titles.isEmpty == true {
+                            Text(self.model.statusDetail)
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
                         }
                     }
-                } else if case let .expired(snapshot) = self.state {
-                    Section("Expired titles") {
-                        ForEach(snapshot.titles.prefix(5), id: \.id) { row in
-                            Text(row.title)
-                                .lineLimit(2)
+                    .accessibilityElement(children: .combine)
+                    if self.model.snapshot == nil || self.model.snapshot?.titles.isEmpty == true {
+                        Button("Try sample Feed", systemImage: "play.circle") {
+                            self.model.showSample()
                         }
+                        .accessibilityIdentifier("watchFeedSnapshotSeed")
+                    }
+                }
+
+                if let snapshot = self.model.snapshot {
+                    Section {
+                        ForEach(snapshot.titles.prefix(5), id: \.id) { row in
+                            NavigationLink {
+                                ScrollView {
+                                    VStack(alignment: .leading, spacing: 16) {
+                                        Text(row.title)
+                                            .font(.headline)
+                                            .accessibilityIdentifier("watchFeedHeadlineTitle")
+                                        Text(self.model.statusDetail)
+                                            .font(.caption)
+                                            .foregroundStyle(.secondary)
+                                        Text(self.model.sourceTitle)
+                                            .font(.caption2)
+                                            .foregroundStyle(.secondary)
+                                    }
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    .padding(.horizontal)
+                                }
+                                .navigationTitle("Headline")
+                            } label: {
+                                Text(row.title)
+                                    .font(.body)
+                                    .lineLimit(3)
+                            }
+                            .accessibilityHint("Opens the full headline")
+                            .accessibilityIdentifier("watchFeedHeadline_\(row.id)")
+                        }
+                    } header: {
+                        Text("Headlines")
+                    } footer: {
+                        Text("Updated \(snapshot.writtenAt.formatted(date: .omitted, time: .shortened))")
                     }
                 }
 
                 Section {
-                    Button("Reload") {
-                        self.reload()
+                    NavigationLink {
+                        FeedWatchScenariosView(model: self.model)
+                    } label: {
+                        Label("Demo states", systemImage: "slider.horizontal.3")
                     }
+                    .accessibilityIdentifier("watchFeedDemoStates")
+                    Button("Reload", systemImage: "arrow.clockwise") {
+                        Task { await self.model.reload() }
+                    }
+                    .disabled(self.model.isLoading)
                     .accessibilityIdentifier("watchFeedSnapshotReload")
-
-                    Button("Seed demo snapshot") {
-                        self.seedDemo()
+                    if self.model.scenario != nil {
+                        Button("Use stored Feed", systemImage: "internaldrive") {
+                            Task { await self.model.useStoredSnapshot() }
+                        }
+                        .accessibilityIdentifier("watchFeedUseStored")
                     }
-                    .accessibilityIdentifier("watchFeedSnapshotSeed")
                 } footer: {
-                    if let seededNote {
-                        Text(seededNote)
-                            .font(.caption2)
-                    } else {
-                        Text(
-                            "Seed writes a sample snapshot into the watch App Group "
-                                + "for Simulator review when the phone file is absent."
-                        )
+                    Text("Independent demo. Samples stay on this watch.")
+                }
+            }
+            .navigationTitle("Feed")
+        }
+        .task(id: self.scenePhase) {
+            guard self.scenePhase == .active else { return }
+            await self.model.observeSnapshots()
+        }
+    }
+}
+
+private struct FeedWatchScenariosView: View {
+    @Environment(\.dismiss)
+    private var dismiss
+    let model: FeedCompanionModel
+
+    var body: some View {
+        List(FeedCompanionScenario.allCases) { scenario in
+            Button {
+                self.model.showSample(scenario)
+                self.dismiss()
+            } label: {
+                HStack {
+                    Text(scenario.title)
+                    if self.model.scenario == scenario {
+                        Image(systemName: "checkmark")
+                            .accessibilityHidden(true)
                     }
                 }
             }
-            .navigationTitle("superDemo")
-            .onAppear { self.reload() }
+            .accessibilityValue(self.model.scenario == scenario ? "Selected" : "")
+            .accessibilityIdentifier("watchFeedScenario_\(scenario.rawValue)")
         }
-    }
-
-    private var statusTitle: String {
-        switch self.state {
-        case .unavailable: "Unavailable"
-        case .absent: "Absent"
-        case .corrupt: "Corrupt"
-        case .expired: "Expired"
-        case .ok: "OK"
-        }
-    }
-
-    private var statusDetail: String {
-        switch self.state {
-        case .unavailable:
-            return "App Group missing (unsigned / entitlement)."
-        case .absent:
-            return "No \(FeedWidgetAppGroup.fileName) on this watch yet."
-        case .corrupt:
-            return "JSON decode failed or version mismatch."
-        case let .expired(snapshot):
-            return "Past TTL (\(Int(snapshot.cacheTTLSeconds ?? 0))s)."
-        case let .ok(snapshot):
-            let stale = snapshot.isStale ? " · stale" : ""
-            return "\(snapshot.titles.count) title(s)\(stale)."
-        }
-    }
-
-    private func reload() {
-        self.state = FeedWidgetSnapshotStore.loadState()
-        self.seededNote = nil
-    }
-
-    private func seedDemo() {
-        let snapshot = FeedCompanionDemoSnapshot.watchSeed()
-        do {
-            try FeedWidgetSnapshotStore.write(snapshot)
-            self.state = FeedWidgetSnapshotStore.loadState()
-            self.seededNote = "Seeded watch-local demo snapshot."
-        } catch {
-            self.state = FeedWidgetSnapshotStore.loadState()
-            self.seededNote = "Seed failed (App Group unavailable)."
-        }
+        .navigationTitle("Demo states")
     }
 }
 
-#Preview("Absent") {
-    FeedWatchSnapshotView()
-}
+#Preview("Fresh sample") { FeedWatchSnapshotView(scenario: .fresh) }
+#Preview("Expired sample") { FeedWatchSnapshotView(scenario: .expired) }
+#Preview("Empty sample") { FeedWatchSnapshotView(scenario: .empty) }
+#Preview("No snapshot") { FeedWatchSnapshotView(scenario: .absent) }

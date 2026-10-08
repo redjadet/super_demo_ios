@@ -16,14 +16,14 @@ struct WatchCompanionDemoView: View {
                     .accessibilityIdentifier("watchCompanionDemoTitle")
                     .accessibilityLabel("watchOS Feed snapshot companion")
                 Text(
-                    "The Watch app reads the same Feed widget App Group snapshot "
-                        + "DTO (`feed-widget-snapshot.json`) and honest states "
-                        + "(unavailable / absent / corrupt / expired / ok)."
+                    "Browse a local Feed with clear freshness states and full headline details. "
+                        + "Try sample Feed to explore offline, then use Demo states to show "
+                        + "cached, expired, empty, or unavailable content."
                 )
                 .foregroundStyle(.secondary)
                 .accessibilityIdentifier("watchCompanionDemoSummary")
                 .accessibilityLabel(
-                    "Watch companion reads the Feed widget App Group snapshot with honest states."
+                    "Watch companion shows local Feed headlines and offline sample states."
                 )
             } header: {
                 Text("Surface")
@@ -53,7 +53,9 @@ struct WatchCompanionDemoView: View {
                     "iPhone and Watch do not share one App Group disk. "
                         + "Each process has a local container with the same group ID. "
                         + "This demo does not claim WatchConnectivity phone→watch sync. "
-                        + "On Watch Simulator, use Seed demo snapshot when absent."
+                        + "On Watch Simulator, choose Try sample Feed. Samples stay in memory "
+                        + "and never replace a saved snapshot. Scroll with the Digital Crown; "
+                        + "tap a headline to read it in full."
                 )
                 .font(.callout)
                 .accessibilityIdentifier("watchCompanionDemoHonesty")
@@ -61,7 +63,7 @@ struct WatchCompanionDemoView: View {
                     "Watch App Group is local only. No phone to watch sync is claimed."
                 )
             } header: {
-                Text("Honesty")
+                Text("Independent demo")
             } footer: {
                 Text("A visionOS companion app is not included in this sample.")
             }

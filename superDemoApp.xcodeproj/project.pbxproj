@@ -185,6 +185,11 @@
 			path = superDemoAppTVTests;
 			sourceTree = "<group>";
 		};
+		A1COMPANIONTEST0000000003 /* FeedCompanionTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = FeedCompanionTests;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -305,6 +310,7 @@
 				A1TVOS010000000000000003 /* superDemoAppTV */,
 				A1WATCHTEST0000000000003 /* superDemoAppWatchTests */,
 				A1TVOSTEST00000000000003 /* superDemoAppTVTests */,
+				A1COMPANIONTEST0000000003 /* FeedCompanionTests */,
 				56D79AE82FB7787400B9E63E /* superDemoAppTests */,
 				56D79AF22FB7787400B9E63E /* superDemoAppUITests */,
 				56D79AD72FB7787300B9E63E /* Products */,
@@ -525,6 +531,7 @@
 			);
 			fileSystemSynchronizedGroups = (
 				A1WATCHTEST0000000000003 /* superDemoAppWatchTests */,
+				A1COMPANIONTEST0000000003 /* FeedCompanionTests */,
 			);
 			name = superDemoAppWatchTests;
 			packageProductDependencies = (
@@ -548,6 +555,7 @@
 			);
 			fileSystemSynchronizedGroups = (
 				A1TVOSTEST00000000000003 /* superDemoAppTVTests */,
+				A1COMPANIONTEST0000000003 /* FeedCompanionTests */,
 			);
 			name = superDemoAppTVTests;
 			packageProductDependencies = (
@@ -1325,6 +1333,7 @@
 		A1WATCH010000000000000009 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = superDemoAppWatch/superDemoAppWatch.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -1360,6 +1369,7 @@
 		A1WATCH01000000000000000A /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = superDemoAppWatch/superDemoAppWatch.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -1396,6 +1406,7 @@
 		A1TVOS010000000000000009 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = superDemoAppTV/superDemoAppTV.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -1430,6 +1441,7 @@
 		A1TVOS01000000000000000A /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = superDemoAppTV/superDemoAppTV.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;

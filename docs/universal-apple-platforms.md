@@ -30,6 +30,9 @@ Current project settings already target Apple multi-platform builds:
 - TV companion: `SUPPORTED_PLATFORMS = appletvos appletvsimulator`,
   `TARGETED_DEVICE_FAMILY = 3` (scheme `superDemoAppTV`; standalone)
 
+For the native companion walkthrough, sample states, source map, and verified
+demo boundaries, see [Watch and Apple TV demo](watch-tv-demo.md).
+
 Required product proof remains iOS, iPadOS, and macOS unless the task adds
 watchOS/tvOS/visionOS. **watchOS** and **tvOS** compile proof is part of
 `./bin/ci-platform-builds.sh` (`./bin/ci-watch-build.sh`,

@@ -55,16 +55,19 @@ visionOS companion demo, and live public DNS for `superdemo.app` universal links
 | StoreKit 2 | `Config/Products.storekit`; `superDemoApp/Shared/StoreKit/`; Engineering demos → StoreKit 2 product query (demo) | **In repo** (product query only; no purchase path) |
 | Native↔Flutter host bridge | `superDemoApp/Shared/HostBridge/`, `superDemoApp/Shared/FlutterEmbed/`, `flutter_module/`, [`native-host-boundary.md`](native-host-boundary.md), [`flutter-add-to-app.md`](flutter-add-to-app.md); Engineering demos → Host bridge ping / Flutter add-to-app | **In repo** (typed contract and optional module embed; `postCount` = full cache size; Mac target excludes Flutter linkage; prepare script builds frameworks) |
 | Core ML / Vision / Speech / Apple Intelligence | `superDemoApp/Shared/OnDeviceAI/`, Engineering demos → On-device Vision OCR | **In repo** (Vision OCR only; no Speech, Core ML model, or Apple Intelligence claim) |
-| watchOS companion (Feed snapshot) | `superDemoAppWatch/`, `superDemoAppWatchTests/`, `FeedWidgetShared/`, App Group `group.com.ilkersevim.superDemoApp`; Engineering demos → watchOS Feed companion; scheme `superDemoAppWatch`; `WATCHOS_DEPLOYMENT_TARGET` **26.7**; `./bin/ci-watch-build.sh` | **In repo** (iOS embeds the extension; watch-local App Group; not phone sync; XCTest integration on Watch Simulator) |
+| watchOS companion (Feed snapshot) | `superDemoAppWatch/`, `superDemoAppWatchTests/`, `FeedCompanionTests/`, `FeedWidgetShared/`, App Group `group.com.ilkersevim.superDemoApp`; Engineering demos → watchOS Feed companion; scheme `superDemoAppWatch`; `WATCHOS_DEPLOYMENT_TARGET` **26.7**; `./bin/ci-watch-build.sh` | **In repo** (iOS embeds the extension; watch-local App Group; not phone sync; native headline navigation, in-memory scenarios; shared model + storage tests on Watch Simulator) |
 | visionOS shared SwiftUI API guards | `AdaptiveNavigationShell` / glass chrome availability; `OnDeviceVisionDemo` `nonisolated` init | **In repo** (availability guards only; no visionOS Simulator behavior is claimed) |
 | visionOS companion | Project settings may include visionOS entries; no companion app or reviewer demo | **Not in repo** |
-| tvOS companion (Feed snapshot) | `superDemoAppTV/`, `superDemoAppTVTests/`, `FeedWidgetShared/`, App Group `group.com.ilkersevim.superDemoApp`; Engineering demos → tvOS Feed companion; scheme `superDemoAppTV`; `TVOS_DEPLOYMENT_TARGET` **26.7**; `./bin/ci-tvos-build.sh` | **In repo** (standalone tvOS app; tv-local App Group; not phone sync; XCTest integration on tvOS Simulator) |
+| tvOS companion (Feed snapshot) | `superDemoAppTV/`, `superDemoAppTVTests/`, `FeedCompanionTests/`, `FeedWidgetShared/`, App Group `group.com.ilkersevim.superDemoApp`; Engineering demos → tvOS Feed companion; scheme `superDemoAppTV`; `TVOS_DEPLOYMENT_TARGET` **26.7**; `./bin/ci-tvos-build.sh` | **In repo** (standalone tvOS app; tv-local App Group; not phone sync; native remote focus, in-memory scenarios; shared model + storage tests on tvOS Simulator) |
 | App Store–shipped product | README honesty | **Not claimed** |
 
 **Maps:** [`../CODEMAP.md`](../CODEMAP.md) · [`architecture-tour.md`](architecture-tour.md) ·
 [`engineering/engineering-evidence-map.md`](engineering/engineering-evidence-map.md) ·
 [`engineering/senior-coding-patterns-map.md`](engineering/senior-coding-patterns-map.md) ·
 [`engineering/failure-concepts-map.md`](engineering/failure-concepts-map.md).
+
+Companion demo: [Watch and Apple TV walkthrough](watch-tv-demo.md) — offline
+launch, native navigation, failure states, and source map.
 
 ## How to read this repo (cold reviewer)
 
