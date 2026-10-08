@@ -56,6 +56,15 @@ simulated flows and optional integrations are documented in the
 
 Task → path: [`CODEMAP.md`](CODEMAP.md).
 
+### Native macOS demo
+
+Resizable SwiftUI window, split-view Feed and SwiftData notes, native menu and
+keyboard commands, and Light/Dark appearance. Follow the
+[2-minute Mac walkthrough](docs/macos-demo.md) for screenshots, launch commands,
+and the distinction between sample data, local execution, and hosted build proof.
+
+![Native macOS Feed in Dark appearance](docs/screenshots/macos/feed-dark.png)
+
 ## 3-minute path
 
 1. **Dashboard:** inspect release-health states and navigation.

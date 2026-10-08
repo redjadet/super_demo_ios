@@ -11,6 +11,10 @@ struct ItemsView: View {
     @State private var selectedItem: ItemEntity?
     @State private var preferredCompactColumn = NavigationSplitViewColumn.sidebar
     @State private var addFeedbackTick = 0
+    @State private var isAdding = false
+    #if os(macOS)
+    @State private var itemPendingDeletion: ItemEntity?
+    #endif
 
     init(model: ItemsFeatureModel) {
         self.model = model
@@ -36,6 +40,38 @@ struct ItemsView: View {
         .toolbar {
             self.itemsToolbar
         }
+        #if os(macOS)
+        .focusedSceneValue(\.macNewItem, self.isLoading || self.isAdding ? nil : { self.addItem() })
+        .focusedSceneValue(\.macRefresh) { self.model.refresh() }
+        .onChange(of: self.model.state) { _, state in
+            guard let selectedID = self.selectedItem?.id,
+                  case let .content(items) = state
+            else { return }
+            // Entity equality includes edited fields. Keep List selection in sync after save/refresh.
+            self.selectedItem = items.first { $0.id == selectedID }
+        }
+        .confirmationDialog(
+            "Delete Item?",
+            isPresented: Binding(
+                get: { self.itemPendingDeletion != nil },
+                set: { isPresented in
+                    if !isPresented {
+                        self.itemPendingDeletion = nil
+                    }
+                }
+            ),
+            titleVisibility: .visible
+        ) {
+            Button("Delete", role: .destructive) {
+                if let item = self.itemPendingDeletion {
+                    self.deleteItem(item)
+                }
+            }
+            Button("Cancel", role: .cancel) { self.itemPendingDeletion = nil }
+        } message: {
+            Text("This permanently deletes the selected note.")
+        }
+        #endif
         .sensoryFeedback(.success, trigger: self.addFeedbackTick)
         .task {
             await self.model.refreshAndWait()
@@ -56,19 +92,12 @@ struct ItemsView: View {
         #endif
         ToolbarItem {
             Button {
-                Task {
-                    guard !self.isLoading else { return }
-                    await self.model.addItemNow()
-                    if case .failed = self.model.state {
-                        return
-                    }
-                    self.addFeedbackTick &+= 1
-                }
+                self.addItem()
             } label: {
                 Label("Add Item", systemImage: "plus")
             }
             .chromeGlassButtonStyle()
-            .allowsHitTesting(!self.isLoading)
+            .disabled(self.isLoading || self.isAdding)
             .accessibilityIdentifier("addItem")
             .accessibilityHint("Adds a new item to the list")
         }
@@ -104,14 +133,9 @@ struct ItemsView: View {
                 Text("Add a note to get started.")
             } actions: {
                 Button("Add Item") {
-                    Task {
-                        await self.model.addItemNow()
-                        if case .failed = self.model.state {
-                            return
-                        }
-                        self.addFeedbackTick &+= 1
-                    }
+                    self.addItem()
                 }
+                .disabled(self.isAdding)
                 .chromeGlassButtonStyle()
                 .accessibilityIdentifier("addItemEmpty")
             }
@@ -139,17 +163,73 @@ struct ItemsView: View {
                 }
                 .accessibilityIdentifier("itemRow-\(item.id.uuidString)")
                 .tag(item)
+                #if os(macOS)
+                .contextMenu {
+                    Button("Delete Item", role: .destructive) {
+                        self.itemPendingDeletion = item
+                    }
+                }
+                #endif
             }
             .onDelete { offsets in
+                #if os(macOS)
+                if let index = offsets.first, items.indices.contains(index) {
+                    self.itemPendingDeletion = items[index]
+                }
+                #else
                 Task {
                     await self.model.deleteItems(at: offsets, in: items)
                     self.clearSelectionIfDeleted(from: items, at: offsets)
                 }
+                #endif
             }
         }
+        #if os(macOS)
+        .onDeleteCommand {
+            self.itemPendingDeletion = self.selectedItem
+        }
+        #endif
         .featureSidebarColumnWidth()
         .accessibilityIdentifier("itemsList")
     }
+
+    private func addItem() {
+        guard !self.isLoading, !self.isAdding else { return }
+        self.isAdding = true
+        Task {
+            defer { self.isAdding = false }
+            #if os(macOS)
+            let priorIDs: Set<UUID>
+            if case let .content(items) = self.model.state {
+                priorIDs = Set(items.map(\.id))
+            } else {
+                priorIDs = []
+            }
+            #endif
+            await self.model.addItemNow()
+            if case .failed = self.model.state {
+                return
+            }
+            self.addFeedbackTick &+= 1
+            #if os(macOS)
+            if case let .content(items) = self.model.state {
+                self.selectedItem = items.first { !priorIDs.contains($0.id) }
+            }
+            #endif
+        }
+    }
+
+    #if os(macOS)
+    private func deleteItem(_ item: ItemEntity) {
+        guard case let .content(items) = self.model.state,
+              let index = items.firstIndex(where: { $0.id == item.id })
+        else { return }
+        Task {
+            await self.model.deleteItems(at: IndexSet(integer: index), in: items)
+            self.clearSelectionIfDeleted(from: items, at: IndexSet(integer: index))
+        }
+    }
+    #endif
 
     private func itemRowAccessibilityLabel(for item: ItemEntity) -> String {
         let when = item.timestamp.formatted(.dateTime.month().day().hour().minute())
@@ -157,6 +237,9 @@ struct ItemsView: View {
     }
 
     private func clearSelectionIfDeleted(from items: [ItemEntity], at offsets: IndexSet) {
+        if case .failed = self.model.state {
+            return
+        }
         guard let selectedItem else { return }
         let deletedIDs = Set(offsets.compactMap { items.indices.contains($0) ? items[$0].id : nil })
         if deletedIDs.contains(selectedItem.id) {
@@ -181,6 +264,11 @@ struct ItemsView: View {
 
 #Preview("Items — Mac", traits: UniversalPreviewLayouts.macWindow) {
     ItemsPreviewFactory.view(seedItems: ItemsPreviewFactory.sampleItems)
+}
+
+#Preview("Items — Mac (Dark)", traits: UniversalPreviewLayouts.macWindow) {
+    ItemsPreviewFactory.view(seedItems: ItemsPreviewFactory.sampleItems)
+        .previewDarkAppearance()
 }
 
 #Preview("Items — Empty", traits: UniversalPreviewLayouts.iPhonePortrait) {

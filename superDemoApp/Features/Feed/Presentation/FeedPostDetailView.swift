@@ -32,6 +32,7 @@ struct FeedPostDetailView: View {
                     .padding(.top, 8)
                 }
             }
+            .textSelection(.enabled)
             .padding()
             .frame(maxWidth: .infinity, alignment: .leading)
         }
