@@ -87,21 +87,33 @@ final class superDemoAppUITests: XCTestCase {
 
     @MainActor
     func testDeepLinkOpensFeedPostDetail() {
-        let app = UiTestSupport.launchApplication(from: self)
+        // One soft relaunch — after long Engineering demos on the same sim,
+        // XCTest can report “does not have a process ID” on the next launch
+        // (CI ui-1 run 37773620216). Coverage unchanged: still assert detail.
+        for attempt in 1 ... 2 {
+            let app = UiTestSupport.launchApplication(from: self)
 
-        UiTestSupport.openDeepLink("superdemo://feed/1", in: app)
+            UiTestSupport.openDeepLink("superdemo://feed/1", in: app)
 
-        // Compact split may prefer the detail column after pending post selection,
-        // so sidebar-only chrome checks can miss — wait for detail (or Feed chrome
-        // that includes feedPostDetail-*).
-        let detail = app.descendants(matching: .any).matching(identifier: "feedPostDetail-1").firstMatch
-        let opened =
-            detail.waitForExistence(timeout: 30)
-                || (
-                    UiTestSupport.waitForFeedChrome(in: app, timeout: 10)
-                        && detail.waitForExistence(timeout: 15)
-                )
-        XCTAssertTrue(opened, "Feed post detail did not open from superdemo://feed/1")
+            // Compact split may prefer the detail column after pending post selection,
+            // so sidebar-only chrome checks can miss — wait for detail (or Feed chrome
+            // that includes feedPostDetail-*).
+            let detail = app.descendants(matching: .any).matching(identifier: "feedPostDetail-1").firstMatch
+            let opened =
+                detail.waitForExistence(timeout: 30)
+                    || (
+                        UiTestSupport.waitForFeedChrome(in: app, timeout: 10)
+                            && detail.waitForExistence(timeout: 15)
+                    )
+            if opened {
+                return
+            }
+            UiTestSupport.terminateApplication(app)
+            if attempt < 2 {
+                RunLoop.current.run(until: Date().addingTimeInterval(2))
+            }
+        }
+        XCTFail("Feed post detail did not open from superdemo://feed/1 after 2 attempts")
     }
 
     @MainActor
