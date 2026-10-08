@@ -58,6 +58,11 @@ concurrency, platform honesty). Review the **path**, not only the patch:
 2. Proof matched to change type (fast vs full / SAFETY-05)?
 3. Claims reconstructable (~10 min) — or residual risk named?
 
+Treat this as the **critic / reflection** step before ship: score fit + proof +
+honesty; revise if below ~8/10 (one pass usual; 2–3 for high-stakes code).
+Execution results still beat self-score —
+[`ai/self-improving-loop.md`](ai/self-improving-loop.md).
+
 Spot confident wrongness: plausible APIs, silent `try?`, false-green UI waits,
 docs that overclaim CI proof. Human guide:
 [`using-agents-here.md`](using-agents-here.md).

@@ -128,6 +128,12 @@ Tool choice and MCP/connector boundaries:
 
 ## Durable Learning
 
+Every non-trivial run should teach something: on success, save a reusable
+pattern; on failure, save a lesson (knowledge, not logs). Prefer execution
+results (tests, CI, simulator output) over unaided self-review. Full pipeline
+(reflect → memory → skill library):
+[`ai/self-improving-loop.md`](ai/self-improving-loop.md).
+
 If a verified lesson will matter again, put it in one of:
 
 - `docs/changes/`
@@ -138,6 +144,8 @@ If a verified lesson will matter again, put it in one of:
 - [`agent_preferences.md`](agent_preferences.md) and
   [`agent_project_context.md`](agent_project_context.md) — not
   [`../AGENTS.md`](../AGENTS.md) (map-only; no learned-section growth)
+- institutional skill when the workflow is proven twice:
+  [`ai-sdlc/skills/`](ai-sdlc/skills/README.md)
 
 Cursor team skills are pinned in [`../skills-lock.json`](../skills-lock.json); restore
 with `npx skills experimental_install -y`. Do not duplicate skill content in `docs/`.

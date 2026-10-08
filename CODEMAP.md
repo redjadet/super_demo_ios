@@ -12,6 +12,7 @@ Timed walk: [`docs/architecture-tour.md`](docs/architecture-tour.md).
 | Platform surfaces (WidgetKit, bridge, …) | [`docs/portfolio.md`](docs/portfolio.md) → **Platform surfaces** (honest inventory; missing rows marked) |
 | Agent onboard / loop | [`AGENTS.md`](AGENTS.md), [`docs/agent_knowledge_base.md`](docs/agent_knowledge_base.md) |
 | Humans directing agents | [`docs/using-agents-here.md`](docs/using-agents-here.md) |
+| Learn / reflect after a run | [`docs/ai/self-improving-loop.md`](docs/ai/self-improving-loop.md) |
 | AI-native SDLC kit | [`docs/ai-sdlc/README.md`](docs/ai-sdlc/README.md); skills [`docs/ai-sdlc/skills/`](docs/ai-sdlc/skills/); gates [`docs/ai-sdlc/gates.md`](docs/ai-sdlc/gates.md) |
 | Feature shape / layers | [`docs/feature-template.md`](docs/feature-template.md), [`docs/layers.md`](docs/layers.md), [`docs/modularity.md`](docs/modularity.md), `superDemoApp/Features/<Name>/{Presentation,Domain,Data}/` |
 | Modularity / import leaks | [`docs/modularity.md`](docs/modularity.md); `./tool/check_feature_folder_contract.sh`, `./tool/check_feature_import_leaks.sh` |
