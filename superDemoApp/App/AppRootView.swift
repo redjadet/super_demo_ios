@@ -7,6 +7,10 @@ import SwiftUI
 
 struct AppRootView: View {
     @State private var navigation = AppNavigationStore.shared
+    #if os(macOS)
+    @AppStorage("macAppearance")
+    private var appearance = MacAppearance.system.rawValue
+    #endif
 
     var body: some View {
         @Bindable var navigation = self.navigation
@@ -31,6 +35,10 @@ struct AppRootView: View {
             .accessibilityLabel("Feed")
         }
         .tabBarMinimizeBehavior(.automatic)
+        #if os(macOS)
+        .focusedSceneValue(\.macSelectedTab, $navigation.state.selection)
+        .preferredColorScheme(MacAppearance(rawValue: self.appearance)?.colorScheme)
+        #endif
         .onOpenURL { url in
             self.navigation.handle(url: url)
         }

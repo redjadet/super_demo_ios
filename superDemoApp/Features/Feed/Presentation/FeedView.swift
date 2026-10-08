@@ -37,18 +37,22 @@ struct FeedView: View {
                         self.content
                             .navigationTitle("Feed")
                             .iosInlineNavigationBarTitle()
-                            .toolbar {
-                                self.feedToolbar
-                            }
+                            #if !os(macOS)
+                            .toolbar { self.feedToolbar }
+                            #endif
                     }
                 )
             } else {
                 self.content
-                    .toolbar {
-                        self.feedToolbar
-                    }
+                    #if !os(macOS)
+                    .toolbar { self.feedToolbar }
+                    #endif
             }
         }
+        #if os(macOS)
+        .toolbar { self.feedToolbar }
+        .focusedSceneValue(\.macRefresh) { self.model.refresh() }
+        #endif
         .alert("Could Not Save Bookmark", isPresented: Binding(
             get: { self.model.bookmarkErrorMessage != nil },
             set: { isPresented in
@@ -206,7 +210,7 @@ struct FeedView: View {
     private func postsListContent(_ posts: [FeedPost], isStale: Bool) -> some View {
         if isStale {
             Section {
-                Label("Showing offline cache. Pull to refresh when back online.", systemImage: "wifi.slash")
+                Label("Showing offline cache. Refresh when back online.", systemImage: "wifi.slash")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
                     .accessibilityIdentifier("feedStaleBanner")
@@ -261,10 +265,19 @@ struct FeedView: View {
         VStack(alignment: .leading, spacing: 4) {
             Text(post.title)
                 .font(.headline)
+                #if os(macOS)
+                .foregroundStyle(self.selectedPost?.id == post
+                    .id ? Color(nsColor: .alternateSelectedControlTextColor) : .primary)
+                #endif
                 .lineLimit(2)
             Text(post.body)
                 .font(.subheadline)
+                #if os(macOS)
+                .foregroundStyle(self.selectedPost?.id == post
+                    .id ? Color(nsColor: .alternateSelectedControlTextColor) : .secondary)
+                #else
                 .foregroundStyle(.secondary)
+                #endif
                 .lineLimit(2)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -284,6 +297,15 @@ struct FeedView: View {
 
 #Preview("Feed — Empty", traits: UniversalPreviewLayouts.iPhonePortrait) {
     FeedPreviewFactory.view(seedPosts: [])
+}
+
+#Preview("Feed — Mac", traits: UniversalPreviewLayouts.macWindow) {
+    FeedPreviewFactory.view(seedPosts: FeedPreviewFactory.samplePosts)
+}
+
+#Preview("Feed — Mac (Dark)", traits: UniversalPreviewLayouts.macWindow) {
+    FeedPreviewFactory.view(seedPosts: FeedPreviewFactory.samplePosts)
+        .previewDarkAppearance()
 }
 
 #Preview("Feed — Stale", traits: UniversalPreviewLayouts.iPhonePortrait) {

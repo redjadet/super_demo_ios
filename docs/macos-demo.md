@@ -1,73 +1,136 @@
-# macOS portfolio demo
+# Native macOS portfolio demo
 
-Native macOS destination for the universal SwiftUI shell (not Mac Catalyst).
-Hosted CI proves an **unsigned Mac compile**; local Xcode / Terminal runs the same
-lane for a live desktop window.
+superDemoApp runs as a native macOS app, using SwiftUI, Observation, SwiftData,
+and Swift concurrency. This is the `macosx` destination of the universal app
+target. Requires macOS 26.7 and Xcode 27.
 
-## What this proves
+## Portfolio description
 
-- One app target with `SUPPORTED_PLATFORMS` including `macosx` (see
-  [`universal-apple-platforms.md`](universal-apple-platforms.md)).
-- Adaptive navigation / chrome on a resizable Mac window (pointer + keyboard).
-- Feed / Items / Dashboard / Engineering demos compile for Mac; Flutter embed,
-  WidgetKit, and Share extension stay **iOS-linked** (Mac lane skips them).
-- Merge proof is the `platform-builds` job → `./bin/ci-platform-builds.sh`
-  Mac destination with `CODE_SIGNING_ALLOWED=NO` (same default as #69).
+> A native macOS demo with a resizable SwiftUI window, split-view navigation,
+> keyboard and menu commands, editable SwiftData notes, and a Feed built around
+> repository boundaries and cancellation. A deterministic sample mode makes
+> the walkthrough repeatable without a live service.
 
-**Not claimed here:** Mac App Store signing, Mac Development profiles, or a
-hosted Mac UITest lane. Opt into signed Mac builds only when profiles exist
-(`CI_MAC_REQUIRE_CODE_SIGN=1`).
+Use this description with the screenshots below and a repository link. Normal
+launches persist Items in SwiftData; the screenshot recipe uses a disposable
+in-memory store. Dashboard scores, release-health states, and API timings in
+sample mode are fixtures, not measurements of a deployed service.
 
-## Run locally (unsandboxed Terminal / Xcode)
+## Desktop walkthrough — 2 minutes
 
-Cursor agent / seatbelt shells often abort `xcodebuild` (CoreDevice
-`xpc_add_bundle`) or fail SPM manifest loads (`SwiftShims`). Use a normal
-Terminal.app or Xcode session on the Mac mini:
+1. **Dashboard — ⌘1:** show the sample-data notice and release-health layout.
+2. **Items — ⌘2:** select a note. Create another with **⌘N**, edit title and body,
+   then press **⌘S**. Switch notes and reopen the saved entry. Right-click a row
+   to delete; cancel the confirmation first to demonstrate the safeguard.
+3. **Feed — ⌘3:** select a post in the sidebar, copy its selectable text, and
+   refresh with **⌘R**. Open **Dashboard → Engineering demos → Stale Feed** to
+   show an explicit offline-cache state.
+4. Resize the window and drag the sidebar divider. Use **View → Appearance**
+   to show Light and Dark. Minimum content size is 680 × 500. At narrow widths,
+   toolbar actions may move into overflow; menu commands remain available.
+
+| Command | Behavior |
+| --- | --- |
+| ⌘1 / ⌘2 / ⌘3 | Dashboard / Items / Feed |
+| ⌘N | Create and select an Item; enabled in Items |
+| ⌘S | Save the visible dirty Item; disabled without pending changes |
+| ⌘R | Refresh the visible feature |
+| Delete, with sidebar focus | Confirm deletion of the selected Item |
+| View → Appearance | System / Light / Dark, stored as an app preference |
+
+The app uses one main window because navigation and App Intent routing are
+app-scoped. New Item creates a note in that window.
+
+## Screenshots
+
+Captured from the native Mac build with `-UITesting`; sample data only.
+
+![Native macOS sample dashboard in Light appearance](screenshots/macos/dashboard-light.png)
+
+![Native macOS SwiftData note editor in Light appearance](screenshots/macos/items-light.png)
+
+![Native macOS Feed split view in Dark appearance](screenshots/macos/feed-dark.png)
+
+## Run locally
+
+From the Git root (`super_demo_ios/superDemoApp`, the folder containing
+`superDemoApp.xcodeproj`):
 
 ```bash
-cd /path/to/super_demo_ios
-# Preferred: full iPad + Mac (+ watch/tvOS) compile proof
-./bin/ci-platform-builds.sh
-
-# Mac-only unsigned compile-proof (matches CI Mac lane)
 xcodebuild \
   -project superDemoApp.xcodeproj \
   -scheme superDemoApp \
   -destination 'platform=macOS' \
+  -derivedDataPath build/macos-demo \
   CODE_SIGNING_ALLOWED=NO \
   CODE_SIGN_IDENTITY=- \
   build
+
+# Disposable notes, seeded Feed/dashboard, no live HTTP for screenshots.
+open -n build/macos-demo/Build/Products/Debug/superDemoApp.app --args -UITesting
 ```
 
-To **run** the app (needs a development team / signing for `macosx`):
+Quit the existing app before relaunching with different flags. Omit
+`--args -UITesting` for normal persistence and live Feed behavior. Use
+`-ReviewerDemoMode` for seeded review data with a persistent store.
 
-1. Open `superDemoApp.xcodeproj` in Xcode 27.
-2. Choose scheme `superDemoApp` → destination **My Mac**.
-3. Run. Walk Feed, Items, Dashboard, and Engineering demos in a Mac window.
+In Xcode, choose **superDemoApp → My Mac**, add `-UITesting` in the Run scheme
+arguments for the disposable walkthrough, then Run. Use the repository's
+signing configuration when local Mac Development profiles are available.
+Unsigned local execution is development evidence, not distribution signing.
 
-## Reviewer talk track (2 minutes)
+## Evidence and scope
 
-1. Point at Platforms badge + portfolio row **Universal shell (iPhone / iPad / Mac)**.
-2. Show `docs/ci-cd-map.md` job `platform-builds` (iPad + Mac + watchOS + tvOS).
-3. On a Mac: either open the running app or the unsigned `xcodebuild` log with
-   `BUILD SUCCEEDED` for `platform=macOS`.
-4. Call out honesty: Mac CI is compile-proof; Flutter / widgets / share are
-   intentionally unlinked on `macosx`.
+- Native Mac compile: `./bin/ci-platform-builds.sh`, Mac destination with
+  `CODE_SIGNING_ALLOWED=NO`. Hosted `platform-builds` is compile proof.
+- Local window, menu, keyboard, editing, and appearance checks are described in
+  the [desktop polish change note](changes/2026-10-08_macos-desktop-polish.md).
+- Mac XCTest execution needs a working local test host; UI tests also need
+  authenticated Automation Mode. See [testing](testing.md#local-platform-matrix).
+- Flutter embed, WidgetKit, Host bridge, Share inbox, and UIKit showcase
+  entries are available on iOS. Mac Feed uses a no-op widget snapshot publisher
+  because the widget is embedded only in the iOS host. Other demos label simulations or platform
+  unavailability. Mac App Store distribution, sandbox/App Group capabilities,
+  and production service status are not established by this walkthrough.
+
+Run the focused desktop UI regressions on a Mac with a working test host and
+authenticated Automation Mode. This recipe ad-hoc signs only disposable local
+build products; it does not establish distribution signing:
+
+```bash
+xcodebuild -project superDemoApp.xcodeproj -scheme superDemoApp \
+  -destination 'platform=macOS' \
+  -derivedDataPath build/macos-tests \
+  -only-testing:superDemoAppUITests/MacPortfolioUITests \
+  -parallel-testing-enabled NO \
+  CODE_SIGNING_ALLOWED=NO CODE_SIGN_IDENTITY=- build-for-testing
+
+codesign --force --deep --sign - \
+  build/macos-tests/Build/Products/Debug/superDemoApp.app
+codesign --force --deep --sign - \
+  build/macos-tests/Build/Products/Debug/superDemoAppUITests-Runner.app
+
+xcodebuild -project superDemoApp.xcodeproj -scheme superDemoApp \
+  -destination 'platform=macOS' -derivedDataPath build/macos-tests \
+  -only-testing:superDemoAppUITests/MacPortfolioUITests \
+  -parallel-testing-enabled NO \
+  -resultBundlePath build/mac-portfolio-tests.xcresult \
+  CODE_SIGNING_ALLOWED=NO CODE_SIGN_IDENTITY=- test-without-building
+```
 
 ## Source map
 
 | Concern | Owner |
 | --- | --- |
-| Platforms | `SUPPORTED_PLATFORMS` on app target (`macosx`) |
-| Adaptive shell | `superDemoApp/Shared/Presentation/AdaptiveNavigationShell.swift` |
-| Mac CI lane | `bin/ci-platform-builds.sh` → `run_mac_build` |
-| Destination helper | `tool/resolve_platform_destination.sh` |
-| Portfolio honesty | [`portfolio.md`](portfolio.md) |
-| Matrix commands | [`testing.md`](testing.md), [`universal-apple-platforms.md`](universal-apple-platforms.md) |
+| Main window and minimum/default size | `superDemoApp/superDemoAppApp.swift` |
+| Native menu commands | `superDemoApp/App/MacAppCommands.swift` |
+| Scene-focused menu actions | `superDemoApp/Shared/Presentation/MacCommandValues.swift` |
+| Tab routing and appearance | `superDemoApp/App/AppRootView.swift` |
+| Split-view sizing | `superDemoApp/Shared/Presentation/AdaptiveNavigationShell.swift` |
+| Notes and persistence | `superDemoApp/Features/Items/`, `superDemoApp/App/ItemsComposition.swift` |
+| Feed and stale cache | `superDemoApp/Features/Feed/`, [offline invariants](offline-invariants.md) |
+| Platform compile lane | `bin/ci-platform-builds.sh` → `run_mac_build` |
 
-```bash
-./bin/ci-platform-builds.sh
-# or Mac-only:
-xcodebuild -project superDemoApp.xcodeproj -scheme superDemoApp \
-  -destination 'platform=macOS' CODE_SIGNING_ALLOWED=NO CODE_SIGN_IDENTITY=- build
-```
+SwiftUI references: [menu commands and focused values](https://developer.apple.com/documentation/swiftui/building-and-customizing-the-menu-bar-with-swiftui),
+[window sizing](https://developer.apple.com/documentation/swiftui/windows).
+Platform matrix: [universal Apple platforms](universal-apple-platforms.md).

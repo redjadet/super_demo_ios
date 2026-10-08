@@ -75,6 +75,9 @@ struct ProductionReadinessView: View {
                 }
         }
         .sensoryFeedback(.selection, trigger: self.refreshFeedbackTick)
+        #if os(macOS)
+        .focusedSceneValue(\.macRefresh, self.model.isInitialLoading ? nil : { self.model.refresh() })
+        #endif
         .task {
             await self.model.refreshAndWait()
         }
@@ -140,6 +143,18 @@ private struct ProductionReadinessContent: View {
 
     var body: some View {
         List {
+            #if os(macOS)
+            Section {
+                Label("Native macOS · SwiftUI + SwiftData", systemImage: "desktopcomputer")
+                    .font(.headline)
+                if AppLaunchConfiguration.usesSeededSampleState {
+                    Text("Sample dashboard. Status, score, and API timings are demo data.")
+                        .font(.callout)
+                        .foregroundStyle(.secondary)
+                        .accessibilityIdentifier("macSampleDashboardNotice")
+                }
+            }
+            #endif
             Section {
                 ReadinessHero(
                     score: self.score,
@@ -184,12 +199,14 @@ private struct ProductionReadinessContent: View {
                 }
                 .accessibilityIdentifier("productionRisksLink")
 
+                #if canImport(UIKit)
                 NavigationLink {
                     UIKitShowcaseEntryView(modules: self.snapshot.modules)
                 } label: {
                     Label("Collection view, prefetching, hosting, custom transition", systemImage: "rectangle.grid.2x2")
                 }
                 .accessibilityIdentifier("uikitShowcaseLink")
+                #endif
 
                 NavigationLink {
                     DiagnosticsDemoView()
@@ -212,6 +229,7 @@ private struct ProductionReadinessContent: View {
                 }
                 .accessibilityIdentifier("staleFeedDemoLink")
 
+                #if os(iOS)
                 NavigationLink {
                     FeedWidgetSnapshotDemoView()
                 } label: {
@@ -232,6 +250,7 @@ private struct ProductionReadinessContent: View {
                     Label("Flutter add-to-app module", systemImage: "cube.transparent")
                 }
                 .accessibilityIdentifier("flutterAddToAppDemoLink")
+                #endif
 
                 NavigationLink {
                     LocalNotificationDemoView()
@@ -254,12 +273,14 @@ private struct ProductionReadinessContent: View {
                 }
                 .accessibilityIdentifier("signInWithAppleDemoLink")
 
+                #if os(iOS)
                 NavigationLink {
                     ShareInboxDemoView()
                 } label: {
                     Label("Share inbox (App Group, not SwiftData)", systemImage: "square.and.arrow.up")
                 }
                 .accessibilityIdentifier("shareInboxDemoLink")
+                #endif
 
                 NavigationLink {
                     OnDeviceVisionDemoView()
@@ -509,6 +530,15 @@ private struct StatusPill: View {
 
 #Preview("Production Readiness — iPad", traits: UniversalPreviewLayouts.iPadRegular) {
     ProductionReadinessPreviewFactory.view()
+}
+
+#Preview("Production Readiness — Mac", traits: UniversalPreviewLayouts.macWindow) {
+    ProductionReadinessPreviewFactory.view()
+}
+
+#Preview("Production Readiness — Mac (Dark)", traits: UniversalPreviewLayouts.macWindow) {
+    ProductionReadinessPreviewFactory.view()
+        .previewDarkAppearance()
 }
 
 @MainActor

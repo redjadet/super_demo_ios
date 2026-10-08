@@ -7,6 +7,7 @@ Source-of-truth docs for `superDemoApp`.
 - **Task → path:** [`../CODEMAP.md`](../CODEMAP.md)
 - **≤15 min architecture tour:** [`architecture-tour.md`](architecture-tour.md)
 - **Portfolio / reviewers:** [`portfolio.md`](portfolio.md) (+ [`../README.md`](../README.md)).
+- **Native macOS demo:** [walkthrough, screenshots, commands, and scope](macos-demo.md).
 - **Humans directing agents** (stakes, harness, judgment):
   [`using-agents-here.md`](using-agents-here.md)
 - Agent map (lean links only; detail in `docs/`): [`../AGENTS.md`](../AGENTS.md)

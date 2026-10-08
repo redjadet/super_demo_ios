@@ -69,6 +69,8 @@ extension View {
     ) -> some View {
         #if os(iOS)
         self.modifier(FeatureSidebarColumnWidthModifier(min: min, ideal: ideal, max: max))
+        #elseif os(macOS)
+        self.navigationSplitViewColumnWidth(min: 260, ideal: 300, max: 420)
         #else
         self.navigationSplitViewColumnWidth(min: min, ideal: ideal, max: max)
         #endif

@@ -47,6 +47,7 @@ visionOS companion demo, and live public DNS for `superdemo.app` universal links
 | Performance (Feed + UIKit) | `AppPerformanceSignposts`, [`performance-lab.md`](performance-lab.md) | **In repo** |
 | Performance (widget / concurrency lab) | [`performance-lab.md`](performance-lab.md) widget App Group + Live Activity Feed-refresh recipes + concurrency talk track | **In repo** |
 | Universal shell (iPhone / iPad / Mac) | Adaptive navigation; CI platform builds (iPad + Mac + watchOS + tvOS; Mac unsigned compile proof); iOS / macOS deployment floors **26.7** | **In repo** |
+| Native macOS desktop demo | [Walkthrough and screenshots](macos-demo.md); resizable window, split navigation, scene-focused New/Save/Refresh commands, SwiftData note editor, Light/Dark appearance | **In repo** (local execution; hosted Mac compile proof) |
 | WidgetKit / Home Screen widget | `FeedWidgetShared/`, `superDemoAppWidget/`, App Group `group.com.ilkersevim.superDemoApp`; Engineering demos → Feed widget snapshot | **In repo** (iOS embed; Mac lane skips extension) |
 | Live Activities / Dynamic Island | `FeedRefreshActivityAttributes`, `ActivityKitFeedRefreshLiveActivityController`, `FeedRefreshLiveActivity` in widget bundle | **In repo** (compiles on hosted CI; device Dynamic Island behavior is not claimed there) |
 | Push / notification service extension | Engineering demos → Local stale-Feed reminder (local only); [`release-checklist.md`](release-checklist.md) mock TestFlight/APNs | **In repo** (local reminder and labeled mock/demo checklist; no production APNs claim) |

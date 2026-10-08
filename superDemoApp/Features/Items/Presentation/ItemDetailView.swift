@@ -21,6 +21,9 @@ struct ItemDetailView: View {
     @State private var saveGeneration: UInt = 0
     @State private var isSaving = false
     @State private var saveFeedbackTick = 0
+    #if os(macOS)
+    @FocusState private var titleIsFocused: Bool
+    #endif
 
     init(
         item: ItemEntity,
@@ -44,6 +47,14 @@ struct ItemDetailView: View {
         self.title != self.savedTitle || self.note != self.savedNote
     }
 
+    private var itemWasDeleted: Bool {
+        switch self.model.state {
+        case .empty: true
+        case let .content(items): !items.contains { $0.id == self.item.id }
+        case .loading, .failed: false
+        }
+    }
+
     private var noteEditorMinHeight: CGFloat {
         let base = DesignSpacing.noteEditorMinHeight
         if self.dynamicTypeSize.isAccessibilitySize {
@@ -61,12 +72,19 @@ struct ItemDetailView: View {
             Section {
                 TextField("Title", text: self.$title)
                     .accessibilityIdentifier("itemDetailTitle")
+                    #if os(macOS)
+                    .focused(self.$titleIsFocused)
+                    #endif
             }
             Section {
                 TextEditor(text: self.$note)
                     .frame(minHeight: self.noteEditorMinHeight)
                     .accessibilityLabel("Note")
                     .accessibilityIdentifier("itemDetailNote")
+            } header: {
+                #if os(macOS)
+                Text("Note")
+                #endif
             }
             if self.isDirty {
                 Section {
@@ -78,6 +96,14 @@ struct ItemDetailView: View {
             }
         }
         .navigationTitle("Item")
+        #if os(macOS)
+        .formStyle(.grouped)
+        .defaultFocus(self.$titleIsFocused, true)
+        .onAppear { self.titleIsFocused = true }
+        .focusedSceneValue(\.macSaveItem, self.isDirty && !self.isSaving ? {
+            Task { await self.saveChanges() }
+        } : nil)
+        #endif
         .iosInlineNavigationBarTitle()
         .accessibilityIdentifier("itemDetail")
         .sensoryFeedback(.success, trigger: self.saveFeedbackTick)
@@ -106,6 +132,11 @@ struct ItemDetailView: View {
             self.bumpDraftRevisionAndPersist()
         }
         .onDisappear {
+            // A confirmed deletion must not autosave a draft back into a removed record.
+            if self.itemWasDeleted {
+                self.draftStore?.clear()
+                return
+            }
             self.persistDraftSnapshot()
             Task { await self.saveChanges() }
         }

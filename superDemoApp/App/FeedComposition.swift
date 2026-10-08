@@ -35,12 +35,18 @@ enum FeedComposition {
             let client = LiveFeedAPIClient(session: AppURLSession.makeDefault())
             remote = RemoteFeedRepository(client: client)
         }
-        // Live / review Feed path publishes App Group widget snapshot.
-        // StaleFeedDemo / in-memory fixtures keep NoOp publisher (isolated).
+        // The Feed widget is embedded only in the iOS host. Native Mac Feed
+        // must not coordinate writes into an unsupported widget App Group.
+        let snapshotPublisher: any FeedWidgetSnapshotPublishing
+        #if os(iOS)
+        snapshotPublisher = WidgetKitFeedSnapshotPublisher()
+        #else
+        snapshotPublisher = NoOpFeedWidgetSnapshotPublisher()
+        #endif
         let repository = CachingFeedRepository(
             remote: remote,
             context: context,
-            snapshotPublisher: WidgetKitFeedSnapshotPublisher()
+            snapshotPublisher: snapshotPublisher
         )
 
         let bookmarkStack = self.makeBookmarkStack(context: context)
