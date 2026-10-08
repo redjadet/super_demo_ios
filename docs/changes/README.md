@@ -4,6 +4,8 @@ Record durable implementation notes after meaningful changes.
 
 ## Entries
 
+- [`2026-10-08_ci-ui2-launch-timeout-retry.md`](2026-10-08_ci-ui2-launch-timeout-retry.md)
+  — Retry iPhone UI shards on `Timed out while launching application`.
 - [`2026-10-08_macos-desktop-polish.md`](2026-10-08_macos-desktop-polish.md)
   — Native Mac window, scene-focused menus, keyboard editing, safe deletion,
   Light/Dark screenshots, and portfolio walkthrough.
