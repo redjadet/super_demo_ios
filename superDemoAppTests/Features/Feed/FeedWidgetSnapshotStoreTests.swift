@@ -28,6 +28,7 @@ struct FeedWidgetSnapshotStoreTests {
             isStale: false,
             titles: [.init(id: 1, title: "Hello")]
         )
+        // write / loadState / remove all go through NSFileCoordinator (Share parity).
         try FeedWidgetSnapshotStore.write(snapshot, containerURLOverride: root)
 
         let state = FeedWidgetSnapshotStore.loadState(

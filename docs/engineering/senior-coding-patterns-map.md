@@ -20,6 +20,7 @@ index; pattern table unchanged since #70).
 
 ## Related
 
+- Failure concepts (eight): [`failure-concepts-map.md`](failure-concepts-map.md)
 - Engineering habits summary: [`../engineering-standards.md`](../engineering-standards.md)
 - Portfolio inventory: [`../portfolio.md`](../portfolio.md)
 - Production risk honesty: [`../production-risks.md`](../production-risks.md)

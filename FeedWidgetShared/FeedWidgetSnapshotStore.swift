@@ -51,37 +51,26 @@ nonisolated enum FeedWidgetSnapshotStore {
             .appendingPathComponent(FeedWidgetAppGroup.fileName, isDirectory: false)
     }
 
-    /// Atomically write snapshot (temp file + replace).
+    /// Atomically write snapshot (temp file + replace), under file coordination.
+    /// Matches `ShareInboxStore` so app / widget / companion processes serialize
+    /// App Group access instead of racing bare `replaceItemAt`.
     static func write(
         _ snapshot: FeedWidgetSnapshot,
         fileManager: FileManager = .default,
         suiteName: String = FeedWidgetAppGroup.identifier,
         containerURLOverride: URL? = nil
     ) throws {
-        guard let directory = containerURL(
+        try self.coordinate(
             fileManager: fileManager,
             suiteName: suiteName,
             containerURLOverride: containerURLOverride
-        ) else {
-            throw FeedWidgetSnapshotStoreError.containerUnavailable
-        }
-        try fileManager.createDirectory(at: directory, withIntermediateDirectories: true)
-        let destination = directory.appendingPathComponent(FeedWidgetAppGroup.fileName, isDirectory: false)
-        let data = try jsonEncoder.encode(snapshot)
-        let temporary = directory.appendingPathComponent(
-            ".\(FeedWidgetAppGroup.fileName).tmp-\(UUID().uuidString)",
-            isDirectory: false
-        )
-        defer {
-            if fileManager.fileExists(atPath: temporary.path) {
-                try? fileManager.removeItem(at: temporary)
-            }
-        }
-        try data.write(to: temporary, options: .atomic)
-        if fileManager.fileExists(atPath: destination.path) {
-            _ = try fileManager.replaceItemAt(destination, withItemAt: temporary)
-        } else {
-            try fileManager.moveItem(at: temporary, to: destination)
+        ) {
+            try self.writeUnlocked(
+                snapshot,
+                fileManager: fileManager,
+                suiteName: suiteName,
+                containerURLOverride: containerURLOverride
+            )
         }
     }
 
@@ -91,15 +80,21 @@ nonisolated enum FeedWidgetSnapshotStore {
         suiteName: String = FeedWidgetAppGroup.identifier,
         containerURLOverride: URL? = nil
     ) throws {
-        guard let fileURL = snapshotFileURL(
+        try self.coordinate(
             fileManager: fileManager,
             suiteName: suiteName,
             containerURLOverride: containerURLOverride
-        ) else {
-            throw FeedWidgetSnapshotStoreError.containerUnavailable
-        }
-        if fileManager.fileExists(atPath: fileURL.path) {
-            try fileManager.removeItem(at: fileURL)
+        ) {
+            guard let fileURL = snapshotFileURL(
+                fileManager: fileManager,
+                suiteName: suiteName,
+                containerURLOverride: containerURLOverride
+            ) else {
+                throw FeedWidgetSnapshotStoreError.containerUnavailable
+            }
+            if fileManager.fileExists(atPath: fileURL.path) {
+                try fileManager.removeItem(at: fileURL)
+            }
         }
     }
 
@@ -109,6 +104,65 @@ nonisolated enum FeedWidgetSnapshotStore {
         fileManager: FileManager = .default,
         suiteName: String = FeedWidgetAppGroup.identifier,
         containerURLOverride: URL? = nil
+    ) -> FeedWidgetSnapshotState {
+        var result: FeedWidgetSnapshotState = .unavailable
+        do {
+            try self.coordinate(
+                fileManager: fileManager,
+                suiteName: suiteName,
+                containerURLOverride: containerURLOverride
+            ) {
+                result = self.loadStateUnlocked(
+                    now: now,
+                    fileManager: fileManager,
+                    suiteName: suiteName,
+                    containerURLOverride: containerURLOverride
+                )
+            }
+        } catch {
+            return .unavailable
+        }
+        return result
+    }
+
+    // MARK: - Coordination
+
+    private static func coordinate(
+        fileManager: FileManager,
+        suiteName: String,
+        containerURLOverride: URL?,
+        body: () throws -> Void
+    ) throws {
+        guard let fileURL = snapshotFileURL(
+            fileManager: fileManager,
+            suiteName: suiteName,
+            containerURLOverride: containerURLOverride
+        ) else {
+            throw FeedWidgetSnapshotStoreError.containerUnavailable
+        }
+        var coordinationError: NSError?
+        var bodyError: Error?
+        let coordinator = NSFileCoordinator(filePresenter: nil)
+        coordinator.coordinate(writingItemAt: fileURL, options: [], error: &coordinationError) { _ in
+            do {
+                try body()
+            } catch {
+                bodyError = error
+            }
+        }
+        if let coordinationError {
+            throw coordinationError
+        }
+        if let bodyError {
+            throw bodyError
+        }
+    }
+
+    private static func loadStateUnlocked(
+        now: Date,
+        fileManager: FileManager,
+        suiteName: String,
+        containerURLOverride: URL?
     ) -> FeedWidgetSnapshotState {
         guard let fileURL = snapshotFileURL(
             fileManager: fileManager,
@@ -135,6 +189,39 @@ nonisolated enum FeedWidgetSnapshotStore {
             return .ok(snapshot)
         } catch {
             return .corrupt
+        }
+    }
+
+    private static func writeUnlocked(
+        _ snapshot: FeedWidgetSnapshot,
+        fileManager: FileManager,
+        suiteName: String,
+        containerURLOverride: URL?
+    ) throws {
+        guard let directory = containerURL(
+            fileManager: fileManager,
+            suiteName: suiteName,
+            containerURLOverride: containerURLOverride
+        ) else {
+            throw FeedWidgetSnapshotStoreError.containerUnavailable
+        }
+        try fileManager.createDirectory(at: directory, withIntermediateDirectories: true)
+        let destination = directory.appendingPathComponent(FeedWidgetAppGroup.fileName, isDirectory: false)
+        let data = try jsonEncoder.encode(snapshot)
+        let temporary = directory.appendingPathComponent(
+            ".\(FeedWidgetAppGroup.fileName).tmp-\(UUID().uuidString)",
+            isDirectory: false
+        )
+        defer {
+            if fileManager.fileExists(atPath: temporary.path) {
+                try? fileManager.removeItem(at: temporary)
+            }
+        }
+        try data.write(to: temporary, options: .atomic)
+        if fileManager.fileExists(atPath: destination.path) {
+            _ = try fileManager.replaceItemAt(destination, withItemAt: temporary)
+        } else {
+            try fileManager.moveItem(at: temporary, to: destination)
         }
     }
 }
