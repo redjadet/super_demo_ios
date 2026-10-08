@@ -53,6 +53,7 @@ Rules and a Feed bookmark example: [`skills/progressive-prompting.md`](skills/pr
 | Institutional skills | Short policy skills (any agent) | [`skills/`](skills/README.md) |
 | Deterministic hooks | Documented gates (scripts/CI) | [`gates.md`](gates.md) |
 | Feedback loops | Proof before done + review vs plan | [`gates.md`](gates.md), [`../ai_code_review_protocol.md`](../ai_code_review_protocol.md) |
+| Self-improving loop | Reflect → file memory → skill library | [`../ai/self-improving-loop.md`](../ai/self-improving-loop.md) |
 
 ## When to use artifacts
 

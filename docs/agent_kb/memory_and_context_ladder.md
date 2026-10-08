@@ -19,13 +19,27 @@ Next session should be smarter without bloating docs.
   actionable facts only.
 - No cron/autonomous behavior without explicit user approval.
 - Prefer maps, `rg`, Xcode project inspection, and targeted validation over
-  separate RAG layers.
+  separate RAG layers. This repo has **no** Redis/Postgres/vector agent memory.
 - Semantic lint during doc/agent changes: stale plans, duplicate rules,
   source/host-template contradictions, reusable conclusions stranded in chat or
   local trackers.
 - Before feature/refactor work, audit related code, tests, docs, plans, known
   bugs, workarounds, deprecated patterns, unusual helpers. Carry only
   high-signal landmines into `Context` or `Boundaries`.
+- After non-trivial runs, follow the learn/reflect/promote loop:
+  [`../ai/self-improving-loop.md`](../ai/self-improving-loop.md).
+
+## Memory by purpose
+
+| Purpose | Store here |
+| --- | --- |
+| Session (active goal / blockers) | Chat; local `tasks/codex/todo.md`; Cursor Agent Store `notes.md` |
+| Preferences (stable conventions) | [`../agent_preferences.md`](../agent_preferences.md); Project `preferences.md` |
+| Past experiences (verified lessons) | Owning `docs/`, `docs/changes/`, `docs/audits/`; Store `docs/` plans & e2e |
+| Relationships (what to load when) | [`../ai/context_loading.md`](../ai/context_loading.md); [`../../CODEMAP.md`](../../CODEMAP.md); [`../ai-sdlc/skills/`](../ai-sdlc/skills/README.md) |
+
+Keep successful workflows and high-confidence fixes; skip raw chats, failed
+noise, and duplicates.
 
 ## File Discovery Layers
 

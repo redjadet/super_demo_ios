@@ -14,7 +14,8 @@ Source-of-truth docs for `superDemoApp`.
   [`ai-sdlc/README.md`](ai-sdlc/README.md)
 - AI routing (`docs/ai/`): [`ai/README.md`](ai/README.md) —
   [`ai/context_loading.md`](ai/context_loading.md),
-  [`ai/ai_failure_risks.md`](ai/ai_failure_risks.md)
+  [`ai/ai_failure_risks.md`](ai/ai_failure_risks.md),
+  [`ai/self-improving-loop.md`](ai/self-improving-loop.md)
 - AI agent harness: [`agent_knowledge_base.md`](agent_knowledge_base.md)
 - Safety contracts: [`agent_kb/agent_safety_contracts.md`](agent_kb/agent_safety_contracts.md)
 - Agent harness shards: [`agent_kb/adaptive_execution.md`](agent_kb/adaptive_execution.md),

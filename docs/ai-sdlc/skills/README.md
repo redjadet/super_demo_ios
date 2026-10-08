@@ -1,8 +1,10 @@
 # Institutional skills (tool-agnostic)
 
-Short reusable policy docs any agent can load. Not Claude-only skills or
-Anthropic slash commands. Prefer these over conflicting vendor skill text when
-the topic is this repo.
+Short reusable policy docs any agent can load — a **skill library**, not a
+prompt pile. Promote a workflow here when it succeeds twice with proof. Loop:
+[`../../ai/self-improving-loop.md`](../../ai/self-improving-loop.md). Not Claude-only
+skills or Anthropic slash commands. Prefer these over conflicting vendor skill
+text when the topic is this repo.
 
 Apple platform skills restored from [`../../../skills-lock.json`](../../../skills-lock.json)
 remain host-installed under gitignored `.agents/skills/` — see
