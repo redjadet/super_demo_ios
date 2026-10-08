@@ -4,6 +4,8 @@ Record durable implementation notes after meaningful changes.
 
 ## Entries
 
+- [`2026-10-08_macos-portfolio-demo.md`](2026-10-08_macos-portfolio-demo.md)
+  — Native macOS demo path: CI unsigned compile-proof, local run, honesty.
 - [`2026-10-08_agent-customization-layers.md`](2026-10-08_agent-customization-layers.md)
   — Cursor/Codex layer chooser; CI/docs skills; workspace `.cursorignore` install.
 - [`2026-10-08_watch-tv-portfolio-demo.md`](2026-10-08_watch-tv-portfolio-demo.md)
