@@ -34,12 +34,14 @@ ci_iphone_shard_only_testing_args() {
       ;;
     ui-2)
       # Baseline test bodies ~367s; new cases estimated at 70s.
+      # Launch/items chrome first — avoids wedged accessibility snapshots after
+      # long Engineering + Feed cases on Xcode 27 CI simulators (main run 37744806904).
       printf '%s\n' \
+        "-only-testing:superDemoAppUITests/superDemoAppUITests/testLaunchShowsAddItemControl" \
         "-only-testing:superDemoAppUITests/EngineeringDemosUITests/testHostBridgePingDemoReturnsResponse" \
         "-only-testing:superDemoAppUITests/EngineeringDemosUITests/testSignInWithAppleDemoIsReachable" \
         "-only-testing:superDemoAppUITests/superDemoAppUITests/testDeepLinkOpensFeedTab" \
         "-only-testing:superDemoAppUITests/superDemoAppUITests/testFeedPostRowOpensDetail" \
-        "-only-testing:superDemoAppUITests/superDemoAppUITests/testLaunchShowsAddItemControl" \
         "-only-testing:superDemoAppUITests/superDemoAppUITests/testOfflineBookmarkToggleShowsPending" \
         "-only-testing:superDemoAppUITests/superDemoAppUITests/testUIKitShowcaseCollectionIsReachable"
       ;;

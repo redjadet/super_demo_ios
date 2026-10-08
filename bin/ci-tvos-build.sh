@@ -120,16 +120,64 @@ if [[ "$TV_ACTION" == "build" ]] || [[ "${CI_TVOS_FORCE_UNSIGNED:-}" == "1" ]]; 
   )
 fi
 
+tv_simulator_udid_from_dest() {
+  sed -n 's/.*id=\([0-9A-Fa-f-]\{36\}\).*/\1/p' <<<"${1:-}" | tr '[:lower:]' '[:upper:]'
+}
+
+reset_tv_simulator_after_launch_flake() {
+  local dest="$1"
+  local udid
+  udid="$(tv_simulator_udid_from_dest "$dest")"
+  if [[ ! "$udid" =~ ^[0-9A-F-]{36}$ ]]; then
+    return 0
+  fi
+  echo "warning: resetting tvOS Simulator $udid (shutdown + erase + boot)" >&2
+  xcrun simctl shutdown "$udid" 2>/dev/null || true
+  xcrun simctl erase "$udid" 2>/dev/null || true
+  xcrun simctl boot "$udid" 2>/dev/null || true
+  xcrun simctl bootstatus "$udid" -b 2>/dev/null || true
+}
+
+tv_log_indicates_launch_flake() {
+  local log="$1"
+  grep -Eq \
+    'termination assertions|Failed to install or launch the test runner|FBSOpenApplicationServiceErrorDomain' \
+    "$log"
+}
+
+run_tv_action() {
+  run_tv_xcodebuild \
+    -project superDemoApp.xcodeproj \
+    -scheme superDemoAppTV \
+    -destination "$TV_DEST" \
+    -configuration Debug \
+    ${XCODEBUILD_SANDBOX_FLAGS+"${XCODEBUILD_SANDBOX_FLAGS[@]}"} \
+    ${XCODEBUILD_WARNINGS_AS_ERRORS_FLAGS+"${XCODEBUILD_WARNINGS_AS_ERRORS_FLAGS[@]}"} \
+    ${TV_DERIVED_DATA_FLAGS+"${TV_DERIVED_DATA_FLAGS[@]}"} \
+    ${TV_SIGN_FLAGS+"${TV_SIGN_FLAGS[@]}"} \
+    "$TV_ACTION"
+}
+
 echo "==> tvOS $TV_ACTION ($TV_DEST)"
-run_tv_xcodebuild \
-  -project superDemoApp.xcodeproj \
-  -scheme superDemoAppTV \
-  -destination "$TV_DEST" \
-  -configuration Debug \
-  ${XCODEBUILD_SANDBOX_FLAGS+"${XCODEBUILD_SANDBOX_FLAGS[@]}"} \
-  ${XCODEBUILD_WARNINGS_AS_ERRORS_FLAGS+"${XCODEBUILD_WARNINGS_AS_ERRORS_FLAGS[@]}"} \
-  ${TV_DERIVED_DATA_FLAGS+"${TV_DERIVED_DATA_FLAGS[@]}"} \
-  ${TV_SIGN_FLAGS+"${TV_SIGN_FLAGS[@]}"} \
-  "$TV_ACTION"
+tv_log="$(mktemp)"
+trap 'rm -f "$tv_log"' EXIT
+
+set +e
+run_tv_action 2>&1 | tee "$tv_log"
+tv_status=${PIPESTATUS[0]}
+set -e
+
+if ((tv_status != 0)); then
+  if [[ "${CI:-}" == "true" ]] \
+    && [[ "$TV_ACTION" == "test" ]] \
+    && tv_log_indicates_launch_flake "$tv_log"
+  then
+    echo "warning: tvOS Simulator launch flake; retrying $TV_ACTION once" >&2
+    reset_tv_simulator_after_launch_flake "$TV_DEST"
+    run_tv_action || exit $?
+  else
+    exit "$tv_status"
+  fi
+fi
 
 echo "tvOS $TV_ACTION passed."
