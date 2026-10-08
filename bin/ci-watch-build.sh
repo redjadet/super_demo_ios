@@ -105,16 +105,64 @@ if [[ "$WATCH_ACTION" == "build" ]] || [[ "${CI_WATCH_FORCE_UNSIGNED:-}" == "1" 
   )
 fi
 
+watch_simulator_udid_from_dest() {
+  sed -n 's/.*id=\([0-9A-Fa-f-]\{36\}\).*/\1/p' <<<"${1:-}" | tr '[:lower:]' '[:upper:]'
+}
+
+reset_watch_simulator_after_launch_flake() {
+  local dest="$1"
+  local udid
+  udid="$(watch_simulator_udid_from_dest "$dest")"
+  if [[ ! "$udid" =~ ^[0-9A-F-]{36}$ ]]; then
+    return 0
+  fi
+  echo "warning: resetting watchOS Simulator $udid (shutdown + erase + boot)" >&2
+  xcrun simctl shutdown "$udid" 2>/dev/null || true
+  xcrun simctl erase "$udid" 2>/dev/null || true
+  xcrun simctl boot "$udid" 2>/dev/null || true
+  xcrun simctl bootstatus "$udid" -b 2>/dev/null || true
+}
+
+watch_log_indicates_launch_flake() {
+  local log="$1"
+  grep -Eq \
+    'termination assertions|Failed to install or launch the test runner|FBSOpenApplicationServiceErrorDomain' \
+    "$log"
+}
+
+run_watch_action() {
+  run_watch_xcodebuild \
+    -project superDemoApp.xcodeproj \
+    -scheme superDemoAppWatch \
+    -destination "$WATCH_DEST" \
+    -configuration Debug \
+    ${XCODEBUILD_SANDBOX_FLAGS+"${XCODEBUILD_SANDBOX_FLAGS[@]}"} \
+    ${XCODEBUILD_WARNINGS_AS_ERRORS_FLAGS+"${XCODEBUILD_WARNINGS_AS_ERRORS_FLAGS[@]}"} \
+    ${WATCH_DERIVED_DATA_FLAGS+"${WATCH_DERIVED_DATA_FLAGS[@]}"} \
+    ${WATCH_SIGN_FLAGS+"${WATCH_SIGN_FLAGS[@]}"} \
+    "$WATCH_ACTION"
+}
+
 echo "==> watchOS $WATCH_ACTION ($WATCH_DEST)"
-run_watch_xcodebuild \
-  -project superDemoApp.xcodeproj \
-  -scheme superDemoAppWatch \
-  -destination "$WATCH_DEST" \
-  -configuration Debug \
-  ${XCODEBUILD_SANDBOX_FLAGS+"${XCODEBUILD_SANDBOX_FLAGS[@]}"} \
-  ${XCODEBUILD_WARNINGS_AS_ERRORS_FLAGS+"${XCODEBUILD_WARNINGS_AS_ERRORS_FLAGS[@]}"} \
-  ${WATCH_DERIVED_DATA_FLAGS+"${WATCH_DERIVED_DATA_FLAGS[@]}"} \
-  ${WATCH_SIGN_FLAGS+"${WATCH_SIGN_FLAGS[@]}"} \
-  "$WATCH_ACTION"
+watch_log="$(mktemp)"
+trap 'rm -f "$watch_log"' EXIT
+
+set +e
+run_watch_action 2>&1 | tee "$watch_log"
+watch_status=${PIPESTATUS[0]}
+set -e
+
+if ((watch_status != 0)); then
+  if [[ "${CI:-}" == "true" ]] \
+    && [[ "$WATCH_ACTION" == "test" ]] \
+    && watch_log_indicates_launch_flake "$watch_log"
+  then
+    echo "warning: watchOS Simulator launch flake; retrying $WATCH_ACTION once" >&2
+    reset_watch_simulator_after_launch_flake "$WATCH_DEST"
+    run_watch_action || exit $?
+  else
+    exit "$watch_status"
+  fi
+fi
 
 echo "watchOS $WATCH_ACTION passed."

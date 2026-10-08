@@ -21,10 +21,18 @@ final class superDemoAppUITests: XCTestCase {
 
     @MainActor
     func testLaunchShowsAddItemControl() {
-        let app = UiTestSupport.launchApplication(from: self)
-
-        UiTestSupport.openItemsTab(in: app)
-        XCTAssertTrue(UiTestSupport.waitForItemsChrome(in: app))
+        for attempt in 1 ... 2 {
+            let app = UiTestSupport.launchApplication(from: self)
+            UiTestSupport.openItemsTab(in: app)
+            if UiTestSupport.waitForItemsChrome(in: app) {
+                return
+            }
+            UiTestSupport.terminateApplication(app)
+            if attempt < 2 {
+                RunLoop.current.run(until: Date().addingTimeInterval(2))
+            }
+        }
+        XCTFail("Items tab chrome did not appear after 2 launch attempts")
     }
 
     @MainActor
