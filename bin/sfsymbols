@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+# Agent bridge to SF Symbols 27 CLI (search / export). Optional host cask.
+# See docs/agent_dev_tools.md.
+set -euo pipefail
+
+export PATH="/opt/homebrew/bin:/usr/local/bin:${PATH}"
+
+SFSYMBOLS_BIN_DEFAULT="/Applications/SF Symbols.app/Contents/Executables/sfsymbols"
+
+show_help() {
+  cat <<'EOF'
+Usage: ./bin/sfsymbols [sfsymbols-args...]
+
+Forwards to Apple SF Symbols 27 CLI when installed.
+
+Examples (deployment target iOS 26.7 → prefer --min-platform iOS26):
+  ./bin/sfsymbols search heart --min-platform iOS26
+  ./bin/sfsymbols search heart.circle.fill --match-style exactName --min-platform iOS26 --json
+  ./bin/sfsymbols export heart.circle.fill --format png --output /tmp/heart.png
+
+Install: brew install --cask sf-symbols
+Canon: docs/agent_dev_tools.md
+EOF
+}
+
+resolve_sfsymbols() {
+  if [[ -n "${SFSYMBOLS_BIN:-}" && -x "${SFSYMBOLS_BIN}" ]]; then
+    printf '%s\n' "${SFSYMBOLS_BIN}"
+    return 0
+  fi
+  if command -v sfsymbols >/dev/null 2>&1; then
+    command -v sfsymbols
+    return 0
+  fi
+  if [[ -x "$SFSYMBOLS_BIN_DEFAULT" ]]; then
+    printf '%s\n' "$SFSYMBOLS_BIN_DEFAULT"
+    return 0
+  fi
+  return 1
+}
+
+case "${1:-}" in
+  -h|--help|help)
+    # Prefer real CLI help when installed.
+    if bin="$(resolve_sfsymbols 2>/dev/null)"; then
+      exec "$bin" --help
+    fi
+    show_help
+    exit 0
+    ;;
+esac
+
+if ! bin="$(resolve_sfsymbols)"; then
+  echo "error: SF Symbols 27 CLI not found." >&2
+  echo "hint: brew install --cask sf-symbols" >&2
+  echo "expected: $SFSYMBOLS_BIN_DEFAULT" >&2
+  echo "docs: docs/agent_dev_tools.md" >&2
+  exit 2
+fi
+
+exec "$bin" "$@"

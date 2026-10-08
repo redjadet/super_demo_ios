@@ -7,3 +7,10 @@
 brew "swiftlint"
 brew "swiftformat"
 brew "ripgrep"
+
+# Optional agent-host tools (NOT required in CI Brewfile — keep PR lanes lean).
+# Install on Mac mini / agent hosts when useful; wrappers soft-fail if absent.
+#   xcsift          brew install xcsift                 (~1.5.2) → ./bin/xcsift-run
+#   SF Symbols 27   brew install --cask sf-symbols      (cask 27) → ./bin/sfsymbols
+#   RocketTrace     https://rockettrace.app/ + CLI&Agent → ./bin/rockettrace
+# See docs/agent_dev_tools.md and tool/expected_tool_versions.sh.

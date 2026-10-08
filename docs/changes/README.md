@@ -4,6 +4,8 @@ Record durable implementation notes after meaningful changes.
 
 ## Entries
 
+- [`2026-10-08_agent-dev-tools.md`](2026-10-08_agent-dev-tools.md)
+  — Optional agent wrappers for xcsift / SF Symbols 27 / RocketTrace + smoke.
 - [`2026-10-08_ci-watch-retry-ui2-launch-order.md`](2026-10-08_ci-watch-retry-ui2-launch-order.md)
   — watch/tvOS Simulator launch retry; ui-2 launch test first + one relaunch.
 - [`2026-10-07_ci-pr-critical-path.md`](2026-10-07_ci-pr-critical-path.md)

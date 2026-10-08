@@ -94,10 +94,23 @@ Add or bump skills:
 | ------ | ------ | ------ |
 | 1 | **Xcode tools** (`xcode-tools` in `mcp.json`, `xcrun mcpbridge`) | Build, scheme, simulator, Xcode Intelligence (Xcode 26.3+) |
 | 2 | **Repo scripts** | `./bin/lint.sh`, `./bin/ci.sh`, `./bin/checklist`, `xcodebuild` per [`agents_quick_reference.md`](agents_quick_reference.md) |
-| 3 | **XcodeBuildMCP** (optional) | If `../.xcodebuildmcp/config.yaml` exists and host exposes it — same profile `superDemoApp` as Codex |
+| 3 | **Optional agent CLI bridges** | `./bin/xcsift-run`, `./bin/sfsymbols`, `./bin/rockettrace` — see [`agent_dev_tools.md`](agent_dev_tools.md) |
+| 4 | **XcodeBuildMCP** (optional) | If `../.xcodebuildmcp/config.yaml` exists and host exposes it — same profile `superDemoApp` as Codex |
 
 Shell `xcodebuild` is always valid fallback. For iPad/Mac/watchOS/tvOS compile proof
-use `./bin/ci-platform-builds.sh` or `./bin/checklist`.
+use `./bin/ci-platform-builds.sh` or `./bin/checklist`. When build logs are huge,
+prefer `./bin/xcsift-run xcodebuild …` after `brew install xcsift`.
+
+### Optional agent Mac tools (host)
+
+| Tool | Wrapper | Install | Notes |
+| --- | --- | --- | --- |
+| xcsift | `./bin/xcsift-run` | `brew install xcsift` | Token-efficient build/test JSON/TOON |
+| SF Symbols 27 | `./bin/sfsymbols` | `brew install --cask sf-symbols` | `search` / `export`; verify before `Image(systemName:)` |
+| RocketTrace | `./bin/rockettrace` | [rockettrace.app](https://rockettrace.app/) → Settings → CLI & Agent | Keep app running; macOS 26 + Xcode 27+ |
+
+Smoke: `./tool/smoke_agent_dev_tools.sh`. These are **not** Delivery gates — see
+[`agent_dev_tools.md`](agent_dev_tools.md).
 
 ### Validation habits
 

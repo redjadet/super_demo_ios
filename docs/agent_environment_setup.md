@@ -8,6 +8,8 @@ Goal: repeatable local work through Xcode command-line tools.
 - `xcodebuild` available on PATH.
 - Git available on PATH.
 - SwiftLint and SwiftFormat installed through `brew bundle --file Brewfile`.
+- Optional agent tools (not required for CI): `xcsift`, SF Symbols 27 cask,
+  RocketTrace — see [`agent_dev_tools.md`](agent_dev_tools.md).
 
 Check:
 
@@ -95,6 +97,18 @@ by default with isolated DerivedData, then watch, then tvOS):
 ```bash
 ./bin/ci-platform-builds.sh
 # Narrow: ./bin/ci-watch-build.sh · ./bin/ci-tvos-build.sh
+```
+
+Optional agent Mac tools (soft-fail wrappers; host install separate):
+
+```bash
+brew install xcsift
+brew install --cask sf-symbols
+# RocketTrace: https://rockettrace.app/ → Settings → CLI & Agent
+./tool/smoke_agent_dev_tools.sh
+./bin/xcsift-run xcodebuild -list -project superDemoApp.xcodeproj
+./bin/sfsymbols search heart --min-platform iOS26
+./bin/rockettrace status   # requires RocketTrace.app running
 ```
 
 Fast checklist (lint + focused common issue checks + project sanity):
