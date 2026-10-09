@@ -4,6 +4,7 @@ Source-of-truth docs for `superDemoApp`.
 
 ## Start Here
 
+- **Regression evidence and contribution:** [`EVIDENCE.md`](EVIDENCE.md) — bookmark race, design decision, test, and passing run.
 - **Task → path:** [`../CODEMAP.md`](../CODEMAP.md)
 - **≤15 min architecture tour:** [`architecture-tour.md`](architecture-tour.md)
 - **Portfolio / reviewers:** [`portfolio.md`](portfolio.md) (+ [`../README.md`](../README.md)).

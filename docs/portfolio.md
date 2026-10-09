@@ -1,9 +1,26 @@
 # Portfolio tour — superDemoApp
 
-Repo for reviewers: **Universal SwiftUI + SwiftData demo** (iPhone / iPad / Mac)
-with a **Feed** trajectory: network client → repository → use cases →
+Repo for technical reviewers: **Universal SwiftUI + SwiftData demo** (iPhone /
+iPad / Mac) with a **Feed** trajectory: network client → repository → use cases →
 `@Observable` feature model → SwiftUI, DI, cancellation, optional SwiftData
 read-through cache.
+
+**Evidence first:** [bookmark race → design → regression → passing run](EVIDENCE.md#lead-case-preserve-the-latest-bookmark-intent),
+then [my contribution](EVIDENCE.md#my-contribution) and proof scope. This page is the broader tour.
+
+## 3-minute path
+
+1. **Dashboard:** inspect release-health states and navigation.
+2. **Feed:** inspect loading, Retry and stale-cache presentation
+   (`-StaleFeedDemo` or Engineering demos), then compare the
+   [cache regression tests](EVIDENCE.md#1-swiftdata-feed-cache-expiry-and-stale-honesty).
+3. **UIKit Showcase:** open from Dashboard and inspect the native UI bridge.
+4. **Engineering demos:** inspect Diagnostics, simulated Idempotent POST and
+   optional Flutter add-to-app; availability depends on the selected platform.
+
+Use `-ReviewerDemoMode` for seeded Dashboard, Feed and Items data. See
+[launch flags](#launch-and-build-flags), the [Mac walkthrough](macos-demo.md),
+and the [Watch and TV walkthrough](watch-tv-demo.md) for platform-specific steps.
 
 ## Reviewer map
 
@@ -75,7 +92,7 @@ compile-proof, local Terminal / Xcode run path, honesty boundaries.
 
 ## How to read this repo (cold reviewer)
 
-1. [`../README.md`](../README.md) — what it proves + 3-minute path.
+1. [`../README.md`](../README.md) — app overview, evidence links and screenshots.
 2. [`../CODEMAP.md`](../CODEMAP.md) — task → path; timed walk
    [`architecture-tour.md`](architecture-tour.md).
 3. [`architecture.md`](architecture.md) + [`feature-template.md`](feature-template.md).
