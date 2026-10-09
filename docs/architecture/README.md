@@ -1,8 +1,8 @@
 # Architecture deep-dives (reviewer grade)
 
-Code-cited engineering notes for hiring reviewers and senior engineers. Every
+Code-cited engineering notes for technical reviewers and senior engineers. Every
 claim maps to a type or test in this repository. Prefer these pages over dated
-change notes when the two disagree.
+change notes when the two disagree. See also [`../EVIDENCE.md`](../EVIDENCE.md).
 
 | Topic | Doc |
 | --- | --- |

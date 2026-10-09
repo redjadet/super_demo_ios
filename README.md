@@ -1,6 +1,7 @@
 # superDemoApp — Apple multi-platform engineering portfolio
 
 [![3-minute path](https://img.shields.io/badge/3--minute-reviewer%20path-0066CC)](docs/portfolio.md)
+[![Evidence](https://img.shields.io/badge/Evidence-technical%20reviewer-0066CC)](docs/EVIDENCE.md)
 [![Architecture tour](https://img.shields.io/badge/Architecture-tour-0A7A3E)](docs/architecture-tour.md)
 [![Engineering evidence](https://img.shields.io/badge/Engineering-evidence-6E6E73)](docs/engineering/engineering-evidence-map.md)
 
@@ -24,6 +25,7 @@ architecture, offline caching, async networking, UIKit interoperability and
 an optional Flutter add-to-app module.
 
 [3-minute reviewer path](#3-minute-path) ·
+[Engineering evidence](docs/EVIDENCE.md) ·
 [Architecture tour](docs/architecture-tour.md) ·
 [Detailed portfolio guide](docs/portfolio.md) ·
 [Watch & TV demo](docs/watch-tv-demo.md) ·
@@ -31,7 +33,8 @@ an optional Flutter add-to-app module.
 
 This is a portfolio sample, not a shipped App Store product. Platform support,
 simulated flows and optional integrations are documented in the
-[reviewer guide](docs/portfolio.md).
+[reviewer guide](docs/portfolio.md). For problem → design → test proof, start at
+[`docs/EVIDENCE.md`](docs/EVIDENCE.md).
 
 ## Portfolio honesty (cold reviewers)
 

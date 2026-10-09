@@ -2,7 +2,7 @@
 
 ## Intent
 
-Remove high-confidence amateur signals for hiring reviewers without new product
+Remove high-confidence amateur signals for technical reviewers without new product
 scope or architecture churn.
 
 ## Before

@@ -25,4 +25,7 @@ regression.
 ## Proof
 
 - `python3 ./tool/check_ci_contracts.py` (shard coverage unchanged).
-- PR Delivery: Checklist · iPhone test (ui-1) + Delivery checklist.
+- PR Delivery (#101): Checklist · iPhone test (ui-1) + Delivery checklist.
+- Tip main after merge: Delivery green on
+  [37828018857](https://github.com/redjadet/super_demo_ios/actions/runs/37828018857)
+  (`17d795f`) — ui-1 included.

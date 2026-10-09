@@ -1,9 +1,12 @@
 # Portfolio tour — superDemoApp
 
-Repo for reviewers: **Universal SwiftUI + SwiftData demo** (iPhone / iPad / Mac)
-with a **Feed** trajectory: network client → repository → use cases →
+Repo for technical reviewers: **Universal SwiftUI + SwiftData demo** (iPhone /
+iPad / Mac) with a **Feed** trajectory: network client → repository → use cases →
 `@Observable` feature model → SwiftUI, DI, cancellation, optional SwiftData
 read-through cache.
+
+**Evidence first:** [`EVIDENCE.md`](EVIDENCE.md) — role/workflow, scope limits,
+and the strongest problem → design → test cases. This page is the broader tour.
 
 ## Reviewer map
 
