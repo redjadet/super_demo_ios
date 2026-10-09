@@ -1,123 +1,138 @@
 # Engineering evidence for technical reviewers
 
-Short map from **problem → design trade-off → code → regression test → how to
-run**. Prefer this page when you want proof, not a product pitch.
+Inspect one bookmark race, its design decision, regression, and passing run;
+then contribution, proof scope, and four more cases.
 
-Related: [portfolio tour](portfolio.md) · [architecture tour](architecture-tour.md) ·
-[engineering evidence map](engineering/engineering-evidence-map.md) ·
-[CI map](ci-cd-map.md).
+## Lead case: preserve the latest bookmark intent
 
-## My role and AI-assisted workflow
+**Problem:** a user bookmarks a post, then removes it while the `set` request
+is still in flight. A late acknowledgement must preserve the newer local
+intent, and the queued `clear` must run without waiting for a second flush.
 
-I am **İlker Sevim**, the owner of this repository (`redjadet/super_demo_ios`).
-Git history attributes commits to my accounts (`İlker Sevim` /
-`ilkersevim2007@gmail.com` and related aliases) as well as agent co-authors
-(`Cursor Agent`, `cursor[bot]`) on some changes.
-
-**Division of labor I use here:** the AI handles typing and syntax so I can
-focus on architecture, intent, and edge cases. In practice that means:
-
-- I set architecture direction, requirements, and acceptance criteria.
-- I review and validate behavior — especially failure paths, offline/cache
-  honesty, concurrency cancellation, and CI determinism.
-- Implementation is partly produced with AI agents (**Cursor** and **Codex**)
-  under that direction.
-- Nothing lands on `main` without the same gates I use for any change: pull
-  request review, Delivery CI on GitHub Actions, and the regression tests
-  cited below.
-
-I do not claim production traffic, employer sponsorship, or headcount for this
-sample. Claims stay limited to what this repo and its CI history show.
-
-## Scope and limits
-
-- **Portfolio demo**, not a production-scale service. Feed uses
-  JSONPlaceholder where configured; many Engineering demos are labeled
-  simulations.
-- **watchOS and tvOS** are Feed-snapshot companions (App Group / in-memory
-  samples), not phone sync products. See [watch-tv-demo.md](watch-tv-demo.md).
-- **macOS** has a native desktop demo path; hosted Mac proof is compile-oriented
-  unless a local Mac run is noted. See [macos-demo.md](macos-demo.md).
-- Universal links for `superdemo.app` **parse** in-app; public DNS handoff is
-  **not** claimed — prefer `superdemo://` for demos.
-
-## Verification (CI)
-
-| Surface | Link |
+| Evidence | Inspect |
 | --- | --- |
-| Workflow badge (main) | [![CI](https://github.com/redjadet/super_demo_ios/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/redjadet/super_demo_ios/actions/workflows/ci.yml) |
-| Main-branch runs | [Actions · branch `main`](https://github.com/redjadet/super_demo_ios/actions?query=branch%3Amain) |
-| Tip green Delivery (pre-PR) | [run 37828018857](https://github.com/redjadet/super_demo_ios/actions/runs/37828018857) on `17d795f` — includes **Checklist · iPhone test (ui-1)** and **Delivery checklist** |
-| This PR green Delivery | [run 37933427839](https://github.com/redjadet/super_demo_ios/actions/runs/37933427839) on `52351f3` (`cursor/portfolio-evidence-6eb4`) — docs-only **Delivery checklist** |
+| **Design decision** | Save the optimistic bookmark and outbox entry in one transaction. On acknowledgement, update the baseline while retaining a pending successor's intent. Continue draining successors in order during the same flush. |
+| **Regression** | [`OutboxSyncEngineTests.toggleDuringRemoteRequestDrainsLatestIntent`](https://github.com/redjadet/super_demo_ios/blob/17d795f471aafae5010b5736d052b316cdedd02a/superDemoAppTests/Features/Feed/OutboxSyncEngineTests.swift#L214-L231) removes the bookmark from inside the first remote call. It asserts `set → clear`, an unbookmarked `.synced` result, and an empty outbox. |
+| **Passing run** | [iPhone unit job](https://github.com/redjadet/super_demo_ios/actions/runs/37828018857/job/113485831800): the named regression passed on **2026-10-08** at [`17d795f`](https://github.com/redjadet/super_demo_ios/commit/17d795f471aafae5010b5736d052b316cdedd02a). The [full Delivery run](https://github.com/redjadet/super_demo_ios/actions/runs/37828018857) also passed. |
+| **Implementation** | [`SwiftDataBookmarkRepository`](../superDemoApp/Features/Feed/Data/SwiftDataBookmarkRepository.swift): `setBookmarked` and `markSynced` · [`OutboxStore`](../superDemoApp/Features/Feed/Data/OutboxStore.swift): `performTransaction` and `claimPending` · [`OutboxSyncEngine`](../superDemoApp/Features/Feed/Data/OutboxSyncEngine.swift). |
 
-**Untested / not claimed here:** App Store marketing screenshots, production
-APNs, paid StoreKit checkout, live `superdemo.app` Safari→app handoff, and
-visionOS companion behavior.
+**Trade-off:** local state can be pending until acknowledgement. Conflict
+handling uses the last acknowledged baseline and exposes failure without
+guessing a server value.
 
-## Strongest cases
+**Related checks:** `singleFlushDrainsSuccessorsForSameEntity` and
+`conflictKeepsAcknowledgedStateInsteadOfGuessingServerValue` in the
+[current test suite](../superDemoAppTests/Features/Feed/OutboxSyncEngineTests.swift)
+passed in the same unit job. The [pending-state UI test](../superDemoAppUITests/superDemoAppUITests.swift)
+`testOfflineBookmarkToggleShowsPending` passed in
+[ui-2](https://github.com/redjadet/super_demo_ios/actions/runs/37828018857/job/113492500441).
+Use the unit and `ui-2` commands under [Reproduce](#reproduce-the-evidence).
+
+The regression uses an injected remote and an in-memory SwiftData fixture.
+It proves the encoded race and queue outcome; it is not a production network
+load or durability benchmark.
+
+## My contribution
+
+I am **İlker Sevim**, the owner of `redjadet/super_demo_ios`. I own architecture,
+requirements, acceptance criteria, and the decision to accept a change.
+
+| Responsibility | Contribution and inspectable evidence |
+| --- | --- |
+| **Designed** | Feature boundaries and dependency injection; for the lead case, optimistic state plus a durable outbox, atomic local updates, and preservation of newer intent. Inspect the [layer map](layers.md), [Feed composition](../superDemoApp/App/FeedComposition.swift), and implementation above. |
+| **Reviewed** | Failure behavior and the limits of claims: cache expiry, cancellation, bookmark conflicts, and platform/demo boundaries. The cases below connect those decisions to source and assertions. [Review protocol](ai_code_review_protocol.md) records the review criteria. |
+| **Validated** | Acceptance through behavior assertions and CI evidence: the named race regression, related conflict tests, and pending-state UI test have passing job links above. The proof table below distinguishes runtime checks from documentation checks. |
+
+**AI-assisted workflow:** Cursor and Codex assist with implementation, tests,
+documentation, and review suggestions. My responsibility is to direct the
+work, review behavior and trade-offs, and assess the resulting evidence.
+Commit author names alone do not establish which code was written manually;
+the linked artifacts make the decisions and verification inspectable.
+
+## Verification and proof scope
+
+| Evidence | Commit and scope |
+| --- | --- |
+| **Recorded full run** | [Main run 37828018857](https://github.com/redjadet/super_demo_ios/actions/runs/37828018857), **2026-10-08**, `17d795f`: iPhone unit tests, UI shards `ui-1`–`ui-4`, platform build lane, and Delivery checklist passed. The named cases on this page were checked in the unit or `ui-2` logs. |
+| **This documentation PR** | [PR #107 checks](https://github.com/redjadet/super_demo_ios/pull/107/checks) show the current published head. Its docs-only route checks Markdown/DesignMD and Delivery aggregation; iPhone runtime tests and platform builds are skipped. App and test sources in this PR match the recorded full-run commit. |
+| **Newer main runs** | [Actions · branch `main`](https://github.com/redjadet/super_demo_ios/actions?query=branch%3Amain). Check each run's commit and executed jobs before treating it as runtime proof. |
+
+Hosted Mac proof is unsigned compilation; an iPhone UI pass does not establish
+Mac, iPad, watchOS, or tvOS UI behavior. See the [CI map](ci-cd-map.md) and
+[testing guide](testing.md) for each platform's lane and limitations.
+
+## More engineering cases
 
 ### 1. SwiftData Feed cache expiry and stale honesty
 
-| | |
+| Evidence | Inspect |
 | --- | --- |
-| **Problem** | Remote Feed can fail while a local SwiftData cache still has rows. Returning expired rows as “fresh” lies to the UI; discarding all cache on any failure hurts offline demos. |
-| **Design + trade-off** | `CachingFeedRepository` serves cache within TTL as stale-capable success, ignores expired rows when remote fails, and never treats cancellation as a cache-fallback win. Trade-off: TTL is a policy constant (demo-friendly), not a server-driven cache validator. |
-| **Source** | [`CachingFeedRepository`](../superDemoApp/Features/Feed/Data/CachingFeedRepository.swift) · composition in [`FeedComposition`](../superDemoApp/App/FeedComposition.swift) |
-| **Regression tests** | `CachingFeedRepositoryTests.fetchPostsReturnsCachedPostsWhenRemoteFails` · `fetchPostsIgnoresExpiredCacheWhenRemoteFails` · `fetchPostsRethrowsCancellationWithoutCacheFallback` in [`CachingFeedRepositoryTests.swift`](../superDemoAppTests/Features/Feed/CachingFeedRepositoryTests.swift) |
-| **How to run** | `xcodebuild test -scheme superDemoApp -destination 'platform=iOS Simulator,name=iPhone 17' -only-testing:superDemoAppTests/CachingFeedRepositoryTests` (or full `./bin/ci-iphone-test.sh` with `CI_IPHONE_TEST_SHARD=unit`) |
+| **Problem** | Remote Feed fails while cache rows remain. Expired rows must not appear as fresh data, and usable cache should keep the offline screen useful. |
+| **Decision + trade-off** | Return only rows within TTL after a remote failure and mark the result `isStale = true`; rethrow cancellation without cache fallback. TTL is a local policy with an injectable clock, rather than a server-driven cache validator. |
+| **Source** | [`CachingFeedRepository`](../superDemoApp/Features/Feed/Data/CachingFeedRepository.swift) · [`FeedComposition`](../superDemoApp/App/FeedComposition.swift). |
+| **Regressions** | `fetchPostsReturnsCachedPostsWhenRemoteFails`, `fetchPostsIgnoresExpiredCacheWhenRemoteFails`, and `fetchPostsRethrowsCancellationWithoutCacheFallback` in [`CachingFeedRepositoryTests`](../superDemoAppTests/Features/Feed/CachingFeedRepositoryTests.swift). All passed in the recorded [unit job](https://github.com/redjadet/super_demo_ios/actions/runs/37828018857/job/113485831800). |
+| **Reproduce** | Unit shard below. |
 
-### 2. Task cancellation (load controller + repository)
+### 2. Task cancellation through the load controller and repository
 
-| | |
+| Evidence | Inspect |
 | --- | --- |
-| **Problem** | Overlapping refreshes and view teardown must not surface `CancellationError` as a user-facing Retry failure or overwrite good state with empty/error. |
-| **Design + trade-off** | Shared [`AsyncLoadController`](../superDemoApp/Shared/Presentation/AsyncLoadController.swift) cancels the prior operation; Feed caching rethrows cancellation without cache fallback. Trade-off: callers must treat cancellation as control-flow, not domain failure — enforced in tests. |
-| **Source** | `AsyncLoadController` · `CachingFeedRepository` cancellation branches |
-| **Regression tests** | `AsyncLoadControllerTests.runCancelsPriorOperation` · `runAndWaitPropagatesCallerCancellation` in [`AsyncLoadControllerTests.swift`](../superDemoAppTests/Shared/Presentation/AsyncLoadControllerTests.swift) · `CachingFeedRepositoryTests.fetchPostsRethrowsCancellationWithoutCacheFallback` |
-| **How to run** | Same unit shard as above, or `-only-testing:superDemoAppTests/AsyncLoadControllerTests` |
+| **Problem** | A new load replaces an earlier operation; caller cancellation must reach the underlying task without turning into a cache-fallback success. |
+| **Decision + trade-off** | Cancel the prior task in `AsyncLoadController`; propagate caller cancellation in `runAndWait`; rethrow cancellation in the caching repository. Operations must cooperate with cancellation, and presentation must handle it as control flow. |
+| **Source** | [`AsyncLoadController`](../superDemoApp/Shared/Presentation/AsyncLoadController.swift) · [`CachingFeedRepository`](../superDemoApp/Features/Feed/Data/CachingFeedRepository.swift). |
+| **Regressions** | `runCancelsPriorOperation` and `runAndWaitPropagatesCallerCancellation` in [`AsyncLoadControllerTests`](../superDemoAppTests/Shared/Presentation/AsyncLoadControllerTests.swift), plus the cache cancellation case above. All passed in the recorded [unit job](https://github.com/redjadet/super_demo_ios/actions/runs/37828018857/job/113485831800). |
+| **Reproduce** | Unit shard below. |
 
-### 3. URLSession networking (retry, 401 refresh, 429, cancel)
+### 3. URLSession retry, token refresh, and cancellation
 
-| | |
+| Evidence | Inspect |
 | --- | --- |
-| **Problem** | Real clients need injectable sessions, bounded retries, one-shot token refresh on 401, Retry-After on 429, and cooperative cancellation — without baking UI into the transport. |
-| **Design + trade-off** | App uses SPM [`IlkerSevimNetworking`](https://github.com/redjadet/ilkersevim_networking) via [`IlkerSevimNetworkingExport`](../superDemoApp/Shared/Networking/IlkerSevimNetworkingExport.swift) / `URLSessionAPIClient`. Trade-off: transport policy lives in the shared package; this app owns composition and demos. |
-| **Source** | Re-export + `URLSessionAPIClient` usage in [`FeedComposition`](../superDemoApp/App/FeedComposition.swift) / [`ProductionReadinessComposition`](../superDemoApp/App/ProductionReadinessComposition.swift) |
-| **Regression tests** | `URLSessionAPIClientTests.exercisesRetryAuthAndFailureMapping` (covers refresh, Retry-After, failure mapping, cancellation) in [`URLSessionAPIClientTests.swift`](../superDemoAppTests/Shared/Networking/URLSessionAPIClientTests.swift) · [`RetryPolicyTests.swift`](../superDemoAppTests/Shared/Networking/RetryPolicyTests.swift) |
-| **How to run** | `-only-testing:superDemoAppTests/URLSessionAPIClientTests` |
+| **Problem** | Transport needs bounded retries, one token refresh on 401, `Retry-After` on 429, and cancellation without coupling networking to the UI. |
+| **Decision + trade-off** | Use the shared SPM [`IlkerSevimNetworking`](https://github.com/redjadet/ilkersevim_networking) package with injected sessions and policies. Transport policy lives in that package; this app owns composition and integration tests. |
+| **Source** | [`IlkerSevimNetworkingExport`](../superDemoApp/Shared/Networking/IlkerSevimNetworkingExport.swift) · [`FeedComposition`](../superDemoApp/App/FeedComposition.swift) · [`ProductionReadinessComposition`](../superDemoApp/App/ProductionReadinessComposition.swift). |
+| **Regressions** | `exercisesRetryAuthAndFailureMapping` in [`URLSessionAPIClientTests`](../superDemoAppTests/Shared/Networking/URLSessionAPIClientTests.swift) covers 401 refresh, 429 delay, typed failures, and cancellation. `postRetriesOnlyWithIdempotencyKey` in [`RetryPolicyTests`](../superDemoAppTests/Shared/Networking/RetryPolicyTests.swift) checks the POST retry boundary. Both passed in the recorded [unit job](https://github.com/redjadet/super_demo_ios/actions/runs/37828018857/job/113485831800). |
+| **Reproduce** | Unit shard below; the tests inject transport responses. |
 
-### 4. Offline bookmark outbox
+### 4. UIKit and SwiftUI interoperability
 
-| | |
+| Evidence | Inspect |
 | --- | --- |
-| **Problem** | Bookmark toggles must stay responsive offline, coalesce conflicting intents for the same post, and survive conflicts without inventing server state. |
-| **Design + trade-off** | Durable `OutboxEntry` + [`OutboxSyncEngine`](../superDemoApp/Features/Feed/Domain/OutboxSyncEngine.swift) with coalescing and backoff. Trade-off: demo remote is injectable/stubbed in tests; hosted UI covers pending chrome, not full network chaos. |
-| **Source** | `OutboxSyncEngine` · [`OutboxCoalescer`](../superDemoApp/Features/Feed/Domain/OutboxCoalescer.swift) · [`OutboxBackoffPolicy`](../superDemoApp/Features/Feed/Domain/OutboxBackoffPolicy.swift) · wire-up in `FeedComposition` |
-| **Regression tests** | `OutboxSyncEngineTests.singleFlushDrainsSuccessorsForSameEntity` · `conflictKeepsAcknowledgedStateInsteadOfGuessingServerValue` · `toggleDuringRemoteRequestDrainsLatestIntent` in [`OutboxSyncEngineTests.swift`](../superDemoAppTests/Features/Feed/OutboxSyncEngineTests.swift) · suite in [`OutboxCoalescerTests.swift`](../superDemoAppTests/Features/Feed/OutboxCoalescerTests.swift) |
-| **How to run** | `-only-testing:superDemoAppTests/OutboxSyncEngineTests` · UI: `testOfflineBookmarkToggleShowsPending` in [`superDemoAppUITests.swift`](../superDemoAppUITests/superDemoAppUITests.swift) |
+| **Problem** | A UIKit collection and detail transition need to work inside the SwiftUI navigation shell. |
+| **Decision + trade-off** | Host the collection through `UIViewControllerRepresentable`, retaining UIKit reuse, prefetching, and transition code. The UI regression checks navigation and detail presentation; it does not measure scroll performance or memory use. |
+| **Source** | [`UIKitShowcaseEntryView`](../superDemoApp/Features/ProductionReadiness/UIKitShowcase/UIKitShowcaseEntryView.swift) · [showcase implementation](../superDemoApp/Features/ProductionReadiness/UIKitShowcase/). |
+| **Regression** | `testUIKitShowcaseCollectionIsReachable` in [`superDemoAppUITests`](../superDemoAppUITests/superDemoAppUITests.swift) passed in the recorded [ui-2 job](https://github.com/redjadet/super_demo_ios/actions/runs/37828018857/job/113492500441). |
+| **Reproduce** | `ui-2` shard below. |
 
-### 5. UIKit ↔ SwiftUI interop showcase
+## Reproduce the evidence
 
-| | |
-| --- | --- |
-| **Problem** | Portfolio needs a real UIKit surface (collection reuse, prefetch, hosting, custom transition) without abandoning the SwiftUI shell. |
-| **Design + trade-off** | Dashboard entry hosts [`UIKitShowcase`](../superDemoApp/Features/ProductionReadiness/UIKitShowcase/) via `UIViewControllerRepresentable`. Trade-off: UITest proves reachability and detail open on iPhone compact; deep UIKit performance claims stay in talk-track docs, not CI timing budgets. |
-| **Source** | [`UIKitShowcaseEntryView`](../superDemoApp/Features/ProductionReadiness/UIKitShowcase/UIKitShowcaseEntryView.swift) · showcase folder |
-| **Regression tests** | `superDemoAppUITests.testUIKitShowcaseCollectionIsReachable` in [`superDemoAppUITests.swift`](../superDemoAppUITests/superDemoAppUITests.swift) |
-| **How to run** | UI shard containing that case, e.g. `CI_IPHONE_TEST_SHARD=ui-2 ./bin/ci-iphone-test.sh`, or Xcode UI test target filtered to that method |
+From the repository root on a Mac with the project's Xcode toolchain and an
+installed iPhone Simulator runtime:
 
-## CI note — ui-1 deep link (already on main)
+```bash
+# All named unit regressions, including the in-flight bookmark race.
+CI_IPHONE_TEST_SHARD=unit ./bin/ci-iphone-test.sh
 
-Failed main run
-[37773620216](https://github.com/redjadet/super_demo_ios/actions/runs/37773620216)
-(`857f912`): only **Checklist · iPhone test (ui-1)** /
-`testDeepLinkOpensFeedPostDetail` — “Application does not have a process ID”
-after long Engineering demos. Root cause was **Simulator/XCTest launch wedge**
-after StoreKit/Engineering work, not product deep-link routing.
+# Pending bookmark presentation and UIKit navigation/detail checks.
+CI_IPHONE_TEST_SHARD=ui-2 ./bin/ci-iphone-test.sh
+```
 
-Fix landed in [#101](https://github.com/redjadet/super_demo_ios/pull/101)
-(`45f2784`): run deep-link cases first in `ui-1`, one soft relaunch in the
-test, and process-ID retry in `bin/ci-iphone-test.sh`. Change note:
-[`changes/2026-10-08_ci-ui1-deeplink-launch-flake.md`](changes/2026-10-08_ci-ui1-deeplink-launch-flake.md).
-Tip Delivery after that fix:
-[37828018857](https://github.com/redjadet/super_demo_ios/actions/runs/37828018857).
+The script builds and tests locally, selects an installed iPhone destination,
+and writes logs/results under `build/`. Shard definitions live in
+[`ci_iphone_test_shards.sh`](../tool/ci_iphone_test_shards.sh). Optional Flutter
+framework setup is separate: [add-to-app guide](flutter-add-to-app.md).
+
+## Portfolio scope
+
+- Feed uses JSONPlaceholder where configured; many Engineering demos are
+  labeled simulations. Production traffic, production APNs, and paid StoreKit
+  checkout are not claimed.
+- watchOS and tvOS are Feed-snapshot companions with local samples, rather than
+  phone sync products. See the [Watch and TV walkthrough](watch-tv-demo.md).
+- macOS has a native desktop demo; see the [Mac walkthrough](macos-demo.md) for
+  local execution and hosted compile proof.
+- Universal links for `superdemo.app` parse in-app. Public DNS/Safari handoff
+  and visionOS companion behavior are not claimed; use `superdemo://` for demos.
+
+Continue with the [portfolio tour](portfolio.md), [architecture tour](architecture-tour.md),
+or [full engineering evidence map](engineering/engineering-evidence-map.md).
+CI launch-failure history is recorded in the [ui-1 change note](changes/2026-10-08_ci-ui1-deeplink-launch-flake.md).

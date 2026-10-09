@@ -19,8 +19,9 @@ Main CI run
 `testDeepLinkOpensFeedPostDetail` after three Engineering demos (~238s), with
 `Application 'com.ilkersevim.superDemoApp' does not have a process ID`. Builds
 and ui-2…ui-4 were green. Next deep-link case (`testDeepLinkOpensItemsTab`)
-passed on the same job — launch wedge after StoreKit, not a product routing
-regression.
+passed on the same job. This is consistent with a Simulator/XCTest launch
+failure after the Engineering demos, but the logs do not isolate its cause
+or exclude every routing defect. The detail assertions remain in the test.
 
 ## Proof
 

@@ -1,6 +1,6 @@
 # superDemoApp — Apple multi-platform engineering portfolio
 
-[![3-minute path](https://img.shields.io/badge/3--minute-reviewer%20path-0066CC)](docs/portfolio.md)
+[![3-minute path](https://img.shields.io/badge/3--minute-reviewer%20path-0066CC)](docs/portfolio.md#3-minute-path)
 [![Evidence](https://img.shields.io/badge/Evidence-technical%20reviewer-0066CC)](docs/EVIDENCE.md)
 [![Architecture tour](https://img.shields.io/badge/Architecture-tour-0A7A3E)](docs/architecture-tour.md)
 [![Engineering evidence](https://img.shields.io/badge/Engineering-evidence-6E6E73)](docs/engineering/engineering-evidence-map.md)
@@ -24,94 +24,38 @@ with thin watchOS and tvOS Feed-snapshot companions. It demonstrates layered
 architecture, offline caching, async networking, UIKit interoperability and
 an optional Flutter add-to-app module.
 
-[3-minute reviewer path](#3-minute-path) ·
-[Engineering evidence](docs/EVIDENCE.md) ·
-[Architecture tour](docs/architecture-tour.md) ·
-[Detailed portfolio guide](docs/portfolio.md) ·
-[Watch & TV demo](docs/watch-tv-demo.md) ·
-[İlker Sevim's portfolio](https://redjadet.github.io/react-web-portfolio/)
-
 This is a portfolio sample, not a shipped App Store product. Platform support,
 simulated flows and optional integrations are documented in the
-[reviewer guide](docs/portfolio.md). For problem → design → test proof, start at
-[`docs/EVIDENCE.md`](docs/EVIDENCE.md).
+[reviewer guide](docs/portfolio.md#platform-surfaces).
 
-## Portfolio honesty (cold reviewers)
-
-| Topic | What to expect |
-| --- | --- |
-| **Seeded demo data** | Launch with `-ReviewerDemoMode` (or `SUPERDEMO_REVIEWER_DEMO_MODE=1`) for deterministic Dashboard, Feed, and Items. Normal runs still use live JSONPlaceholder for Feed where configured. |
-| **Engineering demos** | Dashboard → **Engineering demos** — labeled simulations (StoreKit query-only, local notifications, Flutter when frameworks are prepared, watchOS/tvOS Feed companions, and similar). Not production integrations. |
-| **Watch & Apple TV** | Run `superDemoAppWatch` or `superDemoAppTV`, choose **Try sample Feed**, then open a headline or **Demo states**. Offline samples stay in memory; saved snapshots remain read-only. [Two-minute walkthrough](docs/watch-tv-demo.md). |
-| **Assets** | Custom blue monogram app icon includes Light, Dark, Tinted, and Mac size variants in the [asset catalog](superDemoApp/Assets.xcassets/AppIcon.appiconset/Contents.json). App Store marketing screenshots are not included. |
-| **Universal links** | `https://superdemo.app/…` routes parse like the custom scheme; public DNS for the apex domain is **not** claimed — prefer `superdemo://` for demos. |
+Author: [İlker Sevim](https://redjadet.github.io/react-web-portfolio/).
 
 ## Engineering decisions and evidence
 
-| Mobile engineering skill | Decision to inspect | Implementation and verification |
-| --- | --- | --- |
-| **SwiftUI architecture and state** | Feature layers separate presentation, use cases and repositories; composition supplies dependencies. | [Layer map](docs/layers.md) · [Feed feature](superDemoApp/Features/Feed/) · [Feature-model tests](superDemoAppTests/Features/Feed/FeedFeatureModelTests.swift) |
-| **Offline caching with SwiftData** | Use valid cached Feed rows after a remote failure, expose stale state, expire old rows and propagate cancellation. | [Caching repository](superDemoApp/Features/Feed/Data/CachingFeedRepository.swift) · [Cache and cancellation tests](superDemoAppTests/Features/Feed/CachingFeedRepositoryTests.swift) |
-| **URLSession and Swift concurrency** | Inject the session and retry policy; handle token refresh, Retry-After and cooperative cancellation. | [IlkerSevimNetworking](https://github.com/redjadet/ilkersevim_networking) · [App re-export](superDemoApp/Shared/Networking/IlkerSevimNetworkingExport.swift) · [Client tests](superDemoAppTests/Shared/Networking/URLSessionAPIClientTests.swift) · [Retry tests](superDemoAppTests/Shared/Networking/RetryPolicyTests.swift) |
-| **UIKit / SwiftUI interoperability** | Demonstrate collection reuse, prefetching, hosting and custom transitions. | [UIKit showcase](superDemoApp/Features/ProductionReadiness/UIKitShowcase/) · [UI test suite](superDemoAppUITests/) · [Talk track](docs/portfolio.md) |
-| **Native iOS + Flutter integration** | An optional iOS module exchanges typed host-bridge messages; binaries without frameworks show an unavailable state. | [Add-to-app setup](docs/flutter-add-to-app.md) · [Swift channel tests](superDemoAppTests/Shared/FlutterEmbed/FlutterHostBridgeChannelTests.swift) · [Dart channel tests](flutter_module/test/host_bridge_channel_test.dart) |
-| **Testing and CI/CD** | Keep implementation evidence, local validation and hosted merge checks traceable. | [CI map](docs/ci-cd-map.md) · [Current workflow](https://github.com/redjadet/super_demo_ios/actions/workflows/ci.yml) · [Quality scope](docs/code-quality.md) |
+### Bookmark race with regression proof
 
-Task → path: [`CODEMAP.md`](CODEMAP.md).
+Bookmark → remove during an in-flight request: persist local intent and outbox
+atomically, preserve the newer removal, then drain it in order.
+[Problem, decision and regression test](docs/EVIDENCE.md#lead-case-preserve-the-latest-bookmark-intent) ·
+[Passing unit run · 2026-10-08](https://github.com/redjadet/super_demo_ios/actions/runs/37828018857/job/113485831800).
 
-### Native macOS demo
+**My contribution:** architecture and acceptance criteria, review of failure
+paths, and regression/CI validation. [Responsibilities and workflow](docs/EVIDENCE.md#my-contribution).
 
-Resizable SwiftUI window, split-view Feed and SwiftData notes, native menu and
-keyboard commands, and Light/Dark appearance. Follow the
-[2-minute Mac walkthrough](docs/macos-demo.md) for screenshots, launch commands,
-and the distinction between sample data, local execution, and hosted build proof.
+- [Architecture tour](docs/architecture-tour.md): state, layers and dependency injection.
+- [More engineering cases](docs/EVIDENCE.md#more-engineering-cases): cache expiry, cancellation, URLSession and UIKit regressions.
+- [Flutter add-to-app](docs/flutter-add-to-app.md): optional iOS module, typed host bridge and setup.
 
-![Native macOS Feed in Dark appearance](docs/screenshots/macos/feed-dark.png)
+## Run the demo
 
-## 3-minute path
+Open `superDemoApp.xcodeproj` in Xcode, choose an iPhone, iPad or Mac destination,
+and use `-ReviewerDemoMode` for seeded sample data.
 
-1. **Dashboard:** inspect release-health states and navigation.
-2. **Feed:** inspect loading, Retry and stale-cache presentation
-   (`-StaleFeedDemo` or Engineering demos), then compare the cache tests above.
-3. **UIKit Showcase:** open from Dashboard and inspect the native UI bridge.
-4. **Engineering demos:** inspect Diagnostics, simulated Idempotent POST and
-   optional Flutter add-to-app; availability depends on the selected platform.
+- [3-minute reviewer path](docs/portfolio.md#3-minute-path) and [launch flags](docs/portfolio.md#launch-and-build-flags).
+- [Mac walkthrough](docs/macos-demo.md) and [Watch & TV walkthrough](docs/watch-tv-demo.md).
+- [Test commands](docs/testing.md), [regression reproduction](docs/EVIDENCE.md#reproduce-the-evidence) and [CI/CD map](docs/ci-cd-map.md).
 
-Deep links and launch flags: [`docs/portfolio.md`](docs/portfolio.md).
-
-## Run and proof
-
-Open `superDemoApp.xcodeproj` and choose an iPhone, iPad or Mac destination.
-Use `-ReviewerDemoMode` for seeded review data. The Flutter module is iOS-only
-and requires the [separate framework preparation step](docs/flutter-add-to-app.md).
-From the repository root:
-
-```bash
-./bin/lint.sh
-./bin/verify-swift.sh   # format + lint
-./bin/ci.sh             # merge gate
-```
-
-## Docs
-
-| Topic | Doc |
-| --- | --- |
-| Task → path router | [`CODEMAP.md`](CODEMAP.md) |
-| ≤15 min architecture tour | [`docs/architecture-tour.md`](docs/architecture-tour.md) |
-| Reviewer architecture deep-dives | [`docs/architecture/`](docs/architecture/README.md) — [cancellation](docs/architecture/native-cancellation.md) · [cache](docs/architecture/cache-behavior.md) · [offline-first](docs/architecture/offline-first-behavior.md) · [Flutter](docs/architecture/flutter-add-to-app.md) |
-| Reviewer map / talk tracks | [`docs/portfolio.md`](docs/portfolio.md) |
-| Design system | [`DESIGN.md`](DESIGN.md) |
-| Layers / modularity | [`docs/layers.md`](docs/layers.md) |
-| Offline / networking | [`docs/offline-first.md`](docs/offline-first.md) |
-| Flutter add-to-app | [`docs/flutter-add-to-app.md`](docs/flutter-add-to-app.md) |
-| CI / CD map | [`docs/ci-cd-map.md`](docs/ci-cd-map.md) |
-| Engineering evidence map | [`docs/engineering/engineering-evidence-map.md`](docs/engineering/engineering-evidence-map.md) |
-| Code quality honesty | [`docs/code-quality.md`](docs/code-quality.md) |
-| Full index | [`docs/README.md`](docs/README.md) |
-
-## License
-
-This project is licensed under the [MIT License](LICENSE).
+[Full documentation index](docs/README.md) · [Code map](CODEMAP.md) · [Design system](DESIGN.md) · [MIT License](LICENSE).
 
 ## Screenshots
 
@@ -141,3 +85,7 @@ data. See the [reviewer guide](docs/portfolio.md) and
 #### Dark appearance
 
 ![Apple TV sample Feed with focused headline in dark appearance](docs/screenshots/watch-tv/tv-feed-dark.png)
+
+### Mac
+
+![Native macOS Feed in Dark appearance](docs/screenshots/macos/feed-dark.png)
