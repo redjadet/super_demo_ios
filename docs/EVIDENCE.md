@@ -48,9 +48,7 @@ sample. Claims stay limited to what this repo and its CI history show.
 | Workflow badge (main) | [![CI](https://github.com/redjadet/super_demo_ios/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/redjadet/super_demo_ios/actions/workflows/ci.yml) |
 | Main-branch runs | [Actions · branch `main`](https://github.com/redjadet/super_demo_ios/actions?query=branch%3Amain) |
 | Tip green Delivery (pre-PR) | [run 37828018857](https://github.com/redjadet/super_demo_ios/actions/runs/37828018857) on `17d795f` — includes **Checklist · iPhone test (ui-1)** and **Delivery checklist** |
-
-After this PR’s Delivery checklist goes green, replace the tip link above with
-that specific passing PR run (keep the main badge + branch query).
+| This PR green Delivery | [run 37933427839](https://github.com/redjadet/super_demo_ios/actions/runs/37933427839) on `52351f3` (`cursor/portfolio-evidence-6eb4`) — docs-only **Delivery checklist** |
 
 **Untested / not claimed here:** App Store marketing screenshots, production
 APNs, paid StoreKit checkout, live `superdemo.app` Safari→app handoff, and
