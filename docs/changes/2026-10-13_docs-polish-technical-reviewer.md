@@ -14,6 +14,9 @@
 - Light index and linked-doc wording (`docs/README.md`, `CODEMAP.md`,
   performance-lab / incident / failure-map cross-references).
 - Clarify the evidence table’s pointer to PR #107 after that PR merged.
+- Align `tool/cursor-template/README.md` install command with the
+  repo-local `.cursor` override (`CURSOR_INSTALL_DIR`); bare script still
+  defaults to `../.cursor`.
 
 ## Why
 
