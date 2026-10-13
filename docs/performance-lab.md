@@ -1,7 +1,7 @@
 # Performance lab
 
 Instruments recipes for existing `os_signpost` instrumentation, the Feed
-widget App Group path, and a concurrency talk track. **Recipe only** unless
+widget App Group path, and concurrency cancel notes. **Recipe only** unless
 you record a real local Profile session — never invent FPS / latency numbers
 in CI or docs.
 
@@ -129,7 +129,7 @@ compiles ActivityKit sources with the widget extension; it does not Profile or
 screenshot the Island. Silent no-op when activities are disabled is an honest
 outcome.
 
-## Concurrency talk track (reviewers)
+## Concurrency discussion (technical reviewers)
 
 Use this when walking performance **and** Swift Concurrency together — still
 no invented numbers.

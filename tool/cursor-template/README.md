@@ -7,14 +7,14 @@ folder is gitignored; install from the repo after clone or when rules change.
 
 | Open in Cursor | Install target | Notes |
 | ------ | ------ |
-| Parent `super_demo_ios/` (recommended) | `../.cursor/` relative to `superDemoApp/` | Matches Xcode MCP at repo parent |
-| Git root `superDemoApp/` only | Set `CURSOR_INSTALL_DIR="$PWD/.cursor"` | Rules still reference `superDemoApp/` paths |
+| Parent `super_demo_ios/` (optional) | `.cursor/` under that parent | Local multi-folder workspace |
+| Published git repo root | `CURSOR_INSTALL_DIR="$PWD/.cursor"` | Default for GitHub clones; run `./bin/*` here |
 
 See [`../../AGENTS.md`](../../AGENTS.md) workspace layout.
 
 ## Install
 
-From **git repo root** (`superDemoApp/`):
+From the **git repo root** (directory with `bin/`, `docs/`, and `superDemoApp/`):
 
 ```bash
 ./tool/install-cursor-rules.sh

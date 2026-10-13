@@ -4,9 +4,11 @@ Machine-readable project facts for agents.
 
 ## Repository
 
-- Published: `https://github.com/redjadet/super_demo_ios` (`superDemoApp/` is the only git root).
+- Published: `https://github.com/redjadet/super_demo_ios` (git root is the
+  repository root; app sources live under `superDemoApp/`).
 - Parent folder `super_demo_ios/` may hold gitignored `.cursor/`, `.vscode/`, `tasks/`,
-  `buildServer.json`, `.agents/` (skills install target).
+  `buildServer.json`, `.agents/` (skills install target) when used as a local
+  Cursor workspace.
 - GitHub Actions and local pre-merge proof: `./bin/ci.sh` (see
   [`agents_quick_reference.md`](agents_quick_reference.md)).
 
@@ -50,9 +52,9 @@ Machine-readable project facts for agents.
 
 | Path | Role |
 | ------ | ------ |
-| `superDemoApp/` | Git root; run `./bin/*` and `./tool/*` here |
-| `super_demo_ios/` (parent) | Optional Cursor workspace root |
-| `superDemoApp/superDemoApp/` | App Swift sources (`App/`, assets, entry) |
+| `.` (repo root) | Git root; run `./bin/*` and `./tool/*` here |
+| `super_demo_ios/` (parent) | Optional local Cursor workspace folder |
+| `superDemoApp/` | App Swift sources (`App/`, assets, entry) |
 | `superDemoAppTests/` | Unit tests (repo root) |
 | `superDemoAppUITests/` | UI tests (repo root) |
 | `superDemoApp/Features/` | Layered features (`Presentation` / `Domain` / `Data`) |

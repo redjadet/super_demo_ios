@@ -43,18 +43,19 @@ requirements, acceptance criteria, and the decision to accept a change.
 | **Reviewed** | Failure behavior and the limits of claims: cache expiry, cancellation, bookmark conflicts, and platform/demo boundaries. The cases below connect those decisions to source and assertions. [Review protocol](ai_code_review_protocol.md) records the review criteria. |
 | **Validated** | Acceptance through behavior assertions and CI evidence: the named race regression, related conflict tests, and pending-state UI test have passing job links above. The proof table below distinguishes runtime checks from documentation checks. |
 
-**AI-assisted workflow:** Cursor and Codex assist with implementation, tests,
-documentation, and review suggestions. My responsibility is to direct the
-work, review behavior and trade-offs, and assess the resulting evidence.
-Commit author names alone do not establish which code was written manually;
-the linked artifacts make the decisions and verification inspectable.
+**AI-assisted workflow:** Cursor, Codex, and similar agents handle typing and
+syntax (implementation drafts, tests, docs). I own architecture, intent, edge
+cases, acceptance criteria, review of trade-offs, and whether the evidence is
+enough to accept a change. Commit author names alone do not establish which
+lines were typed manually; the linked artifacts make the decisions and
+verification inspectable.
 
 ## Verification and proof scope
 
 | Evidence | Commit and scope |
 | --- | --- |
 | **Recorded full run** | [Main run 37828018857](https://github.com/redjadet/super_demo_ios/actions/runs/37828018857), **2026-10-08**, `17d795f`: iPhone unit tests, UI shards `ui-1`–`ui-4`, platform build lane, and Delivery checklist passed. The named cases on this page were checked in the unit or `ui-2` logs. |
-| **This documentation PR** | [PR #107 checks](https://github.com/redjadet/super_demo_ios/pull/107/checks) show the current published head. Its docs-only route checks Markdown/DesignMD and Delivery aggregation; iPhone runtime tests and platform builds are skipped. App and test sources in this PR match the recorded full-run commit. |
+| **Evidence page PR** | [PR #107 checks](https://github.com/redjadet/super_demo_ios/pull/107/checks) published the evidence page on a docs-only route (Markdown/DesignMD and Delivery aggregation; iPhone runtime tests and platform builds skipped). App and test sources at that head match the recorded full-run commit. |
 | **Newer main runs** | [Actions · branch `main`](https://github.com/redjadet/super_demo_ios/actions?query=branch%3Amain). Check each run's commit and executed jobs before treating it as runtime proof. |
 
 Hosted Mac proof is unsigned compilation; an iPhone UI pass does not establish

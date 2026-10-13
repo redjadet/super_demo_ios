@@ -4,6 +4,9 @@ Record durable implementation notes after meaningful changes.
 
 ## Entries
 
+- [`2026-10-13_docs-polish-technical-reviewer.md`](2026-10-13_docs-polish-technical-reviewer.md)
+  — Technical-reviewer prose polish; AI typing vs ownership framing; workspace
+  layout fact fix.
 - [`2026-10-09_portfolio-evidence.md`](2026-10-09_portfolio-evidence.md)
   — `docs/EVIDENCE.md` for technical reviewers; README/portfolio links; role + scope.
 - [`2026-10-08_ci-ui2-launch-timeout-retry.md`](2026-10-08_ci-ui2-launch-timeout-retry.md)

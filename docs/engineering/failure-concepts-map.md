@@ -30,6 +30,6 @@ coordination on top); update when behavior rows below change.
 
 - Senior habits (Stackademic 7): [`senior-coding-patterns-map.md`](senior-coding-patterns-map.md)
 - Offline rules: [`../offline-invariants.md`](../offline-invariants.md)
-- Cancel talk track: [`../architecture/native-cancellation.md`](../architecture/native-cancellation.md)
+- Cancel discussion: [`../architecture/native-cancellation.md`](../architecture/native-cancellation.md)
 - Performance + concurrency: [`../performance-lab.md`](../performance-lab.md)
 - Portfolio inventory: [`../portfolio.md`](../portfolio.md)

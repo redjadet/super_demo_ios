@@ -1,36 +1,36 @@
 # Architecture tour (≤15 minutes)
 
-**Audience:** Cold reviewer or agent who needs the iOS portfolio spine without a
-full demo script. Companion to [`portfolio.md`](portfolio.md) (theme table) and
-[`../CODEMAP.md`](../CODEMAP.md) (task → path).
+**Audience:** Technical reviewers and agents who need the portfolio spine
+without a full demo script. Companion to [`portfolio.md`](portfolio.md)
+(theme table) and [`../CODEMAP.md`](../CODEMAP.md) (task → path).
 
 **Date:** 2026-09-28  
 **Scope:** Read paths + open one real folder per stop. No product API changes.
 
 | Min | Stop | Do | Open |
 | --- | --- | --- | --- |
-| 0–2 | Orient | Name what the repo proves; land badges + 3-minute path | [`../README.md`](../README.md), [`../CODEMAP.md`](../CODEMAP.md) |
+| 0–2 | Orient | Skim purpose, badges, and the 3-minute path | [`../README.md`](../README.md), [`../CODEMAP.md`](../CODEMAP.md) |
 | 2–5 | Layers | Presentation → Domain ← Data; enforcement command | [`architecture.md`](architecture.md), [`layers.md`](layers.md), `superDemoApp/Features/Feed/` |
 | 5–9 | Offline Feed | Network → repository → use case → `@Observable` model; stale path | `superDemoApp/Features/Feed/Data/CachingFeedRepository.swift`, `superDemoApp/Features/Feed/Presentation/FeedFeatureModel.swift`, [`offline-first.md`](offline-first.md) |
 | 9–12 | Networking | Retry / 401 / 429 / Idempotency-Key + redaction | SPM `IlkerSevimNetworking` + thin `superDemoApp/Shared/Networking/` re-export; [`sync-and-networking.md`](sync-and-networking.md) |
 | 12–15 | Composition + proof | DI roots wire features; run a fast proof lane | `superDemoApp/App/FeedComposition.swift`, `./bin/checklist-fast` or `./bin/ci.sh` |
 
-## Optional one-liners (if asked)
+## Common follow-ups
 
-| Follow-up | Point here |
+| Question | Point here |
 | --- | --- |
-| “Where do agents start?” | [`../AGENTS.md`](../AGENTS.md), [`../CODEMAP.md`](../CODEMAP.md) |
-| “AI-native feature loop?” | [`ai-sdlc/README.md`](ai-sdlc/README.md) |
-| “Full reviewer talk tracks?” | [`portfolio.md`](portfolio.md) |
-| “Items as SwiftData reference?” | `superDemoApp/Features/Items/` |
-| “UIKit interop?” | `superDemoApp/Features/ProductionReadiness/UIKitShowcase/` |
-| “Widget / Share / watch / TV?” | `FeedWidgetShared/`, `superDemoAppWidget/`, `superDemoAppShare/`, `superDemoAppWatch/`, `superDemoAppTV/`; [`portfolio.md`](portfolio.md) Platform surfaces |
-| “Diagnostics / crash later?” | `superDemoApp/Shared/Diagnostics/`, [`incident-playbook.md`](incident-playbook.md), [`adr/0003-crash-vendor-deferred.md`](adr/0003-crash-vendor-deferred.md) |
-| “Validation chooser?” | [`agents_quick_reference.md`](agents_quick_reference.md), [`engineering/validation_routing_fast_vs_full.md`](engineering/validation_routing_fast_vs_full.md) |
-| “What evidence supports the engineering claims?” | [`engineering/engineering-evidence-map.md`](engineering/engineering-evidence-map.md) |
-| “Cancel / cache / offline / Flutter deep-dives?” | [`architecture/README.md`](architecture/README.md) |
-| “Coverage % / quality overview?” | [`code-quality.md`](code-quality.md) — measured `%` unavailable; no fake badge |
-| “Why layering / offline / Sonar / CI honesty?” | [`adr/README.md`](adr/README.md) |
+| Where do agents start? | [`../AGENTS.md`](../AGENTS.md), [`../CODEMAP.md`](../CODEMAP.md) |
+| AI-native feature loop? | [`ai-sdlc/README.md`](ai-sdlc/README.md) |
+| Full reviewer discussion map? | [`portfolio.md`](portfolio.md) |
+| Items as SwiftData reference? | `superDemoApp/Features/Items/` |
+| UIKit interop? | `superDemoApp/Features/ProductionReadiness/UIKitShowcase/` |
+| Widget / Share / watch / TV? | `FeedWidgetShared/`, `superDemoAppWidget/`, `superDemoAppShare/`, `superDemoAppWatch/`, `superDemoAppTV/`; [`portfolio.md`](portfolio.md) Platform surfaces |
+| Diagnostics / deferred crash vendor? | `superDemoApp/Shared/Diagnostics/`, [`incident-playbook.md`](incident-playbook.md), [`adr/0003-crash-vendor-deferred.md`](adr/0003-crash-vendor-deferred.md) |
+| Validation chooser? | [`agents_quick_reference.md`](agents_quick_reference.md), [`engineering/validation_routing_fast_vs_full.md`](engineering/validation_routing_fast_vs_full.md) |
+| What evidence supports the engineering claims? | [`engineering/engineering-evidence-map.md`](engineering/engineering-evidence-map.md) |
+| Cancel / cache / offline / Flutter deep-dives? | [`architecture/README.md`](architecture/README.md) |
+| Coverage % / quality overview? | [`code-quality.md`](code-quality.md) — measured `%` unavailable; no fake badge |
+| Why layering / offline / Sonar / CI honesty? | [`adr/README.md`](adr/README.md) |
 
 ## Honesty
 
