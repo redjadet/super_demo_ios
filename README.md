@@ -39,8 +39,9 @@ atomically, preserve the newer removal, then drain it in order.
 [Problem, decision and regression test](docs/EVIDENCE.md#lead-case-preserve-the-latest-bookmark-intent) ·
 [Passing unit run · 2026-10-08](https://github.com/redjadet/super_demo_ios/actions/runs/37828018857/job/113485831800).
 
-**My contribution:** architecture and acceptance criteria, review of failure
-paths, and regression/CI validation. [Responsibilities and workflow](docs/EVIDENCE.md#my-contribution).
+**My contribution:** architecture, intent, and edge cases; acceptance criteria;
+review of failure paths; regression and CI validation. Agents assist with
+typing and syntax. [Responsibilities and workflow](docs/EVIDENCE.md#my-contribution).
 
 - [Architecture tour](docs/architecture-tour.md): state, layers and dependency injection.
 - [More engineering cases](docs/EVIDENCE.md#more-engineering-cases): cache expiry, cancellation, URLSession and UIKit regressions.

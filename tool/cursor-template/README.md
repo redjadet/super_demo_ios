@@ -7,27 +7,32 @@ folder is gitignored; install from the repo after clone or when rules change.
 
 | Open in Cursor | Install target | Notes |
 | ------ | ------ |
-| Parent `super_demo_ios/` (recommended) | `../.cursor/` relative to `superDemoApp/` | Matches Xcode MCP at repo parent |
-| Git root `superDemoApp/` only | Set `CURSOR_INSTALL_DIR="$PWD/.cursor"` | Rules still reference `superDemoApp/` paths |
+| Parent `super_demo_ios/` (optional) | bare `./tool/install-cursor-rules.sh` → `../.cursor` | Script default; local multi-folder workspace |
+| Published git repo root | `CURSOR_INSTALL_DIR="$PWD/.cursor"` | Required override for GitHub clones; run `./bin/*` here |
 
 See [`../../AGENTS.md`](../../AGENTS.md) workspace layout.
 
 ## Install
 
-From **git repo root** (`superDemoApp/`):
+From the **git repo root** (directory with `bin/`, `docs/`, and `superDemoApp/`),
+install into **repo-local** `.cursor/` (gitignored):
 
 ```bash
-./tool/install-cursor-rules.sh
+CURSOR_INSTALL_DIR="$PWD/.cursor" ./tool/install-cursor-rules.sh
 ```
+
+Without `CURSOR_INSTALL_DIR`, the script defaults to `../.cursor` (parent of
+the git root)—useful for a multi-folder parent workspace, not for a clone
+opened at the published repo root.
 
 Options:
 
 ```bash
-# Install into repo-local .cursor (gitignored)
-CURSOR_INSTALL_DIR="$(pwd)/.cursor" ./tool/install-cursor-rules.sh
+# Parent-workspace default (writes ../.cursor)
+./tool/install-cursor-rules.sh
 
 # Dry run
-./tool/install-cursor-rules.sh --dry-run
+CURSOR_INSTALL_DIR="$PWD/.cursor" ./tool/install-cursor-rules.sh --dry-run
 ```
 
 Restart Cursor or reload the window after install.

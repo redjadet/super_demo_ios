@@ -1,7 +1,8 @@
 # CODEMAP — task → paths
 
-Short router for agents and cold reviewers. Canon stays in [`docs/`](docs/README.md).
-Timed walk: [`docs/architecture-tour.md`](docs/architecture-tour.md).
+Short router for agents and technical reviewers. Canon stays in
+[`docs/`](docs/README.md). Timed walk:
+[`docs/architecture-tour.md`](docs/architecture-tour.md).
 
 | Task | Start here |
 | --- | --- |

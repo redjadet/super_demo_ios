@@ -1,12 +1,13 @@
 # Portfolio tour — superDemoApp
 
-Repo for technical reviewers: **Universal SwiftUI + SwiftData demo** (iPhone /
-iPad / Mac) with a **Feed** trajectory: network client → repository → use cases →
-`@Observable` feature model → SwiftUI, DI, cancellation, optional SwiftData
-read-through cache.
+Technical-reviewer guide for this **Universal SwiftUI + SwiftData** sample
+(iPhone / iPad / Mac). The **Feed** slice shows the full stack path: network
+client → repository → use cases → `@Observable` feature model → SwiftUI, with
+DI, cancellation, and an optional SwiftData read-through cache.
 
 **Evidence first:** [bookmark race → design → regression → passing run](EVIDENCE.md#lead-case-preserve-the-latest-bookmark-intent),
-then [my contribution](EVIDENCE.md#my-contribution) and proof scope. This page is the broader tour.
+then [contribution and proof scope](EVIDENCE.md#my-contribution). This page is
+the broader tour.
 
 ## 3-minute path
 
@@ -24,7 +25,7 @@ and the [Watch and TV walkthrough](watch-tv-demo.md) for platform-specific steps
 
 ## Reviewer map
 
-| Quality theme | Path | Talk track | Proof |
+| Quality theme | Path | Discussion | Proof |
 | --- | --- | --- | --- |
 | Layer boundaries | `superDemoApp/Features/*/`, `docs/layers.md` | Presentation → Domain ← Data; composition in `superDemoApp/App/` | `./bin/lint.sh` → `tool/check_layer_boundaries.sh` |
 | Concurrency cancel | `superDemoApp/Shared/Presentation/AsyncLoadController.swift`, Feed/Items/Dashboard models | Cancel restores prior state; `CancellationError` not a Retry failure | Unit tests on feature models; UI Retry IDs |
@@ -34,7 +35,7 @@ and the [Watch and TV walkthrough](watch-tv-demo.md) for platform-specific steps
 | UIKit showcase | `superDemoApp/Features/ProductionReadiness/UIKitShowcase/` | Collection reuse, prefetch, hosting, custom transition | UI smoke: `uikitShowcaseLink` |
 | Diagnostics / crash swap | `superDemoApp/Shared/Diagnostics/` | OSLog non-fatals today; vendor adapter later | [`incident-playbook.md`](incident-playbook.md); Engineering demos → Diagnostics |
 | CI / delivery | `bin/`, `.github/workflows/ci.yml`, Fastlane | Local `./bin/ci.sh` = merge proof; GHA build-heavy | [`ci-cd-map.md`](ci-cd-map.md) |
-| Performance signposts | `AppPerformanceSignposts`, Feed widget App Group path | Feed + UIKit `os_signpost`; widget recipe; Live Activity Feed-refresh recipe (gate A); concurrency cancel talk track | [`performance-lab.md`](performance-lab.md) |
+| Performance signposts | `AppPerformanceSignposts`, Feed widget App Group path | Feed + UIKit `os_signpost`; widget recipe; Live Activity Feed-refresh recipe (gate A); concurrency cancel notes | [`performance-lab.md`](performance-lab.md) |
 | Security habits | Keychain demo, ATS, redaction | Demo auth ≠ production OAuth | [`security-checklist.md`](security-checklist.md) |
 | Engineering standards | Layers, Observation, PR proof | Human-readable budget + owners | [`engineering-standards.md`](engineering-standards.md) |
 | SonarCloud | Optional static analysis | **Skipped** — no org; use lint/CI gates | [`sonar-decision.md`](sonar-decision.md) |
@@ -62,7 +63,7 @@ visionOS companion demo, and live public DNS for `superdemo.app` universal links
 | ObjC legacy interop | `superDemoApp/Shared/LegacyObjC/` + bridging header | **In repo** (thin) |
 | Observability / crash swap | `superDemoApp/Shared/Diagnostics/`, [`incident-playbook.md`](incident-playbook.md) | **In repo** |
 | Performance (Feed + UIKit) | `AppPerformanceSignposts`, [`performance-lab.md`](performance-lab.md) | **In repo** |
-| Performance (widget / concurrency lab) | [`performance-lab.md`](performance-lab.md) widget App Group + Live Activity Feed-refresh recipes + concurrency talk track | **In repo** |
+| Performance (widget / concurrency lab) | [`performance-lab.md`](performance-lab.md) widget App Group + Live Activity Feed-refresh recipes + concurrency cancel notes | **In repo** |
 | Universal shell (iPhone / iPad / Mac) | Adaptive navigation; CI platform builds (iPad + Mac + watchOS + tvOS; Mac unsigned compile proof); iOS / macOS deployment floors **26.7** | **In repo** |
 | Native macOS desktop demo | [Walkthrough and screenshots](macos-demo.md); resizable window, split navigation, scene-focused New/Save/Refresh commands, SwiftData note editor, Light/Dark appearance | **In repo** (local execution; hosted Mac compile proof) |
 | WidgetKit / Home Screen widget | `FeedWidgetShared/`, `superDemoAppWidget/`, App Group `group.com.ilkersevim.superDemoApp`; Engineering demos → Feed widget snapshot | **In repo** (iOS embed; Mac lane skips extension) |
@@ -90,7 +91,7 @@ launch, native navigation, failure states, and source map.
 Mac desktop demo: [macOS portfolio walkthrough](macos-demo.md) — unsigned CI
 compile-proof, local Terminal / Xcode run path, honesty boundaries.
 
-## How to read this repo (cold reviewer)
+## How to read this repo
 
 1. [`../README.md`](../README.md) — app overview, evidence links and screenshots.
 2. [`../CODEMAP.md`](../CODEMAP.md) — task → path; timed walk
@@ -159,7 +160,7 @@ Both seed a fresh SwiftData cache and fail remote through existing
 `CachingFeedRepository`. Preview `#Preview("Feed — Stale")` and
 `CachingFeedRepositoryTests` remain valid proofs.
 
-## Reviewer talking points (5–7)
+## Discussion points for technical reviewers
 
 - **Layers:** `Presentation → Domain ← Data`; `./tool/check_layer_boundaries.sh`.
 - **DI:** Injectable `URLSession` + URLs in Data; wired in composition.

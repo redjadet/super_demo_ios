@@ -21,9 +21,9 @@ report proof.
 
 | Path | Role |
 | ------ | ------ |
-| `superDemoApp/` | Git root — run `./bin/*` here |
-| Parent `super_demo_ios/` | Optional Cursor workspace root |
-| `superDemoApp/superDemoApp/` | App Swift sources |
+| `.` (repo root) | Git root — run `./bin/*` and `./tool/*` here |
+| `superDemoApp/` | App Swift sources (`App/`, `Features/`, `Shared/`) |
+| Parent `super_demo_ios/` | Optional local Cursor workspace folder |
 
 Facts / CI: [`docs/agent_project_context.md`](docs/agent_project_context.md).
 Host / MCP / skills: [`docs/agent_host_notes.md`](docs/agent_host_notes.md),
