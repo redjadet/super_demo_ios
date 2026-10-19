@@ -78,6 +78,7 @@ preferred = (
 )
 exotic = ('Duo', 'Fold', 'Air')
 rows = []
+exotic_rows = []
 for line in sys.stdin:
     if 'platform:iOS Simulator' not in line or 'placeholder' in line:
         continue
@@ -86,9 +87,14 @@ for line in sys.stdin:
         continue
     name_m = re.search(r'name:([^,}]+)', line)
     name = (name_m.group(1).strip() if name_m else '')
+    entry = (name, m.group(1).upper(), line.strip())
     if any(x in name for x in exotic):
+        exotic_rows.append(entry)
         continue
-    rows.append((name, m.group(1).upper(), line.strip()))
+    rows.append(entry)
+if not rows:
+    # Last resort when xcodebuild only lists exotic form factors (e.g. Duo on 27.1).
+    rows = exotic_rows
 if not rows:
     sys.exit(1)
 for pref in preferred:
@@ -109,7 +115,22 @@ def rank(name):
     else:
         tier = 0
     return (gen, tier)
-rows.sort(key=lambda r: rank(r[0]), reverse=True)
+
+def exotic_rank(name):
+    if 'Duo' in name:
+        return 3
+    if 'Air' in name:
+        return 2
+    if 'Fold' in name:
+        return 1
+    return 0
+
+if any(any(x in r[0] for x in exotic) for r in rows) and not any(
+    not any(x in r[0] for x in exotic) for r in rows
+):
+    rows.sort(key=lambda r: exotic_rank(r[0]), reverse=True)
+else:
+    rows.sort(key=lambda r: rank(r[0]), reverse=True)
 print(rows[0][1])
 " 2>/dev/null || true
   )"

@@ -79,7 +79,11 @@ def pick(supported_names):
         if name in by:
             return by[name]
     standard = [n for n in by if is_standard(n)]
-    return by[standard[0]] if standard else None
+    if standard:
+        return by[standard[0]]
+    # Last resort: exotic-only runtimes (Xcode 27.1 → iPhone Duo).
+    any_iphone = [n for n in by if "iPhone" in n]
+    return by[any_iphone[0]] if any_iphone else None
 
 
 # Case: 27.1 omits iPhone 18* (the GHA footgun). Prefer 17 Pro, not empty.
@@ -97,6 +101,12 @@ if pick([]) is not None:
 got = pick(["iPhone 18 Pro", "iPhone 17 Pro"])
 if got != "id.iPhone-18-Pro":
     print(f"error: expected iPhone 18 Pro when listed, got {got}", file=sys.stderr)
+    sys.exit(1)
+
+# Case: exotic-only runtime (Xcode 27.1) → last-resort Duo, not empty.
+got = pick(["iPhone Duo"])
+if got != "id.iPhone-Duo":
+    print(f"error: expected iPhone Duo last-resort when only exotic listed, got {got}", file=sys.stderr)
     sys.exit(1)
 
 print("ok: fixture selection prefers runtime-supported types")
@@ -121,6 +131,12 @@ run_static_script_guards() {
   fi
   if ! grep -q 'supportedDeviceTypes' "$runtime"; then
     fail "ios_simulator_runtime.sh must consult runtime supportedDeviceTypes"
+  fi
+  if ! grep -q 'is_any_iphone' "$runtime"; then
+    fail "ios_simulator_runtime.sh must define is_any_iphone last-resort for exotic-only runtimes"
+  fi
+  if ! grep -q 'exotic_rank' "$runtime"; then
+    fail "ios_simulator_runtime.sh must rank exotic last-resort types (Duo/Air/Fold)"
   fi
 }
 
