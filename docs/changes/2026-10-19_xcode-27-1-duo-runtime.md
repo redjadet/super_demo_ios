@@ -12,6 +12,9 @@ building against the **27.1** SDK (SDK mismatch risk).
 - Prefer standard iPhones when the runtime supports them.
 - When a runtime is exotic-only, use Duo (then Air/Fold) as last resort for
   UDID pick, device-type create lists, and xcodebuild destination parsing.
+- Exotic UDID fallback consults `supportedDeviceTypes` so a leftover Duo on a
+  runtime that still supports standard iPhones does not block creating a
+  preferred standard device (Codex P2).
 - Fixture + script guards cover Duo-only selection; `docs/testing.md` documents
   the policy.
 

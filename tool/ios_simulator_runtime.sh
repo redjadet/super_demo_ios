@@ -60,7 +60,7 @@ find_iphone_udid_on_runtime() {
   local runtime_id="$1"
   xcrun simctl list devices -j 2>/dev/null \
     | python3 -c "
-import json, re, sys
+import json, re, subprocess, sys
 
 runtime_id = sys.argv[1]
 preferred = (
@@ -111,6 +111,32 @@ def phone_rank(name):
         tier = 0
     return (gen, tier)
 
+def runtime_is_exotic_only(rid):
+    try:
+        raw = subprocess.check_output(
+            ['xcrun', 'simctl', 'list', 'runtimes', '-j'],
+            stderr=subprocess.DEVNULL,
+        )
+    except (OSError, subprocess.CalledProcessError):
+        return False
+    runtimes = json.loads(raw)
+    runtime = next(
+        (r for r in runtimes.get('runtimes', []) if r.get('identifier') == rid),
+        None,
+    )
+    if not runtime:
+        return False
+    supported = runtime.get('supportedDeviceTypes') or []
+    names = [
+        entry.get('name') or ''
+        for entry in supported
+        if isinstance(entry, dict)
+    ]
+    # Empty supportedDeviceTypes: treat as not exotic-only (older-runtime path).
+    if not names:
+        return False
+    return not any(is_standard_iphone(n) for n in names)
+
 data = json.load(sys.stdin)
 devices = data.get('devices', {}).get(runtime_id, [])
 iphones = [
@@ -119,6 +145,11 @@ iphones = [
 ]
 used_last_resort = False
 if not iphones:
+    # Only admit exotic devices when this runtime cannot create a standard
+    # iPhone (e.g. iOS 27.1 → Duo). Otherwise return empty so ensure_ci_simulator
+    # can create a preferred standard device instead of locking onto leftover Duo.
+    if not runtime_is_exotic_only(runtime_id):
+        sys.exit(1)
     iphones = [
         d for d in devices
         if d.get('isAvailable') and is_any_iphone(d.get('name', ''))
