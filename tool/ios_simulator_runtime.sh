@@ -53,7 +53,9 @@ sys.exit(1)
 }
 
 # Prints UDID of preferred iPhone on runtime_id, or empty.
-# Skips exotic form factors (Duo/Fold/…) — they are not reliable xcodebuild destinations.
+# Prefers standard form factors; when a runtime only lists exotic types
+# (e.g. iOS 27.1 → iPhone Duo), use those as last resort so the newest
+# runtime can match the iphonesimulator SDK instead of falling back older.
 find_iphone_udid_on_runtime() {
   local runtime_id="$1"
   xcrun simctl list devices -j 2>/dev/null \
@@ -82,6 +84,18 @@ def is_standard_iphone(name):
         return True
     return False
 
+def is_any_iphone(name):
+    return bool(name) and 'iPhone' in name
+
+def exotic_rank(name):
+    if 'Duo' in name:
+        return 3
+    if 'Air' in name:
+        return 2
+    if 'Fold' in name:
+        return 1
+    return 0
+
 def phone_rank(name):
     m = re.search(r'iPhone (\d+)', name or '')
     gen = int(m.group(1)) if m else 0
@@ -103,17 +117,26 @@ iphones = [
     d for d in devices
     if d.get('isAvailable') and is_standard_iphone(d.get('name', ''))
 ]
+used_last_resort = False
+if not iphones:
+    iphones = [
+        d for d in devices
+        if d.get('isAvailable') and is_any_iphone(d.get('name', ''))
+    ]
+    used_last_resort = True
 if not iphones:
     sys.exit(1)
 booted = [d for d in iphones if d.get('state') == 'Booted']
 pool = booted or iphones
-for name in preferred:
-    for d in pool:
-        if d.get('name') == name:
-            print(d['udid'].upper())
-            sys.exit(0)
-
-pool.sort(key=lambda d: phone_rank(d.get('name', '')), reverse=True)
+if not used_last_resort:
+    for name in preferred:
+        for d in pool:
+            if d.get('name') == name:
+                print(d['udid'].upper())
+                sys.exit(0)
+    pool.sort(key=lambda d: phone_rank(d.get('name', '')), reverse=True)
+else:
+    pool.sort(key=lambda d: exotic_rank(d.get('name', '')), reverse=True)
 print(pool[0]['udid'].upper())
 " "$runtime_id" 2>/dev/null || true
 }
@@ -257,6 +280,20 @@ def is_standard_iphone(name):
         return True
     return False
 
+def is_any_iphone(name):
+    return bool(name) and 'iPhone' in name
+
+def exotic_rank(name):
+    # When a runtime only exposes exotic form factors (Xcode 27.1 → Duo),
+    # prefer Duo over Air/Fold for xcodebuild destinations.
+    if 'Duo' in name:
+        return 3
+    if 'Air' in name:
+        return 2
+    if 'Fold' in name:
+        return 1
+    return 0
+
 def phone_rank(name):
     m = re.search(r'iPhone (\d+)', name or '')
     gen = int(m.group(1)) if m else 0
@@ -330,6 +367,13 @@ if standard:
     standard.sort(key=lambda pair: phone_rank(pair[0]), reverse=True)
     print(standard[0][1])
     sys.exit(0)
+
+# Last resort: exotic-only runtimes (e.g. iOS 27.1 lists only iPhone Duo).
+last_resort = [(n, i) for n, i in by_name.items() if is_any_iphone(n)]
+if last_resort:
+    last_resort.sort(key=lambda pair: exotic_rank(pair[0]), reverse=True)
+    print(last_resort[0][1])
+    sys.exit(0)
 sys.exit(1)
 " "$runtime_id" 2>/dev/null || true
 }
@@ -368,6 +412,14 @@ standard = [(n, i) for n, i in by_name.items() if is_standard_iphone(n) and i no
 standard.sort(key=lambda pair: phone_rank(pair[0]), reverse=True)
 for _, ident in standard:
     print(ident)
+    seen.add(ident)
+
+# Append exotic last-resort types when no standard iPhone is creatable.
+if not any(is_standard_iphone(n) for n in by_name):
+    last_resort = [(n, i) for n, i in by_name.items() if is_any_iphone(n) and i not in seen]
+    last_resort.sort(key=lambda pair: exotic_rank(pair[0]), reverse=True)
+    for _, ident in last_resort:
+        print(ident)
 " "$runtime_id" 2>/dev/null || true
 }
 

@@ -51,16 +51,21 @@ compilation; shard simulators boot after product download. The optional single
 layout is selected via `changes.outputs.iphone_layout` in the workflow.
 Local checklist runs unsharded `xcodebuild test` with warnings-as-errors.
 Destination preference:
-iPhone 18 **Pro** → Pro Max → Plus → base (skip Duo/Fold/Air), then
-generation-ranked fallback. UDID hex is normalized uppercase for destination
-matching. Local Mac prefers a booted iPhone 18 Pro when present.
+iPhone 18 **Pro** → Pro Max → Plus → base (skip Duo/Fold/Air when standard
+types exist), then generation-ranked fallback. When a runtime’s
+`supportedDeviceTypes` lists **only** exotic form factors (Xcode 27.1 →
+**iPhone Duo**), use that type as last resort so the destination stays on the
+newest runtime matching the iphonesimulator SDK instead of falling back to an
+older runtime (SDK mismatch risk). UDID hex is normalized uppercase for
+destination matching. Local Mac prefers a booted iPhone 18 Pro when present.
 
 **Early gate (before UI / manual Simulator):**
 `./tool/check_simulator_runtime_compat.sh` runs from `check_common_issues`
 (checklist-fast / lint) and again at the start of `ci-iphone-test`. It fails when
 the global preferred device type is missing from the newest runtime’s
 `supportedDeviceTypes` (simctl **403 Incompatible device** class) and when no
-runtime can provision a standard iPhone. Fixture mode: `--self-test`.
+runtime can provision a standard **or** last-resort exotic iPhone. Fixture mode:
+`--self-test`.
 
 Escape hatch: set `CI_IPHONE_GENERIC_BUILD=1` for the legacy
 `generic/platform=iOS Simulator` **build-only** path (no XCTest). The lane
