@@ -10,6 +10,33 @@ enum AppLaunchConfiguration {
         ProcessInfo.processInfo.arguments.contains("-UITesting")
     }
 
+    /// Custom-scheme URL applied once on a UI-test launch.
+    ///
+    /// UI tests pass `-UITestOpenURL` plus the URL in `launchArguments` so the
+    /// running `-UITesting` process handles the link. `XCUIApplication.open`
+    /// starts a second launch and can lose the automation session
+    /// (“does not have a process ID”, CI ui-1 run 37773620216).
+    static let uiTestOpenURLArgument = "-UITestOpenURL"
+
+    static var uiTestOpenURL: URL? {
+        self.uiTestOpenURL(arguments: ProcessInfo.processInfo.arguments)
+    }
+
+    static func uiTestOpenURL(arguments: [String]) -> URL? {
+        guard let flagIndex = arguments.firstIndex(of: self.uiTestOpenURLArgument) else {
+            return nil
+        }
+        let valueIndex = arguments.index(after: flagIndex)
+        guard valueIndex < arguments.endIndex else {
+            return nil
+        }
+        let raw = arguments[valueIndex]
+        guard !raw.hasPrefix("-"), let url = URL(string: raw), url.scheme != nil else {
+            return nil
+        }
+        return url
+    }
+
     static var isReviewerDemoMode: Bool {
         self.isReviewerDemoMode(
             arguments: ProcessInfo.processInfo.arguments,

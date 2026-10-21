@@ -4,6 +4,8 @@ Record durable implementation notes after meaningful changes.
 
 ## Entries
 
+- [`2026-10-21_ui1-deeplink-single-launch.md`](2026-10-21_ui1-deeplink-single-launch.md)
+  — ui-1 deep links use one `-UITesting` launch; CI verification catalog.
 - [`2026-10-13_docs-polish-technical-reviewer.md`](2026-10-13_docs-polish-technical-reviewer.md)
   — Technical-reviewer prose polish; AI typing vs ownership framing; workspace
   layout fact fix.

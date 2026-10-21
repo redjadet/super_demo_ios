@@ -38,6 +38,17 @@ struct AppNavigationTests {
     }
 
     @Test
+    func deepLinkTabMatchesTheShellSelection() throws {
+        #expect(AppDeepLink.dashboard.tab == .dashboard)
+        #expect(AppDeepLink.productionRisks.tab == .dashboard)
+        #expect(AppDeepLink.items.tab == .items)
+        #expect(AppDeepLink.feed.tab == .feed)
+        let postURL = try #require(URL(string: "superdemo://feed/1"))
+        let post = try #require(AppDeepLink(url: postURL))
+        #expect(post.tab == .feed)
+    }
+
+    @Test
     func httpsUniversalLinksParseMatchingPaths() throws {
         let risks = try #require(URL(string: "https://superdemo.app/dashboard/risks"))
         let feed = try #require(URL(string: "https://superdemo.app/feed"))

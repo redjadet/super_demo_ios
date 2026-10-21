@@ -71,49 +71,41 @@ final class superDemoAppUITests: XCTestCase {
 
     @MainActor
     func testDeepLinkOpensFeedTab() {
-        let app = UiTestSupport.launchApplication(from: self)
-
-        UiTestSupport.openDeepLink("superdemo://feed", in: app)
+        let app = UiTestSupport.launchApplication(from: self, deepLinkURL: "superdemo://feed")
         XCTAssertTrue(UiTestSupport.waitForFeedChrome(in: app))
     }
 
     @MainActor
     func testDeepLinkOpensItemsTab() {
-        let app = UiTestSupport.launchApplication(from: self)
-
-        UiTestSupport.openDeepLink("superdemo://items", in: app)
+        let app = UiTestSupport.launchApplication(from: self, deepLinkURL: "superdemo://items")
         XCTAssertTrue(UiTestSupport.waitForItemsChrome(in: app))
     }
 
     @MainActor
     func testDeepLinkOpensFeedPostDetail() {
-        // One soft relaunch — after long Engineering demos on the same sim,
-        // XCTest can report “does not have a process ID” on the next launch
-        // (CI ui-1 run 37773620216). Coverage unchanged: still assert detail.
-        for attempt in 1 ... 2 {
-            let app = UiTestSupport.launchApplication(from: self)
-
-            UiTestSupport.openDeepLink("superdemo://feed/1", in: app)
-
-            // Compact split may prefer the detail column after pending post selection,
-            // so sidebar-only chrome checks can miss — wait for detail (or Feed chrome
-            // that includes feedPostDetail-*).
-            let detail = app.descendants(matching: .any).matching(identifier: "feedPostDetail-1").firstMatch
-            let opened =
-                detail.waitForExistence(timeout: 30)
-                    || (
-                        UiTestSupport.waitForFeedChrome(in: app, timeout: 10)
-                            && detail.waitForExistence(timeout: 15)
-                    )
-            if opened {
-                return
+        // One launch with `-UITestOpenURL`. `XCUIApplication.open` relaunches
+        // and, on CI ui-1 run 37773620216, the following launch reported
+        // “does not have a process ID” after the StoreKit demo. Compact split
+        // may show only the detail column — wait for that identifier.
+        let app = UiTestSupport.launchApplication(from: self, deepLinkURL: "superdemo://feed/1")
+        let detail = app.descendants(matching: .any).matching(identifier: "feedPostDetail-1").firstMatch
+        guard detail.waitForExistence(timeout: 30) else {
+            func present(_ identifier: String) -> Bool {
+                app.descendants(matching: .any)
+                    .matching(identifier: identifier)
+                    .firstMatch
+                    .waitForExistence(timeout: 1)
             }
-            UiTestSupport.terminateApplication(app)
-            if attempt < 2 {
-                RunLoop.current.run(until: Date().addingTimeInterval(2))
-            }
+            XCTFail(
+                "Feed post detail did not open from superdemo://feed/1"
+                    + " row=\(present("feedPostRow-1"))"
+                    + " list=\(present("feedList"))"
+                    + " loading=\(present("feedLoading"))"
+                    + " dashboard=\(present("productionReadinessDashboard"))"
+                    + " items=\(present("itemsList"))"
+            )
+            return
         }
-        XCTFail("Feed post detail did not open from superdemo://feed/1 after 2 attempts")
     }
 
     @MainActor

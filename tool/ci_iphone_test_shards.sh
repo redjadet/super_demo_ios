@@ -27,7 +27,9 @@ ci_iphone_shard_only_testing_args() {
       # Baseline test bodies ~356s; new cases estimated at 70s.
       # Deep-link cases first — after long Engineering demos (esp. StoreKit),
       # Xcode 27 CI sims can fail the next launch with “does not have a process
-      # ID” (main run 37773620216). Same ordering pattern as ui-2 (#96).
+      # ID” (main run 37773620216). The deep-link tests themselves pass the URL
+      # as `-UITestOpenURL` on that single `-UITesting` launch. Same ordering
+      # pattern as ui-2 (#96).
       printf '%s\n' \
         "-only-testing:superDemoAppUITests/superDemoAppUITests/testDeepLinkOpensFeedPostDetail" \
         "-only-testing:superDemoAppUITests/superDemoAppUITests/testDeepLinkOpensItemsTab" \
