@@ -5,7 +5,9 @@ Source-of-truth docs for `superDemoApp`.
 ## Start Here
 
 - **Evidence for technical reviewers:** [`EVIDENCE.md`](EVIDENCE.md) — bookmark
-  race, design decision, regression, and passing run.
+  race, design decision, regression, and passing run. The same file’s
+  [CI verification catalog](EVIDENCE.md#ci-verification-catalog) lists workflow
+  jobs, UI shards, and local commands.
 - **Task → path:** [`../CODEMAP.md`](../CODEMAP.md)
 - **≤15 min architecture tour:** [`architecture-tour.md`](architecture-tour.md)
 - **Portfolio tour:** [`portfolio.md`](portfolio.md) (+ [`../README.md`](../README.md)).
