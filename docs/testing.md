@@ -108,12 +108,17 @@ provides proof.
 
 Helpers live in `superDemoAppUITests/UiTestSupport.swift`:
 
-- **`launchApplication(from:)`** — passes `-UITesting`, terminates any running
-  app, launches, waits for foreground; with a test case, allows one
-  terminate+relaunch after launch-progress XCTFail (CI Simulator wedge —
+- **`launchApplication(from:deepLinkURL:)`** — passes `-UITesting`, terminates
+  any running app, launches, waits for foreground; with a test case, allows
+  one terminate+relaunch after launch-progress XCTFail (CI Simulator wedge —
   e.g. Vision demo on run 36576125333). Does **not** set
   `XCUIApplication.launchTimeout` (unavailable on CI Xcode 27).
-- **`openDeepLink(_:in:)`** — opens a custom-scheme URL against the running app.
+  `deepLinkURL` appends `-UITestOpenURL` and the URL to that same launch.
+  The app applies it from `AppRootView` once the scene exists. UI tests do
+  not call `XCUIApplication.open`, which starts a second launch (CI ui-1 run
+  37773620216 failed `testDeepLinkOpensFeedPostDetail` with “does not have a
+  process ID” before the open step finished; the next case’s open log shows
+  a nested Launch).
 - **`openFeedTab` / `openItemsTab` / `openDashboardTab`** — fail when no tab
   control is tappable (no silent `tapFirstHittable` no-op).
 - **`waitForFeedChrome` / `waitForItemsChrome`** — require feature-scoped

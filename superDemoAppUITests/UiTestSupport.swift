@@ -30,10 +30,17 @@ enum UiTestSupport {
     @MainActor
     static func launchApplication(
         from testCase: XCTestCase? = nil,
-        extraArguments: [String] = []
+        extraArguments: [String] = [],
+        deepLinkURL: String? = nil
     ) -> XCUIApplication {
         let app = XCUIApplication()
-        app.launchArguments = ["-UITesting"] + extraArguments
+        var arguments = ["-UITesting"] + extraArguments
+        if let deepLinkURL {
+            // Must match `AppLaunchConfiguration.uiTestOpenURLArgument`.
+            // The UI-test target does not import the app module.
+            arguments.append(contentsOf: ["-UITestOpenURL", deepLinkURL])
+        }
+        app.launchArguments = arguments
 
         let previousContinue = testCase?.continueAfterFailure
         if let testCase {
@@ -60,16 +67,6 @@ enum UiTestSupport {
 
         XCTFail("App did not reach runningForeground after \(attempts) launch attempt(s)")
         return app
-    }
-
-    /// Opens a custom-scheme deep link against a running app.
-    @MainActor
-    static func openDeepLink(_ urlString: String, in app: XCUIApplication) {
-        guard let url = URL(string: urlString) else {
-            XCTFail("Invalid deep link URL: \(urlString)")
-            return
-        }
-        app.open(url)
     }
 
     /// Opens the Dashboard tab across iPhone bottom tabs and iPad top/sidebar tabs.

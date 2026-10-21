@@ -111,7 +111,20 @@ struct FeedView: View {
             return
         }
         self.selectedPost = post
+        self.revealSelectedPostColumn()
         AppNavigationStore.current.clearPendingFeedPostOpen()
+    }
+
+    /// Compact `NavigationSplitView` can write `.sidebar` back into
+    /// `preferredCompactColumn` when the sidebar swaps from loading to the
+    /// list in the same turn `onChange(of: selectedPost)` runs.
+    private func revealSelectedPostColumn() {
+        self.preferredCompactColumn = .detail
+        let postID = self.selectedPost?.id
+        Task { @MainActor in
+            guard self.selectedPost?.id == postID else { return }
+            self.preferredCompactColumn = .detail
+        }
     }
 
     /// Drops a pending open once load is definitive and the id is missing

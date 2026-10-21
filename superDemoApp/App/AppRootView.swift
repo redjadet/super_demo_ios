@@ -42,6 +42,18 @@ struct AppRootView: View {
         .onOpenURL { url in
             self.navigation.handle(url: url)
         }
+        .task {
+            // After the root scene exists. `TabView` can still write the first
+            // tab back into `selection` in that same turn, so correct again
+            // on the next turn and whenever selection drifts.
+            self.applyUITestLaunchDeepLinkIfNeeded()
+            Task { @MainActor in
+                self.applyUITestLaunchDeepLinkIfNeeded()
+            }
+        }
+        .onChange(of: navigation.state.selection) { _, _ in
+            self.applyUITestLaunchDeepLinkIfNeeded()
+        }
         .onContinueUserActivity(NSUserActivityTypeBrowsingWeb) { activity in
             guard let url = activity.webpageURL else { return }
             self.navigation.handle(url: url)
@@ -51,6 +63,28 @@ struct AppRootView: View {
         } message: {
             Text(self.navigation.state.invalidDeepLinkMessage ?? "")
         }
+    }
+
+    /// Re-applies `-UITestOpenURL` until the tab matches.
+    ///
+    /// A launch-time write is not enough: `TabView` can reset `selection` to
+    /// Dashboard after the first frame. Local probe 2 of
+    /// `testDeepLinkOpensFeedPostDetail` stayed on `productionReadinessDashboard`
+    /// for the full 30s wait (`row=false list=false loading=false`).
+    private func applyUITestLaunchDeepLinkIfNeeded() {
+        guard AppLaunchConfiguration.isUITesting,
+              let url = AppLaunchConfiguration.uiTestOpenURL,
+              let link = AppDeepLink(url: url)
+        else {
+            return
+        }
+        guard self.navigation.state.selection != link.tab else {
+            if case let .feedPost(id) = link, self.navigation.state.feedOpenPostID != id {
+                self.navigation.requestOpenFeedPost(id: id)
+            }
+            return
+        }
+        self.navigation.handle(url: url)
     }
 
     private var invalidDeepLinkPresented: Binding<Bool> {

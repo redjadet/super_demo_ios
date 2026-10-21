@@ -103,4 +103,24 @@ struct AppLaunchConfigurationTests {
             environment: [:]
         ))
     }
+
+    @Test
+    func uiTestOpenURLReadsTheArgumentAfterTheFlag() {
+        let url = AppLaunchConfiguration.uiTestOpenURL(
+            arguments: ["-UITesting", "-UITestOpenURL", "superdemo://feed/1"]
+        )
+        #expect(url?.absoluteString == "superdemo://feed/1")
+    }
+
+    @Test
+    func uiTestOpenURLIgnoresAMissingValueOrBareFlag() {
+        #expect(AppLaunchConfiguration.uiTestOpenURL(arguments: ["-UITesting"]) == nil)
+        #expect(AppLaunchConfiguration.uiTestOpenURL(arguments: ["-UITestOpenURL"]) == nil)
+        #expect(AppLaunchConfiguration.uiTestOpenURL(
+            arguments: ["-UITestOpenURL", "-UITesting"]
+        ) == nil)
+        #expect(AppLaunchConfiguration.uiTestOpenURL(
+            arguments: ["-UITestOpenURL", "not a url"]
+        ) == nil)
+    }
 }

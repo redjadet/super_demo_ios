@@ -54,7 +54,8 @@ and use `-ReviewerDemoMode` for seeded sample data.
 
 - [3-minute reviewer path](docs/portfolio.md#3-minute-path) and [launch flags](docs/portfolio.md#launch-and-build-flags).
 - [Mac walkthrough](docs/macos-demo.md) and [Watch & TV walkthrough](docs/watch-tv-demo.md).
-- [Test commands](docs/testing.md), [regression reproduction](docs/EVIDENCE.md#reproduce-the-evidence) and [CI/CD map](docs/ci-cd-map.md).
+- [Test commands](docs/testing.md), [regression reproduction](docs/EVIDENCE.md#reproduce-the-evidence),
+  [CI verification catalog](docs/EVIDENCE.md#ci-verification-catalog) and [CI/CD map](docs/ci-cd-map.md).
 
 [Full documentation index](docs/README.md) · [Code map](CODEMAP.md) · [Design system](DESIGN.md) · [MIT License](LICENSE).
 

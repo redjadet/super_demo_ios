@@ -95,6 +95,19 @@ nonisolated enum AppDeepLink: Equatable {
         }
     }
 
+    /// Tab the link selects. UI tests use this to see when `TabView` has
+    /// overwritten a launch-time selection.
+    var tab: AppTab {
+        switch self {
+        case .dashboard, .productionRisks:
+            .dashboard
+        case .items:
+            .items
+        case .feed, .feedPost:
+            .feed
+        }
+    }
+
     /// Custom-scheme URL used by App Intents handoff and UI tests.
     var customSchemeURL: URL {
         switch self {
