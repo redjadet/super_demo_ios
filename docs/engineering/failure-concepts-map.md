@@ -18,12 +18,12 @@ coordination on top); update when behavior rows below change.
 | 5 | Backpressure | **Soft present** | Transport **429** + `Retry-After`; outbox flush coalesce (`isFlushing` / `pendingFlush`); `OutboxCoalescer`; `AsyncLoadController` cancels prior load; Share inbox **cap 20** | Unbounded task fan-out control / product rate-limit UI |
 | 6 | State ownership | **Present** | [`../layers.md`](../layers.md), [`../state-management.md`](../state-management.md); App Group Feed/Share = **projection**; watch/tv companions are **local** App Group (not phone sync) | Cross-device SoT / WatchConnectivity sync |
 | 7 | Immutability | **Soft present** | Domain `let` / `Sendable` values (`FeedPost`, outbox snapshots, widget/share DTOs); SwiftData `@Model` mutable by design in Data | “Everything immutable” or rewriting `@Model` classes |
-| 8 | Structured concurrency | **Present** | `AsyncLoadController` + generation guards; OI-05 cancel restore; [`../architecture/native-cancellation.md`](../architecture/native-cancellation.md); `OutboxSyncEngine` **actor** | That every path uses `withTaskGroup` (few/no fan-out sites yet) |
+| 8 | Structured concurrency | **Present** | `AsyncLoadController` + generation guards; OI-05 cancel restore; [`../architecture/native-cancellation.md`](../architecture/native-cancellation.md); `OutboxSyncEngine` **actor**; Composite Dashboard **TaskGroup** sample∥remote ([`../swift-concurrency.md`](../swift-concurrency.md)) | That every path uses `withTaskGroup` (other fan-outs may stay sequential) |
 
 ## Highest-value follow-ups (not this map’s job alone)
 
 1. **Read-side OCC (simulated)** — injectable cache validator + 304 path; do not claim live JSONPlaceholder ETags.
-2. **TaskGroup where work is already independent** — e.g. Composite Dashboard sample∥remote; cancel-child proof in `native-cancellation.md`.
+2. ~~**TaskGroup where work is already independent**~~ — **Done:** Composite Dashboard sample∥remote + cancel-child tests (see [`../swift-concurrency.md`](../swift-concurrency.md)).
 3. **Ownership SoT table** — optional `docs/architecture/state-ownership.md` stitching SwiftData / outbox / App Group / Presentation / HostBridge.
 
 ## Related

@@ -12,6 +12,7 @@ callers see, and how cancel stays distinct from transport/server failures.
 | Feed cache gate | `CachingFeedRepository.fetchPosts()` |
 | Dashboard HTTP client | SPM `URLSessionAPIClient` (re-exported via `IlkerSevimNetworkingExport`) |
 | Dashboard cancel soft-fail bypass | `CompositeProductionReadinessRepository.loadRemoteHealthEntry()` |
+| Dashboard sample ∥ remote fan-out | `CompositeProductionReadinessRepository.loadSnapshot()` (`withThrowingTaskGroup`) |
 | Views | `FeedView`, `ItemsView`, `ProductionReadinessView` (`.task` + `onDisappear`) |
 
 ## Lifecycle flow
@@ -133,6 +134,7 @@ design: models must not route cancel into `.failed`.
 | Items cancel restore | `cancelRefreshRestoresPriorLoadingState`, `overlappingRetriesPreserveFailedStateOnCancel` | `superDemoAppTests/Features/Items/ItemsFeatureModelTests.swift` |
 | Dashboard cancel honesty | `cancellationDoesNotReplaceFeatureStateWithFailure`, `cancelRefreshRestoresPriorContent`, `cancelledRetryRestoresFailedState` | `superDemoAppTests/Features/ProductionReadiness/ProductionReadinessTests.swift` |
 | Remote health soft-fail bypass | `rethrowsCancellationInsteadOfRemoteWarning`, `rethrowsAPIErrorCancelledAsCancellationError` | `superDemoAppTests/Features/ProductionReadiness/CompositeProductionReadinessRepositoryTests.swift` |
+| Dashboard TaskGroup cancel-child | `cancellingParentCancelsSampleAndRemoteChildren`, `loadsSampleAndRemoteInParallel` | `superDemoAppTests/Features/ProductionReadiness/CompositeProductionReadinessRepositoryTests.swift` |
 | Host bridge cancel | `facadePropagatesCancellation` | `superDemoAppTests/Shared/HostBridge/HostBridgeCodecTests.swift` |
 
 **CI:** unit suites run under GHA job **Checklist · iPhone test** (`iphone-test` →

@@ -4,6 +4,8 @@ Record durable implementation notes after meaningful changes.
 
 ## Entries
 
+- [`2026-10-22_dashboard-taskgroup-fanout.md`](2026-10-22_dashboard-taskgroup-fanout.md)
+  — Composite Dashboard sample∥remote via TaskGroup; cancel-child unit proof.
 - [`2026-10-21_ui1-deeplink-single-launch.md`](2026-10-21_ui1-deeplink-single-launch.md)
   — ui-1 deep links use one `-UITesting` launch; CI verification catalog.
 - [`2026-10-13_docs-polish-technical-reviewer.md`](2026-10-13_docs-polish-technical-reviewer.md)
