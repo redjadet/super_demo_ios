@@ -160,23 +160,17 @@ struct CompositeProductionReadinessRepositoryTests {
 // MARK: - Parallel + cancel probes
 
 /// Both children must call `arrive()` before either proceeds — proves overlap.
+/// NSLock stays in sync helpers (Swift 6: unavailable from async contexts).
 private final class ArrivalBarrier: @unchecked Sendable {
     private let lock = NSLock()
     private let partyCount: Int
     private var arrivals = 0
     private var waiters: [CheckedContinuation<Void, Never>] = []
 
-    private(set) var arrivalCount: Int {
-        get {
-            self.lock.lock()
-            defer { self.lock.unlock() }
-            return self.arrivals
-        }
-        set {
-            self.lock.lock()
-            self.arrivals = newValue
-            self.lock.unlock()
-        }
+    var arrivalCount: Int {
+        self.lock.lock()
+        defer { self.lock.unlock() }
+        return self.arrivals
     }
 
     init(partyCount: Int) {
@@ -185,20 +179,25 @@ private final class ArrivalBarrier: @unchecked Sendable {
 
     func arrive() async {
         await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
-            self.lock.lock()
-            self.arrivals += 1
-            if self.arrivals >= self.partyCount {
-                let pending = self.waiters
-                self.waiters = []
-                self.lock.unlock()
-                continuation.resume()
-                for waiter in pending {
-                    waiter.resume()
-                }
-            } else {
-                self.waiters.append(continuation)
-                self.lock.unlock()
+            self.enqueue(continuation)
+        }
+    }
+
+    /// Sync so `NSLock` stays out of async contexts (Swift 6).
+    private func enqueue(_ continuation: CheckedContinuation<Void, Never>) {
+        self.lock.lock()
+        self.arrivals += 1
+        if self.arrivals >= self.partyCount {
+            let pending = self.waiters
+            self.waiters = []
+            self.lock.unlock()
+            continuation.resume()
+            for waiter in pending {
+                waiter.resume()
             }
+        } else {
+            self.waiters.append(continuation)
+            self.lock.unlock()
         }
     }
 }
@@ -247,18 +246,17 @@ private final class HangingLoadProbe: ProductionReadinessRepository, @unchecked 
     private let lock = NSLock()
     private var startedContinuation: CheckedContinuation<Void, Never>?
     private var hasStarted = false
-    private(set) var didObserveCancellation = false
+    private var _didObserveCancellation = false
+
+    var didObserveCancellation: Bool {
+        self.lock.lock()
+        defer { self.lock.unlock() }
+        return self._didObserveCancellation
+    }
 
     func waitUntilStarted() async {
         await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
-            self.lock.lock()
-            if self.hasStarted {
-                self.lock.unlock()
-                continuation.resume()
-            } else {
-                self.startedContinuation = continuation
-                self.lock.unlock()
-            }
+            self.parkUntilStarted(continuation)
         }
     }
 
@@ -267,9 +265,7 @@ private final class HangingLoadProbe: ProductionReadinessRepository, @unchecked 
         do {
             try await Task.sleep(nanoseconds: 60_000_000_000)
         } catch is CancellationError {
-            self.lock.lock()
-            self.didObserveCancellation = true
-            self.lock.unlock()
+            self.markCancelled()
             throw CancellationError()
         }
         return ProductionReadinessSnapshot(
@@ -280,6 +276,19 @@ private final class HangingLoadProbe: ProductionReadinessRepository, @unchecked 
         )
     }
 
+    /// Sync so `NSLock` stays out of async contexts (Swift 6).
+    private func parkUntilStarted(_ continuation: CheckedContinuation<Void, Never>) {
+        self.lock.lock()
+        if self.hasStarted {
+            self.lock.unlock()
+            continuation.resume()
+        } else {
+            self.startedContinuation = continuation
+            self.lock.unlock()
+        }
+    }
+
+    /// Sync so `NSLock` stays out of async contexts (Swift 6).
     private func signalStarted() {
         self.lock.lock()
         self.hasStarted = true
@@ -288,24 +297,30 @@ private final class HangingLoadProbe: ProductionReadinessRepository, @unchecked 
         self.lock.unlock()
         continuation?.resume()
     }
+
+    /// Sync so `NSLock` stays out of async contexts (Swift 6).
+    private func markCancelled() {
+        self.lock.lock()
+        self._didObserveCancellation = true
+        self.lock.unlock()
+    }
 }
 
 private final class HangingRemoteHealthProbe: RemoteAPIHealthLoading, @unchecked Sendable {
     private let lock = NSLock()
     private var startedContinuation: CheckedContinuation<Void, Never>?
     private var hasStarted = false
-    private(set) var didObserveCancellation = false
+    private var _didObserveCancellation = false
+
+    var didObserveCancellation: Bool {
+        self.lock.lock()
+        defer { self.lock.unlock() }
+        return self._didObserveCancellation
+    }
 
     func waitUntilStarted() async {
         await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
-            self.lock.lock()
-            if self.hasStarted {
-                self.lock.unlock()
-                continuation.resume()
-            } else {
-                self.startedContinuation = continuation
-                self.lock.unlock()
-            }
+            self.parkUntilStarted(continuation)
         }
     }
 
@@ -314,9 +329,7 @@ private final class HangingRemoteHealthProbe: RemoteAPIHealthLoading, @unchecked
         do {
             try await Task.sleep(nanoseconds: 60_000_000_000)
         } catch is CancellationError {
-            self.lock.lock()
-            self.didObserveCancellation = true
-            self.lock.unlock()
+            self.markCancelled()
             throw CancellationError()
         }
         return APIHealthCheck(
@@ -330,6 +343,19 @@ private final class HangingRemoteHealthProbe: RemoteAPIHealthLoading, @unchecked
         )
     }
 
+    /// Sync so `NSLock` stays out of async contexts (Swift 6).
+    private func parkUntilStarted(_ continuation: CheckedContinuation<Void, Never>) {
+        self.lock.lock()
+        if self.hasStarted {
+            self.lock.unlock()
+            continuation.resume()
+        } else {
+            self.startedContinuation = continuation
+            self.lock.unlock()
+        }
+    }
+
+    /// Sync so `NSLock` stays out of async contexts (Swift 6).
     private func signalStarted() {
         self.lock.lock()
         self.hasStarted = true
@@ -337,6 +363,13 @@ private final class HangingRemoteHealthProbe: RemoteAPIHealthLoading, @unchecked
         self.startedContinuation = nil
         self.lock.unlock()
         continuation?.resume()
+    }
+
+    /// Sync so `NSLock` stays out of async contexts (Swift 6).
+    private func markCancelled() {
+        self.lock.lock()
+        self._didObserveCancellation = true
+        self.lock.unlock()
     }
 }
 
