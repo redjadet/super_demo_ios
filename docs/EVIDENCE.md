@@ -106,6 +106,16 @@ Mac, iPad, watchOS, or tvOS UI behavior. See the [CI map](ci-cd-map.md) and
 | **Regression** | `testUIKitShowcaseCollectionIsReachable` in [`superDemoAppUITests`](../superDemoAppUITests/superDemoAppUITests.swift) passed in the recorded [ui-2 job](https://github.com/redjadet/super_demo_ios/actions/runs/37828018857/job/113492500441). |
 | **Reproduce** | `ui-2` shard below. |
 
+### 5. TaskGroup fan-out for Dashboard sample ∥ remote
+
+| Evidence | Inspect |
+| --- | --- |
+| **Problem** | Composite Dashboard sample snapshot and live Remote API probe are independent, but sequential `await`s hid structured concurrency and left no cancel-child proof. |
+| **Decision + trade-off** | Load both in `withThrowingTaskGroup`. Soft-fail still maps remote transport errors to a warning row; `CancellationError` / `APIError.cancelled` still rethrow (no warning). Parent cancel cancels both children. |
+| **Source** | [`CompositeProductionReadinessRepository`](../superDemoApp/Features/ProductionReadiness/Data/CompositeProductionReadinessRepository.swift) · map: [`swift-concurrency.md`](swift-concurrency.md). |
+| **Regressions** | `loadsSampleAndRemoteInParallel` and `cancellingParentCancelsSampleAndRemoteChildren` in [`CompositeProductionReadinessRepositoryTests`](../superDemoAppTests/Features/ProductionReadiness/CompositeProductionReadinessRepositoryTests.swift), plus existing cancel soft-fail cases. |
+| **Reproduce** | Unit shard below. |
+
 ## Reproduce the evidence
 
 From the repository root on a Mac with the project's Xcode toolchain and an

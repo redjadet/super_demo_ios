@@ -56,7 +56,7 @@ visionOS companion demo, and live public DNS for `superdemo.app` universal links
 | --- | --- | --- |
 | Clean layers + modularity | `superDemoApp/Features/*/`, [`layers.md`](layers.md), [`modularity.md`](modularity.md), `./tool/check_layer_boundaries.sh` | **In repo** |
 | SwiftUI + Observation + DI | Feed / Items / ProductionReadiness; `superDemoApp/App/*Composition.swift`; App composition injects Engineering demo dependencies | **In repo** |
-| Swift Concurrency | `async`/`await` networking; actor token refreshers; `AsyncLoadController` | **In repo** |
+| Swift Concurrency | `async`/`await` networking; actor token refreshers; `AsyncLoadController`; Dashboard TaskGroup sample∥remote ([`swift-concurrency.md`](swift-concurrency.md)) | **In repo** |
 | Offline / networking | `CachingFeedRepository`, Feed bookmark outbox (`OutboxSyncEngine`), [`offline-first.md`](offline-first.md), [`offline-invariants.md`](offline-invariants.md) (OI-08), [`architecture/offline-first-behavior.md`](architecture/offline-first-behavior.md), [`sync-and-networking.md`](sync-and-networking.md) | **In repo** |
 | App Intents (open-tab) | `superDemoApp/App/AppIntents/` + Shortcuts; tests | **In repo** |
 | Parameterized Feed/Items intents | `RefreshFeedIntent` (`openFeedTab`); `OpenFeedPostIntent` (`postID`) → `feedOpenPostID` + `superdemo://feed/<id>`; tests | **In repo** (typed navigation and entity open) |

@@ -59,6 +59,7 @@ Source-of-truth docs for `superDemoApp`.
 - CI/CD map: [`ci-cd-map.md`](ci-cd-map.md)
 - Security checklist: [`security-checklist.md`](security-checklist.md)
 - Performance lab: [`performance-lab.md`](performance-lab.md)
+- Swift concurrency map: [`swift-concurrency.md`](swift-concurrency.md)
 - Engineering standards: [`engineering-standards.md`](engineering-standards.md)
 
 ## Design (SwiftUI)
