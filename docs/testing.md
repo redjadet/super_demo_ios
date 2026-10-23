@@ -51,13 +51,15 @@ compilation; shard simulators boot after product download. The optional single
 layout is selected via `changes.outputs.iphone_layout` in the workflow.
 Local checklist runs unsharded `xcodebuild test` with warnings-as-errors.
 Destination preference:
-iPhone 18 **Pro** → Pro Max → Plus → base (skip Duo/Fold/Air when standard
-types exist), then generation-ranked fallback. When a runtime’s
-`supportedDeviceTypes` lists **only** exotic form factors (Xcode 27.1 →
-**iPhone Duo**), use that type as last resort so the destination stays on the
-newest runtime matching the iphonesimulator SDK instead of falling back to an
-older runtime (SDK mismatch risk). UDID hex is normalized uppercase for
-destination matching. Local Mac prefers a booted iPhone 18 Pro when present.
+iPhone 18 **Pro** → Pro Max → Plus → base → **17e** (skip Duo/Fold/Air when
+standard types exist), then generation-ranked fallback. When **multiple**
+runtimes are installed and the newest is exotic-only (Xcode 27.1 →
+**iPhone Duo** only), prefer an older standard-capable runtime (e.g. iOS
+**27.0** + iPhone 17e/17 Pro) over Duo — PosterBoard / form-factor crashes
+have been observed on Duo/27.1. Duo remains last resort only when no
+standard iPhone can be provisioned on any installed runtime. UDID hex is
+normalized uppercase for destination matching. Local Mac prefers a booted
+standard iPhone (17e / 18 Pro) when present.
 
 **Early gate (before UI / manual Simulator):**
 `./tool/check_simulator_runtime_compat.sh` runs from `check_common_issues`

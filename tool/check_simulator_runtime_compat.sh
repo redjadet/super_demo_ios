@@ -138,6 +138,15 @@ run_static_script_guards() {
   if ! grep -q 'exotic_rank' "$runtime"; then
     fail "ios_simulator_runtime.sh must rank exotic last-resort types (Duo/Air/Fold)"
   fi
+  if ! grep -q 'select_ios_runtime_ids_prefer_standard' "$runtime"; then
+    fail "ios_simulator_runtime.sh must prefer standard-capable runtimes before exotic-only (Duo last resort)"
+  fi
+  if ! grep -q 'ios_runtime_is_exotic_only' "$runtime"; then
+    fail "ios_simulator_runtime.sh must detect exotic-only runtimes (e.g. iOS 27.1 Duo)"
+  fi
+  if ! grep -q 'select_ios_runtime_ids_prefer_standard' "$ensure"; then
+    fail "ensure_ci_simulator.sh must walk select_ios_runtime_ids_prefer_standard (standard before Duo)"
+  fi
 }
 
 # Live host checks (simctl + sourced helpers).
@@ -232,31 +241,47 @@ print('no')
     warn "global preferred ${global_name:-$global_id} is NOT in iOS ${newest_ver} supportedDeviceTypes — ensure will use runtime-preferred ${runtime_preferred}"
   fi
 
+  local newest_exotic_only=0
+  if ios_runtime_is_exotic_only "$newest_id"; then
+    newest_exotic_only=1
+    newest_unusable=1
+    warn "newest runtime iOS ${newest_ver} is exotic-only (Duo/Fold/Air) — prefer older standard runtime when available"
+  fi
+
   if [[ -z "$runtime_preferred" && "$supported_count" != "0" ]]; then
     newest_unusable=1
     warn "newest runtime iOS ${newest_ver} has supportedDeviceTypes but no standard preferred iPhone"
   fi
 
   if [[ "$supported_count" == "0" || "$newest_unusable" == "1" ]]; then
-    # Dead/partial/incompatible newest runtime (seen on some GHA images after
-    # optional platform download). Allow older-runtime fallback only when
-    # another runtime can provision; still fail hard if none can.
+    # Dead/partial/exotic-only newest runtime. Prefer an older standard
+    # runtime (27.0 + 17e) over Duo on 27.1 when both exist (PosterBoard /
+    # form-factor stability). Fail only when no runtime can provision.
     local any_usable=0
     local rid ver pref udid
     while IFS= read -r rid; do
       [[ -n "$rid" ]] || continue
       [[ "$rid" == "$newest_id" ]] && continue
+      if ios_runtime_is_exotic_only "$rid"; then
+        continue
+      fi
       pref="$(select_preferred_iphone_device_type_id_for_runtime "$rid" || true)"
       udid="$(find_iphone_udid_on_runtime "$rid" || true)"
       if [[ -n "$pref" || -n "$udid" ]]; then
         any_usable=1
         ver="$(ios_runtime_version "$rid")"
-        warn "newest runtime iOS ${newest_ver} is not provisionable for a standard iPhone; will fall back to iOS ${ver} (SDK mismatch risk)"
+        if ((newest_exotic_only == 1)); then
+          echo "info: preferring iOS ${ver} standard iPhone over exotic-only iOS ${newest_ver} (Duo last resort)"
+        else
+          warn "newest runtime iOS ${newest_ver} is not provisionable for a standard iPhone; will fall back to iOS ${ver} (SDK mismatch risk)"
+        fi
         break
       fi
     done < <(select_ios_runtime_ids_newest_first)
     if ((any_usable == 0)); then
-      if [[ "$supported_count" == "0" ]]; then
+      if ((newest_exotic_only == 1)); then
+        echo "info: no standard iPhone runtime available; Duo/exotic last resort on iOS ${newest_ver}"
+      elif [[ "$supported_count" == "0" ]]; then
         fail "no iOS Simulator runtime can provision a standard iPhone (empty supportedDeviceTypes / no devices)"
       else
         fail "newest runtime iOS ${newest_ver} cannot provision a standard iPhone and no older runtime can either — update preferred list in ios_simulator_runtime.sh"
@@ -266,6 +291,41 @@ print('no')
 
   if [[ -z "$runtime_preferred" && -z "$existing" && "$supported_count" != "0" && "$newest_unusable" != "1" ]]; then
     fail "newest runtime iOS ${newest_ver} has no creatable standard iPhone and no existing device"
+  fi
+
+  # Cross-runtime pick must not lock onto Duo when a standard runtime exists.
+  local picked picked_name
+  picked="$(find_iphone_udid_on_newest_runtime 2>/dev/null || true)"
+  if [[ -n "$picked" ]]; then
+    picked_name="$(
+      xcrun simctl list devices -j 2>/dev/null \
+        | python3 -c "
+import json, sys
+want = sys.argv[1].upper()
+data = json.load(sys.stdin)
+for devices in data.get('devices', {}).values():
+    for d in devices:
+        if (d.get('udid') or '').upper() == want:
+            print(d.get('name') or '')
+            sys.exit(0)
+" "$picked" 2>/dev/null || true
+    )"
+    if [[ "$picked_name" == *Duo* || "$picked_name" == *Fold* || "$picked_name" == *Air* ]]; then
+      local any_standard=0
+      local rid
+      while IFS= read -r rid; do
+        [[ -n "$rid" ]] || continue
+        if ! ios_runtime_is_exotic_only "$rid"; then
+          if [[ -n "$(find_iphone_udid_on_runtime "$rid" || true)" ]]; then
+            any_standard=1
+            break
+          fi
+        fi
+      done < <(select_ios_runtime_ids_newest_first)
+      if ((any_standard == 1)); then
+        fail "find_iphone_udid_on_newest_runtime returned exotic ${picked_name} while a standard iPhone runtime exists"
+      fi
+    fi
   fi
 
   # SDK vs runtime honesty (warn locally; fail on CI when skew and newest unusable).
