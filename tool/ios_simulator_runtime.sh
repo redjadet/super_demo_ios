@@ -52,10 +52,61 @@ sys.exit(1)
 " "$runtime_id" 2>/dev/null || true
 }
 
+# True when runtime supportedDeviceTypes lists only exotic iPhones (Duo/Fold/Air).
+# Empty supportedDeviceTypes → false (older-runtime / unknown path).
+ios_runtime_is_exotic_only() {
+  local runtime_id="$1"
+  [[ -n "$runtime_id" ]] || return 1
+  xcrun simctl list runtimes -j 2>/dev/null \
+    | python3 -c "
+import json, re, sys
+$(_iphone_preferred_names_python)
+runtime_id = sys.argv[1]
+data = json.load(sys.stdin)
+runtime = next(
+    (r for r in data.get('runtimes', []) if r.get('identifier') == runtime_id),
+    None,
+)
+if not runtime:
+    sys.exit(1)
+supported = runtime.get('supportedDeviceTypes') or []
+names = [
+    entry.get('name') or ''
+    for entry in supported
+    if isinstance(entry, dict)
+]
+if not names:
+    sys.exit(1)
+sys.exit(0 if not any(is_standard_iphone(n) for n in names) else 1)
+" "$runtime_id" 2>/dev/null
+}
+
+# Runtime walk order: non-exotic-only (newest first), then exotic-only (newest
+# first). Prefers a creatable standard iPhone on an older runtime (e.g. 27.0 +
+# 17e) over Duo on a newer exotic-only runtime (27.1). Duo remains last resort
+# when no standard runtime can provision.
+select_ios_runtime_ids_prefer_standard() {
+  local rid
+  while IFS= read -r rid; do
+    [[ -n "$rid" ]] || continue
+    if ios_runtime_is_exotic_only "$rid"; then
+      continue
+    fi
+    printf '%s\n' "$rid"
+  done < <(select_ios_runtime_ids_newest_first)
+  while IFS= read -r rid; do
+    [[ -n "$rid" ]] || continue
+    if ios_runtime_is_exotic_only "$rid"; then
+      printf '%s\n' "$rid"
+    fi
+  done < <(select_ios_runtime_ids_newest_first)
+}
+
 # Prints UDID of preferred iPhone on runtime_id, or empty.
 # Prefers standard form factors; when a runtime only lists exotic types
-# (e.g. iOS 27.1 → iPhone Duo), use those as last resort so the newest
-# runtime can match the iphonesimulator SDK instead of falling back older.
+# (e.g. iOS 27.1 → iPhone Duo), admit those only as last resort for *that*
+# runtime. Cross-runtime selection prefers an older standard runtime over
+# exotic-only newest — see find_iphone_udid_on_newest_runtime.
 find_iphone_udid_on_runtime() {
   local runtime_id="$1"
   xcrun simctl list devices -j 2>/dev/null \
@@ -63,53 +114,7 @@ find_iphone_udid_on_runtime() {
 import json, re, subprocess, sys
 
 runtime_id = sys.argv[1]
-preferred = (
-    'iPhone 18 Pro', 'iPhone 18 Pro Max', 'iPhone 18 Plus', 'iPhone 18',
-    'iPhone 17 Pro', 'iPhone 17 Pro Max', 'iPhone 17 Plus', 'iPhone 17',
-    'iPhone 16 Pro', 'iPhone 16 Pro Max', 'iPhone 16 Plus', 'iPhone 16',
-    'iPhone 15 Pro', 'iPhone 15 Pro Max', 'iPhone 15 Plus', 'iPhone 15',
-)
-exotic_markers = ('Duo', 'Fold', 'Air')
-
-def is_standard_iphone(name):
-    if not name or 'iPhone' not in name:
-        return False
-    if any(m in name for m in exotic_markers):
-        return False
-    if name in preferred:
-        return True
-    if re.match(r'^iPhone \d+( Pro Max| Pro| Plus)?$', name):
-        return True
-    if re.match(r'^iPhone SE( \(\d(st|nd|rd|th) generation\))?$', name):
-        return True
-    return False
-
-def is_any_iphone(name):
-    return bool(name) and 'iPhone' in name
-
-def exotic_rank(name):
-    if 'Duo' in name:
-        return 3
-    if 'Air' in name:
-        return 2
-    if 'Fold' in name:
-        return 1
-    return 0
-
-def phone_rank(name):
-    m = re.search(r'iPhone (\d+)', name or '')
-    gen = int(m.group(1)) if m else 0
-    if 'Pro' in name and 'Pro Max' not in name:
-        tier = 3
-    elif 'Pro Max' in name:
-        tier = 2
-    elif 'Plus' in name:
-        tier = 1
-    elif name.startswith('iPhone SE'):
-        tier = -1
-    else:
-        tier = 0
-    return (gen, tier)
+$(_iphone_preferred_names_python)
 
 def runtime_is_exotic_only(rid):
     try:
@@ -173,15 +178,22 @@ print(pool[0]['udid'].upper())
 }
 
 find_iphone_udid_on_newest_runtime() {
-  local runtime_id udid
+  local runtime_id udid used_exotic=0
   while IFS= read -r runtime_id; do
     [[ -n "$runtime_id" ]] || continue
+    if ios_runtime_is_exotic_only "$runtime_id"; then
+      used_exotic=1
+    fi
     udid="$(find_iphone_udid_on_runtime "$runtime_id" || true)"
     if [[ -n "$udid" ]]; then
+      if ((used_exotic == 1)); then
+        echo "warning: using exotic last-resort iPhone on iOS $(ios_runtime_version "$runtime_id") (no standard iPhone on any installed runtime)" >&2
+      fi
       printf '%s\n' "$udid"
       return 0
     fi
-  done < <(select_ios_runtime_ids_newest_first)
+    used_exotic=0
+  done < <(select_ios_runtime_ids_prefer_standard)
   return 1
 }
 
@@ -290,11 +302,12 @@ sys.exit(1)
 }
 
 # Preferred marketing names — Pro before Pro Max (xcodebuild + UITest stability).
+# Include 17e (common on iOS 27.0 when 27.1 is Duo-only).
 _iphone_preferred_names_python() {
   cat <<'PY'
 preferred = (
     'iPhone 18 Pro', 'iPhone 18 Pro Max', 'iPhone 18 Plus', 'iPhone 18',
-    'iPhone 17 Pro', 'iPhone 17 Pro Max', 'iPhone 17 Plus', 'iPhone 17',
+    'iPhone 17 Pro', 'iPhone 17 Pro Max', 'iPhone 17 Plus', 'iPhone 17', 'iPhone 17e',
     'iPhone 16 Pro', 'iPhone 16 Pro Max', 'iPhone 16 Plus', 'iPhone 16',
     'iPhone 15 Pro', 'iPhone 15 Pro Max', 'iPhone 15 Plus', 'iPhone 15',
 )
@@ -307,7 +320,10 @@ def is_standard_iphone(name):
         return False
     if name in preferred:
         return True
-    if re.match(r'^iPhone \d+( Pro Max| Pro| Plus)?$', name):
+    # Numbered + optional letter suffix (17e) + Pro/Plus; SE generations.
+    if re.match(r'^iPhone \d+[a-z]?( Pro Max| Pro| Plus)?$', name, re.I):
+        return True
+    if re.match(r'^iPhone SE( \(\d(st|nd|rd|th) generation\))?$', name):
         return True
     return False
 
@@ -334,6 +350,8 @@ def phone_rank(name):
         tier = 2
     elif 'Plus' in name:
         tier = 1
+    elif name.startswith('iPhone SE'):
+        tier = -1
     else:
         tier = 0
     return (gen, tier)

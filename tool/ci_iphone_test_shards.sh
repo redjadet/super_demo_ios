@@ -41,10 +41,13 @@ ci_iphone_shard_only_testing_args() {
       # Baseline test bodies ~367s; new cases estimated at 70s.
       # Launch/items chrome first — avoids wedged accessibility snapshots after
       # long Engineering + Feed cases on Xcode 27 CI simulators (main run 37744806904).
+      # SIWA before HostBridge — after HostBridge, CI sims can hang evaluating
+      # `signInWithAppleDemoLink` ("Timed out while evaluating UI query";
+      # run 39951355789). Same early-order pattern as ui-1 deep links.
       printf '%s\n' \
         "-only-testing:superDemoAppUITests/superDemoAppUITests/testLaunchShowsAddItemControl" \
-        "-only-testing:superDemoAppUITests/EngineeringDemosUITests/testHostBridgePingDemoReturnsResponse" \
         "-only-testing:superDemoAppUITests/EngineeringDemosUITests/testSignInWithAppleDemoIsReachable" \
+        "-only-testing:superDemoAppUITests/EngineeringDemosUITests/testHostBridgePingDemoReturnsResponse" \
         "-only-testing:superDemoAppUITests/superDemoAppUITests/testDeepLinkOpensFeedTab" \
         "-only-testing:superDemoAppUITests/superDemoAppUITests/testFeedPostRowOpensDetail" \
         "-only-testing:superDemoAppUITests/superDemoAppUITests/testOfflineBookmarkToggleShowsPending" \

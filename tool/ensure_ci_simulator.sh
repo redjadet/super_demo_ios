@@ -158,7 +158,8 @@ try_newest_runtime_destination() {
   local udid dest runtime_id runtime_version device_type_id created=0 created_out
   ensure_ios_runtime_matches_sdk
 
-  # Walk newest → older. Create only device types the runtime lists as supported
+  # Prefer standard-capable runtimes (e.g. 27.0 + 17e) before exotic-only
+  # newest (27.1 Duo). Create only device types the runtime lists as supported
   # (global "preferred" iPhone 18 Pro can 403 Incompatible on some 27.1 images).
   while IFS= read -r runtime_id; do
     [[ -n "$runtime_id" ]] || continue
@@ -185,7 +186,11 @@ try_newest_runtime_destination() {
       echo "==> No usable iPhone on iOS ${runtime_version}; trying next runtime" >&2
       continue
     fi
-    echo "==> Trying iOS Simulator runtime ${runtime_version} (${runtime_id}) udid=${udid}"
+    if ios_runtime_is_exotic_only "$runtime_id"; then
+      echo "==> Trying exotic last-resort iOS ${runtime_version} (${runtime_id}) udid=${udid}" >&2
+    else
+      echo "==> Trying iOS Simulator runtime ${runtime_version} (${runtime_id}) udid=${udid}"
+    fi
     boot_simulator_with_timeout "$udid" 180 || true
     if dest="$(wait_for_scheme_destination "$udid")" \
       && export_ci_simulator_dest "$dest"; then
@@ -195,7 +200,7 @@ try_newest_runtime_destination() {
     if ((created == 1)); then
       xcrun simctl delete "$udid" 2>/dev/null || true
     fi
-  done < <(select_ios_runtime_ids_newest_first)
+  done < <(select_ios_runtime_ids_prefer_standard)
 
   return 1
 }
@@ -232,7 +237,7 @@ create_newest_runtime_simulator() {
       echo "warning: created simulator on ${runtime_version} not visible to xcodebuild; trying next type/runtime" >&2
       xcrun simctl delete "$udid" 2>/dev/null || true
     done < <(list_preferred_iphone_device_type_ids_for_runtime "$runtime_id")
-  done < <(select_ios_runtime_ids_newest_first)
+  done < <(select_ios_runtime_ids_prefer_standard)
 
   # Last resort: download platform if we still have no usable runtime pairing.
   echo "==> No usable iPhone destination; downloading iOS platform and retrying once"

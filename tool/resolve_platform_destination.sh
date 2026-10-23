@@ -72,7 +72,7 @@ resolve_iphone_destination_from_xcodebuild() {
 import re, sys
 preferred = (
     'iPhone 18 Pro', 'iPhone 18 Pro Max', 'iPhone 18 Plus', 'iPhone 18',
-    'iPhone 17 Pro', 'iPhone 17 Pro Max', 'iPhone 17 Plus', 'iPhone 17',
+    'iPhone 17 Pro', 'iPhone 17 Pro Max', 'iPhone 17 Plus', 'iPhone 17', 'iPhone 17e',
     'iPhone 16 Pro', 'iPhone 16 Pro Max', 'iPhone 16 Plus', 'iPhone 16',
     'iPhone 15 Pro', 'iPhone 15 Pro Max', 'iPhone 15 Plus', 'iPhone 15',
 )
@@ -93,7 +93,8 @@ for line in sys.stdin:
         continue
     rows.append(entry)
 if not rows:
-    # Last resort when xcodebuild only lists exotic form factors (e.g. Duo on 27.1).
+    # Last resort only when xcodebuild lists no standard iPhone at all
+    # (e.g. Duo-only host). Prefer standard rows from any runtime first.
     rows = exotic_rows
 if not rows:
     sys.exit(1)
