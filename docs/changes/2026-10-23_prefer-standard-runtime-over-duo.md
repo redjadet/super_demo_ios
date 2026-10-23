@@ -18,7 +18,7 @@ those), then exotic-only runtimes (Duo/Fold/Air) as a true last resort.
 
 ## Why
 
-#109 made Duo a last-resort *device type* on an exotic-only newest runtime so
+PR 109 made Duo a last-resort *device type* on an exotic-only newest runtime so
 SDK and runtime stayed aligned. On Mac mini hosts with **both** iOS 27.1
 (Duo-only) and iOS 27.0 (17e / 18 Pro), that still selected Duo first and hit
 PosterBoard `PRPosterDescriptor _initWithPath:` crashes during UI work.
