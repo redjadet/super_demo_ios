@@ -280,15 +280,15 @@ nonisolated enum ShareInboxStore {
         containerURLOverride: URL?
     ) throws {
         guard let source = inboxFileURL(
-            fileManager: fileManager,
-            suiteName: suiteName,
-            containerURLOverride: containerURLOverride
-        ),
-            let destination = quarantineFileURL(
-                fileManager: fileManager,
-                suiteName: suiteName,
-                containerURLOverride: containerURLOverride
-            )
+                  fileManager: fileManager,
+                  suiteName: suiteName,
+                  containerURLOverride: containerURLOverride
+              ),
+              let destination = quarantineFileURL(
+                  fileManager: fileManager,
+                  suiteName: suiteName,
+                  containerURLOverride: containerURLOverride
+              )
         else {
             throw ShareInboxStoreError.containerUnavailable
         }

@@ -22,10 +22,9 @@ nonisolated enum HostBridgeCodec {
         }
         do {
             let wire = try jsonDecoder.decode(RequestWire.self, from: data)
-            guard let method = wire.method, !method.isEmpty, let id = wire.id, !id.isEmpty else {
-                return .failure(.malformedJSON)
-            }
-            guard let version = wire.schemaVersion else {
+            guard let method = wire.method, !method.isEmpty, let id = wire.id, !id.isEmpty,
+                  let version = wire.schemaVersion
+            else {
                 return .failure(.malformedJSON)
             }
             guard version == HostBridgeContract.version else {

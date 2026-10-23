@@ -4,6 +4,8 @@ Record durable implementation notes after meaningful changes.
 
 ## Entries
 
+- [`2026-10-23_swiftformat-0-64-1-pin.md`](2026-10-23_swiftformat-0-64-1-pin.md)
+  — Bump SwiftFormat pin to 0.64.1 (Homebrew stable; tip CI pin gate).
 - [`2026-10-22_dashboard-taskgroup-fanout.md`](2026-10-22_dashboard-taskgroup-fanout.md)
   — Composite Dashboard sample∥remote via TaskGroup; cancel-child unit proof.
 - [`2026-10-21_ui1-deeplink-single-launch.md`](2026-10-21_ui1-deeplink-single-launch.md)
