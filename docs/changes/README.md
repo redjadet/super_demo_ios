@@ -2,6 +2,8 @@
 
 Record durable implementation notes after meaningful changes.
 
+- [2026-11-05 SwiftFormat pin 0.64.5](2026-11-05_swiftformat-0-64-5-pin.md)
+  — Bump SwiftFormat pin to 0.64.5 (Homebrew stable; fix tip CI pin gate).
 ## Entries
 
 - [`2026-11-05_adr-agent-retrieval-protocol.md`](2026-11-05_adr-agent-retrieval-protocol.md)
