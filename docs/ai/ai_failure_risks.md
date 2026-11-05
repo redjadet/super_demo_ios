@@ -15,7 +15,7 @@ architecture policy). Map the task to rows below before first edit.
 | Tier | When | Example IDs |
 | --- | --- | --- |
 | P0 — stop before edit | Secrets, destructive/costly ops, unclear scope, unapproved Git | `RISK-SECRET-LEAK`, `RISK-UNAPPROVED-EXTERNAL`, `RISK-SCOPE-CREEP`, `RISK-UNAPPROVED-GIT` |
-| P1 — during implementation | Layers, MainActor, SwiftData, tests, universal UI | `RISK-ARCH-LAYER`, `RISK-MAINACTOR`, `RISK-SWIFTDATA`, `RISK-UNIVERSAL-UI`, `RISK-SIM-RUNTIME-DEVICE`, `RISK-VALIDATION-SHORTCUT` |
+| P1 — during implementation | Layers, MainActor, SwiftData, tests, universal UI, ADR fit | `RISK-ARCH-LAYER`, `RISK-ADR-OVERTURN`, `RISK-MAINACTOR`, `RISK-SWIFTDATA`, `RISK-UNIVERSAL-UI`, `RISK-SIM-RUNTIME-DEVICE`, `RISK-VALIDATION-SHORTCUT` |
 | P2 — session hygiene | Doc drift (manual) | `RISK-DOC-DRIFT` |
 
 ## Risk register
@@ -23,6 +23,7 @@ architecture policy). Map the task to rows below before first edit.
 | ID | Trigger | Owner | Prevention | Honest proof | Recovery |
 | --- | --- | --- | --- | --- | --- |
 | `RISK-ARCH-LAYER` | `Features/` edit | [`layers.md`](../layers.md) | Presentation → Domain ← Data | `./tool/check_layer_boundaries.sh` | Move type; rerun check |
+| `RISK-ADR-OVERTURN` | Sync, diagnostics, deps, CI claims, “simpler” architecture | [`adr/README.md`](../adr/README.md) | Load scoped ADRs; flag conflict; ask human | **Manual review** + scoped ADR read; layer/offline tests when applicable | Stop; preserve ADR or supersede with new ADR + approval |
 | `RISK-MAINACTOR` | Feature model / UI async | [`agent_swift_guards.md`](../agent_swift_guards.md) | `@MainActor` models; no isolated `deinit` misuse | `./bin/verify-swift.sh` | Fix isolation; format+lint |
 | `RISK-SWIFTDATA` | Schema / ModelContainer | [`offline-first.md`](../offline-first.md) | Document recovery; migration thinking | Unit tests for container wipe/recreate; review store path | Recreate store path or in-memory fallback |
 | `RISK-UNIVERSAL-UI` | Shared SwiftUI layout | [`universal-apple-platforms.md`](../universal-apple-platforms.md) | `AdaptiveNavigationShell`; no phone-only assumptions | `./bin/checklist` or `./bin/ci.sh` (**not** checklist-fast alone) | Fix layout; re-run iPad/Mac proof |

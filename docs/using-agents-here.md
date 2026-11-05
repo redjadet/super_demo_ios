@@ -91,6 +91,8 @@ cases, layer boundaries, platform honesty, release risk—needs human scrutiny.
 Review **process**, not only the final diff:
 
 - Did the agent load the right owners and declare a write-set?
+- For architecture, sync, vendors, or CI claims: did it load scoped **ADRs**
+  and stop on conflict instead of silently “fixing” toward tests?
 - Was proof matched to change type (fast vs full)?
 - Are claims reconstructable (~10 min) per SAFETY-REPORT?
 

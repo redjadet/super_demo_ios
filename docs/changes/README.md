@@ -4,6 +4,8 @@ Record durable implementation notes after meaningful changes.
 
 ## Entries
 
+- [`2026-11-05_adr-agent-retrieval-protocol.md`](2026-11-05_adr-agent-retrieval-protocol.md)
+  — ADR load + conflict ask protocol for agents/reviewers (harness gap; ADRs 0001–0005 unchanged).
 - [`2026-10-23_prefer-standard-runtime-over-duo.md`](2026-10-23_prefer-standard-runtime-over-duo.md)
   — Prefer 27.0 + 17e/standard over exotic-only 27.1 Duo (PosterBoard).
 - [`2026-10-23_ci-ui2-siwa-before-hostbridge.md`](2026-10-23_ci-ui2-siwa-before-hostbridge.md)
