@@ -20,8 +20,35 @@ Each ADR uses:
 
 - **Status** — Accepted / Deferred / Superseded
 - **Context** — Why a decision was needed
+- **Options considered** — Reasonable alternatives and why they were not chosen
+  (include non-code constraints: portfolio scope, secrets, CI cost, ops ownership)
 - **Decision** — What we chose
-- **Consequences** — What follows (gates, non-goals, revisit triggers)
+- **Consequences** — Trade-offs, gates, non-goals
+- **Revisit when** — Conditions to reconsider (budget, ownership, product scope)
+
+ADRs are **engineering memory**, not permanent law. To overturn a decision,
+add a new ADR that states why the old rationale no longer holds, mark the prior
+ADR **Superseded** (link both ways), and update topic owners (`layers.md`,
+`offline-first.md`, …) if behavior changes.
+
+## Agents and AI reviewers
+
+Before proposing or approving a change that touches **layers**, **offline/sync**,
+**diagnostics vendors**, **quality cloud tooling**, or **CI / proof claims**:
+
+1. Read this index and load **scoped** Accepted ADRs (not the whole tree).
+2. Distinguish **implementation improvement** (same decision, better code) from
+   **overturning the reasoning** (different trade-off, e.g. add Crashlytics,
+   enable SonarCloud, bypass Domain/Data boundaries, “fix” sync by guessing server
+   state on conflict, claim hosted CI ran the full local suite).
+3. If the diff **conflicts** with an Accepted ADR, **stop and ask the human**:
+   preserve the recorded decision, or explicitly revisit it (new/superseding ADR +
+   human approval). Do **not** silently optimize for passing tests or local convenience.
+4. AI review alone does not cover business or portfolio constraints — humans still
+   judge ADR fit ([`../ai_code_review_protocol.md`](../ai_code_review_protocol.md)).
+
+Load triggers: [`../ai/context_loading.md`](../ai/context_loading.md). Risk row:
+[`../ai/ai_failure_risks.md`](../ai/ai_failure_risks.md) (`RISK-ADR-OVERTURN`).
 
 ## Related
 

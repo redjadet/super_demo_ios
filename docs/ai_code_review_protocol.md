@@ -7,6 +7,11 @@ Use before accepting AI-written or heavily AI-shaped changes.
 1. Request fit: does diff solve the asked problem only?
 2. Apple-native fit: use [`apple-development-practices.md`](apple-development-practices.md) before adding dependency or custom platform behavior.
 3. Architecture: any boundary leak between Presentation, Domain, Data?
+   Load scoped Accepted ADRs from [`adr/README.md`](adr/README.md). If the diff
+   overturns an ADR (vendor SDK, Sonar, layer bypass, offline/conflict policy,
+   CI proof claims) without a superseding ADR and human intent, **reject** and
+   ask whether to preserve the decision or revisit it — do not treat green tests
+   as sufficient ([`adr/README.md`](adr/README.md) § Agents and AI reviewers).
 4. Concurrency/performance: MainActor, cancellation, actor safety, `Sendable`,
    strict-concurrency warnings, no unjustified detached tasks or main-thread hangs.
 5. Persistence: SwiftData schema, relationship/delete behavior, indexes, uniqueness, history, migration, fixture impact.

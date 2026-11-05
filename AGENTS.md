@@ -36,7 +36,7 @@ Host / MCP / skills: [`docs/agent_host_notes.md`](docs/agent_host_notes.md),
 | Find any path | [`CODEMAP.md`](CODEMAP.md) |
 | ≤15 min architecture tour | [`docs/architecture-tour.md`](docs/architecture-tour.md) |
 | Any Swift | [`docs/agent_swift_guards.md`](docs/agent_swift_guards.md); `./bin/verify-swift.sh` |
-| Feature / layers | [`docs/feature-template.md`](docs/feature-template.md), [`docs/layers.md`](docs/layers.md), [`docs/modularity.md`](docs/modularity.md) |
+| Feature / layers / ADRs | [`docs/layers.md`](docs/layers.md), [`docs/modularity.md`](docs/modularity.md), [`docs/adr/README.md`](docs/adr/README.md), [`docs/feature-template.md`](docs/feature-template.md) |
 | AI-native SDLC artifacts | [`docs/ai-sdlc/README.md`](docs/ai-sdlc/README.md); skills [`docs/ai-sdlc/skills/`](docs/ai-sdlc/skills/); gates [`docs/ai-sdlc/gates.md`](docs/ai-sdlc/gates.md) |
 | SwiftUI / light–dark | [`DESIGN.md`](DESIGN.md), [`docs/design_system.md`](docs/design_system.md) |
 | Domain / Data | [`docs/offline-first.md`](docs/offline-first.md), [`docs/dependency-injection.md`](docs/dependency-injection.md) |

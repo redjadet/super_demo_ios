@@ -29,7 +29,9 @@ skill text when they conflict.
 
 | Trigger | Load |
 | --- | --- |
-| Features layers / new feature | [`../architecture.md`](../architecture.md), [`../layers.md`](../layers.md), [`../feature-template.md`](../feature-template.md), [`../ai-sdlc/README.md`](../ai-sdlc/README.md) |
+| Features layers / new feature | [`../architecture.md`](../architecture.md), [`../layers.md`](../layers.md), [`../feature-template.md`](../feature-template.md), [`../adr/README.md`](../adr/README.md) + scoped Accepted ADRs, [`../ai-sdlc/README.md`](../ai-sdlc/README.md) |
+| Offline / sync / bookmark outbox | [`../offline-invariants.md`](../offline-invariants.md), [`../adr/0002-offline-first-posture.md`](../adr/0002-offline-first-posture.md) |
+| Vendor SDK / Sonar / CI honesty claims | Scoped ADRs from [`../adr/README.md`](../adr/README.md) (0003–0005) |
 | SwiftUI / design / light–dark | [`../../DESIGN.md`](../../DESIGN.md), [`../design_system.md`](../design_system.md), [`../universal-apple-platforms.md`](../universal-apple-platforms.md) |
 | Swift indent / MainActor / lint | [`../agent_swift_guards.md`](../agent_swift_guards.md); `./bin/verify-swift.sh`; skill [`../ai-sdlc/skills/swift-concurrency.md`](../ai-sdlc/skills/swift-concurrency.md) |
 | SwiftData / offline | [`../offline-first.md`](../offline-first.md); skill [`../ai-sdlc/skills/offline-outbox.md`](../ai-sdlc/skills/offline-outbox.md) |
