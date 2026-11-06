@@ -4,6 +4,8 @@ Record durable implementation notes after meaningful changes.
 
 ## Entries
 
+- [`2026-11-05_swiftformat-0-64-5-pin.md`](2026-11-05_swiftformat-0-64-5-pin.md)
+  — Bump SwiftFormat pin to 0.64.5 (Homebrew stable; fix tip CI pin gate).
 - [`2026-11-05_adr-agent-retrieval-protocol.md`](2026-11-05_adr-agent-retrieval-protocol.md)
   — ADR load + conflict ask protocol for agents/reviewers (harness gap; ADRs 0001–0005 unchanged).
 - [`2026-10-23_prefer-standard-runtime-over-duo.md`](2026-10-23_prefer-standard-runtime-over-duo.md)
