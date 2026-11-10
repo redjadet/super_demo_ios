@@ -153,6 +153,11 @@ enum UiTestSupport {
     }
 
     /// True when any descendant identifier has the given prefix (e.g. `visionLine_`).
+    ///
+    /// Polls typed element queries first. Avoids a single long
+    /// `descendants(.any).waitForExistence` — on Xcode 27.2 CI that path can
+    /// hang with “Timed out while evaluating UI query” (StoreKit ui-1,
+    /// Delivery run 42860011085) without weakening the terminal-state assert.
     @MainActor
     static func waitForIdentifierPrefix(
         _ prefix: String,
@@ -160,8 +165,23 @@ enum UiTestSupport {
         timeout: TimeInterval = 15
     ) -> Bool {
         let predicate = NSPredicate(format: "identifier BEGINSWITH %@", prefix)
-        let match = app.descendants(matching: .any).matching(predicate).firstMatch
-        return match.waitForExistence(timeout: timeout)
+        let deadline = Date().addingTimeInterval(timeout)
+        while Date() < deadline {
+            if app.cells.matching(predicate).firstMatch.exists {
+                return true
+            }
+            if app.staticTexts.matching(predicate).firstMatch.exists {
+                return true
+            }
+            if app.otherElements.matching(predicate).firstMatch.exists {
+                return true
+            }
+            if app.buttons.matching(predicate).firstMatch.exists {
+                return true
+            }
+            RunLoop.current.run(until: Date().addingTimeInterval(0.25))
+        }
+        return false
     }
 
     /// Opens the Feed tab when the root shell uses `TabView`.
