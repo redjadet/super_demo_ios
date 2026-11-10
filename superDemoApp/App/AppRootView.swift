@@ -47,8 +47,14 @@ struct AppRootView: View {
             // tab back into `selection` in that same turn, so correct again
             // on the next turn and whenever selection drifts.
             self.applyUITestLaunchDeepLinkIfNeeded()
+            #if os(macOS)
+            MacUITestingWindowPlacement.pinMainWindowIfNeeded()
+            #endif
             Task { @MainActor in
                 self.applyUITestLaunchDeepLinkIfNeeded()
+                #if os(macOS)
+                MacUITestingWindowPlacement.pinMainWindowIfNeeded()
+                #endif
             }
         }
         .onChange(of: navigation.state.selection) { _, _ in

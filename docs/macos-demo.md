@@ -32,14 +32,15 @@ sample mode are fixtures, not measurements of a deployed service.
 | Command | Behavior |
 | --- | --- |
 | ⌘1 / ⌘2 / ⌘3 | Dashboard / Items / Feed |
-| ⌘N | Create and select an Item; enabled in Items |
+| ⌘N | Create and select an Item (replaces File → New Window); enabled in Items |
 | ⌘S | Save the visible dirty Item; disabled without pending changes |
 | ⌘R | Refresh the visible feature |
 | Delete, with sidebar focus | Confirm deletion of the selected Item |
 | View → Appearance | System / Light / Dark, stored as an app preference |
 
 The app uses one main window because navigation and App Intent routing are
-app-scoped. New Item creates a note in that window.
+app-scoped. `MacAppCommands` uses `CommandGroup(replacing: .newItem)` so ⌘N
+creates a note in that window instead of opening another window.
 
 ## Screenshots
 

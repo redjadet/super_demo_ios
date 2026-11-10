@@ -7,7 +7,7 @@
 
 [![CI](https://github.com/redjadet/super_demo_ios/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/redjadet/super_demo_ios/actions/workflows/ci.yml)
 
-![Xcode](https://img.shields.io/badge/Xcode-27.0-147EFB?logo=xcode&logoColor=white)
+![Xcode](https://img.shields.io/badge/Xcode-27.2-147EFB?logo=xcode&logoColor=white)
 ![Swift](https://img.shields.io/badge/Swift-6.4-F05138?logo=swift&logoColor=white)
 ![SwiftUI](https://img.shields.io/badge/SwiftUI-SDK%2027-0D96F6?logo=swift&logoColor=white)
 ![SwiftData](https://img.shields.io/badge/SwiftData-persistence-F05138?logo=swift&logoColor=white)

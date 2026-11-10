@@ -4,6 +4,8 @@ Record durable implementation notes after meaningful changes.
 
 ## Entries
 
+- [`2026-11-10_xcode-27-2-mac-new-item.md`](2026-11-10_xcode-27-2-mac-new-item.md)
+  — Xcode 27.2 local verify; Mac ⌘N replaces New Window; UITesting window pin.
 - [`2026-11-05_swiftformat-0-64-5-pin.md`](2026-11-05_swiftformat-0-64-5-pin.md)
   — Bump SwiftFormat pin to 0.64.5 (Homebrew stable; fix tip CI pin gate).
 - [`2026-11-05_adr-agent-retrieval-protocol.md`](2026-11-05_adr-agent-retrieval-protocol.md)

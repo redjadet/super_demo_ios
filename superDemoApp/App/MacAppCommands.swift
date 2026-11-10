@@ -14,7 +14,11 @@ struct MacAppCommands: Commands {
     private var appearance = MacAppearance.system.rawValue
 
     var body: some Commands {
-        CommandGroup(after: .newItem) {
+        // Replace the default File → New (Cmd+N / New Window) so the Items
+        // focused-scene action owns the shortcut. `after: .newItem` left the
+        // system New command in place and made Cmd+N open another window on
+        // macOS 26 / Xcode 27.2 instead of creating a note.
+        CommandGroup(replacing: .newItem) {
             Button("New Item") { self.newItem?() }
                 .keyboardShortcut("n")
                 .disabled(self.newItem == nil)
