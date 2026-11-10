@@ -25,17 +25,18 @@ ci_iphone_shard_only_testing_args() {
       ;;
     ui-1)
       # Baseline test bodies ~356s; new cases estimated at 70s.
-      # Deep-link cases first — after long Engineering demos (esp. StoreKit),
-      # Xcode 27 CI sims can fail the next launch with “does not have a process
-      # ID” (main run 37773620216). The deep-link tests themselves pass the URL
-      # as `-UITestOpenURL` on that single `-UITesting` launch. Same ordering
-      # pattern as ui-2 (#96).
+      # Deep-link cases first — after long Engineering demos, Xcode 27 CI sims
+      # can fail the next launch with “does not have a process ID”
+      # (main run 37773620216). StoreKit next (not last): on Xcode 27.2
+      # Delivery (run 42860011085) a post-Load `descendants(.any)` prefix wait
+      # hung AX evaluation twice when StoreKit ran after idempotent + local
+      # notification. Same early-order pattern as ui-2 SIWA (#96 / #113).
       printf '%s\n' \
         "-only-testing:superDemoAppUITests/superDemoAppUITests/testDeepLinkOpensFeedPostDetail" \
         "-only-testing:superDemoAppUITests/superDemoAppUITests/testDeepLinkOpensItemsTab" \
+        "-only-testing:superDemoAppUITests/EngineeringDemosUITests/testStoreKitProductQueryDemoIsReachable" \
         "-only-testing:superDemoAppUITests/EngineeringDemosUITests/testIdempotentPostDemoIsReachable" \
-        "-only-testing:superDemoAppUITests/EngineeringDemosUITests/testLocalNotificationDemoIsReachable" \
-        "-only-testing:superDemoAppUITests/EngineeringDemosUITests/testStoreKitProductQueryDemoIsReachable"
+        "-only-testing:superDemoAppUITests/EngineeringDemosUITests/testLocalNotificationDemoIsReachable"
       ;;
     ui-2)
       # Baseline test bodies ~367s; new cases estimated at 70s.

@@ -194,12 +194,15 @@ final class EngineeringDemosUITests: XCTestCase {
         load.tap()
 
         // Terminal only — idle/loading after Load previously false-greened.
+        // Prefer product-row prefix, then honest empty/unavailable. Typed
+        // queries only (see `waitForIdentifierPrefix`); do not fall through to
+        // a wedged `descendants(.any)` scan after a slow StoreKit response.
         let finished =
             UiTestSupport.waitForIdentifierPrefix("storeKitProductRow_", in: app, timeout: 30)
                 || UiTestSupport.waitForAnyIdentifier(
                     ["storeKitStatusEmpty", "storeKitStatusUnavailable"],
                     in: app,
-                    timeout: 5
+                    timeout: 15
                 )
         XCTAssertTrue(finished, "StoreKit query did not reach a terminal UI state")
     }
