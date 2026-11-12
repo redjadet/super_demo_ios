@@ -54,7 +54,7 @@ struct ProductionReadinessView: View {
     var body: some View {
         NavigationStack(path: self.$path) {
             self.content
-                .navigationTitle("Production Readiness")
+                .navigationTitle("Dashboard")
                 .iosLargeNavigationBarTitle()
                 .toolbar {
                     ToolbarItem {

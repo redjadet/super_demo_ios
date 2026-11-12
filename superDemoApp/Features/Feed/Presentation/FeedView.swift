@@ -189,6 +189,8 @@ struct FeedView: View {
                 .accessibilityIdentifier("refreshFeedEmpty")
             }
             .featureScreenFrame()
+            .accessibilityIdentifier("feedEmpty")
+            .accessibilityLabel("No posts")
         case let .content(posts, isStale):
             self.postsList(posts, isStale: isStale)
         }

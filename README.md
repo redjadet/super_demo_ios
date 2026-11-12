@@ -63,7 +63,8 @@ and use `-ReviewerDemoMode` for seeded sample data.
 
 Simulator captures using sample data: the iPhone app runs with
 `-ReviewerDemoMode`; the watchOS and tvOS companions use illustrative sample Feed
-data. See the [reviewer guide](docs/portfolio.md) and
+data. iPhone gallery shots are **Light** appearance; paired Dark captures are a
+human Simulator pass (not claimed here). See the [reviewer guide](docs/portfolio.md) and
 [Watch & TV walkthrough](docs/watch-tv-demo.md) for demo steps.
 
 ### iPhone
