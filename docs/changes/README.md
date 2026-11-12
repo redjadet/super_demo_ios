@@ -4,6 +4,8 @@ Record durable implementation notes after meaningful changes.
 
 ## Entries
 
+- [`2026-11-12_portfolio-demo-polish.md`](2026-11-12_portfolio-demo-polish.md)
+  — Feed empty AX parity; Dashboard nav title; README Light screenshot honesty.
 - [`2026-11-10_ui1-storekit-early-ax.md`](2026-11-10_ui1-storekit-early-ax.md)
   — ui-1: StoreKit after deep links; typed prefix waits (Xcode 27.2 AX hang).
 - [`2026-11-10_xcode-27-2-mac-new-item.md`](2026-11-10_xcode-27-2-mac-new-item.md)
