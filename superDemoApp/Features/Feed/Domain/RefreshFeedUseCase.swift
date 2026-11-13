@@ -15,4 +15,9 @@ struct RefreshFeedUseCase {
     func callAsFunction() async throws -> FeedLoadResult {
         try await self.repository.fetchPosts()
     }
+
+    /// Warm-cache serve for cold UI (no spinner when a valid local row set exists).
+    func peekCached() throws -> FeedLoadResult? {
+        try self.repository.peekCachedPosts()
+    }
 }

@@ -54,14 +54,66 @@ struct CachingFeedRepositoryTests {
             FeedPost(id: 2, userID: 20, title: "Second", body: "More"),
         ]
         let remote = RemoteFeedRepositorySpy(posts: posts)
-        let repository = CachingFeedRepository(remote: remote, context: context)
+        let now = Date(timeIntervalSince1970: 1_700_000_000)
+        let repository = CachingFeedRepository(remote: remote, context: context) { now }
 
         let fetched = try await repository.fetchPosts()
 
         #expect(fetched.posts == posts)
         #expect(fetched.isStale == false)
+        #expect(fetched.lastSyncedAt == now)
         #expect(remote.fetchCount == 1)
         #expect(try Self.cachedPosts(in: context) == posts)
+    }
+
+    @Test
+    @MainActor
+    func peekCachedPostsServesValidCacheWithoutHittingRemote() throws {
+        let context = try Self.makeContext()
+        let cachedAt = Date(timeIntervalSince1970: 1_700_000_000)
+        let now = Date(timeIntervalSince1970: 1_700_000_100)
+        let cachedPosts = [
+            FeedPost(id: 1, userID: 10, title: "Cached", body: "Local"),
+        ]
+        try Self.seed(cachedPosts, in: context, cachedAt: cachedAt)
+        let remote = RemoteFeedRepositorySpy(error: FeedError.invalidResponse)
+        let publisher = RecordingFeedWidgetSnapshotPublisher()
+        let repository = CachingFeedRepository(
+            remote: remote,
+            context: context,
+            cacheTTL: 60 * 15,
+            snapshotPublisher: publisher
+        ) { now }
+
+        let peeked = try repository.peekCachedPosts()
+
+        #expect(peeked?.posts == cachedPosts)
+        #expect(peeked?.isStale == false)
+        #expect(peeked?.lastSyncedAt == cachedAt)
+        #expect(remote.fetchCount == 0)
+        #expect(publisher.published.isEmpty)
+        #expect(publisher.clearCount == 0)
+    }
+
+    @Test
+    @MainActor
+    func peekCachedPostsReturnsNilWhenCacheExpired() throws {
+        let context = try Self.makeContext()
+        let now = Date(timeIntervalSince1970: 1_700_000_000)
+        try Self.seed(
+            [FeedPost(id: 1, userID: 10, title: "Expired", body: "Too old")],
+            in: context,
+            cachedAt: now.addingTimeInterval(-3600)
+        )
+        let remote = RemoteFeedRepositorySpy(posts: [])
+        let repository = CachingFeedRepository(
+            remote: remote,
+            context: context,
+            cacheTTL: 60 * 15
+        ) { now }
+
+        #expect(try repository.peekCachedPosts() == nil)
+        #expect(remote.fetchCount == 0)
     }
 
     @Test
@@ -113,6 +165,7 @@ struct CachingFeedRepositoryTests {
 
         #expect(fetched.posts == cachedPosts)
         #expect(fetched.isStale)
+        #expect(fetched.lastSyncedAt == cachedAt)
         #expect(remote.fetchCount == 1)
         let snapshot = try #require(publisher.published.first)
         #expect(snapshot.isStale)

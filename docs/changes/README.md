@@ -4,6 +4,8 @@ Record durable implementation notes after meaningful changes.
 
 ## Entries
 
+- [`2026-11-13_offline-first-article-gaps.md`](2026-11-13_offline-first-article-gaps.md)
+  — Warm Feed cache peek, last-synced chrome, 8s fail-fast timeout (article gaps).
 - [`2026-11-12_portfolio-demo-polish.md`](2026-11-12_portfolio-demo-polish.md)
   — Feed empty AX parity; Dashboard nav title; README Light screenshot honesty.
 - [`2026-11-10_ui1-storekit-early-ax.md`](2026-11-10_ui1-storekit-early-ax.md)

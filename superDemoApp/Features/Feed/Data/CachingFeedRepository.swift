@@ -41,6 +41,18 @@ final class CachingFeedRepository: FeedRepository {
         self.snapshotPublisher = snapshotPublisher ?? NoOpFeedWidgetSnapshotPublisher()
     }
 
+    func peekCachedPosts() throws -> FeedLoadResult? {
+        let cached = try self.loadValidCachedPosts()
+        guard cached.isEmpty == false else { return nil }
+        // Warm serve: not marked stale yet — remote refresh still decides OI-02/04.
+        let lastSyncedAt = cached.map(\.cachedAt).max()
+        return FeedLoadResult(
+            posts: cached.map(\.post),
+            isStale: false,
+            lastSyncedAt: lastSyncedAt
+        )
+    }
+
     func fetchPosts() async throws -> FeedLoadResult {
         let signpostID = self.signposter.makeSignpostID()
         let interval = self.signposter.beginInterval("fetchPosts", id: signpostID)
@@ -50,14 +62,15 @@ final class CachingFeedRepository: FeedRepository {
             let result = try await self.remote.fetchPosts()
             // Cancel / supersede after remote returns must not commit cache or widget.
             try Task.checkCancellation()
-            try self.replaceCache(with: result.posts)
+            let syncedAt = self.now()
+            try self.replaceCache(with: result.posts, cachedAt: syncedAt)
             self.publishSnapshot(
                 posts: result.posts,
                 isStale: false,
-                writtenAt: self.now()
+                writtenAt: syncedAt
             )
             self.signposter.emitEvent("remoteSuccess", id: signpostID)
-            return FeedLoadResult(posts: result.posts, isStale: false)
+            return FeedLoadResult(posts: result.posts, isStale: false, lastSyncedAt: syncedAt)
         } catch is CancellationError {
             self.signposter.emitEvent("cancelled", id: signpostID)
             throw CancellationError()
@@ -79,13 +92,18 @@ final class CachingFeedRepository: FeedRepository {
             // Align widget TTL with the *oldest* surviving row. `max(cachedAt)`
             // let newer titles keep an older title “ok” past its own age + TTL.
             let writtenAt = cached.map(\.cachedAt).min() ?? self.now()
+            let lastSyncedAt = cached.map(\.cachedAt).max()
             self.publishSnapshot(
                 posts: cached.map(\.post),
                 isStale: true,
                 writtenAt: writtenAt
             )
             self.signposter.emitEvent("cacheFallback", id: signpostID)
-            return FeedLoadResult(posts: cached.map(\.post), isStale: true)
+            return FeedLoadResult(
+                posts: cached.map(\.post),
+                isStale: true,
+                lastSyncedAt: lastSyncedAt
+            )
         }
     }
 
@@ -103,8 +121,8 @@ final class CachingFeedRepository: FeedRepository {
         self.snapshotPublisher.publish(snapshot)
     }
 
-    private func replaceCache(with posts: [FeedPost]) throws {
-        let timestamp = self.now()
+    private func replaceCache(with posts: [FeedPost], cachedAt: Date? = nil) throws {
+        let timestamp = cachedAt ?? self.now()
         let descriptor = FetchDescriptor<CachedFeedPost>()
         let existing = try self.context.fetch(descriptor)
         // uniquingKeysWith: corrupt duplicate postIDs must not trap the process.

@@ -30,10 +30,11 @@ Named rules: **OI-01…OI-08** in [`../offline-invariants.md`](../offline-invari
 
 ## URLCache / HTTP caching
 
-`LiveFeedAPIClient` builds a plain `URLRequest` (30s timeout) and calls
-`session.data(for:)`. App Feed sources do **not** set `URLCache`,
-`requestCachePolicy`, or Cache-Control policy. Shared session is
-`AppURLSession.makeDefault()` (SPM `DefaultURLSession`).
+`LiveFeedAPIClient` builds a plain `URLRequest` (**8s** timeout —
+`LiveFeedAPIClient.requestTimeout`) and calls `session.data(for:)`. App Feed
+sources do **not** set `URLCache`, `requestCachePolicy`, or Cache-Control
+policy. Shared session is `AppURLSession.makeDefault()` (SPM
+`DefaultURLSession`).
 
 Retry/backoff in SPM `URLSessionAPIClient` applies to Production Readiness
 remote health — **not** to `LiveFeedAPIClient`.
@@ -89,9 +90,18 @@ rollback — no remote merge.
 
 ## Offline reads
 
-Feed has **no** cache-first read API. Every `RefreshFeedUseCase` /
-`CachingFeedRepository.fetchPosts()` attempt hits remote first. Cached rows
-appear only after remote failure (or after a prior success updated the store).
+Feed uses **warm-cache + remote refresh** (not pure local-only UI):
+
+1. `peekCachedPosts()` returns TTL-valid SwiftData rows immediately (no network,
+   no widget publish). `FeedFeatureModel` serves them on cold / loading start so
+   there is **no spinner when a valid cache exists**.
+2. `fetchPosts()` still hits remote next. Success replaces cache wholesale
+   (OI-01). Failure with fresh rows returns `isStale: true` (OI-02). Expired
+   TTL remains a miss (OI-03).
+
+`FeedLoadResult.lastSyncedAt` carries the newest surviving `cachedAt` (or the
+success write stamp) for “Last synced” chrome. Peek marks `isStale: false`;
+only remote-failure fallback sets the offline banner (OI-04).
 
 Items always read local SwiftData (`LoadItemsUseCase` → `fetchItems()`).
 
@@ -111,7 +121,7 @@ serialized via `NSFileCoordinator` (parity with `ShareInboxStore`).
 
 | Choice | Alternatives considered | Why |
 | --- | --- | --- |
-| Cache-aside (remote first) | Cache-first then revalidate | Simpler honesty for a demo API; stale UI only when offline/error |
+| Warm peek + remote refresh | Pure local-only UI; remote-only until fail | No spinner when cache exists; remote still owns freshness; stale banner only after failure |
 | SwiftData for Feed rows | Disk JSON / UserDefaults | Same container as Items; testable with in-memory `ModelContainer` |
 | 15-minute TTL with per-row filter | Forever cache only; whole-cache age | Mixed-age / migration-safe; `nil` TTL preserves old forever behavior |
 | Wholesale replace on success | Patch merge by version | JSONPlaceholder posts are a full list; avoids zombie rows |
@@ -125,6 +135,7 @@ serialized via `NSFileCoordinator` (parity with `ShareInboxStore`).
 | --- | --- | --- |
 | Persist / replace (OI-01) | `fetchPostsPersistsRemotePosts`, `fetchPostsReplacesStaleCacheWithRemotePosts` | `CachingFeedRepositoryTests.swift` |
 | Fresh fallback (OI-02) | `fetchPostsReturnsCachedPostsWhenRemoteFails`, `fetchPostsUsesOldestCachedAtForStaleWidgetSnapshot` | same |
+| Warm peek (no spinner path) | `peekCachedPostsServesValidCacheWithoutHittingRemote`, `peekCachedPostsReturnsNilWhenCacheExpired`; `FeedFeatureModelTests.warmCacheServesContentWithoutWaitingForRemote` | same + `FeedFeatureModelTests.swift` |
 | TTL miss / mixed age (OI-03) | `fetchPostsIgnoresExpiredCacheWhenRemoteFails`, `fetchPostsFiltersMixedAgeAndMigratedCacheRows`, `fetchPostsKeepsExpiredCacheWhenTTLDisabled` | same |
 | Widget publish shape | `fetchPostsPublishesFullPostCountAndCappedTitles` | same |
 | Snapshot store TTL | `FeedWidgetSnapshotStoreTests` suite | `superDemoAppTests/Features/Feed/FeedWidgetSnapshotStoreTests.swift` |

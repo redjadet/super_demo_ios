@@ -28,6 +28,8 @@ final class FeedFeatureModel {
     private(set) var bookmarksByPostID: [Int: PostBookmark] = [:]
     private(set) var failedOutboxCount = 0
     private(set) var bookmarkErrorMessage: String?
+    /// Newest successful local Feed cache stamp for “Last synced” chrome.
+    private(set) var lastSyncedAt: Date?
     /// Completed refresh cycles (success or failure). UITests use this to prove
     /// Retry drove a new attempt — not a no-op tap that leaves prior chrome.
     private(set) var completedRefreshCount = 0
@@ -163,6 +165,7 @@ final class FeedFeatureModel {
             self.stateBeforeRefresh = self.state
         }
         self.showLoadingStateIfNeeded()
+        self.serveCachedFeedIfAvailable()
         self.liveActivity.refreshDidStart()
         return self.refreshGeneration
     }
@@ -175,6 +178,9 @@ final class FeedFeatureModel {
             guard !Task.isCancelled else {
                 self.restorePriorStateAfterCancelledRefresh()
                 return
+            }
+            if let syncedAt = result.lastSyncedAt {
+                self.lastSyncedAt = syncedAt
             }
             if result.posts.isEmpty {
                 self.state = .empty
@@ -215,6 +221,22 @@ final class FeedFeatureModel {
             self.completedRefreshCount += 1
             self.stateBeforeRefresh = nil
         }
+    }
+
+    /// Cold start / failed→retry: if TTL-valid cache exists, show it immediately
+    /// (no spinner) while remote refresh continues in the background.
+    private func serveCachedFeedIfAvailable() {
+        guard case .loading = self.state, let cached = try? self.refreshFeed.peekCached(),
+              cached.posts.isEmpty == false
+        else {
+            return
+        }
+        if let syncedAt = cached.lastSyncedAt {
+            self.lastSyncedAt = syncedAt
+        }
+        self.state = .content(posts: cached.posts, isStale: cached.isStale)
+        // Warm serve becomes the cancel-restore baseline for this refresh.
+        self.stateBeforeRefresh = self.state
     }
 
     private func restorePriorStateAfterCancelledRefresh() {
