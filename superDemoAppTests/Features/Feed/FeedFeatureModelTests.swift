@@ -11,6 +11,8 @@ import Testing
 private final class FeedModelRepositorySpy: FeedRepository {
     var posts: [FeedPost] = []
     var isStale = false
+    var lastSyncedAt: Date?
+    var peekResult: FeedLoadResult?
     var delayNanoseconds: UInt64 = 0
     var error: Error?
 
@@ -23,7 +25,15 @@ private final class FeedModelRepositorySpy: FeedRepository {
         if let error {
             throw error
         }
-        return FeedLoadResult(posts: self.posts, isStale: self.isStale)
+        return FeedLoadResult(
+            posts: self.posts,
+            isStale: self.isStale,
+            lastSyncedAt: self.lastSyncedAt
+        )
+    }
+
+    func peekCachedPosts() throws -> FeedLoadResult? {
+        self.peekResult
     }
 }
 
@@ -215,6 +225,62 @@ struct FeedFeatureModelTests {
         }
 
         model.cancelRefresh()
+    }
+
+    @Test
+    @MainActor
+    func warmCacheServesContentWithoutWaitingForRemote() async {
+        let repository = FeedModelRepositorySpy()
+        let cachedPost = FeedPost(id: 1, userID: 1, title: "Cached", body: "Local")
+        let syncedAt = Date(timeIntervalSince1970: 1_700_000_000)
+        repository.peekResult = FeedLoadResult(
+            posts: [cachedPost],
+            isStale: false,
+            lastSyncedAt: syncedAt
+        )
+        repository.posts = [FeedPost(id: 2, userID: 1, title: "Fresh", body: "Remote")]
+        repository.lastSyncedAt = Date(timeIntervalSince1970: 1_700_000_500)
+        repository.delayNanoseconds = 300_000_000
+        let model = FeedFeatureModel(
+            refreshFeed: RefreshFeedUseCase(repository: repository)
+        )
+
+        model.refresh()
+        try? await Task.sleep(nanoseconds: 40_000_000)
+
+        if case let .content(posts, isStale) = model.state {
+            #expect(posts == [cachedPost])
+            #expect(isStale == false)
+        } else {
+            Issue.record("Expected warm cache content before remote returns")
+        }
+        #expect(model.lastSyncedAt == syncedAt)
+
+        await model.refreshAndWait()
+
+        if case let .content(posts, isStale) = model.state {
+            #expect(posts.map(\.id) == [2])
+            #expect(isStale == false)
+        } else {
+            Issue.record("Expected remote content after refresh completes")
+        }
+        #expect(model.lastSyncedAt == Date(timeIntervalSince1970: 1_700_000_500))
+    }
+
+    @Test
+    @MainActor
+    func refreshRecordsLastSyncedAtFromResult() async {
+        let repository = FeedModelRepositorySpy()
+        let syncedAt = Date(timeIntervalSince1970: 1_700_000_123)
+        repository.posts = [FeedPost(id: 1, userID: 1, title: "A", body: "B")]
+        repository.lastSyncedAt = syncedAt
+        let model = FeedFeatureModel(
+            refreshFeed: RefreshFeedUseCase(repository: repository)
+        )
+
+        await model.refreshAndWait()
+
+        #expect(model.lastSyncedAt == syncedAt)
     }
 
     @Test

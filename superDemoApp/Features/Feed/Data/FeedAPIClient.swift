@@ -10,11 +10,20 @@ protocol FeedAPIClient: Sendable {
 }
 
 struct LiveFeedAPIClient: FeedAPIClient {
+    /// Connectivity is a hint — fail fast so TTL-valid cache can serve (OI-02).
+    nonisolated static let requestTimeout: TimeInterval = 8
+
     private let session: URLSession
     private let postsURL: URL
+    private let timeoutInterval: TimeInterval
 
-    init(session: URLSession = .shared, postsURL: URL? = nil) {
+    init(
+        session: URLSession = .shared,
+        postsURL: URL? = nil,
+        timeoutInterval: TimeInterval = Self.requestTimeout
+    ) {
         self.session = session
+        self.timeoutInterval = timeoutInterval
         if let postsURL {
             self.postsURL = postsURL
         } else {
@@ -31,7 +40,7 @@ struct LiveFeedAPIClient: FeedAPIClient {
 
     func fetchPostsData() async throws -> Data {
         var request = URLRequest(url: self.postsURL)
-        request.timeoutInterval = 30
+        request.timeoutInterval = self.timeoutInterval
         let (data, response) = try await self.session.data(for: request)
         guard let http = response as? HTTPURLResponse else {
             throw FeedError.invalidResponse

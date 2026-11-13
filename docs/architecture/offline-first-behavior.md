@@ -142,8 +142,15 @@ forces `ManualConnectivityMonitor(isConnected: false)`.
 
 ### Feed read / Items
 
-Unchanged from prior deep-dive (stale banner, Items local chrome). See tables in
-git history / `FeedView` / `ItemsView`.
+| State | User-visible |
+| --- | --- |
+| Cold load + valid cache | Content immediately (warm peek); no `feedLoading` spinner |
+| Cold load + cache miss | `ProgressView` (`feedLoading`) until remote returns |
+| Stale after remote fail | Offline banner (`feedStaleBanner`) + content |
+| Last synced known | Footnote `feedLastSynced` (“Last synced …”) from `lastSyncedAt` |
+| Items | Local-only chrome (OI-06); no remote sync strip |
+
+See `FeedView` / `ItemsView`.
 
 ## Decisions and trade-offs
 

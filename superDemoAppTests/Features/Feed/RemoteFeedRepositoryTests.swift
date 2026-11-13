@@ -51,4 +51,9 @@ struct RemoteFeedRepositoryTests {
             _ = try await repository.fetchPosts()
         }
     }
+
+    @Test
+    func liveFeedAPIClientUsesFailFastTimeout() {
+        #expect(LiveFeedAPIClient.requestTimeout == 8)
+    }
 }

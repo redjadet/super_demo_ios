@@ -17,8 +17,9 @@ The **Feed** feature (see [`docs/portfolio.md`](portfolio.md) and
   `JSONPlaceholderBookmarkRemoteClient` (JSONPlaceholder fakes persistence —
   see [`architecture/offline-first-behavior.md`](architecture/offline-first-behavior.md)).
 - **`FeedAPIClient`** lives under `Features/Feed/Data/` only.
-- Injectable **`URLSession`**; **`timeoutIntervalForRequest` ~ 30s** in app
-  composition when using a custom configuration.
+- Injectable **`URLSession`**; Feed request **`timeoutInterval` = 8s**
+  (`LiveFeedAPIClient.requestTimeout`) so connectivity-as-hint fails fast into
+  TTL-valid cache (OI-02) instead of hanging on a long URLSession default.
 - **`PostDTO` → `FeedPost`** in **`RemoteFeedRepository`**.
 - **`CachingFeedRepository`** / **`CachedFeedPost`**: persist on success with
   `cachedAt`; on network failure with **fresh** cached rows (default TTL

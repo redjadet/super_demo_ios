@@ -232,6 +232,16 @@ struct FeedView: View {
             }
         }
 
+        if let lastSyncedAt = self.model.lastSyncedAt {
+            Section {
+                Text(self.lastSyncedLabel(for: lastSyncedAt))
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                    .accessibilityIdentifier("feedLastSynced")
+                    .accessibilityLabel(self.lastSyncedLabel(for: lastSyncedAt))
+            }
+        }
+
         if self.model.failedOutboxCount > 0 {
             Section {
                 Button {
@@ -274,6 +284,13 @@ struct FeedView: View {
             }
             .tag(post)
         }
+    }
+
+    private func lastSyncedLabel(for date: Date) -> String {
+        let formatter = RelativeDateTimeFormatter()
+        formatter.unitsStyle = .full
+        let relative = formatter.localizedString(for: date, relativeTo: Date())
+        return String(localized: "Last synced \(relative)")
     }
 
     private func postTextLabel(_ post: FeedPost) -> some View {

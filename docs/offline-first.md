@@ -13,14 +13,18 @@ Default product posture: local data first, sync opportunistically.
 
 ## Principles
 
-- Reads should work from local storage when possible.
+- Reads should work from local storage when possible (Feed: warm
+  `peekCachedPosts` then remote refresh; Items: local-only).
 - Writes should be recorded locally before remote sync when feature allows it
   (Feed bookmarks: SwiftData outbox — see
   [`architecture/offline-first-behavior.md`](architecture/offline-first-behavior.md)).
 - Sync must be idempotent and retryable.
 - Conflicts need explicit policy: local wins, remote wins, merge, or user choice
   (bookmarks: last-writer-wins in queue; unresolved failure on 409/412).
-- UI should distinguish offline, syncing, synced, and failed states when relevant.
+- UI should distinguish offline, syncing, synced, and failed states when relevant
+  (Feed: stale banner + “Last synced”; bookmarks: pending / failed / synced).
+- Connectivity is a hint: Feed HTTP uses an **8s** request timeout so stale
+  cache can win quickly when the network hangs.
 
 ## SwiftData Rules
 
